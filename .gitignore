@@ -1,0 +1,15 @@
+/dist/
+.gocache
+/.vscode
+.terraform
+.terraform.lock.hcl
+*.tfvars
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate*
+dist/
+*.tfplan
+/generated
+/kubefu/generated
+/pattern
+.tempdir
