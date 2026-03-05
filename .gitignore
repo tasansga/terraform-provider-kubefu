@@ -10,6 +10,5 @@ terraform.tfstate.backup
 dist/
 *.tfplan
 /generated
-/kubefu/generated
 /pattern
 .tempdir

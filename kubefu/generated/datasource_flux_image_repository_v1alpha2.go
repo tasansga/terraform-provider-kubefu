@@ -1,0 +1,158 @@
+package generated
+
+import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
+	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
+)
+
+func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Alpha2() *schema.Resource {
+	return &schema.Resource{
+		ReadContext: dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Alpha2Read,
+		Description: "ImageRepository is the Schema for the imagerepositories API",
+		Schema: map[string]*schema.Schema{
+			"api_version": {
+				Type:        schema.TypeString,
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+			"kind": {
+				Type:        schema.TypeString,
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+			"kubefu_manifest_json": {
+				Type:        schema.TypeString,
+				Description: "Rendered manifest (canonical JSON) for this data source.",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
+			},
+			"kubefu_manifest_yaml": {
+				Type:        schema.TypeString,
+				Description: "Rendered manifest (canonical YAML) for this data source.",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
+			},
+			"metadata": {
+				Type:        schema.TypeMap,
+				Description: "",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+			"spec": {
+				Type:        schema.TypeMap,
+				Description: "ImageRepositorySpec defines the parameters for scanning an image repository, e.g., `fluxcd/flux`.",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+			"status": {
+				Type:        schema.TypeMap,
+				Description: "ImageRepositoryStatus defines the observed state of ImageRepository",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+		},
+	}
+}
+
+
+
+func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Alpha2Read(_ context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
+	if err := manifestpkg.SetDataSourceDefaults(d, "image.toolkit.fluxcd.io/v1alpha2", "ImageRepository", "image.toolkit.fluxcd.io/v1alpha2/ImageRepository"); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec", "status"}); err != nil {
+		return diag.FromErr(err)
+	}
+	return diag.Diagnostics{}
+}
+var dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Alpha2CompatibleVersions = []string{
+	"v0.13.0",
+	"v0.13.1",
+	"v0.13.2",
+	"v0.13.3",
+	"v0.13.4",
+	"v0.14.0",
+	"v0.14.1",
+	"v0.14.2",
+	"v0.15.0",
+	"v0.15.1",
+	"v0.15.2",
+	"v0.15.3",
+	"v0.16.0",
+	"v0.16.1",
+	"v0.16.2",
+	"v0.17.0",
+	"v0.17.1",
+	"v0.17.2",
+	"v0.18.0",
+	"v0.18.1",
+	"v0.18.2",
+	"v0.18.3",
+	"v0.19.0",
+	"v0.19.1",
+	"v0.20.0",
+	"v0.20.1",
+	"v0.21.0",
+	"v0.21.1",
+	"v0.22.0",
+	"v0.22.1",
+	"v0.23.0",
+	"v0.24.0",
+	"v0.24.1",
+	"v0.25.0",
+	"v0.25.1",
+	"v0.25.2",
+	"v0.25.3",
+	"v0.26.0",
+	"v0.26.1",
+	"v0.26.2",
+	"v0.26.3",
+	"v0.27.0",
+	"v0.27.1",
+	"v0.27.2",
+	"v0.27.3",
+	"v0.27.4",
+	"v0.28.0",
+	"v0.28.1",
+	"v0.28.2",
+	"v0.28.3",
+	"v0.28.4",
+	"v0.28.5",
+	"v0.29.0",
+	"v0.29.1",
+	"v0.29.2",
+	"v0.29.3",
+	"v0.29.4",
+	"v0.29.5",
+	"v0.30.0",
+	"v0.30.1",
+	"v0.30.2",
+	"v0.31.0",
+	"v0.31.1",
+	"v0.31.2",
+	"v0.31.3",
+	"v0.31.4",
+	"v0.31.5",
+	"v0.32.0",
+	"v0.33.0",
+	"v0.34.0",
+	"v0.35.0",
+	"v0.36.0",
+}
+
+func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Alpha2IsCompatibleWith(version string) bool {
+	return versionpkg.IsCompatibleWith(version, dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Alpha2CompatibleVersions)
+}

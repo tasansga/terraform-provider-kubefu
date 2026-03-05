@@ -27,6 +27,9 @@ func GenerateFromSchemas(schemaRoot, outDir, pkgName string) error {
 	if len(providerNames) == 0 {
 		return fmt.Errorf("no definitions found under %s", schemaRoot)
 	}
+	if err := os.RemoveAll(outDir); err != nil {
+		return fmt.Errorf("remove output dir %s: %w", outDir, err)
+	}
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return fmt.Errorf("create output dir %s: %w", outDir, err)
 	}

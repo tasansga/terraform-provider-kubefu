@@ -1,0 +1,106 @@
+package generated
+
+import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
+	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
+)
+
+func dataSourceCertManagerCertManagerIoIssuerV1() *schema.Resource {
+	return &schema.Resource{
+		ReadContext: dataSourceCertManagerCertManagerIoIssuerV1Read,
+		Description: "An Issuer represents a certificate issuing authority which can be referenced as part of `issuerRef` fields. It is scoped to a single namespace and can therefore only be referenced by resources within the same namespace.",
+		Schema: map[string]*schema.Schema{
+			"api_version": {
+				Type:        schema.TypeString,
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+			"kind": {
+				Type:        schema.TypeString,
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+			"kubefu_manifest_json": {
+				Type:        schema.TypeString,
+				Description: "Rendered manifest (canonical JSON) for this data source.",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
+			},
+			"kubefu_manifest_yaml": {
+				Type:        schema.TypeString,
+				Description: "Rendered manifest (canonical YAML) for this data source.",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
+			},
+			"metadata": {
+				Type:        schema.TypeMap,
+				Description: "",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+			"spec": {
+				Type:        schema.TypeMap,
+				Description: "Desired state of the Issuer resource.",
+				Optional:    false,
+				Required:    true,
+				Computed:    false,
+			},
+			"status": {
+				Type:        schema.TypeMap,
+				Description: "Status of the Issuer. This is set and managed automatically.",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+		},
+	}
+}
+
+
+
+func dataSourceCertManagerCertManagerIoIssuerV1Read(_ context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
+	if err := manifestpkg.SetDataSourceDefaults(d, "cert-manager.io/v1", "Issuer", "cert-manager.io/v1/Issuer"); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec", "status"}); err != nil {
+		return diag.FromErr(err)
+	}
+	return diag.Diagnostics{}
+}
+var dataSourceCertManagerCertManagerIoIssuerV1CompatibleVersions = []string{
+	"v1.0.0",
+	"v1.1.0",
+	"v1.2.0",
+	"v1.3.0",
+	"v1.4.0",
+	"v1.5.0",
+	"v1.6.0",
+	"v1.7.0",
+	"v1.8.0",
+	"v1.9.0",
+	"v1.10.0",
+	"v1.11.0",
+	"v1.12.0",
+	"v1.13.0",
+	"v1.14.0",
+	"v1.15.0",
+	"v1.16.0",
+	"v1.17.0",
+	"v1.18.0",
+	"v1.19.0",
+}
+
+func dataSourceCertManagerCertManagerIoIssuerV1IsCompatibleWith(version string) bool {
+	return versionpkg.IsCompatibleWith(version, dataSourceCertManagerCertManagerIoIssuerV1CompatibleVersions)
+}
