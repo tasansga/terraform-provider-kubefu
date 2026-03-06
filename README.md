@@ -2,6 +2,11 @@
 
 `kubefu` is a Terraform provider that exposes Kubernetes API schemas as local, type-checked data sources and provides a single `kubefu_manifest` resource to apply manifests to a cluster. It is designed for GitOps-style workflows where you want schema validation without coupling to a specific controller.
 
+Links:
+- [kubefu homepage on GitHub](https://github.com/tasansga/terraform-provider-kubefu)
+- [kubefu in the terraform registry](https://registry.terraform.io/providers/tasansga/kubefu/latest)
+- [kubefu in the OpenTofu registry](https://search.opentofu.org/provider/tasansga/kubefu/latest)
+
 ## What it provides
 
 - **Generated data sources** for Kubernetes, Flux, cert-manager, Prometheus Operator, Gateway API, and External Secrets Operator schemas.
