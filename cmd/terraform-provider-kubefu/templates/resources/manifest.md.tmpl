@@ -2,6 +2,12 @@
 
 Apply a Kubernetes manifest (YAML or JSON) to the target cluster using server-side apply.
 
+Notes:
+- This resource applies a single manifest (multi-document YAML is not supported).
+- On read, the provider normalizes the manifest (drops `status`, sorts keys) which may reformat the input.
+- If `metadata.namespace` is omitted, the namespace is resolved from the kubeconfig context, falling back to `default`.
+- Destroy deletes the live object in the cluster.
+
 ## Example Usage
 
 ```terraform
@@ -30,7 +36,7 @@ Use the following import ID format:
 
 `apiVersion/kind/namespace/name`
 
-For cluster-scoped resources, use `cluster` as the namespace.
+For cluster-scoped resources, use `cluster` as the namespace value.
 
 Example:
 
