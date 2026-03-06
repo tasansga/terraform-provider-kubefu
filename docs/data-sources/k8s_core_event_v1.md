@@ -23,11 +23,9 @@ Event is a report of an event somewhere in the cluster.
 ### Optional
 
 - `action` (String) What action was taken/failed regarding to the Regarding object.
-- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
 - `count_` (Number) The number of times this event has occurred.
 - `event_time` (Map of String) Time when this Event was first observed.
 - `first_timestamp` (Map of String) The time at which the event was first recorded. (Time of server receipt is in TypeMeta.)
-- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `last_timestamp` (Map of String) The time at which the most recent occurrence of this event was recorded.
 - `message` (String) A human-readable description of the status of this operation.
 - `reason` (String) This should be a short, machine understandable string that gives the reason for the transition into the object's current status.
@@ -40,6 +38,8 @@ Event is a report of an event somewhere in the cluster.
 
 ### Read-Only
 
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
 - `id` (String) The ID of this resource.
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.

@@ -64,6 +64,8 @@ func (d Definition) AsDataSource(pkgName, provider string) (FileData, error) {
 		Description: "Rendered manifest (canonical YAML) for this data source.",
 		Computed:    true,
 	}
+	markComputed(schemaMap, "api_version")
+	markComputed(schemaMap, "kind")
 	manifestKeys := make([]string, 0, len(schemaMap))
 	for key := range schemaMap {
 		if key == "api_version" || key == "kind" || key == manifestJSONField || key == manifestYAMLField {
@@ -183,4 +185,19 @@ func copySchemaMap(src map[string]*schema.Schema) map[string]*schema.Schema {
 		dst[k] = v
 	}
 	return dst
+}
+
+func markComputed(schemaMap map[string]*schema.Schema, key string) {
+	if schemaMap == nil {
+		return
+	}
+	s, ok := schemaMap[key]
+	if !ok || s == nil {
+		return
+	}
+	clone := *s
+	clone.Required = false
+	clone.Optional = false
+	clone.Computed = true
+	schemaMap[key] = &clone
 }

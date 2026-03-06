@@ -22,12 +22,10 @@ Event is a report of an event somewhere in the cluster. It generally denotes som
 ### Optional
 
 - `action` (String) What action was taken/failed regarding to the regarding object.
-- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
 - `deprecated_count` (Number) Deprecated field assuring backward compatibility with core.v1 Event type
 - `deprecated_first_timestamp` (Map of String) Deprecated field assuring backward compatibility with core.v1 Event type
 - `deprecated_last_timestamp` (Map of String) Deprecated field assuring backward compatibility with core.v1 Event type
 - `deprecated_source` (Map of String) Deprecated field assuring backward compatibility with core.v1 Event type
-- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `metadata` (Map of String)
 - `note` (String) Optional. A human-readable description of the status of this operation. Maximal length of the note is 1kB, but libraries should be prepared to handle values up to 64kB.
 - `reason` (String) Why the action was taken.
@@ -40,6 +38,8 @@ Event is a report of an event somewhere in the cluster. It generally denotes som
 
 ### Read-Only
 
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
 - `id` (String) The ID of this resource.
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
