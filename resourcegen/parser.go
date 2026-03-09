@@ -42,8 +42,8 @@ func ParseRootResources(data []byte) ([]ResourceEntry, error) {
 	if err := json.Unmarshal(data, &doc); err != nil {
 		return nil, fmt.Errorf("unmarshal OpenAPI document: %w", err)
 	}
-	if doc.Paths == nil {
-		return nil, fmt.Errorf("missing paths section")
+	if len(doc.Paths) == 0 {
+		return parseDefinitionsOnly(doc.Definitions)
 	}
 	lookup := buildDefinitionLookup(doc.Definitions)
 	var result []ResourceEntry
@@ -62,6 +62,46 @@ func ParseRootResources(data []byte) ([]ResourceEntry, error) {
 	}
 	sort.Slice(result, func(i, j int) bool {
 		return result[i].Path < result[j].Path
+	})
+	return result, nil
+}
+
+func parseDefinitionsOnly(definitions map[string]definition) ([]ResourceEntry, error) {
+	if len(definitions) == 0 {
+		return nil, fmt.Errorf("missing definitions section")
+	}
+	seen := map[string]struct{}{}
+	var result []ResourceEntry
+	for name, def := range definitions {
+		for i := range def.XGroupVersionKind {
+			gvk := def.XGroupVersionKind[i]
+			key := gvkKey(&groupVersionKind{
+				Group:   gvk.Group,
+				Version: gvk.Version,
+				Kind:    gvk.Kind,
+			})
+			if _, ok := seen[key]; ok {
+				continue
+			}
+			seen[key] = struct{}{}
+			result = append(result, ResourceEntry{
+				Group:                 gvk.Group,
+				Version:               gvk.Version,
+				Kind:                  gvk.Kind,
+				DefinitionName:        name,
+				DefinitionDescription: def.Description,
+				Schema:                buildTerraformSchema(name, def, definitions),
+			})
+		}
+	}
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].Group == result[j].Group {
+			if result[i].Version == result[j].Version {
+				return result[i].Kind < result[j].Kind
+			}
+			return result[i].Version < result[j].Version
+		}
+		return result[i].Group < result[j].Group
 	})
 	return result, nil
 }

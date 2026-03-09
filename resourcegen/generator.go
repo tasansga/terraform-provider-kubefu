@@ -134,6 +134,7 @@ type Versions struct {
 	PrometheusOperatorVersions []string
 	GatewayAPIVersions         []string
 	ExternalSecretsVersions    []string
+	KustomizeVersions          []string
 }
 
 func DataSources(versions Versions) map[string]*schema.Resource {
@@ -176,6 +177,8 @@ func (v Versions) versionFor(provider string) []string {
 		return v.GatewayAPIVersions
 	case "external_secrets", "external-secrets", "externalsecrets":
 		return v.ExternalSecretsVersions
+	case "kustomize":
+		return v.KustomizeVersions
 	default:
 		return nil
 	}

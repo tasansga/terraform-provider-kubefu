@@ -24,4 +24,5 @@ description: |-
 - `k8s_version` (List of String) Optional list of Kubernetes schema versions to target
 - `kubeconfig_context` (String) Optional kubeconfig context to use
 - `kubeconfig_path` (String) Path to the kubeconfig file; defaults to the KUBECONFIG environment variable
+- `kustomize_version` (List of String) Optional list of Kustomize schema versions to target
 - `prometheus_operator_version` (List of String) Optional list of Prometheus Operator schema versions to target

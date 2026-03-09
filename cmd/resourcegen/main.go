@@ -69,6 +69,13 @@ var providerConfigs = map[string]providerConfig{
 			return downloader.NewExternalSecretsDownloader(logger)
 		},
 	},
+	"kustomize": {
+		displayName: "kustomize",
+		subdir:      "kustomize",
+		factory: func(logger logrus.FieldLogger) downloader.SchemaDownloader {
+			return downloader.NewKustomizeDownloader(logger)
+		},
+	},
 }
 
 func init() {

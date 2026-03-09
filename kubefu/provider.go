@@ -16,6 +16,7 @@ type providerConfig struct {
 	PrometheusOperatorVersions []string
 	GatewayAPIVersions         []string
 	ExternalSecretsVersions    []string
+	KustomizeVersions          []string
 	KubeConfigPath            string
 	KubeContext               string
 }
@@ -59,6 +60,12 @@ func Provider() *schema.Provider {
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: "Optional list of External Secrets Operator schema versions to target",
 			},
+			"kustomize_version": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: "Optional list of Kustomize schema versions to target",
+			},
 			"kubeconfig_path": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -83,6 +90,7 @@ func Provider() *schema.Provider {
 			PrometheusOperatorVersions: getStringList(d, "prometheus_operator_version"),
 			GatewayAPIVersions:         getStringList(d, "gateway_api_version"),
 			ExternalSecretsVersions:    getStringList(d, "external_secrets_version"),
+			KustomizeVersions:          getStringList(d, "kustomize_version"),
 			KubeConfigPath:            d.Get("kubeconfig_path").(string),
 			KubeContext:               d.Get("kubeconfig_context").(string),
 		}
@@ -93,6 +101,7 @@ func Provider() *schema.Provider {
 			PrometheusOperatorVersions: cfg.PrometheusOperatorVersions,
 			GatewayAPIVersions:         cfg.GatewayAPIVersions,
 			ExternalSecretsVersions:    cfg.ExternalSecretsVersions,
+			KustomizeVersions:          cfg.KustomizeVersions,
 		})
 		return cfg, warnIfClusterVersionMismatch(ctx, cfg)
 	}

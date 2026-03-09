@@ -15,10 +15,11 @@ type Versions struct {
 	PrometheusOperatorVersions []string
 	GatewayAPIVersions         []string
 	ExternalSecretsVersions    []string
+	KustomizeVersions          []string
 }
 
 func DataSources(versions Versions) map[string]*schema.Resource {
-	result := make(map[string]*schema.Resource, 281)
+	result := make(map[string]*schema.Resource, 286)
 	{
 		ds := dataSourceCertManagerAcmeCertManagerIoChallengeV1()
 		configured := versions.versionFor("cert_manager")
@@ -4627,6 +4628,91 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_storagemigration_k8s_io_storage_version_migration_v1beta1"] = ds
 	}
 	{
+		ds := dataSourceKustomizeKustomizeConfigK8sIoConfigMapArgsV1Beta1()
+		configured := versions.versionFor("kustomize")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKustomizeKustomizeConfigK8sIoConfigMapArgsV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_kustomize_kustomize_config_k8s_io_config_map_args_v1beta1",
+				"kustomize",
+				strings.Join(dataSourceKustomizeKustomizeConfigK8sIoConfigMapArgsV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_kustomize_kustomize_config_k8s_io_config_map_args_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceKustomizeKustomizeConfigK8sIoGeneratorArgsV1Beta1()
+		configured := versions.versionFor("kustomize")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKustomizeKustomizeConfigK8sIoGeneratorArgsV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_kustomize_kustomize_config_k8s_io_generator_args_v1beta1",
+				"kustomize",
+				strings.Join(dataSourceKustomizeKustomizeConfigK8sIoGeneratorArgsV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_kustomize_kustomize_config_k8s_io_generator_args_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceKustomizeKustomizeConfigK8sIoKustomizationV1Beta1()
+		configured := versions.versionFor("kustomize")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKustomizeKustomizeConfigK8sIoKustomizationV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_kustomize_kustomize_config_k8s_io_kustomization_v1beta1",
+				"kustomize",
+				strings.Join(dataSourceKustomizeKustomizeConfigK8sIoKustomizationV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_kustomize_kustomize_config_k8s_io_kustomization_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceKustomizeKustomizeConfigK8sIoKvPairSourcesV1Beta1()
+		configured := versions.versionFor("kustomize")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKustomizeKustomizeConfigK8sIoKvPairSourcesV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_kustomize_kustomize_config_k8s_io_kv_pair_sources_v1beta1",
+				"kustomize",
+				strings.Join(dataSourceKustomizeKustomizeConfigK8sIoKvPairSourcesV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_kustomize_kustomize_config_k8s_io_kv_pair_sources_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceKustomizeKustomizeConfigK8sIoSecretArgsV1Beta1()
+		configured := versions.versionFor("kustomize")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKustomizeKustomizeConfigK8sIoSecretArgsV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_kustomize_kustomize_config_k8s_io_secret_args_v1beta1",
+				"kustomize",
+				strings.Join(dataSourceKustomizeKustomizeConfigK8sIoSecretArgsV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_kustomize_kustomize_config_k8s_io_secret_args_v1beta1"] = ds
+	}
+	{
 		ds := dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerConfigV1Alpha1()
 		configured := versions.versionFor("prometheus_operator")
 		if len(configured) > 0 {
@@ -4813,6 +4899,8 @@ func (v Versions) versionFor(provider string) []string {
 		return v.GatewayAPIVersions
 	case "external_secrets", "external-secrets", "externalsecrets":
 		return v.ExternalSecretsVersions
+	case "kustomize":
+		return v.KustomizeVersions
 	default:
 		return nil
 	}

@@ -6,6 +6,7 @@ Notes:
 - Data sources are schema-driven and do not reach out to a cluster.
 - `kubefu_manifest` uses server-side apply and requires kubeconfig access.
 - Schema version fields are lists used only to emit compatibility warnings; they do not change which schemas are available.
+- For Kustomize, versions correspond to the `kyaml/vX.Y.Z` schema tags.
 
 ## Example Usage
 
