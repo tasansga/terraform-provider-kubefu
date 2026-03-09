@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceK8sApiregistrationK8sIoAPIServiceV1Beta1() *schema.Resource {
@@ -94,8 +93,4 @@ var dataSourceK8sApiregistrationK8sIoAPIServiceV1Beta1CompatibleVersions = []str
 	"v1.19.0",
 	"v1.20.0",
 	"v1.21.0",
-}
-
-func dataSourceK8sApiregistrationK8sIoAPIServiceV1Beta1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceK8sApiregistrationK8sIoAPIServiceV1Beta1CompatibleVersions)
 }

@@ -23,7 +23,7 @@ generate: build-resourcegen
 schema-download: build-resourcegen
 	"$(RESOURCEGEN_BIN)" download-schema
 
-lint: generate
+lint:
 	#tfproviderlint -R001=false ./...
 	golangci-lint run kubefu
 	golangci-lint run kubefu/generated

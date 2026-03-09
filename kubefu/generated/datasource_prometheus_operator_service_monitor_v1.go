@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourcePrometheusOperatorMonitoringCoreosComServiceMonitorV1() *schema.Resource {
@@ -144,8 +143,4 @@ var dataSourcePrometheusOperatorMonitoringCoreosComServiceMonitorV1CompatibleVer
 	"v0.88.0",
 	"v0.88.1",
 	"v0.89.0",
-}
-
-func dataSourcePrometheusOperatorMonitoringCoreosComServiceMonitorV1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourcePrometheusOperatorMonitoringCoreosComServiceMonitorV1CompatibleVersions)
 }

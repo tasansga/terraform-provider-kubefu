@@ -84,3 +84,28 @@ func IsCompatibleWith(configured string, supported []string) bool {
 	}
 	return false
 }
+
+// FilterIncompatible returns configured versions that are not in the supported list.
+// If either list is empty, it returns nil (no incompatibility signal).
+func FilterIncompatible(configured []string, supported []string) []string {
+	if len(configured) == 0 || len(supported) == 0 {
+		return nil
+	}
+	supportedSet := make(map[string]struct{}, len(supported))
+	for _, version := range supported {
+		if version == "" {
+			continue
+		}
+		supportedSet[version] = struct{}{}
+	}
+	if len(supportedSet) == 0 {
+		return nil
+	}
+	var incompatible []string
+	for _, version := range NormalizeList(configured) {
+		if _, ok := supportedSet[version]; !ok {
+			incompatible = append(incompatible, version)
+		}
+	}
+	return incompatible
+}

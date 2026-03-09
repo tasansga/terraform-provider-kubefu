@@ -12,3 +12,4 @@ dist/
 /generated
 /pattern
 .tempdir
+/TASK_*.md

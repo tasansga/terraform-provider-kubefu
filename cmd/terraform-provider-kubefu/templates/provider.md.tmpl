@@ -5,7 +5,7 @@ The `kubefu` provider exposes Kubernetes API schemas as local, type-checked data
 Notes:
 - Data sources are schema-driven and do not reach out to a cluster.
 - `kubefu_manifest` uses server-side apply and requires kubeconfig access.
-- Schema version fields are only used to emit compatibility warnings; they do not change which schemas are available.
+- Schema version fields are lists used only to emit compatibility warnings; they do not change which schemas are available.
 
 ## Example Usage
 

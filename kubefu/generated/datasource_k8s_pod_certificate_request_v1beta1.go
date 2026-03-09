@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceK8sCertificatesK8sIoPodCertificateRequestV1Beta1() *schema.Resource {
@@ -80,8 +79,4 @@ func dataSourceK8sCertificatesK8sIoPodCertificateRequestV1Beta1Read(_ context.Co
 }
 var dataSourceK8sCertificatesK8sIoPodCertificateRequestV1Beta1CompatibleVersions = []string{
 	"v1.35.0",
-}
-
-func dataSourceK8sCertificatesK8sIoPodCertificateRequestV1Beta1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceK8sCertificatesK8sIoPodCertificateRequestV1Beta1CompatibleVersions)
 }

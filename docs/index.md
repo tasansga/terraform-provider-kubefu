@@ -17,11 +17,11 @@ description: |-
 
 ### Optional
 
-- `cert_manager_version` (String) Optional cert-manager schema version to target
-- `external_secrets_version` (String) Optional External Secrets Operator schema version to target
-- `flux_version` (String) Optional Flux schema version to target
-- `gateway_api_version` (String) Optional Gateway API schema version to target
-- `k8s_version` (String) Optional Kubernetes schema version to target
+- `cert_manager_version` (List of String) Optional list of cert-manager schema versions to target
+- `external_secrets_version` (List of String) Optional list of External Secrets Operator schema versions to target
+- `flux_version` (List of String) Optional list of Flux schema versions to target
+- `gateway_api_version` (List of String) Optional list of Gateway API schema versions to target
+- `k8s_version` (List of String) Optional list of Kubernetes schema versions to target
 - `kubeconfig_context` (String) Optional kubeconfig context to use
 - `kubeconfig_path` (String) Path to the kubeconfig file; defaults to the KUBECONFIG environment variable
-- `prometheus_operator_version` (String) Optional Prometheus Operator schema version to target
+- `prometheus_operator_version` (List of String) Optional list of Prometheus Operator schema versions to target

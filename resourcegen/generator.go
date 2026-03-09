@@ -124,15 +124,16 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 type Versions struct {
-	K8sVersion         string
-	FluxVersion        string
-	CertManagerVersion string
-	PrometheusOperatorVersion string
-	GatewayAPIVersion         string
-	ExternalSecretsVersion    string
+	K8sVersions                []string
+	FluxVersions               []string
+	CertManagerVersions        []string
+	PrometheusOperatorVersions []string
+	GatewayAPIVersions         []string
+	ExternalSecretsVersions    []string
 }
 
 func DataSources(versions Versions) map[string]*schema.Resource {
@@ -140,16 +141,19 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 	{{- range .Entries }}
 	{
 		ds := {{ .FuncName }}()
-		version := versions.versionFor("{{ .Provider }}")
+		configured := versions.versionFor("{{ .Provider }}")
 		{{- if .HasSupportedVersions }}
-		if version != "" && !{{ .FuncName }}IsCompatibleWith(version) {
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, {{ .FuncName }}CompatibleVersions)
+			if len(incompatible) > 0 {
 			ds.DeprecationMessage = fmt.Sprintf(
-				"%s is only guaranteed to work with %s versions %s; configured version %q may be incompatible",
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
 				"{{ .Key }}",
 				"{{ .Provider }}",
 				strings.Join({{ .FuncName }}CompatibleVersions, ", "),
-				version,
+				strings.Join(incompatible, ", "),
 			)
+			}
 		}
 		{{- end }}
 		result["{{ .Key }}"] = ds
@@ -158,22 +162,22 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 	return result
 }
 
-func (v Versions) versionFor(provider string) string {
+func (v Versions) versionFor(provider string) []string {
 	switch provider {
 	case "k8s":
-		return v.K8sVersion
+		return v.K8sVersions
 	case "flux":
-		return v.FluxVersion
+		return v.FluxVersions
 	case "cert_manager", "cert-manager":
-		return v.CertManagerVersion
+		return v.CertManagerVersions
 	case "prometheus_operator", "prometheus-operator", "prometheus":
-		return v.PrometheusOperatorVersion
+		return v.PrometheusOperatorVersions
 	case "gateway_api", "gateway-api", "gateway":
-		return v.GatewayAPIVersion
+		return v.GatewayAPIVersions
 	case "external_secrets", "external-secrets", "externalsecrets":
-		return v.ExternalSecretsVersion
+		return v.ExternalSecretsVersions
 	default:
-		return ""
+		return nil
 	}
 }
 `))

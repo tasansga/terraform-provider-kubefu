@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta1() *schema.Resource {
@@ -183,8 +182,4 @@ var dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta1CompatibleVersions = []st
 	"v2.6.2",
 	"v2.6.3",
 	"v2.6.4",
-}
-
-func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta1CompatibleVersions)
 }

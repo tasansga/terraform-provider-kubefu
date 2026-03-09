@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceCertManagerCertManagerIoClusterIssuerV1() *schema.Resource {
@@ -99,8 +98,4 @@ var dataSourceCertManagerCertManagerIoClusterIssuerV1CompatibleVersions = []stri
 	"v1.17.0",
 	"v1.18.0",
 	"v1.19.0",
-}
-
-func dataSourceCertManagerCertManagerIoClusterIssuerV1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceCertManagerCertManagerIoClusterIssuerV1CompatibleVersions)
 }

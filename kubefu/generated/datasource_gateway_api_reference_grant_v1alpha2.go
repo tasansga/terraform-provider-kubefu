@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1Alpha2() *schema.Resource {
@@ -82,8 +81,4 @@ var dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1Alpha2CompatibleVe
 	"v1.0.0",
 	"v1.1.0",
 	"v1.1.1",
-}
-
-func dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1Alpha2IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1Alpha2CompatibleVersions)
 }

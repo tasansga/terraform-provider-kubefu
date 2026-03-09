@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceK8sStorageK8sIoVolumeAttributesClassV1Alpha1() *schema.Resource {
@@ -85,8 +84,4 @@ var dataSourceK8sStorageK8sIoVolumeAttributesClassV1Alpha1CompatibleVersions = [
 	"v1.32.0",
 	"v1.33.0",
 	"v1.34.0",
-}
-
-func dataSourceK8sStorageK8sIoVolumeAttributesClassV1Alpha1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceK8sStorageK8sIoVolumeAttributesClassV1Alpha1CompatibleVersions)
 }

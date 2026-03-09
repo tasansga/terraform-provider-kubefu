@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceGatewayApiGatewayNetworkingK8sIoHTTPRouteV1Alpha2() *schema.Resource {
@@ -88,8 +87,4 @@ var dataSourceGatewayApiGatewayNetworkingK8sIoHTTPRouteV1Alpha2CompatibleVersion
 	"v0.7.1",
 	"v0.8.0",
 	"v0.8.1",
-}
-
-func dataSourceGatewayApiGatewayNetworkingK8sIoHTTPRouteV1Alpha2IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceGatewayApiGatewayNetworkingK8sIoHTTPRouteV1Alpha2CompatibleVersions)
 }

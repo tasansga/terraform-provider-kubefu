@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceK8sSchedulingK8sIoWorkloadV1Alpha1() *schema.Resource {
@@ -73,8 +72,4 @@ func dataSourceK8sSchedulingK8sIoWorkloadV1Alpha1Read(_ context.Context, d *sche
 }
 var dataSourceK8sSchedulingK8sIoWorkloadV1Alpha1CompatibleVersions = []string{
 	"v1.35.0",
-}
-
-func dataSourceK8sSchedulingK8sIoWorkloadV1Alpha1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceK8sSchedulingK8sIoWorkloadV1Alpha1CompatibleVersions)
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceFluxNotificationToolkitFluxcdIoReceiverV1() *schema.Resource {
@@ -103,8 +102,4 @@ var dataSourceFluxNotificationToolkitFluxcdIoReceiverV1CompatibleVersions = []st
 	"v2.7.3",
 	"v2.7.4",
 	"v2.7.5",
-}
-
-func dataSourceFluxNotificationToolkitFluxcdIoReceiverV1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceFluxNotificationToolkitFluxcdIoReceiverV1CompatibleVersions)
 }

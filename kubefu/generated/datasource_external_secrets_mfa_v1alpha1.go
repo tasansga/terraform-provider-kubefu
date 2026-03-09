@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceExternalSecretsGeneratorsExternalSecretsIoMFAV1Alpha1() *schema.Resource {
@@ -90,8 +89,4 @@ var dataSourceExternalSecretsGeneratorsExternalSecretsIoMFAV1Alpha1CompatibleVer
 	"v1.3.1",
 	"v1.3.2",
 	"v2.0.0",
-}
-
-func dataSourceExternalSecretsGeneratorsExternalSecretsIoMFAV1Alpha1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceExternalSecretsGeneratorsExternalSecretsIoMFAV1Alpha1CompatibleVersions)
 }

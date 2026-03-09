@@ -10,12 +10,12 @@ import (
 )
 
 type providerConfig struct {
-	K8sVersion                string
-	FluxVersion               string
-	CertManagerVersion        string
-	PrometheusOperatorVersion string
-	GatewayAPIVersion         string
-	ExternalSecretsVersion    string
+	K8sVersions                []string
+	FluxVersions               []string
+	CertManagerVersions        []string
+	PrometheusOperatorVersions []string
+	GatewayAPIVersions         []string
+	ExternalSecretsVersions    []string
 	KubeConfigPath            string
 	KubeContext               string
 }
@@ -24,34 +24,40 @@ func Provider() *schema.Provider {
 	p := &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"k8s_version": {
-				Type:        schema.TypeString,
+				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "Optional Kubernetes schema version to target",
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: "Optional list of Kubernetes schema versions to target",
 			},
 			"flux_version": {
-				Type:        schema.TypeString,
+				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "Optional Flux schema version to target",
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: "Optional list of Flux schema versions to target",
 			},
 			"cert_manager_version": {
-				Type:        schema.TypeString,
+				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "Optional cert-manager schema version to target",
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: "Optional list of cert-manager schema versions to target",
 			},
 			"prometheus_operator_version": {
-				Type:        schema.TypeString,
+				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "Optional Prometheus Operator schema version to target",
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: "Optional list of Prometheus Operator schema versions to target",
 			},
 			"gateway_api_version": {
-				Type:        schema.TypeString,
+				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "Optional Gateway API schema version to target",
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: "Optional list of Gateway API schema versions to target",
 			},
 			"external_secrets_version": {
-				Type:        schema.TypeString,
+				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "Optional External Secrets Operator schema version to target",
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: "Optional list of External Secrets Operator schema versions to target",
 			},
 			"kubeconfig_path": {
 				Type:        schema.TypeString,
@@ -71,25 +77,46 @@ func Provider() *schema.Provider {
 	p.DataSourcesMap = generated.DataSources(generated.Versions{})
 	p.ConfigureContextFunc = func(ctx context.Context, d *schema.ResourceData) (any, diag.Diagnostics) {
 		cfg := &providerConfig{
-			K8sVersion:                d.Get("k8s_version").(string),
-			FluxVersion:               d.Get("flux_version").(string),
-			CertManagerVersion:        d.Get("cert_manager_version").(string),
-			PrometheusOperatorVersion: d.Get("prometheus_operator_version").(string),
-			GatewayAPIVersion:         d.Get("gateway_api_version").(string),
-			ExternalSecretsVersion:    d.Get("external_secrets_version").(string),
+			K8sVersions:                getStringList(d, "k8s_version"),
+			FluxVersions:               getStringList(d, "flux_version"),
+			CertManagerVersions:        getStringList(d, "cert_manager_version"),
+			PrometheusOperatorVersions: getStringList(d, "prometheus_operator_version"),
+			GatewayAPIVersions:         getStringList(d, "gateway_api_version"),
+			ExternalSecretsVersions:    getStringList(d, "external_secrets_version"),
 			KubeConfigPath:            d.Get("kubeconfig_path").(string),
 			KubeContext:               d.Get("kubeconfig_context").(string),
 		}
 		p.DataSourcesMap = generated.DataSources(generated.Versions{
-			K8sVersion:                cfg.K8sVersion,
-			FluxVersion:               cfg.FluxVersion,
-			CertManagerVersion:        cfg.CertManagerVersion,
-			PrometheusOperatorVersion: cfg.PrometheusOperatorVersion,
-			GatewayAPIVersion:         cfg.GatewayAPIVersion,
-			ExternalSecretsVersion:    cfg.ExternalSecretsVersion,
+			K8sVersions:                cfg.K8sVersions,
+			FluxVersions:               cfg.FluxVersions,
+			CertManagerVersions:        cfg.CertManagerVersions,
+			PrometheusOperatorVersions: cfg.PrometheusOperatorVersions,
+			GatewayAPIVersions:         cfg.GatewayAPIVersions,
+			ExternalSecretsVersions:    cfg.ExternalSecretsVersions,
 		})
 		return cfg, warnIfClusterVersionMismatch(ctx, cfg)
 	}
 
 	return p
+}
+
+func getStringList(d *schema.ResourceData, key string) []string {
+	raw := d.Get(key)
+	if raw == nil {
+		return nil
+	}
+	items, ok := raw.([]interface{})
+	if !ok {
+		return nil
+	}
+	values := make([]string, 0, len(items))
+	for _, item := range items {
+		if item == nil {
+			continue
+		}
+		if s, ok := item.(string); ok && s != "" {
+			values = append(values, s)
+		}
+	}
+	return values
 }

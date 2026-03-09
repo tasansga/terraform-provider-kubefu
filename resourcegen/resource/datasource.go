@@ -62,7 +62,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 `, d.PackageName))
@@ -106,9 +105,6 @@ func (d *DataSource) writeCompatibility(buf *bytes.Buffer) error {
 		fmt.Fprintf(buf, "\t%q,\n", version)
 	}
 	fmt.Fprintf(buf, "}\n\n")
-	fmt.Fprintf(buf, "func %sIsCompatibleWith(version string) bool {\n", d.FuncName)
-	fmt.Fprintf(buf, "\treturn versionpkg.IsCompatibleWith(version, %sCompatibleVersions)\n", d.FuncName)
-	fmt.Fprintf(buf, "}\n")
 	return nil
 }
 

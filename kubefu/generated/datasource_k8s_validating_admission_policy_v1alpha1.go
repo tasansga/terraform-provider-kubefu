@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceK8sAdmissionregistrationK8sIoValidatingAdmissionPolicyV1Alpha1() *schema.Resource {
@@ -78,8 +77,4 @@ var dataSourceK8sAdmissionregistrationK8sIoValidatingAdmissionPolicyV1Alpha1Comp
 	"v1.29.0",
 	"v1.30.0",
 	"v1.31.0",
-}
-
-func dataSourceK8sAdmissionregistrationK8sIoValidatingAdmissionPolicyV1Alpha1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceK8sAdmissionregistrationK8sIoValidatingAdmissionPolicyV1Alpha1CompatibleVersions)
 }

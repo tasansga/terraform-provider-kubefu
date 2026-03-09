@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta1() *schema.Resource {
@@ -183,8 +182,4 @@ var dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta1CompatibleVersions = 
 	"v2.6.2",
 	"v2.6.3",
 	"v2.6.4",
-}
-
-func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta1CompatibleVersions)
 }

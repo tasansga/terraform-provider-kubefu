@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
-	versionpkg "github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
 )
 
 func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1() *schema.Resource {
@@ -85,8 +84,4 @@ var dataSourceFluxImageToolkitFluxcdIoImagePolicyV1CompatibleVersions = []string
 	"v2.7.3",
 	"v2.7.4",
 	"v2.7.5",
-}
-
-func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1IsCompatibleWith(version string) bool {
-	return versionpkg.IsCompatibleWith(version, dataSourceFluxImageToolkitFluxcdIoImagePolicyV1CompatibleVersions)
 }
