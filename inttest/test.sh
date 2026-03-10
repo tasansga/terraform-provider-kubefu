@@ -39,10 +39,18 @@ provider_installation {
 EOF
 
 cp "$SCRIPT_DIR/main.tf" "$TF_DIR/main.tf"
+cp -R "$SCRIPT_DIR/schemas" "$TF_DIR/schemas"
+mkdir -p "$TF_DIR/out"
 
 export TF_CLI_CONFIG_FILE="$CLI_CONFIG"
 export TOFU_CLI_CONFIG_FILE="$CLI_CONFIG"
 export TF_IN_AUTOMATION=1
+GOOS="$("$GO_CMD" env GOOS)"
+case "$GOOS" in
+  windows) PATHSEP=";" ;;
+  *) PATHSEP=":" ;;
+esac
+export KUBEFU_SCHEMA_PATHS="$TF_DIR/schemas/ktopic.yaml${PATHSEP}$TF_DIR/schemas/kwidget.yaml"
 
 TF_BIN="${TF_BIN:-$(command -v terraform || command -v tofu || true)}"
 if [[ -z "$TF_BIN" ]]; then
@@ -74,6 +82,42 @@ plan)
   ;;
 apply)
   "$TF_BIN" apply -input=false -auto-approve
+  assert_contains() {
+    local file="$1"
+    local expected="$2"
+    if ! grep -Fq "$expected" "$file"; then
+      echo "expected content missing in $file: $expected" >&2
+      exit 1
+    fi
+  }
+  mkdir -p "$TF_DIR/out"
+  for output_name in namespace_yaml config_map_yaml user_schema_yaml; do
+    expected="$("$TF_BIN" output -raw "$output_name")"
+    case "$output_name" in
+      namespace_yaml) file="$TF_DIR/out/namespace.yaml" ;;
+      config_map_yaml) file="$TF_DIR/out/config_map.yaml" ;;
+      user_schema_yaml) file="$TF_DIR/out/user_schema.yaml" ;;
+      *) echo "unknown output $output_name" >&2; exit 1 ;;
+    esac
+    printf '%s' "$expected" >"$file"
+    if [[ ! -f "$file" ]]; then
+      echo "expected output file missing: $file" >&2
+      exit 1
+    fi
+    if [[ "$(cat "$file")" != "$expected" ]]; then
+      echo "output mismatch for $output_name" >&2
+      exit 1
+    fi
+  done
+  assert_contains "$TF_DIR/out/namespace.yaml" "apiVersion: v1"
+  assert_contains "$TF_DIR/out/namespace.yaml" "kind: Namespace"
+  assert_contains "$TF_DIR/out/namespace.yaml" "name: kubefu-inttest"
+  assert_contains "$TF_DIR/out/config_map.yaml" "kind: ConfigMap"
+  assert_contains "$TF_DIR/out/config_map.yaml" "data:"
+  assert_contains "$TF_DIR/out/config_map.yaml" "hello: world"
+  assert_contains "$TF_DIR/out/config_map.yaml" "namespace: kubefu-inttest"
+  assert_contains "$TF_DIR/out/user_schema.yaml" "apiVersion: crd.omnicate.io/v1beta1"
+  assert_contains "$TF_DIR/out/user_schema.yaml" "kind: KTopic"
   ;;
 destroy)
   "$TF_BIN" destroy -auto-approve

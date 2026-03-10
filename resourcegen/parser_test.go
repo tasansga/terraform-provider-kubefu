@@ -128,6 +128,38 @@ func TestParseRootResourcesBuildsSchema(t *testing.T) {
 	}
 }
 
+func TestParseRootResourcesDefinitionsOnly(t *testing.T) {
+	doc := `{
+  "definitions": {
+    "io.k8s.api.apps.v1.Kustomization": {
+      "description": "Local kustomize config",
+      "type": "object",
+      "properties": {
+        "apiVersion": { "type": "string" },
+        "kind": { "type": "string" },
+        "metadata": { "type": "object" }
+      },
+      "x-kubernetes-group-version-kind": [
+        { "group": "kustomize.config.k8s.io", "version": "v1beta1", "kind": "Kustomization" }
+      ]
+    }
+  }
+}`
+	entries, err := ParseRootResources([]byte(doc))
+	if err != nil {
+		t.Fatalf("ParseRootResources returned error: %v", err)
+	}
+	if len(entries) != 1 {
+		t.Fatalf("expected 1 entry, got %d", len(entries))
+	}
+	if entries[0].Kind != "Kustomization" || entries[0].Group != "kustomize.config.k8s.io" || entries[0].Version != "v1beta1" {
+		t.Fatalf("unexpected entry: %+v", entries[0])
+	}
+	if entries[0].Schema == nil || entries[0].Schema["metadata"] == nil {
+		t.Fatalf("expected schema to include metadata")
+	}
+}
+
 func TestSchemaBuilderNormalizesPropertyNames(t *testing.T) {
 	builder := &schemaBuilder{}
 	def := definition{

@@ -1,6 +1,6 @@
 module github.com/tasansga/terraform-provider-kubefu
 
-go 1.25.3
+go 1.26.1
 
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.39.0

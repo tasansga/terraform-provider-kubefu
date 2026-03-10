@@ -2,6 +2,10 @@ package kubefu
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"sort"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -17,11 +21,14 @@ type providerConfig struct {
 	GatewayAPIVersions         []string
 	ExternalSecretsVersions    []string
 	KustomizeVersions          []string
-	KubeConfigPath            string
-	KubeContext               string
+	KubeConfigPath             string
+	KubeContext                string
+	SchemaPaths                []string
 }
 
 func Provider() *schema.Provider {
+	initSchemaPaths := parseSchemaPathsEnv(os.Getenv("KUBEFU_SCHEMA_PATHS"))
+	userDataSources, userInitDiags := loadUserSchemas(initSchemaPaths)
 	p := &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"k8s_version": {
@@ -77,12 +84,45 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				Description: "Optional kubeconfig context to use",
 			},
+			"schema_paths": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				DefaultFunc: schemaPathsDefaultFunc,
+				Description: "Optional list of local schema files or directories to load (CRD YAML or OpenAPI JSON)",
+			},
 		},
 		ResourcesMap: resources(),
 	}
 
-	p.DataSourcesMap = generated.DataSources(generated.Versions{})
+	dataSources := generated.DataSources(generated.Versions{})
+	for key, resource := range userDataSources {
+		if _, exists := dataSources[key]; exists {
+			userInitDiags = append(userInitDiags, diag.Diagnostic{
+				Severity: diag.Warning,
+				Summary:  "User schema ignored",
+				Detail:   fmt.Sprintf("data source %q already exists in built-in schemas", key),
+			})
+			continue
+		}
+		dataSources[key] = resource
+	}
+	p.DataSourcesMap = dataSources
 	p.ConfigureContextFunc = func(ctx context.Context, d *schema.ResourceData) (any, diag.Diagnostics) {
+		configSchemaPaths := getStringList(d, "schema_paths")
+		if len(initSchemaPaths) == 0 && len(configSchemaPaths) > 0 {
+			userInitDiags = append(userInitDiags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "KUBEFU_SCHEMA_PATHS must be set",
+				Detail:   "Terraform requires data sources to be registered before the provider schema is served. Set KUBEFU_SCHEMA_PATHS and keep schema_paths identical to avoid schema mismatches.",
+			})
+		} else if len(initSchemaPaths) > 0 && !sameStringSet(configSchemaPaths, initSchemaPaths) {
+			userInitDiags = append(userInitDiags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "schema_paths must match KUBEFU_SCHEMA_PATHS",
+				Detail:   "Terraform requires data sources to be registered before the provider schema is served. Set KUBEFU_SCHEMA_PATHS and schema_paths to the same values.",
+			})
+		}
 		cfg := &providerConfig{
 			K8sVersions:                getStringList(d, "k8s_version"),
 			FluxVersions:               getStringList(d, "flux_version"),
@@ -91,10 +131,11 @@ func Provider() *schema.Provider {
 			GatewayAPIVersions:         getStringList(d, "gateway_api_version"),
 			ExternalSecretsVersions:    getStringList(d, "external_secrets_version"),
 			KustomizeVersions:          getStringList(d, "kustomize_version"),
-			KubeConfigPath:            d.Get("kubeconfig_path").(string),
-			KubeContext:               d.Get("kubeconfig_context").(string),
+			KubeConfigPath:             d.Get("kubeconfig_path").(string),
+			KubeContext:                d.Get("kubeconfig_context").(string),
+			SchemaPaths:                configSchemaPaths,
 		}
-		p.DataSourcesMap = generated.DataSources(generated.Versions{
+		versioned := generated.DataSources(generated.Versions{
 			K8sVersions:                cfg.K8sVersions,
 			FluxVersions:               cfg.FluxVersions,
 			CertManagerVersions:        cfg.CertManagerVersions,
@@ -103,7 +144,15 @@ func Provider() *schema.Provider {
 			ExternalSecretsVersions:    cfg.ExternalSecretsVersions,
 			KustomizeVersions:          cfg.KustomizeVersions,
 		})
-		return cfg, warnIfClusterVersionMismatch(ctx, cfg)
+		for key, resource := range userDataSources {
+			if _, exists := versioned[key]; exists {
+				continue
+			}
+			versioned[key] = resource
+		}
+		p.DataSourcesMap = versioned
+		diags := append(userInitDiags, warnIfClusterVersionMismatch(ctx, cfg)...)
+		return cfg, diags
 	}
 
 	return p
@@ -113,6 +162,9 @@ func getStringList(d *schema.ResourceData, key string) []string {
 	raw := d.Get(key)
 	if raw == nil {
 		return nil
+	}
+	if value, ok := raw.(string); ok {
+		return parseSchemaPathsEnv(value)
 	}
 	items, ok := raw.([]interface{})
 	if !ok {
@@ -128,4 +180,70 @@ func getStringList(d *schema.ResourceData, key string) []string {
 		}
 	}
 	return values
+}
+
+func schemaPathsDefaultFunc() (any, error) {
+	value := os.Getenv("KUBEFU_SCHEMA_PATHS")
+	if value == "" {
+		return []interface{}{}, nil
+	}
+	parts := parseSchemaPathsEnv(value)
+	result := make([]interface{}, 0, len(parts))
+	for _, part := range parts {
+		if part == "" {
+			continue
+		}
+		result = append(result, part)
+	}
+	return result, nil
+}
+
+func parseSchemaPathsEnv(value string) []string {
+	if value == "" {
+		return nil
+	}
+	parts := strings.FieldsFunc(value, func(r rune) bool {
+		return r == ',' || r == ';' || r == rune(os.PathListSeparator)
+	})
+	values := make([]string, 0, len(parts))
+	for _, part := range parts {
+		if trimmed := strings.TrimSpace(part); trimmed != "" {
+			values = append(values, trimmed)
+		}
+	}
+	return values
+}
+
+func normalizeStringSet(values []string) []string {
+	if len(values) == 0 {
+		return nil
+	}
+	seen := make(map[string]struct{}, len(values))
+	normalized := make([]string, 0, len(values))
+	for _, value := range values {
+		if value == "" {
+			continue
+		}
+		if _, exists := seen[value]; exists {
+			continue
+		}
+		seen[value] = struct{}{}
+		normalized = append(normalized, value)
+	}
+	sort.Strings(normalized)
+	return normalized
+}
+
+func sameStringSet(left []string, right []string) bool {
+	ln := normalizeStringSet(left)
+	rn := normalizeStringSet(right)
+	if len(ln) != len(rn) {
+		return false
+	}
+	for i := range ln {
+		if ln[i] != rn[i] {
+			return false
+		}
+	}
+	return true
 }

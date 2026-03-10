@@ -4,7 +4,7 @@ PROVIDER_BIN=$(DIST_DIR)/terraform-provider-kubefu
 
 default: all
 
-all: lint unittest build-provider
+all: lint unittest inttest build-provider
 
 $(DIST_DIR):
 	mkdir -p $(DIST_DIR)
