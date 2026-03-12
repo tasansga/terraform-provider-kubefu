@@ -17,7 +17,7 @@ ValidatingWebhookConfiguration describes the configuration of and admission webh
 
 ### Optional
 
-- `metadata` (Map of String) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata.
+- `metadata` (List of Object) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata. (see [below for nested schema](#nestedatt--metadata))
 - `webhooks` (Block List) Webhooks is a list of webhooks and the affected resources and operations. (see [below for nested schema](#nestedblock--webhooks))
 
 ### Read-Only
@@ -28,5 +28,202 @@ ValidatingWebhookConfiguration describes the configuration of and admission webh
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Optional:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Optional:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Optional:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Optional:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Optional:
+
+- `continue` (String)
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
 <a id="nestedblock--webhooks"></a>
 ### Nested Schema for `webhooks`
+
+Required:
+
+- `client_config` (List of Object) ClientConfig defines how to communicate with the hook. Required (see [below for nested schema](#nestedatt--webhooks--client_config))
+- `name` (String) The name of the admission webhook. Name should be fully qualified, e.g., imagepolicy.kubernetes.io, where "imagepolicy" is the name of the webhook, and kubernetes.io is the name of the organization. Required.
+
+Optional:
+
+- `failure_policy` (String) FailurePolicy defines how unrecognized errors from the admission endpoint are handled - allowed values are Ignore or Fail. Defaults to Ignore.
+- `namespace_selector` (List of Object) NamespaceSelector decides whether to run the webhook on an object based on whether the namespace for that object matches the selector. If the object itself is a namespace, the matching is performed on object.metadata.labels. If the object is another cluster scoped resource, it never skips the webhook.
+
+For example, to run the webhook on any objects whose namespace is not associated with "runlevel" of "0" or "1";  you will set the selector as follows: "namespaceSelector": {
+  "matchExpressions": [
+    {
+      "key": "runlevel",
+      "operator": "NotIn",
+      "values": [
+        "0",
+        "1"
+      ]
+    }
+  ]
+}
+
+If instead you want to only run the webhook on any objects whose namespace is associated with the "environment" of "prod" or "staging"; you will set the selector as follows: "namespaceSelector": {
+  "matchExpressions": [
+    {
+      "key": "environment",
+      "operator": "In",
+      "values": [
+        "prod",
+        "staging"
+      ]
+    }
+  ]
+}
+
+See https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/ for more examples of label selectors.
+
+Default to the empty LabelSelector, which matches everything. (see [below for nested schema](#nestedatt--webhooks--namespace_selector))
+- `rules` (Block List) Rules describes what operations on what resources/subresources the webhook cares about. The webhook cares about an operation if it matches _any_ Rule. However, in order to prevent ValidatingAdmissionWebhooks and MutatingAdmissionWebhooks from putting the cluster in a state which cannot be recovered from without completely disabling the plugin, ValidatingAdmissionWebhooks and MutatingAdmissionWebhooks are never called on admission requests for ValidatingWebhookConfiguration and MutatingWebhookConfiguration objects. (see [below for nested schema](#nestedblock--webhooks--rules))
+
+<a id="nestedatt--webhooks--client_config"></a>
+### Nested Schema for `webhooks.client_config`
+
+Required:
+
+- `ca_bundle` (String)
+- `service` (List of Object) (see [below for nested schema](#nestedobjatt--webhooks--client_config--service))
+- `url` (String)
+
+<a id="nestedobjatt--webhooks--client_config--service"></a>
+### Nested Schema for `webhooks.client_config.service`
+
+Required:
+
+- `name` (String)
+- `namespace` (String)
+- `path` (String)
+
+
+
+<a id="nestedatt--webhooks--namespace_selector"></a>
+### Nested Schema for `webhooks.namespace_selector`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--webhooks--namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--webhooks--namespace_selector--match_expressions"></a>
+### Nested Schema for `webhooks.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedblock--webhooks--rules"></a>
+### Nested Schema for `webhooks.rules`
+
+Optional:
+
+- `api_groups` (List of String) APIGroups is the API groups the resources belong to. '*' is all groups. If '*' is present, the length of the slice must be one. Required.
+- `api_versions` (List of String) APIVersions is the API versions the resources belong to. '*' is all versions. If '*' is present, the length of the slice must be one. Required.
+- `operations` (List of String) Operations is the operations the admission hook cares about - CREATE, UPDATE, or * for all operations. If '*' is present, the length of the slice must be one. Required.
+- `resources` (List of String) Resources is a list of resources this rule applies to.
+
+For example: 'pods' means pods. 'pods/log' means the log subresource of pods. '*' means all resources, but not subresources. 'pods/*' means all subresources of pods. '*/scale' means all scale subresources. '*/*' means all resources and their subresources.
+
+If wildcard is present, the validation rule will ensure resources do not overlap with each other.
+
+Depending on the enclosing object, subresources might not be allowed. Required.

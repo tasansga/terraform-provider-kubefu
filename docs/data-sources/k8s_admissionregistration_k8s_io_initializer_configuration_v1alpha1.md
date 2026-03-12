@@ -18,7 +18,7 @@ InitializerConfiguration describes the configuration of initializers.
 ### Optional
 
 - `initializers` (Block List) Initializers is a list of resources and their default initializers Order-sensitive. When merging multiple InitializerConfigurations, we sort the initializers from different InitializerConfigurations by the name of the InitializerConfigurations; the order of the initializers from the same InitializerConfiguration is preserved. (see [below for nested schema](#nestedblock--initializers))
-- `metadata` (Map of String) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata.
+- `metadata` (List of Object) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata. (see [below for nested schema](#nestedatt--metadata))
 
 ### Read-Only
 
@@ -30,3 +30,127 @@ InitializerConfiguration describes the configuration of initializers.
 
 <a id="nestedblock--initializers"></a>
 ### Nested Schema for `initializers`
+
+Required:
+
+- `name` (String) Name is the identifier of the initializer. It will be added to the object that needs to be initialized. Name should be fully qualified, e.g., alwayspullimages.kubernetes.io, where "alwayspullimages" is the name of the webhook, and kubernetes.io is the name of the organization. Required
+
+Optional:
+
+- `rules` (Block List) Rules describes what resources/subresources the initializer cares about. The initializer cares about an operation if it matches _any_ Rule. Rule.Resources must not include subresources. (see [below for nested schema](#nestedblock--initializers--rules))
+
+<a id="nestedblock--initializers--rules"></a>
+### Nested Schema for `initializers.rules`
+
+Optional:
+
+- `api_groups` (List of String) APIGroups is the API groups the resources belong to. '*' is all groups. If '*' is present, the length of the slice must be one. Required.
+- `api_versions` (List of String) APIVersions is the API versions the resources belong to. '*' is all versions. If '*' is present, the length of the slice must be one. Required.
+- `resources` (List of String) Resources is a list of resources this rule applies to.
+
+For example: 'pods' means pods. 'pods/log' means the log subresource of pods. '*' means all resources, but not subresources. 'pods/*' means all subresources of pods. '*/scale' means all scale subresources. '*/*' means all resources and their subresources.
+
+If wildcard is present, the validation rule will ensure resources do not overlap with each other.
+
+Depending on the enclosing object, subresources might not be allowed. Required.
+
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Optional:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Optional:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Optional:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Optional:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Optional:
+
+- `continue` (String)
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)

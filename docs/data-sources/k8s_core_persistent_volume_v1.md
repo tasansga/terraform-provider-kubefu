@@ -17,9 +17,9 @@ PersistentVolume (PV) is a storage resource provisioned by an administrator. It 
 
 ### Optional
 
-- `metadata` (Map of String) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
-- `spec` (Map of String) Spec defines a specification of a persistent volume owned by the cluster. Provisioned by an administrator. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistent-volumes
-- `status` (Map of String) Status represents the current information/status for the persistent volume. Populated by the system. Read-only. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistent-volumes
+- `metadata` (List of Object) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata (see [below for nested schema](#nestedatt--metadata))
+- `spec` (List of Object) Spec defines a specification of a persistent volume owned by the cluster. Provisioned by an administrator. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistent-volumes (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) Status represents the current information/status for the persistent volume. Populated by the system. Read-only. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistent-volumes (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -28,3 +28,542 @@ PersistentVolume (PV) is a storage resource provisioned by an administrator. It 
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Optional:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Optional:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Optional:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Optional:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Optional:
+
+- `continue` (String)
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `access_modes` (List of String)
+- `aws_elastic_block_store` (List of Object) (see [below for nested schema](#nestedobjatt--spec--aws_elastic_block_store))
+- `azure_disk` (List of Object) (see [below for nested schema](#nestedobjatt--spec--azure_disk))
+- `azure_file` (List of Object) (see [below for nested schema](#nestedobjatt--spec--azure_file))
+- `capacity` (Map of String)
+- `cephfs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cephfs))
+- `cinder` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cinder))
+- `claim_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--claim_ref))
+- `csi` (List of Object) (see [below for nested schema](#nestedobjatt--spec--csi))
+- `fc` (List of Object) (see [below for nested schema](#nestedobjatt--spec--fc))
+- `flex_volume` (List of Object) (see [below for nested schema](#nestedobjatt--spec--flex_volume))
+- `flocker` (List of Object) (see [below for nested schema](#nestedobjatt--spec--flocker))
+- `gce_persistent_disk` (List of Object) (see [below for nested schema](#nestedobjatt--spec--gce_persistent_disk))
+- `glusterfs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--glusterfs))
+- `host_path` (List of Object) (see [below for nested schema](#nestedobjatt--spec--host_path))
+- `iscsi` (List of Object) (see [below for nested schema](#nestedobjatt--spec--iscsi))
+- `local` (List of Object) (see [below for nested schema](#nestedobjatt--spec--local))
+- `mount_options` (List of String)
+- `nfs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--nfs))
+- `node_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--node_affinity))
+- `persistent_volume_reclaim_policy` (String)
+- `photon_persistent_disk` (List of Object) (see [below for nested schema](#nestedobjatt--spec--photon_persistent_disk))
+- `portworx_volume` (List of Object) (see [below for nested schema](#nestedobjatt--spec--portworx_volume))
+- `quobyte` (List of Object) (see [below for nested schema](#nestedobjatt--spec--quobyte))
+- `rbd` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rbd))
+- `scale_io` (List of Object) (see [below for nested schema](#nestedobjatt--spec--scale_io))
+- `storage_class_name` (String)
+- `storageos` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storageos))
+- `volume_mode` (String)
+- `vsphere_volume` (List of Object) (see [below for nested schema](#nestedobjatt--spec--vsphere_volume))
+
+<a id="nestedobjatt--spec--aws_elastic_block_store"></a>
+### Nested Schema for `spec.aws_elastic_block_store`
+
+Optional:
+
+- `fs_type` (String)
+- `partition` (Number)
+- `read_only` (Boolean)
+- `volume_id` (String)
+
+
+<a id="nestedobjatt--spec--azure_disk"></a>
+### Nested Schema for `spec.azure_disk`
+
+Optional:
+
+- `caching_mode` (String)
+- `disk_name` (String)
+- `disk_uri` (String)
+- `fs_type` (String)
+- `kind` (String)
+- `read_only` (Boolean)
+
+
+<a id="nestedobjatt--spec--azure_file"></a>
+### Nested Schema for `spec.azure_file`
+
+Optional:
+
+- `read_only` (Boolean)
+- `secret_name` (String)
+- `secret_namespace` (String)
+- `share_name` (String)
+
+
+<a id="nestedobjatt--spec--cephfs"></a>
+### Nested Schema for `spec.cephfs`
+
+Optional:
+
+- `monitors` (List of String)
+- `path` (String)
+- `read_only` (Boolean)
+- `secret_file` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cephfs--secret_ref))
+- `user` (String)
+
+<a id="nestedobjatt--spec--cephfs--secret_ref"></a>
+### Nested Schema for `spec.cephfs.secret_ref`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--cinder"></a>
+### Nested Schema for `spec.cinder`
+
+Optional:
+
+- `fs_type` (String)
+- `read_only` (Boolean)
+- `volume_id` (String)
+
+
+<a id="nestedobjatt--spec--claim_ref"></a>
+### Nested Schema for `spec.claim_ref`
+
+Optional:
+
+- `api_version` (String)
+- `field_path` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
+
+
+<a id="nestedobjatt--spec--csi"></a>
+### Nested Schema for `spec.csi`
+
+Optional:
+
+- `controller_publish_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--csi--controller_publish_secret_ref))
+- `driver` (String)
+- `fs_type` (String)
+- `node_publish_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--csi--node_publish_secret_ref))
+- `node_stage_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--csi--node_stage_secret_ref))
+- `read_only` (Boolean)
+- `volume_attributes` (Map of String)
+- `volume_handle` (String)
+
+<a id="nestedobjatt--spec--csi--controller_publish_secret_ref"></a>
+### Nested Schema for `spec.csi.controller_publish_secret_ref`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--csi--node_publish_secret_ref"></a>
+### Nested Schema for `spec.csi.node_publish_secret_ref`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--csi--node_stage_secret_ref"></a>
+### Nested Schema for `spec.csi.node_stage_secret_ref`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--fc"></a>
+### Nested Schema for `spec.fc`
+
+Optional:
+
+- `fs_type` (String)
+- `lun` (Number)
+- `read_only` (Boolean)
+- `target_ww_ns` (List of String)
+- `wwids` (List of String)
+
+
+<a id="nestedobjatt--spec--flex_volume"></a>
+### Nested Schema for `spec.flex_volume`
+
+Optional:
+
+- `driver` (String)
+- `fs_type` (String)
+- `options` (Map of String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--flex_volume--secret_ref))
+
+<a id="nestedobjatt--spec--flex_volume--secret_ref"></a>
+### Nested Schema for `spec.flex_volume.secret_ref`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--flocker"></a>
+### Nested Schema for `spec.flocker`
+
+Optional:
+
+- `dataset_name` (String)
+- `dataset_uuid` (String)
+
+
+<a id="nestedobjatt--spec--gce_persistent_disk"></a>
+### Nested Schema for `spec.gce_persistent_disk`
+
+Optional:
+
+- `fs_type` (String)
+- `partition` (Number)
+- `pd_name` (String)
+- `read_only` (Boolean)
+
+
+<a id="nestedobjatt--spec--glusterfs"></a>
+### Nested Schema for `spec.glusterfs`
+
+Optional:
+
+- `endpoints` (String)
+- `path` (String)
+- `read_only` (Boolean)
+
+
+<a id="nestedobjatt--spec--host_path"></a>
+### Nested Schema for `spec.host_path`
+
+Optional:
+
+- `path` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--iscsi"></a>
+### Nested Schema for `spec.iscsi`
+
+Optional:
+
+- `chap_auth_discovery` (Boolean)
+- `chap_auth_session` (Boolean)
+- `fs_type` (String)
+- `initiator_name` (String)
+- `iqn` (String)
+- `iscsi_interface` (String)
+- `lun` (Number)
+- `portals` (List of String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--iscsi--secret_ref))
+- `target_portal` (String)
+
+<a id="nestedobjatt--spec--iscsi--secret_ref"></a>
+### Nested Schema for `spec.iscsi.secret_ref`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--local"></a>
+### Nested Schema for `spec.local`
+
+Optional:
+
+- `path` (String)
+
+
+<a id="nestedobjatt--spec--nfs"></a>
+### Nested Schema for `spec.nfs`
+
+Optional:
+
+- `path` (String)
+- `read_only` (Boolean)
+- `server` (String)
+
+
+<a id="nestedobjatt--spec--node_affinity"></a>
+### Nested Schema for `spec.node_affinity`
+
+Optional:
+
+- `required` (List of Object) (see [below for nested schema](#nestedobjatt--spec--node_affinity--required))
+
+<a id="nestedobjatt--spec--node_affinity--required"></a>
+### Nested Schema for `spec.node_affinity.required`
+
+Optional:
+
+- `node_selector_terms` (List of Object) (see [below for nested schema](#nestedobjatt--spec--node_affinity--required--node_selector_terms))
+
+<a id="nestedobjatt--spec--node_affinity--required--node_selector_terms"></a>
+### Nested Schema for `spec.node_affinity.required.node_selector_terms`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--node_affinity--required--node_selector_terms--match_expressions))
+
+<a id="nestedobjatt--spec--node_affinity--required--node_selector_terms--match_expressions"></a>
+### Nested Schema for `spec.node_affinity.required.node_selector_terms.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--spec--photon_persistent_disk"></a>
+### Nested Schema for `spec.photon_persistent_disk`
+
+Optional:
+
+- `fs_type` (String)
+- `pd_id` (String)
+
+
+<a id="nestedobjatt--spec--portworx_volume"></a>
+### Nested Schema for `spec.portworx_volume`
+
+Optional:
+
+- `fs_type` (String)
+- `read_only` (Boolean)
+- `volume_id` (String)
+
+
+<a id="nestedobjatt--spec--quobyte"></a>
+### Nested Schema for `spec.quobyte`
+
+Optional:
+
+- `group` (String)
+- `read_only` (Boolean)
+- `registry` (String)
+- `user` (String)
+- `volume` (String)
+
+
+<a id="nestedobjatt--spec--rbd"></a>
+### Nested Schema for `spec.rbd`
+
+Optional:
+
+- `fs_type` (String)
+- `image` (String)
+- `keyring` (String)
+- `monitors` (List of String)
+- `pool` (String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rbd--secret_ref))
+- `user` (String)
+
+<a id="nestedobjatt--spec--rbd--secret_ref"></a>
+### Nested Schema for `spec.rbd.secret_ref`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--scale_io"></a>
+### Nested Schema for `spec.scale_io`
+
+Optional:
+
+- `fs_type` (String)
+- `gateway` (String)
+- `protection_domain` (String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--scale_io--secret_ref))
+- `ssl_enabled` (Boolean)
+- `storage_mode` (String)
+- `storage_pool` (String)
+- `system` (String)
+- `volume_name` (String)
+
+<a id="nestedobjatt--spec--scale_io--secret_ref"></a>
+### Nested Schema for `spec.scale_io.secret_ref`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--storageos"></a>
+### Nested Schema for `spec.storageos`
+
+Optional:
+
+- `fs_type` (String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storageos--secret_ref))
+- `volume_name` (String)
+- `volume_namespace` (String)
+
+<a id="nestedobjatt--spec--storageos--secret_ref"></a>
+### Nested Schema for `spec.storageos.secret_ref`
+
+Optional:
+
+- `api_version` (String)
+- `field_path` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
+
+
+
+<a id="nestedobjatt--spec--vsphere_volume"></a>
+### Nested Schema for `spec.vsphere_volume`
+
+Optional:
+
+- `fs_type` (String)
+- `storage_policy_id` (String)
+- `storage_policy_name` (String)
+- `volume_path` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `message` (String)
+- `phase` (String)
+- `reason` (String)

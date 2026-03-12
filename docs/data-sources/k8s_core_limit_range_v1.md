@@ -17,8 +17,8 @@ LimitRange sets resource usage limits for each kind of resource in a Namespace.
 
 ### Optional
 
-- `metadata` (Map of String) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
-- `spec` (Map of String) Spec defines the limits enforced. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status
+- `metadata` (List of Object) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata (see [below for nested schema](#nestedatt--metadata))
+- `spec` (List of Object) Spec defines the limits enforced. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -27,3 +27,123 @@ LimitRange sets resource usage limits for each kind of resource in a Namespace.
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Optional:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Optional:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Optional:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Optional:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Optional:
+
+- `continue` (String)
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `limits` (List of Object) (see [below for nested schema](#nestedobjatt--spec--limits))
+
+<a id="nestedobjatt--spec--limits"></a>
+### Nested Schema for `spec.limits`
+
+Optional:
+
+- `default` (Map of String)
+- `default_request` (Map of String)
+- `max` (Map of String)
+- `max_limit_request_ratio` (Map of String)
+- `min` (Map of String)
+- `type` (String)

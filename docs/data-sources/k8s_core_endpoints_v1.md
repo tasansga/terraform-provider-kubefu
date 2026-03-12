@@ -39,7 +39,7 @@ Endpoints is a collection of endpoints that implement the actual service. Exampl
 
 ### Optional
 
-- `metadata` (Map of String) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
+- `metadata` (List of Object) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata (see [below for nested schema](#nestedatt--metadata))
 - `subsets` (Block List) The set of all endpoints is the union of all subsets. Addresses are placed into subsets according to the IPs they share. A single address with multiple ports, some of which are ready and some of which are not (because they come from different containers) will result in the address being displayed in different subsets for the different ports. No address will appear in both Addresses and NotReadyAddresses in the same subset. Sets of addresses and ports that comprise a service. (see [below for nested schema](#nestedblock--subsets))
 
 ### Read-Only
@@ -50,5 +50,180 @@ Endpoints is a collection of endpoints that implement the actual service. Exampl
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Optional:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Optional:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Optional:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Optional:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Optional:
+
+- `continue` (String)
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
 <a id="nestedblock--subsets"></a>
 ### Nested Schema for `subsets`
+
+Optional:
+
+- `addresses` (Block List) IP addresses which offer the related ports that are marked as ready. These endpoints should be considered safe for load balancers and clients to utilize. (see [below for nested schema](#nestedblock--subsets--addresses))
+- `not_ready_addresses` (Block List) IP addresses which offer the related ports but are not currently marked as ready because they have not yet finished starting, have recently failed a readiness check, or have recently failed a liveness check. (see [below for nested schema](#nestedblock--subsets--not_ready_addresses))
+- `ports` (Block List) Port numbers available on the related IP addresses. (see [below for nested schema](#nestedblock--subsets--ports))
+
+<a id="nestedblock--subsets--addresses"></a>
+### Nested Schema for `subsets.addresses`
+
+Required:
+
+- `ip` (String) The IP of this endpoint. May not be loopback (127.0.0.0/8), link-local (169.254.0.0/16), or link-local multicast ((224.0.0.0/24). IPv6 is also accepted but not fully supported on all platforms. Also, certain kubernetes components, like kube-proxy, are not IPv6 ready.
+
+Optional:
+
+- `hostname` (String) The Hostname of this endpoint
+- `node_name` (String) Optional: Node hosting this endpoint. This can be used to determine endpoints local to a node.
+- `target_ref` (List of Object) Reference to object providing the endpoint. (see [below for nested schema](#nestedatt--subsets--addresses--target_ref))
+
+<a id="nestedatt--subsets--addresses--target_ref"></a>
+### Nested Schema for `subsets.addresses.target_ref`
+
+Optional:
+
+- `api_version` (String)
+- `field_path` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
+
+
+
+<a id="nestedblock--subsets--not_ready_addresses"></a>
+### Nested Schema for `subsets.not_ready_addresses`
+
+Required:
+
+- `ip` (String) The IP of this endpoint. May not be loopback (127.0.0.0/8), link-local (169.254.0.0/16), or link-local multicast ((224.0.0.0/24). IPv6 is also accepted but not fully supported on all platforms. Also, certain kubernetes components, like kube-proxy, are not IPv6 ready.
+
+Optional:
+
+- `hostname` (String) The Hostname of this endpoint
+- `node_name` (String) Optional: Node hosting this endpoint. This can be used to determine endpoints local to a node.
+- `target_ref` (List of Object) Reference to object providing the endpoint. (see [below for nested schema](#nestedatt--subsets--not_ready_addresses--target_ref))
+
+<a id="nestedatt--subsets--not_ready_addresses--target_ref"></a>
+### Nested Schema for `subsets.not_ready_addresses.target_ref`
+
+Optional:
+
+- `api_version` (String)
+- `field_path` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
+
+
+
+<a id="nestedblock--subsets--ports"></a>
+### Nested Schema for `subsets.ports`
+
+Required:
+
+- `port` (Number) The port number of the endpoint.
+
+Optional:
+
+- `name` (String) The name of this port (corresponds to ServicePort.Name). Must be a DNS_LABEL. Optional only if one port is defined.
+- `protocol` (String) The IP protocol for this port. Must be UDP or TCP. Default is TCP.

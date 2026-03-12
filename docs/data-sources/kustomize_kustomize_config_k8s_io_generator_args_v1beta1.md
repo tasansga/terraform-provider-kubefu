@@ -18,7 +18,7 @@ Generated data source for io.k8s.api.apps.v1.GeneratorArgs
 ### Optional
 
 - `behavior` (String)
-- `kv_pair_sources` (Map of String)
+- `kv_pair_sources` (List of Object) (see [below for nested schema](#nestedatt--kv_pair_sources))
 - `name` (String)
 - `namespace` (String)
 
@@ -27,3 +27,12 @@ Generated data source for io.k8s.api.apps.v1.GeneratorArgs
 - `id` (String) The ID of this resource.
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--kv_pair_sources"></a>
+### Nested Schema for `kv_pair_sources`
+
+Optional:
+
+- `envs` (List of String)
+- `files` (List of String)
+- `literals` (List of String)

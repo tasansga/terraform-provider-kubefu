@@ -20,7 +20,7 @@ a static set of credentials that is always returned.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) FakeSpec contains the static data.
+- `spec` (List of Object) FakeSpec contains the static data. (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -36,3 +36,11 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `controller` (String)
+- `data` (Map of String)

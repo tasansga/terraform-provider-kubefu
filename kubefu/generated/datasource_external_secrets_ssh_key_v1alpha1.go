@@ -49,11 +49,35 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoSSHKeyV1Alpha1() *schem
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "SSHKeySpec controls the behavior of the ssh key generator.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"comment": {
+						Type:        schema.TypeString,
+						Description: "Comment specifies an optional comment for the SSH key",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"key_size": {
+						Type:        schema.TypeInt,
+						Description: "KeySize specifies the key size for RSA keys (default: 2048)\nFor RSA keys: 2048, 3072, 4096\nIgnored for ed25519 keys",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"key_type": {
+						Type:        schema.TypeString,
+						Description: "KeyType specifies the SSH key type (rsa, ed25519)",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +89,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoSSHKeyV1Alpha1Read(_ co
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "SSHKey", "generators.external-secrets.io/v1alpha1/SSHKey"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

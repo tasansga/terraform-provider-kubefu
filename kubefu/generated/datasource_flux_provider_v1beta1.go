@@ -49,18 +49,127 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta1() *schema.Resource
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "ProviderSpec defines the desired state of Provider",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"address": {
+						Type:        schema.TypeString,
+						Description: "HTTP/S webhook address of this provider",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"channel": {
+						Type:        schema.TypeString,
+						Description: "Alert channel for this provider",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"proxy": {
+						Type:        schema.TypeString,
+						Description: "HTTP/S address of the proxy",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"secret_ref": {
+						Type:        schema.TypeList,
+						Description: "Secret reference containing the provider webhook URL using \"address\" as data key",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"type": {
+						Type:        schema.TypeString,
+						Description: "Type of provider",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"username": {
+						Type:        schema.TypeString,
+						Description: "Bot username for this provider",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 			"status": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "ProviderStatus defines the observed state of Provider",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"conditions": {
+						Type:        schema.TypeList,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message": {
+								Type:        schema.TypeString,
+								Description: "message is a human readable message indicating details about the transition. This may be an empty string.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"reason": {
+								Type:        schema.TypeString,
+								Description: "reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"status": {
+								Type:        schema.TypeString,
+								Description: "status of the condition, one of True, False, Unknown.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+				}},
 			},
 		},
 	}
@@ -72,7 +181,7 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta1Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "notification.toolkit.fluxcd.io/v1beta1", "Provider", "notification.toolkit.fluxcd.io/v1beta1/Provider"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.secret_ref", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

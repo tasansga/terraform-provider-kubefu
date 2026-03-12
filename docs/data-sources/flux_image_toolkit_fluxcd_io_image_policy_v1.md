@@ -18,9 +18,9 @@ ImagePolicy is the Schema for the imagepolicies API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) ImagePolicySpec defines the parameters for calculating the
-ImagePolicy.
-- `status` (Map of String) ImagePolicyStatus defines the observed state of ImagePolicy
+- `spec` (List of Object) ImagePolicySpec defines the parameters for calculating the
+ImagePolicy. (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) ImagePolicyStatus defines the observed state of ImagePolicy (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -36,3 +36,111 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `digest_reflection_policy` (String)
+- `filter_tags` (List of Object) (see [below for nested schema](#nestedobjatt--spec--filter_tags))
+- `image_repository_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--image_repository_ref))
+- `interval` (String)
+- `policy` (List of Object) (see [below for nested schema](#nestedobjatt--spec--policy))
+- `suspend` (Boolean)
+
+<a id="nestedobjatt--spec--filter_tags"></a>
+### Nested Schema for `spec.filter_tags`
+
+Optional:
+
+- `extract` (String)
+- `pattern` (String)
+
+
+<a id="nestedobjatt--spec--image_repository_ref"></a>
+### Nested Schema for `spec.image_repository_ref`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--policy"></a>
+### Nested Schema for `spec.policy`
+
+Optional:
+
+- `alphabetical` (List of Object) (see [below for nested schema](#nestedobjatt--spec--policy--alphabetical))
+- `numerical` (List of Object) (see [below for nested schema](#nestedobjatt--spec--policy--numerical))
+- `semver` (List of Object) (see [below for nested schema](#nestedobjatt--spec--policy--semver))
+
+<a id="nestedobjatt--spec--policy--alphabetical"></a>
+### Nested Schema for `spec.policy.alphabetical`
+
+Optional:
+
+- `order` (String)
+
+
+<a id="nestedobjatt--spec--policy--numerical"></a>
+### Nested Schema for `spec.policy.numerical`
+
+Optional:
+
+- `order` (String)
+
+
+<a id="nestedobjatt--spec--policy--semver"></a>
+### Nested Schema for `spec.policy.semver`
+
+Optional:
+
+- `range` (String)
+
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `last_handled_reconcile_at` (String)
+- `latest_ref` (List of Object) (see [below for nested schema](#nestedobjatt--status--latest_ref))
+- `observed_generation` (Number)
+- `observed_previous_ref` (List of Object) (see [below for nested schema](#nestedobjatt--status--observed_previous_ref))
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--latest_ref"></a>
+### Nested Schema for `status.latest_ref`
+
+Optional:
+
+- `digest` (String)
+- `name` (String)
+- `tag` (String)
+
+
+<a id="nestedobjatt--status--observed_previous_ref"></a>
+### Nested Schema for `status.observed_previous_ref`
+
+Optional:
+
+- `digest` (String)
+- `name` (String)
+- `tag` (String)

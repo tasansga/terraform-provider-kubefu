@@ -18,7 +18,7 @@ SSHKey generates SSH key pairs.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) SSHKeySpec controls the behavior of the ssh key generator.
+- `spec` (List of Object) SSHKeySpec controls the behavior of the ssh key generator. (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -34,3 +34,12 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `comment` (String)
+- `key_size` (Number)
+- `key_type` (String)

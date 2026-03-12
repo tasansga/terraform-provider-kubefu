@@ -48,6 +48,9 @@ func TestParseRootResourcesBuildsSchema(t *testing.T) {
         },
         "spec": {
           "$ref": "#/definitions/io.k8s.api.core.v1.ConfigMapSpec"
+        },
+        "quantity": {
+          "$ref": "#/definitions/io.k8s.apimachinery.pkg.api.resource.Quantity"
         }
       },
       "required": [
@@ -64,6 +67,10 @@ func TestParseRootResourcesBuildsSchema(t *testing.T) {
         }
       },
       "required": []
+    },
+    "io.k8s.apimachinery.pkg.api.resource.Quantity": {
+      "description": "quantity",
+      "type": "string"
     }
   }
 }
@@ -90,14 +97,18 @@ func TestParseRootResourcesBuildsSchema(t *testing.T) {
 	if metadata == nil {
 		t.Fatalf("metadata schema missing")
 	}
-	if metadata.Type != schema.TypeMap {
-		t.Fatalf("expected metadata to be a map, got %d", metadata.Type)
+	if metadata.Type != schema.TypeList {
+		t.Fatalf("expected metadata to be a list, got %d", metadata.Type)
 	}
 	if !metadata.Required {
 		t.Fatalf("expected metadata to be required")
 	}
-	if metadata.Elem != nil {
-		t.Fatalf("expected metadata Elem to be nil for map")
+	if metadata.MaxItems != 1 {
+		t.Fatalf("expected metadata MaxItems=1, got %d", metadata.MaxItems)
+	}
+	metaElem, ok := metadata.Elem.(*schema.Resource)
+	if !ok || metaElem == nil {
+		t.Fatalf("expected metadata Elem resource")
 	}
 	data := entry.Schema["data"]
 	if !data.Optional {
@@ -110,11 +121,25 @@ func TestParseRootResourcesBuildsSchema(t *testing.T) {
 	if spec == nil {
 		t.Fatalf("spec schema missing")
 	}
-	if spec.Type != schema.TypeMap {
-		t.Fatalf("expected spec to be map, got %d", spec.Type)
+	if spec.Type != schema.TypeList {
+		t.Fatalf("expected spec to be list, got %d", spec.Type)
 	}
-	if spec.Elem != nil {
-		t.Fatalf("expected spec Elem to be nil for map")
+	if spec.MaxItems != 1 {
+		t.Fatalf("expected spec MaxItems=1, got %d", spec.MaxItems)
+	}
+	specElem, ok := spec.Elem.(*schema.Resource)
+	if !ok || specElem == nil {
+		t.Fatalf("expected spec Elem resource")
+	}
+	if specField := specElem.Schema["replicas"]; specField == nil || specField.Type != schema.TypeInt {
+		t.Fatalf("expected spec.replicas to be int")
+	}
+	quantity := entry.Schema["quantity"]
+	if quantity == nil {
+		t.Fatalf("quantity schema missing")
+	}
+	if quantity.Type != schema.TypeString {
+		t.Fatalf("expected quantity to be string, got %d", quantity.Type)
 	}
 	items := entry.Schema["items"]
 	if items == nil {
@@ -184,5 +209,94 @@ func TestSchemaBuilderNormalizesPropertyNames(t *testing.T) {
 	}
 	if _, ok := schemaMap["imagePullSecrets"]; ok {
 		t.Fatalf("did not expect original camelCase key")
+	}
+}
+
+func TestSchemaBuilderRefToObjectWithoutPropertiesUsesMap(t *testing.T) {
+	defs := map[string]definition{
+		"example.Parent": {
+			Type: "object",
+			Properties: map[string]property{
+				"opaque": {
+					Ref: "#/definitions/example.Opaque",
+				},
+			},
+		},
+		"example.Opaque": {
+			Type:       "object",
+			Properties: map[string]property{},
+		},
+	}
+	builder := &schemaBuilder{definitions: defs, cache: make(map[string]map[string]*schema.Schema)}
+	schemaMap := builder.buildDefinition("example.Parent", defs["example.Parent"])
+	field := schemaMap["opaque"]
+	if field == nil {
+		t.Fatalf("expected opaque schema to exist")
+	}
+	if field.Type != schema.TypeMap {
+		t.Fatalf("expected opaque to be map, got %d", field.Type)
+	}
+}
+
+func TestSchemaBuilderRefToArrayDefinitionPopulatesElem(t *testing.T) {
+	defs := map[string]definition{
+		"example.Parent": {
+			Type: "object",
+			Properties: map[string]property{
+				"events": {
+					Ref: "#/definitions/example.EventList",
+				},
+			},
+		},
+		"example.EventList": {
+			Type: "array",
+			Items: &property{
+				Type: "string",
+			},
+		},
+	}
+	builder := &schemaBuilder{definitions: defs, cache: make(map[string]map[string]*schema.Schema)}
+	schemaMap := builder.buildDefinition("example.Parent", defs["example.Parent"])
+	field := schemaMap["events"]
+	if field == nil {
+		t.Fatalf("expected events schema to exist")
+	}
+	if field.Type != schema.TypeList {
+		t.Fatalf("expected events to be list, got %d", field.Type)
+	}
+	elem, ok := field.Elem.(*schema.Schema)
+	if !ok || elem.Type != schema.TypeString {
+		t.Fatalf("expected events elem to be string schema")
+	}
+}
+
+func TestSchemaBuilderUnresolvedRefUsesMap(t *testing.T) {
+	defs := map[string]definition{
+		"example.Parent": {
+			Type: "object",
+			Properties: map[string]property{
+				"opaque": {
+					Ref: "#/definitions/example.Missing",
+				},
+			},
+		},
+	}
+	builder := &schemaBuilder{definitions: defs, cache: make(map[string]map[string]*schema.Schema)}
+	schemaMap := builder.buildDefinition("example.Parent", defs["example.Parent"])
+	field := schemaMap["opaque"]
+	if field == nil {
+		t.Fatalf("expected opaque schema to exist")
+	}
+	if field.Type != schema.TypeMap {
+		t.Fatalf("expected unresolved ref to be map, got %d", field.Type)
+	}
+}
+
+func TestNormalizedPropertyNameSanitizesSpecialChars(t *testing.T) {
+	if got := normalizedPropertyName("x-kubernetes-list-type"); got != "x_kubernetes_list_type" {
+		t.Fatalf("expected x_kubernetes_list_type, got %q", got)
+	}
+	if got := normalizedPropertyName("$schema"); got != "schema" {
+		t.Fatalf("expected schema, got %q", got)
 	}
 }

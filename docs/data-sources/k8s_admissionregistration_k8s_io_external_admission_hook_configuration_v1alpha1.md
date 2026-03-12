@@ -18,7 +18,7 @@ ExternalAdmissionHookConfiguration describes the configuration of initializers.
 ### Optional
 
 - `external_admission_hooks` (Block List) ExternalAdmissionHooks is a list of external admission webhooks and the affected resources and operations. (see [below for nested schema](#nestedblock--external_admission_hooks))
-- `metadata` (Map of String) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata.
+- `metadata` (List of Object) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata. (see [below for nested schema](#nestedatt--metadata))
 
 ### Read-Only
 
@@ -30,3 +30,147 @@ ExternalAdmissionHookConfiguration describes the configuration of initializers.
 
 <a id="nestedblock--external_admission_hooks"></a>
 ### Nested Schema for `external_admission_hooks`
+
+Required:
+
+- `client_config` (List of Object) ClientConfig defines how to communicate with the hook. Required (see [below for nested schema](#nestedatt--external_admission_hooks--client_config))
+- `name` (String) The name of the external admission webhook. Name should be fully qualified, e.g., imagepolicy.kubernetes.io, where "imagepolicy" is the name of the webhook, and kubernetes.io is the name of the organization. Required.
+
+Optional:
+
+- `failure_policy` (String) FailurePolicy defines how unrecognized errors from the admission endpoint are handled - allowed values are Ignore or Fail. Defaults to Ignore.
+- `rules` (Block List) Rules describes what operations on what resources/subresources the webhook cares about. The webhook cares about an operation if it matches _any_ Rule. (see [below for nested schema](#nestedblock--external_admission_hooks--rules))
+
+<a id="nestedatt--external_admission_hooks--client_config"></a>
+### Nested Schema for `external_admission_hooks.client_config`
+
+Required:
+
+- `ca_bundle` (String)
+- `service` (List of Object) (see [below for nested schema](#nestedobjatt--external_admission_hooks--client_config--service))
+
+<a id="nestedobjatt--external_admission_hooks--client_config--service"></a>
+### Nested Schema for `external_admission_hooks.client_config.service`
+
+Required:
+
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedblock--external_admission_hooks--rules"></a>
+### Nested Schema for `external_admission_hooks.rules`
+
+Optional:
+
+- `api_groups` (List of String) APIGroups is the API groups the resources belong to. '*' is all groups. If '*' is present, the length of the slice must be one. Required.
+- `api_versions` (List of String) APIVersions is the API versions the resources belong to. '*' is all versions. If '*' is present, the length of the slice must be one. Required.
+- `operations` (List of String) Operations is the operations the admission hook cares about - CREATE, UPDATE, or * for all operations. If '*' is present, the length of the slice must be one. Required.
+- `resources` (List of String) Resources is a list of resources this rule applies to.
+
+For example: 'pods' means pods. 'pods/log' means the log subresource of pods. '*' means all resources, but not subresources. 'pods/*' means all subresources of pods. '*/scale' means all scale subresources. '*/*' means all resources and their subresources.
+
+If wildcard is present, the validation rule will ensure resources do not overlap with each other.
+
+Depending on the enclosing object, subresources might not be allowed. Required.
+
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Optional:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Optional:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Optional:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Optional:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Optional:
+
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)

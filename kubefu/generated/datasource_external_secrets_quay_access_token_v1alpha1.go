@@ -49,11 +49,60 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoQuayAccessTokenV1Alpha1
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"robot_account": {
+						Type:        schema.TypeString,
+						Description: "Name of the robot account you are federating with",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"service_account_ref": {
+						Type:        schema.TypeList,
+						Description: "Name of the service account you are federating with",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"audiences": {
+								Type:        schema.TypeList,
+								Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Schema{Type: schema.TypeString},
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "The name of the ServiceAccount resource being referred to.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "Namespace of the resource being referred to.\nIgnored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"url": {
+						Type:        schema.TypeString,
+						Description: "URL configures the Quay instance URL. Defaults to quay.io.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +114,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoQuayAccessTokenV1Alpha1
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "QuayAccessToken", "generators.external-secrets.io/v1alpha1/QuayAccessToken"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.service_account_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

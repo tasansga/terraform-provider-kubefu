@@ -49,11 +49,73 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoMFAV1Alpha1() *schema.R
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "MFASpec controls the behavior of the mfa generator.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"algorithm": {
+						Type:        schema.TypeString,
+						Description: "Algorithm to use for encoding. Defaults to SHA1 as per the RFC.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"length": {
+						Type:        schema.TypeInt,
+						Description: "Length defines the token length. Defaults to 6 characters.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"secret": {
+						Type:        schema.TypeList,
+						Description: "Secret is a secret selector to a secret containing the seed secret to generate the TOTP value from.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"key": {
+								Type:        schema.TypeString,
+								Description: "A key in the referenced Secret.\nSome instances of this field may be defaulted, in others it may be required.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "The name of the Secret resource being referred to.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "The namespace of the Secret resource being referred to.\nIgnored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"time_period": {
+						Type:        schema.TypeInt,
+						Description: "TimePeriod defines how long the token can be active. Defaults to 30 seconds.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"when": {
+						Type:        schema.TypeString,
+						Description: "When defines a time parameter that can be used to pin the origin time of the generated token.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +127,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoMFAV1Alpha1Read(_ conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "MFA", "generators.external-secrets.io/v1alpha1/MFA"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.secret"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -74,17 +74,19 @@ func (d Definition) AsDataSource(pkgName, provider string) (FileData, error) {
 		manifestKeys = append(manifestKeys, key)
 	}
 	sort.Strings(manifestKeys)
+	manifestObjectPaths := objectPathsForSchema(schemaMap)
 	ds := &resource.DataSource{
-		PackageName:        pkgName,
-		FuncName:           funcName,
-		Description:        description,
-		Schema:             schemaMap,
-		ProviderName:       d.Provider,
-		CompatibleVersions: d.ProviderVersions,
-		APIVersion:         apiVersion,
-		Kind:               d.Kind,
-		ID:                 d.ID(),
-		ManifestKeys:       manifestKeys,
+		PackageName:         pkgName,
+		FuncName:            funcName,
+		Description:         description,
+		Schema:              schemaMap,
+		ProviderName:        d.Provider,
+		CompatibleVersions:  d.ProviderVersions,
+		APIVersion:          apiVersion,
+		Kind:                d.Kind,
+		ID:                  d.ID(),
+		ManifestKeys:        manifestKeys,
+		ManifestObjectPaths: manifestObjectPaths,
 	}
 	source, err := ds.Render()
 	if err != nil {
@@ -118,6 +120,44 @@ func (d Definition) AsSchemaResource() *schema.Resource {
 // ID returns a stable identifier for this definition that can be used for Terraform state.
 func (d Definition) ID() string {
 	return definitionID(d)
+}
+
+func objectPathsForSchema(schemaMap map[string]*schema.Schema) []string {
+	if len(schemaMap) == 0 {
+		return nil
+	}
+	paths := make(map[string]struct{})
+	collectObjectPaths(schemaMap, "", paths)
+	if len(paths) == 0 {
+		return nil
+	}
+	keys := make([]string, 0, len(paths))
+	for key := range paths {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func collectObjectPaths(schemaMap map[string]*schema.Schema, prefix string, paths map[string]struct{}) {
+	for name, entry := range schemaMap {
+		if entry == nil {
+			continue
+		}
+		path := name
+		if prefix != "" {
+			path = prefix + "." + name
+		}
+		elem, ok := entry.Elem.(*schema.Resource)
+		if entry.Type == schema.TypeList && ok {
+			if entry.MaxItems == 1 {
+				paths[path] = struct{}{}
+			}
+			if elem != nil {
+				collectObjectPaths(elem.Schema, path, paths)
+			}
+		}
+	}
 }
 
 func (d Definition) descriptionOrDefault() string {
@@ -174,7 +214,6 @@ func (d Definition) DataSourceKey(provider string) string {
 func (d Definition) DataSourceFuncName(provider string) string {
 	return fmt.Sprintf("dataSource%s%s%s%s", providerCamel(provider), groupCamel(d.Group), d.Kind, versionCamel(d.Version))
 }
-
 
 func copySchemaMap(src map[string]*schema.Schema) map[string]*schema.Schema {
 	if src == nil {

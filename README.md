@@ -55,18 +55,57 @@ resource "kubefu_manifest" "example" {
 ## Example: Use a data source manifest
 
 ```hcl
-data "kubefu_k8s_core_config_map_v1" "example" {
-  metadata = {
-    name      = "example"
+data "kubefu_k8s_apps_deployment_v1" "example" {
+  metadata {
+    name      = "web"
     namespace = "default"
   }
-  data = {
-    hello = "world"
+
+  spec {
+    replicas = 2
+
+    selector {
+      match_labels = {
+        app = "web"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "web"
+        }
+      }
+
+      spec {
+        container {
+          name  = "web"
+          image = "nginx:1.27"
+
+          env {
+            name = "DB_PASSWORD"
+            value_from {
+              secret_key_ref {
+                name = "db-secrets"
+                key  = "password"
+              }
+            }
+          }
+
+          liveness_probe {
+            http_get {
+              path = "/healthz"
+              port = 8080
+            }
+          }
+        }
+      }
+    }
   }
 }
 
 resource "kubefu_manifest" "example" {
-  manifest = data.kubefu_k8s_core_config_map_v1.example.kubefu_manifest_yaml
+  manifest = data.kubefu_k8s_apps_deployment_v1.example.kubefu_manifest_yaml
 }
 ```
 

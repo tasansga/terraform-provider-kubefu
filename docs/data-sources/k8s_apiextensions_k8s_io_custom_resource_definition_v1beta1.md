@@ -17,9 +17,9 @@ CustomResourceDefinition represents a resource that should be exposed on the API
 
 ### Optional
 
-- `metadata` (Map of String)
-- `spec` (Map of String) Spec describes how the user wants the resources to appear
-- `status` (Map of String) Status indicates the actual state of the CustomResourceDefinition
+- `metadata` (List of Object) (see [below for nested schema](#nestedatt--metadata))
+- `spec` (List of Object) Spec describes how the user wants the resources to appear (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) Status indicates the actual state of the CustomResourceDefinition (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -28,3 +28,348 @@ CustomResourceDefinition represents a resource that should be exposed on the API
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Optional:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Optional:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Optional:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Optional:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Optional:
+
+- `continue` (String)
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `group` (String)
+- `names` (List of Object) (see [below for nested schema](#nestedobjatt--spec--names))
+- `scope` (String)
+- `subresources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--subresources))
+- `validation` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation))
+- `version` (String)
+
+<a id="nestedobjatt--spec--names"></a>
+### Nested Schema for `spec.names`
+
+Optional:
+
+- `categories` (List of String)
+- `kind` (String)
+- `list_kind` (String)
+- `plural` (String)
+- `short_names` (List of String)
+- `singular` (String)
+
+
+<a id="nestedobjatt--spec--subresources"></a>
+### Nested Schema for `spec.subresources`
+
+Optional:
+
+- `scale` (List of Object) (see [below for nested schema](#nestedobjatt--spec--subresources--scale))
+- `status` (Map of String)
+
+<a id="nestedobjatt--spec--subresources--scale"></a>
+### Nested Schema for `spec.subresources.scale`
+
+Optional:
+
+- `label_selector_path` (String)
+- `spec_replicas_path` (String)
+- `status_replicas_path` (String)
+
+
+
+<a id="nestedobjatt--spec--validation"></a>
+### Nested Schema for `spec.validation`
+
+Optional:
+
+- `open_apiv3_schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema))
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema`
+
+Optional:
+
+- `$ref` (String)
+- `$schema` (String)
+- `additional_items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--additional_items))
+- `additional_properties` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--additional_properties))
+- `all_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--all_of))
+- `any_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--any_of))
+- `default` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--default))
+- `definitions` (Map of String)
+- `dependencies` (Map of String)
+- `description` (String)
+- `enum` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--enum))
+- `example` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--example))
+- `exclusive_maximum` (Boolean)
+- `exclusive_minimum` (Boolean)
+- `external_docs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--external_docs))
+- `format` (String)
+- `id` (String)
+- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--items))
+- `max_items` (Number)
+- `max_length` (Number)
+- `max_properties` (Number)
+- `maximum` (Number)
+- `min_items` (Number)
+- `min_length` (Number)
+- `min_properties` (Number)
+- `minimum` (Number)
+- `multiple_of` (Number)
+- `not` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--not))
+- `one_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--one_of))
+- `pattern` (String)
+- `pattern_properties` (Map of String)
+- `properties` (Map of String)
+- `required` (List of String)
+- `title` (String)
+- `type` (String)
+- `unique_items` (Boolean)
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--additional_items"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.additional_items`
+
+Optional:
+
+- `allows` (Boolean)
+- `schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--additional_items--schema))
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--additional_items--schema"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.additional_items.schema`
+
+Optional:
+
+
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--additional_properties"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.additional_properties`
+
+Optional:
+
+- `allows` (Boolean)
+- `schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--additional_properties--schema))
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--additional_properties--schema"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.additional_properties.schema`
+
+Optional:
+
+
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--all_of"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.all_of`
+
+Optional:
+
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--any_of"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.any_of`
+
+Optional:
+
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--default"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.default`
+
+Optional:
+
+- `raw` (String)
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--enum"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.enum`
+
+Optional:
+
+- `raw` (String)
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--example"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.example`
+
+Optional:
+
+- `raw` (String)
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--external_docs"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.external_docs`
+
+Optional:
+
+- `description` (String)
+- `url` (String)
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--items"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.items`
+
+Optional:
+
+- `json_schemas` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--items--json_schemas))
+- `schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--items--schema))
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--items--json_schemas"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.items.json_schemas`
+
+Optional:
+
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--items--schema"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.items.schema`
+
+Optional:
+
+
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--not"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.not`
+
+Optional:
+
+
+
+<a id="nestedobjatt--spec--validation--open_apiv3_schema--one_of"></a>
+### Nested Schema for `spec.validation.open_apiv3_schema.one_of`
+
+Optional:
+
+
+
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `accepted_names` (List of Object) (see [below for nested schema](#nestedobjatt--status--accepted_names))
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+
+<a id="nestedobjatt--status--accepted_names"></a>
+### Nested Schema for `status.accepted_names`
+
+Optional:
+
+- `categories` (List of String)
+- `kind` (String)
+- `list_kind` (String)
+- `plural` (String)
+- `short_names` (List of String)
+- `singular` (String)
+
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

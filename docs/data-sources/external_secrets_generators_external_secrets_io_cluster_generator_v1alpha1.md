@@ -18,7 +18,7 @@ ClusterGenerator represents a cluster-wide generator which can be referenced as 
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -34,3 +34,797 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `generator` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator))
+- `kind` (String)
+
+<a id="nestedobjatt--spec--generator"></a>
+### Nested Schema for `spec.generator`
+
+Optional:
+
+- `acr_access_token_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--acr_access_token_spec))
+- `ecr_r_authorization_token_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--ecr_r_authorization_token_spec))
+- `fake_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--fake_spec))
+- `gcr_access_token_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--gcr_access_token_spec))
+- `github_access_token_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--github_access_token_spec))
+- `password_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--password_spec))
+- `sts_session_token_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--sts_session_token_spec))
+- `uuid_spec` (Map of String)
+- `vault_dynamic_secret_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec))
+- `webhook_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--webhook_spec))
+
+<a id="nestedobjatt--spec--generator--acr_access_token_spec"></a>
+### Nested Schema for `spec.generator.acr_access_token_spec`
+
+Optional:
+
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--acr_access_token_spec--auth))
+- `environment_type` (String)
+- `registry` (String)
+- `scope` (String)
+- `tenant_id` (String)
+
+<a id="nestedobjatt--spec--generator--acr_access_token_spec--auth"></a>
+### Nested Schema for `spec.generator.acr_access_token_spec.auth`
+
+Optional:
+
+- `managed_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--acr_access_token_spec--auth--managed_identity))
+- `service_principal` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--acr_access_token_spec--auth--service_principal))
+- `workload_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--acr_access_token_spec--auth--workload_identity))
+
+<a id="nestedobjatt--spec--generator--acr_access_token_spec--auth--managed_identity"></a>
+### Nested Schema for `spec.generator.acr_access_token_spec.auth.managed_identity`
+
+Optional:
+
+- `identity_id` (String)
+
+
+<a id="nestedobjatt--spec--generator--acr_access_token_spec--auth--service_principal"></a>
+### Nested Schema for `spec.generator.acr_access_token_spec.auth.service_principal`
+
+Optional:
+
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--acr_access_token_spec--auth--service_principal--secret_ref))
+
+<a id="nestedobjatt--spec--generator--acr_access_token_spec--auth--service_principal--secret_ref"></a>
+### Nested Schema for `spec.generator.acr_access_token_spec.auth.service_principal.secret_ref`
+
+Optional:
+
+- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--acr_access_token_spec--auth--service_principal--secret_ref--client_id))
+- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--acr_access_token_spec--auth--service_principal--secret_ref--client_secret))
+
+<a id="nestedobjatt--spec--generator--acr_access_token_spec--auth--service_principal--secret_ref--client_id"></a>
+### Nested Schema for `spec.generator.acr_access_token_spec.auth.service_principal.secret_ref.client_id`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--acr_access_token_spec--auth--service_principal--secret_ref--client_secret"></a>
+### Nested Schema for `spec.generator.acr_access_token_spec.auth.service_principal.secret_ref.client_secret`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+<a id="nestedobjatt--spec--generator--acr_access_token_spec--auth--workload_identity"></a>
+### Nested Schema for `spec.generator.acr_access_token_spec.auth.workload_identity`
+
+Optional:
+
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--acr_access_token_spec--auth--workload_identity--service_account_ref))
+
+<a id="nestedobjatt--spec--generator--acr_access_token_spec--auth--workload_identity--service_account_ref"></a>
+### Nested Schema for `spec.generator.acr_access_token_spec.auth.workload_identity.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+
+<a id="nestedobjatt--spec--generator--ecr_r_authorization_token_spec"></a>
+### Nested Schema for `spec.generator.ecr_r_authorization_token_spec`
+
+Optional:
+
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth))
+- `region` (String)
+- `role` (String)
+
+<a id="nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth"></a>
+### Nested Schema for `spec.generator.ecr_r_authorization_token_spec.auth`
+
+Optional:
+
+- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--jwt))
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--secret_ref))
+
+<a id="nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--jwt"></a>
+### Nested Schema for `spec.generator.ecr_r_authorization_token_spec.auth.jwt`
+
+Optional:
+
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--jwt--service_account_ref))
+
+<a id="nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--jwt--service_account_ref"></a>
+### Nested Schema for `spec.generator.ecr_r_authorization_token_spec.auth.jwt.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--secret_ref"></a>
+### Nested Schema for `spec.generator.ecr_r_authorization_token_spec.auth.secret_ref`
+
+Optional:
+
+- `access_key_id_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--secret_ref--access_key_id_secret_ref))
+- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--secret_ref--secret_access_key_secret_ref))
+- `session_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--secret_ref--session_token_secret_ref))
+
+<a id="nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--secret_ref--access_key_id_secret_ref"></a>
+### Nested Schema for `spec.generator.ecr_r_authorization_token_spec.auth.secret_ref.access_key_id_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--secret_ref--secret_access_key_secret_ref"></a>
+### Nested Schema for `spec.generator.ecr_r_authorization_token_spec.auth.secret_ref.secret_access_key_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--ecr_r_authorization_token_spec--auth--secret_ref--session_token_secret_ref"></a>
+### Nested Schema for `spec.generator.ecr_r_authorization_token_spec.auth.secret_ref.session_token_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+
+<a id="nestedobjatt--spec--generator--fake_spec"></a>
+### Nested Schema for `spec.generator.fake_spec`
+
+Optional:
+
+- `controller` (String)
+- `data` (Map of String)
+
+
+<a id="nestedobjatt--spec--generator--gcr_access_token_spec"></a>
+### Nested Schema for `spec.generator.gcr_access_token_spec`
+
+Optional:
+
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--gcr_access_token_spec--auth))
+- `project_id` (String)
+
+<a id="nestedobjatt--spec--generator--gcr_access_token_spec--auth"></a>
+### Nested Schema for `spec.generator.gcr_access_token_spec.auth`
+
+Optional:
+
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--gcr_access_token_spec--auth--secret_ref))
+- `workload_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--gcr_access_token_spec--auth--workload_identity))
+
+<a id="nestedobjatt--spec--generator--gcr_access_token_spec--auth--secret_ref"></a>
+### Nested Schema for `spec.generator.gcr_access_token_spec.auth.secret_ref`
+
+Optional:
+
+- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--gcr_access_token_spec--auth--secret_ref--secret_access_key_secret_ref))
+
+<a id="nestedobjatt--spec--generator--gcr_access_token_spec--auth--secret_ref--secret_access_key_secret_ref"></a>
+### Nested Schema for `spec.generator.gcr_access_token_spec.auth.secret_ref.secret_access_key_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--gcr_access_token_spec--auth--workload_identity"></a>
+### Nested Schema for `spec.generator.gcr_access_token_spec.auth.workload_identity`
+
+Optional:
+
+- `cluster_location` (String)
+- `cluster_name` (String)
+- `cluster_project_id` (String)
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--gcr_access_token_spec--auth--workload_identity--service_account_ref))
+
+<a id="nestedobjatt--spec--generator--gcr_access_token_spec--auth--workload_identity--service_account_ref"></a>
+### Nested Schema for `spec.generator.gcr_access_token_spec.auth.workload_identity.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+
+<a id="nestedobjatt--spec--generator--github_access_token_spec"></a>
+### Nested Schema for `spec.generator.github_access_token_spec`
+
+Optional:
+
+- `app_id` (String)
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--github_access_token_spec--auth))
+- `install_id` (String)
+- `permissions` (Map of String)
+- `repositories` (List of String)
+- `url` (String)
+
+<a id="nestedobjatt--spec--generator--github_access_token_spec--auth"></a>
+### Nested Schema for `spec.generator.github_access_token_spec.auth`
+
+Optional:
+
+- `private_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--github_access_token_spec--auth--private_key))
+
+<a id="nestedobjatt--spec--generator--github_access_token_spec--auth--private_key"></a>
+### Nested Schema for `spec.generator.github_access_token_spec.auth.private_key`
+
+Optional:
+
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--github_access_token_spec--auth--private_key--secret_ref))
+
+<a id="nestedobjatt--spec--generator--github_access_token_spec--auth--private_key--secret_ref"></a>
+### Nested Schema for `spec.generator.github_access_token_spec.auth.private_key.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+
+<a id="nestedobjatt--spec--generator--password_spec"></a>
+### Nested Schema for `spec.generator.password_spec`
+
+Optional:
+
+- `allow_repeat` (Boolean)
+- `digits` (Number)
+- `length` (Number)
+- `no_upper` (Boolean)
+- `symbol_characters` (String)
+- `symbols` (Number)
+
+
+<a id="nestedobjatt--spec--generator--sts_session_token_spec"></a>
+### Nested Schema for `spec.generator.sts_session_token_spec`
+
+Optional:
+
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--sts_session_token_spec--auth))
+- `region` (String)
+- `request_parameters` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--sts_session_token_spec--request_parameters))
+- `role` (String)
+
+<a id="nestedobjatt--spec--generator--sts_session_token_spec--auth"></a>
+### Nested Schema for `spec.generator.sts_session_token_spec.auth`
+
+Optional:
+
+- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--sts_session_token_spec--auth--jwt))
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--sts_session_token_spec--auth--secret_ref))
+
+<a id="nestedobjatt--spec--generator--sts_session_token_spec--auth--jwt"></a>
+### Nested Schema for `spec.generator.sts_session_token_spec.auth.jwt`
+
+Optional:
+
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--sts_session_token_spec--auth--jwt--service_account_ref))
+
+<a id="nestedobjatt--spec--generator--sts_session_token_spec--auth--jwt--service_account_ref"></a>
+### Nested Schema for `spec.generator.sts_session_token_spec.auth.jwt.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--sts_session_token_spec--auth--secret_ref"></a>
+### Nested Schema for `spec.generator.sts_session_token_spec.auth.secret_ref`
+
+Optional:
+
+- `access_key_id_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--sts_session_token_spec--auth--secret_ref--access_key_id_secret_ref))
+- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--sts_session_token_spec--auth--secret_ref--secret_access_key_secret_ref))
+- `session_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--sts_session_token_spec--auth--secret_ref--session_token_secret_ref))
+
+<a id="nestedobjatt--spec--generator--sts_session_token_spec--auth--secret_ref--access_key_id_secret_ref"></a>
+### Nested Schema for `spec.generator.sts_session_token_spec.auth.secret_ref.access_key_id_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--sts_session_token_spec--auth--secret_ref--secret_access_key_secret_ref"></a>
+### Nested Schema for `spec.generator.sts_session_token_spec.auth.secret_ref.secret_access_key_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--sts_session_token_spec--auth--secret_ref--session_token_secret_ref"></a>
+### Nested Schema for `spec.generator.sts_session_token_spec.auth.secret_ref.session_token_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+<a id="nestedobjatt--spec--generator--sts_session_token_spec--request_parameters"></a>
+### Nested Schema for `spec.generator.sts_session_token_spec.request_parameters`
+
+Optional:
+
+- `serial_number` (String)
+- `session_duration` (Number)
+- `token_code` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec`
+
+Optional:
+
+- `controller` (String)
+- `method` (String)
+- `parameters` (String)
+- `path` (String)
+- `provider_` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_))
+- `result_type` (String)
+- `retry_settings` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--retry_settings))
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_`
+
+Optional:
+
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth))
+- `ca_bundle` (String)
+- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--ca_provider))
+- `forward_inconsistent` (Boolean)
+- `headers` (Map of String)
+- `namespace` (String)
+- `path` (String)
+- `read_your_writes` (Boolean)
+- `server` (String)
+- `tls` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--tls))
+- `version` (String)
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth`
+
+Optional:
+
+- `app_role` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--app_role))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--cert))
+- `iam` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam))
+- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--jwt))
+- `kubernetes` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--kubernetes))
+- `ldap` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--ldap))
+- `namespace` (String)
+- `token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--token_secret_ref))
+- `user_pass` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--user_pass))
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--app_role"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.app_role`
+
+Optional:
+
+- `path` (String)
+- `role_id` (String)
+- `role_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--app_role--role_ref))
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--app_role--secret_ref))
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--app_role--role_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.app_role.role_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--app_role--secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.app_role.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--cert"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.cert`
+
+Optional:
+
+- `client_cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--cert--client_cert))
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--cert--secret_ref))
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--cert--client_cert"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.cert.client_cert`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--cert--secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.cert.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.iam`
+
+Optional:
+
+- `external_id` (String)
+- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--jwt))
+- `path` (String)
+- `region` (String)
+- `role` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--secret_ref))
+- `vault_aws_iam_server_id` (String)
+- `vault_role` (String)
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--jwt"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.iam.jwt`
+
+Optional:
+
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--jwt--service_account_ref))
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--jwt--service_account_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.iam.jwt.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.iam.secret_ref`
+
+Optional:
+
+- `access_key_id_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--secret_ref--access_key_id_secret_ref))
+- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--secret_ref--secret_access_key_secret_ref))
+- `session_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--secret_ref--session_token_secret_ref))
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--secret_ref--access_key_id_secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.iam.secret_ref.access_key_id_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--secret_ref--secret_access_key_secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.iam.secret_ref.secret_access_key_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--iam--secret_ref--session_token_secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.iam.secret_ref.session_token_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--jwt"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.jwt`
+
+Optional:
+
+- `kubernetes_service_account_token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--jwt--kubernetes_service_account_token))
+- `path` (String)
+- `role` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--jwt--secret_ref))
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--jwt--kubernetes_service_account_token"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.jwt.kubernetes_service_account_token`
+
+Optional:
+
+- `audiences` (List of String)
+- `expiration_seconds` (Number)
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--jwt--kubernetes_service_account_token--service_account_ref))
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--jwt--kubernetes_service_account_token--service_account_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.jwt.kubernetes_service_account_token.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--jwt--secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.jwt.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--kubernetes"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.kubernetes`
+
+Optional:
+
+- `mount_path` (String)
+- `role` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--kubernetes--secret_ref))
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--kubernetes--service_account_ref))
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--kubernetes--secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.kubernetes.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--kubernetes--service_account_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.kubernetes.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--ldap"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.ldap`
+
+Optional:
+
+- `path` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--ldap--secret_ref))
+- `username` (String)
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--ldap--secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.ldap.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--token_secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.token_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--user_pass"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.user_pass`
+
+Optional:
+
+- `path` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--user_pass--secret_ref))
+- `username` (String)
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--auth--user_pass--secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.user_pass.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--ca_provider"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.ca_provider`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--tls"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.tls`
+
+Optional:
+
+- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--tls--cert_secret_ref))
+- `key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--tls--key_secret_ref))
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--tls--cert_secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.tls.cert_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--provider_--tls--key_secret_ref"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.tls.key_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+<a id="nestedobjatt--spec--generator--vault_dynamic_secret_spec--retry_settings"></a>
+### Nested Schema for `spec.generator.vault_dynamic_secret_spec.retry_settings`
+
+Optional:
+
+- `max_retries` (Number)
+- `retry_interval` (String)
+
+
+
+<a id="nestedobjatt--spec--generator--webhook_spec"></a>
+### Nested Schema for `spec.generator.webhook_spec`
+
+Optional:
+
+- `body` (String)
+- `ca_bundle` (String)
+- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--webhook_spec--ca_provider))
+- `headers` (Map of String)
+- `method` (String)
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--webhook_spec--result))
+- `secrets` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--webhook_spec--secrets))
+- `timeout` (String)
+- `url` (String)
+
+<a id="nestedobjatt--spec--generator--webhook_spec--ca_provider"></a>
+### Nested Schema for `spec.generator.webhook_spec.ca_provider`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--generator--webhook_spec--result"></a>
+### Nested Schema for `spec.generator.webhook_spec.result`
+
+Optional:
+
+- `json_path` (String)
+
+
+<a id="nestedobjatt--spec--generator--webhook_spec--secrets"></a>
+### Nested Schema for `spec.generator.webhook_spec.secrets`
+
+Optional:
+
+- `name` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--generator--webhook_spec--secrets--secret_ref))
+
+<a id="nestedobjatt--spec--generator--webhook_spec--secrets--secret_ref"></a>
+### Nested Schema for `spec.generator.webhook_spec.secrets.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)

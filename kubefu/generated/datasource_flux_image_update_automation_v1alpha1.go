@@ -49,18 +49,257 @@ func dataSourceFluxImageToolkitFluxcdIoImageUpdateAutomationV1Alpha1() *schema.R
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "ImageUpdateAutomationSpec defines the desired state of ImageUpdateAutomation",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"checkout": {
+						Type:        schema.TypeList,
+						Description: "Checkout gives the parameters for cloning the git repository, ready to make changes.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"branch": {
+								Type:        schema.TypeString,
+								Description: "Branch gives the branch to clone from the git repository. If `.spec.push` is not supplied, commits will also be pushed to this branch.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"git_repository_ref": {
+								Type:        schema.TypeList,
+								Description: "GitRepositoryRef refers to the resource giving access details to a git repository to update files in.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
+					"commit": {
+						Type:        schema.TypeList,
+						Description: "Commit specifies how to commit to the git repository.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"author_email": {
+								Type:        schema.TypeString,
+								Description: "AuthorEmail gives the email to provide when making a commit",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"author_name": {
+								Type:        schema.TypeString,
+								Description: "AuthorName gives the name to provide when making a commit",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message_template": {
+								Type:        schema.TypeString,
+								Description: "MessageTemplate provides a template for the commit message, into which will be interpolated the details of the change made.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"signing_key": {
+								Type:        schema.TypeList,
+								Description: "SigningKey provides the option to sign commits with a GPG key",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"secret_ref": {
+										Type:        schema.TypeList,
+										Description: "SecretRef holds the name to a secret that contains a 'git.asc' key corresponding to the ASCII Armored file containing the GPG signing keypair as the value. It must be in the same namespace as the ImageUpdateAutomation.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"name": {
+												Type:        schema.TypeString,
+												Description: "Name of the referent",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+						}},
+					},
+					"interval": {
+						Type:        schema.TypeString,
+						Description: "Interval gives an lower bound for how often the automation run should be attempted.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"push": {
+						Type:        schema.TypeList,
+						Description: "Push specifies how and where to push commits made by the automation. If missing, commits are pushed (back) to `.spec.checkout.branch`.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"branch": {
+								Type:        schema.TypeString,
+								Description: "Branch specifies that commits should be pushed to the branch named. The branch is created using `.spec.checkout.branch` as the starting point, if it doesn't already exist.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"suspend": {
+						Type:        schema.TypeBool,
+						Description: "Suspend tells the controller to not run this automation, until it is unset (or set to false). Defaults to false.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"update": {
+						Type:        schema.TypeList,
+						Description: "Update gives the specification for how to update the files in the repository. This can be left empty, to use the default value.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"path": {
+								Type:        schema.TypeString,
+								Description: "Path to the directory containing the manifests to be updated. Defaults to 'None', which translates to the root path of the GitRepositoryRef.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"strategy": {
+								Type:        schema.TypeString,
+								Description: "Strategy names the strategy to be used.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+				}},
 			},
 			"status": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "ImageUpdateAutomationStatus defines the observed state of ImageUpdateAutomation",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"conditions": {
+						Type:        schema.TypeList,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message": {
+								Type:        schema.TypeString,
+								Description: "message is a human readable message indicating details about the transition. This may be an empty string.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"reason": {
+								Type:        schema.TypeString,
+								Description: "reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"status": {
+								Type:        schema.TypeString,
+								Description: "status of the condition, one of True, False, Unknown.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"last_automation_run_time": {
+						Type:        schema.TypeString,
+						Description: "LastAutomationRunTime records the last time the controller ran this automation through to completion (even if no updates were made).",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"last_handled_reconcile_at": {
+						Type:        schema.TypeString,
+						Description: "LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change can be detected.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"last_push_commit": {
+						Type:        schema.TypeString,
+						Description: "LastPushCommit records the SHA1 of the last commit made by the controller, for this automation object",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"last_push_time": {
+						Type:        schema.TypeString,
+						Description: "LastPushTime records the time of the last pushed change.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"observed_generation": {
+						Type:        schema.TypeInt,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -72,7 +311,7 @@ func dataSourceFluxImageToolkitFluxcdIoImageUpdateAutomationV1Alpha1Read(_ conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "image.toolkit.fluxcd.io/v1alpha1", "ImageUpdateAutomation", "image.toolkit.fluxcd.io/v1alpha1/ImageUpdateAutomation"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.checkout", "spec.checkout.git_repository_ref", "spec.commit", "spec.commit.signing_key", "spec.commit.signing_key.secret_ref", "spec.push", "spec.update", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

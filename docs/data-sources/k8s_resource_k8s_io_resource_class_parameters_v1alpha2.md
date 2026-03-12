@@ -18,8 +18,8 @@ ResourceClassParameters defines resource requests for a ResourceClass in an in-t
 ### Optional
 
 - `filters` (Block List) Filters describes additional contraints that must be met when using the class. (see [below for nested schema](#nestedblock--filters))
-- `generated_from` (Map of String) If this object was created from some other resource, then this links back to that resource. This field is used to find the in-tree representation of the class parameters when the parameter reference of the class refers to some unknown type.
-- `metadata` (Map of String) Standard object metadata
+- `generated_from` (List of Object) If this object was created from some other resource, then this links back to that resource. This field is used to find the in-tree representation of the class parameters when the parameter reference of the class refers to some unknown type. (see [below for nested schema](#nestedatt--generated_from))
+- `metadata` (List of Object) Standard object metadata (see [below for nested schema](#nestedatt--metadata))
 - `vendor_parameters` (Block List) VendorParameters are arbitrary setup parameters for all claims using this class. They are ignored while allocating the claim. There must not be more than one entry per driver. (see [below for nested schema](#nestedblock--vendor_parameters))
 
 ### Read-Only
@@ -33,6 +33,84 @@ ResourceClassParameters defines resource requests for a ResourceClass in an in-t
 <a id="nestedblock--filters"></a>
 ### Nested Schema for `filters`
 
+Optional:
+
+- `driver_name` (String) DriverName is the name used by the DRA driver kubelet plugin.
+- `named_resources` (List of Object) NamedResources describes a resource filter using the named resources model. (see [below for nested schema](#nestedatt--filters--named_resources))
+
+<a id="nestedatt--filters--named_resources"></a>
+### Nested Schema for `filters.named_resources`
+
+Optional:
+
+- `selector` (String)
+
+
+
+<a id="nestedatt--generated_from"></a>
+### Nested Schema for `generated_from`
+
+Optional:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
 
 <a id="nestedblock--vendor_parameters"></a>
 ### Nested Schema for `vendor_parameters`
+
+Optional:
+
+- `driver_name` (String) DriverName is the name used by the DRA driver kubelet plugin.
+- `parameters` (Map of String) Parameters can be arbitrary setup parameters. They are ignored while allocating a claim.

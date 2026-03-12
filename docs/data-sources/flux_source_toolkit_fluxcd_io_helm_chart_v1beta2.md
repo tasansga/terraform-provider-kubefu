@@ -18,8 +18,8 @@ HelmChart is the Schema for the helmcharts API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) HelmChartSpec specifies the desired state of a Helm chart.
-- `status` (Map of String) HelmChartStatus records the observed state of the HelmChart.
+- `spec` (List of Object) HelmChartSpec specifies the desired state of a Helm chart. (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) HelmChartStatus records the observed state of the HelmChart. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -28,3 +28,83 @@ HelmChart is the Schema for the helmcharts API.
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `access_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--access_from))
+- `chart` (String)
+- `interval` (String)
+- `reconcile_strategy` (String)
+- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--source_ref))
+- `suspend` (Boolean)
+- `values_file` (String)
+- `values_files` (List of String)
+- `version` (String)
+
+<a id="nestedobjatt--spec--access_from"></a>
+### Nested Schema for `spec.access_from`
+
+Optional:
+
+- `namespace_selectors` (List of Object) (see [below for nested schema](#nestedobjatt--spec--access_from--namespace_selectors))
+
+<a id="nestedobjatt--spec--access_from--namespace_selectors"></a>
+### Nested Schema for `spec.access_from.namespace_selectors`
+
+Optional:
+
+- `match_labels` (Map of String)
+
+
+
+<a id="nestedobjatt--spec--source_ref"></a>
+### Nested Schema for `spec.source_ref`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `name` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `last_handled_reconcile_at` (String)
+- `observed_chart_name` (String)
+- `observed_generation` (Number)
+- `observed_source_artifact_revision` (String)
+- `url` (String)
+
+<a id="nestedobjatt--status--artifact"></a>
+### Nested Schema for `status.artifact`
+
+Optional:
+
+- `checksum` (String)
+- `last_update_time` (String)
+- `path` (String)
+- `revision` (String)
+- `size` (Number)
+- `url` (String)
+
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

@@ -17,12 +17,12 @@ HTTPRoute provides a way to route HTTP requests. This includes the capability to
 
 ### Required
 
-- `spec` (Map of String) Spec defines the desired state of HTTPRoute.
+- `spec` (List of Object) Spec defines the desired state of HTTPRoute. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
 - `metadata` (Map of String)
-- `status` (Map of String) Status defines the current state of HTTPRoute.
+- `status` (List of Object) Status defines the current state of HTTPRoute. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -31,3 +31,291 @@ HTTPRoute provides a way to route HTTP requests. This includes the capability to
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `hostnames` (List of String)
+- `parent_refs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--parent_refs))
+- `rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules))
+
+<a id="nestedobjatt--spec--parent_refs"></a>
+### Nested Schema for `spec.parent_refs`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `section_name` (String)
+
+
+<a id="nestedobjatt--spec--rules"></a>
+### Nested Schema for `spec.rules`
+
+Required:
+
+- `backend_refs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--backend_refs))
+- `filters` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--filters))
+- `matches` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--matches))
+
+<a id="nestedobjatt--spec--rules--backend_refs"></a>
+### Nested Schema for `spec.rules.backend_refs`
+
+Required:
+
+- `filters` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--backend_refs--filters))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `port` (Number)
+- `weight` (Number)
+
+<a id="nestedobjatt--spec--rules--backend_refs--filters"></a>
+### Nested Schema for `spec.rules.backend_refs.filters`
+
+Required:
+
+- `extension_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--backend_refs--filters--extension_ref))
+- `request_header_modifier` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--backend_refs--filters--request_header_modifier))
+- `request_mirror` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--backend_refs--filters--request_mirror))
+- `request_redirect` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--backend_refs--filters--request_redirect))
+- `type` (String)
+
+<a id="nestedobjatt--spec--rules--backend_refs--filters--extension_ref"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.extension_ref`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--rules--backend_refs--filters--request_header_modifier"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.request_header_modifier`
+
+Required:
+
+- `add` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--backend_refs--filters--request_header_modifier--add))
+- `remove` (List of String)
+- `set` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--backend_refs--filters--request_header_modifier--set))
+
+<a id="nestedobjatt--spec--rules--backend_refs--filters--request_header_modifier--add"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.request_header_modifier.add`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--rules--backend_refs--filters--request_header_modifier--set"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.request_header_modifier.set`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--rules--backend_refs--filters--request_mirror"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.request_mirror`
+
+Required:
+
+- `backend_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--backend_refs--filters--request_mirror--backend_ref))
+
+<a id="nestedobjatt--spec--rules--backend_refs--filters--request_mirror--backend_ref"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.request_mirror.backend_ref`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `port` (Number)
+
+
+
+<a id="nestedobjatt--spec--rules--backend_refs--filters--request_redirect"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.request_redirect`
+
+Required:
+
+- `hostname` (String)
+- `port` (Number)
+- `scheme` (String)
+- `status_code` (Number)
+
+
+
+
+<a id="nestedobjatt--spec--rules--filters"></a>
+### Nested Schema for `spec.rules.filters`
+
+Required:
+
+- `extension_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--filters--extension_ref))
+- `request_header_modifier` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--filters--request_header_modifier))
+- `request_mirror` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--filters--request_mirror))
+- `request_redirect` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--filters--request_redirect))
+- `type` (String)
+
+<a id="nestedobjatt--spec--rules--filters--extension_ref"></a>
+### Nested Schema for `spec.rules.filters.extension_ref`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--rules--filters--request_header_modifier"></a>
+### Nested Schema for `spec.rules.filters.request_header_modifier`
+
+Required:
+
+- `add` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--filters--request_header_modifier--add))
+- `remove` (List of String)
+- `set` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--filters--request_header_modifier--set))
+
+<a id="nestedobjatt--spec--rules--filters--request_header_modifier--add"></a>
+### Nested Schema for `spec.rules.filters.request_header_modifier.add`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--rules--filters--request_header_modifier--set"></a>
+### Nested Schema for `spec.rules.filters.request_header_modifier.set`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--rules--filters--request_mirror"></a>
+### Nested Schema for `spec.rules.filters.request_mirror`
+
+Required:
+
+- `backend_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--filters--request_mirror--backend_ref))
+
+<a id="nestedobjatt--spec--rules--filters--request_mirror--backend_ref"></a>
+### Nested Schema for `spec.rules.filters.request_mirror.backend_ref`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `port` (Number)
+
+
+
+<a id="nestedobjatt--spec--rules--filters--request_redirect"></a>
+### Nested Schema for `spec.rules.filters.request_redirect`
+
+Required:
+
+- `hostname` (String)
+- `port` (Number)
+- `scheme` (String)
+- `status_code` (Number)
+
+
+
+<a id="nestedobjatt--spec--rules--matches"></a>
+### Nested Schema for `spec.rules.matches`
+
+Required:
+
+- `headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--matches--headers))
+- `method` (String)
+- `path` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--matches--path))
+- `query_params` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--matches--query_params))
+
+<a id="nestedobjatt--spec--rules--matches--headers"></a>
+### Nested Schema for `spec.rules.matches.headers`
+
+Required:
+
+- `name` (String)
+- `type` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--rules--matches--path"></a>
+### Nested Schema for `spec.rules.matches.path`
+
+Required:
+
+- `type` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--rules--matches--query_params"></a>
+### Nested Schema for `spec.rules.matches.query_params`
+
+Required:
+
+- `name` (String)
+- `type` (String)
+- `value` (String)
+
+
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `parents` (List of Object) (see [below for nested schema](#nestedobjatt--status--parents))
+
+<a id="nestedobjatt--status--parents"></a>
+### Nested Schema for `status.parents`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--parents--conditions))
+- `controller_name` (String)
+- `parent_ref` (List of Object) (see [below for nested schema](#nestedobjatt--status--parents--parent_ref))
+
+<a id="nestedobjatt--status--parents--conditions"></a>
+### Nested Schema for `status.parents.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--parents--parent_ref"></a>
+### Nested Schema for `status.parents.parent_ref`
+
+Optional:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `section_name` (String)

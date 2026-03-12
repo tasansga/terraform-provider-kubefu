@@ -49,18 +49,226 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmRepositoryV1Beta2() *schema.Resource
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "HelmRepositorySpec specifies the required configuration to produce an Artifact for a Helm repository index YAML.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"access_from": {
+						Type:        schema.TypeList,
+						Description: "AccessFrom specifies an Access Control List for allowing cross-namespace references to this object. NOTE: Not implemented, provisional as of https://github.com/fluxcd/flux2/pull/2092",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"namespace_selectors": {
+								Type:        schema.TypeList,
+								Description: "NamespaceSelectors is the list of namespace selectors to which this ACL applies. Items in this list are evaluated using a logical OR operation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"match_labels": {
+										Type:        schema.TypeMap,
+										Description: "MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
+					"interval": {
+						Type:        schema.TypeString,
+						Description: "Interval at which to check the URL for updates.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"pass_credentials": {
+						Type:        schema.TypeBool,
+						Description: "PassCredentials allows the credentials from the SecretRef to be passed on to a host that does not match the host as defined in URL. This may be required if the host of the advertised chart URLs in the index differ from the defined URL. Enabling this should be done with caution, as it can potentially result in credentials getting stolen in a MITM-attack.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"secret_ref": {
+						Type:        schema.TypeList,
+						Description: "SecretRef specifies the Secret containing authentication credentials for the HelmRepository. For HTTP/S basic auth the secret must contain 'username' and 'password' fields. For TLS the secret must contain a 'certFile' and 'keyFile', and/or 'caCert' fields.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"suspend": {
+						Type:        schema.TypeBool,
+						Description: "Suspend tells the controller to suspend the reconciliation of this HelmRepository.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"timeout": {
+						Type:        schema.TypeString,
+						Description: "Timeout of the index fetch operation, defaults to 60s.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"url": {
+						Type:        schema.TypeString,
+						Description: "URL of the Helm repository, a valid URL contains at least a protocol and host.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 			"status": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "HelmRepositoryStatus records the observed state of the HelmRepository.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"artifact": {
+						Type:        schema.TypeList,
+						Description: "Artifact represents the last successful HelmRepository reconciliation.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"checksum": {
+								Type:        schema.TypeString,
+								Description: "Checksum is the SHA256 checksum of the Artifact file.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"last_update_time": {
+								Type:        schema.TypeString,
+								Description: "LastUpdateTime is the timestamp corresponding to the last update of the Artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"path": {
+								Type:        schema.TypeString,
+								Description: "Path is the relative file path of the Artifact. It can be used to locate the file in the root of the Artifact storage on the local file system of the controller managing the Source.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"revision": {
+								Type:        schema.TypeString,
+								Description: "Revision is a human-readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"size": {
+								Type:        schema.TypeInt,
+								Description: "Size is the number of bytes in the file.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"url": {
+								Type:        schema.TypeString,
+								Description: "URL is the HTTP address of the Artifact as exposed by the controller managing the Source. It can be used to retrieve the Artifact for consumption, e.g. by another controller applying the Artifact contents.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"conditions": {
+						Type:        schema.TypeList,
+						Description: "Conditions holds the conditions for the HelmRepository.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message": {
+								Type:        schema.TypeString,
+								Description: "message is a human readable message indicating details about the transition. This may be an empty string.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"reason": {
+								Type:        schema.TypeString,
+								Description: "reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"status": {
+								Type:        schema.TypeString,
+								Description: "status of the condition, one of True, False, Unknown.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"last_handled_reconcile_at": {
+						Type:        schema.TypeString,
+						Description: "LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"observed_generation": {
+						Type:        schema.TypeInt,
+						Description: "ObservedGeneration is the last observed generation of the HelmRepository object.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"url": {
+						Type:        schema.TypeString,
+						Description: "URL is the dynamic fetch link for the latest Artifact. It is provided on a \"best effort\" basis, and using the precise HelmRepositoryStatus.Artifact data is recommended.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -72,7 +280,7 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmRepositoryV1Beta2Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1beta2", "HelmRepository", "source.toolkit.fluxcd.io/v1beta2/HelmRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.secret_ref", "status", "status.artifact"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

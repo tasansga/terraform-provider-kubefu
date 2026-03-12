@@ -49,11 +49,96 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusRuleV1() *schema.R
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "Specification of desired alerting rule definitions for Prometheus.",
 				Optional:    false,
 				Required:    true,
 				Computed:    false,
+				MinItems:    1,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"groups": {
+						Type:        schema.TypeList,
+						Description: "Content of Prometheus rule file",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"interval": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"partial_response_strategy": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"rules": {
+								Type:        schema.TypeList,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"alert": {
+										Type:        schema.TypeString,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"annotations": {
+										Type:        schema.TypeMap,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"expr": {
+										Type:        schema.TypeString,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"for": {
+										Type:        schema.TypeString,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"labels": {
+										Type:        schema.TypeMap,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"record": {
+										Type:        schema.TypeString,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +150,7 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusRuleV1Read(_ conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "monitoring.coreos.com/v1", "PrometheusRule", "monitoring.coreos.com/v1/PrometheusRule"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

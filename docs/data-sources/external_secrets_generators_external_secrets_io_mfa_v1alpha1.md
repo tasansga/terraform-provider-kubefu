@@ -18,7 +18,7 @@ MFA generates a new TOTP token that is compliant with RFC 6238.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) MFASpec controls the behavior of the mfa generator.
+- `spec` (List of Object) MFASpec controls the behavior of the mfa generator. (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -34,3 +34,23 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `algorithm` (String)
+- `length` (Number)
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret))
+- `time_period` (Number)
+- `when` (String)
+
+<a id="nestedobjatt--spec--secret"></a>
+### Nested Schema for `spec.secret`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)

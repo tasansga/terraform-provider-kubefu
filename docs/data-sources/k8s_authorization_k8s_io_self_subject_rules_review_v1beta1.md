@@ -17,12 +17,12 @@ SelfSubjectRulesReview enumerates the set of actions the current user can perfor
 
 ### Required
 
-- `spec` (Map of String) Spec holds information about the request being evaluated.
+- `spec` (List of Object) Spec holds information about the request being evaluated. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
-- `metadata` (Map of String)
-- `status` (Map of String) Status is filled in by the server and indicates the set of actions a user can perform.
+- `metadata` (List of Object) (see [below for nested schema](#nestedatt--metadata))
+- `status` (List of Object) Status is filled in by the server and indicates the set of actions a user can perform. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -31,3 +31,141 @@ SelfSubjectRulesReview enumerates the set of actions the current user can perfor
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `namespace` (String)
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Optional:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Optional:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Optional:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Optional:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Optional:
+
+- `continue` (String)
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `evaluation_error` (String)
+- `incomplete` (Boolean)
+- `non_resource_rules` (List of Object) (see [below for nested schema](#nestedobjatt--status--non_resource_rules))
+- `resource_rules` (List of Object) (see [below for nested schema](#nestedobjatt--status--resource_rules))
+
+<a id="nestedobjatt--status--non_resource_rules"></a>
+### Nested Schema for `status.non_resource_rules`
+
+Optional:
+
+- `non_resource_ur_ls` (List of String)
+- `verbs` (List of String)
+
+
+<a id="nestedobjatt--status--resource_rules"></a>
+### Nested Schema for `status.resource_rules`
+
+Optional:
+
+- `api_groups` (List of String)
+- `resource_names` (List of String)
+- `resources` (List of String)
+- `verbs` (List of String)

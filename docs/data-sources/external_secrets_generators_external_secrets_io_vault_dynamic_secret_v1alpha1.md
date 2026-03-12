@@ -18,7 +18,7 @@ Generated data source for crd.generators.external-secrets.io.v1alpha1.VaultDynam
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -34,3 +34,341 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `controller` (String)
+- `method` (String)
+- `parameters` (String)
+- `path` (String)
+- `provider_` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_))
+- `result_type` (String)
+
+<a id="nestedobjatt--spec--provider_"></a>
+### Nested Schema for `spec.provider_`
+
+Optional:
+
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth))
+- `ca_bundle` (String)
+- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--ca_provider))
+- `forward_inconsistent` (Boolean)
+- `headers` (Map of String)
+- `namespace` (String)
+- `path` (String)
+- `read_your_writes` (Boolean)
+- `server` (String)
+- `tls` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--tls))
+- `version` (String)
+
+<a id="nestedobjatt--spec--provider_--auth"></a>
+### Nested Schema for `spec.provider_.auth`
+
+Optional:
+
+- `app_role` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--app_role))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--cert))
+- `iam` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--iam))
+- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--jwt))
+- `kubernetes` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--kubernetes))
+- `ldap` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--ldap))
+- `namespace` (String)
+- `token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--token_secret_ref))
+- `user_pass` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--user_pass))
+
+<a id="nestedobjatt--spec--provider_--auth--app_role"></a>
+### Nested Schema for `spec.provider_.auth.app_role`
+
+Optional:
+
+- `path` (String)
+- `role_id` (String)
+- `role_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--app_role--role_ref))
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--app_role--secret_ref))
+
+<a id="nestedobjatt--spec--provider_--auth--app_role--role_ref"></a>
+### Nested Schema for `spec.provider_.auth.app_role.role_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--provider_--auth--app_role--secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.app_role.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--provider_--auth--cert"></a>
+### Nested Schema for `spec.provider_.auth.cert`
+
+Optional:
+
+- `client_cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--cert--client_cert))
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--cert--secret_ref))
+
+<a id="nestedobjatt--spec--provider_--auth--cert--client_cert"></a>
+### Nested Schema for `spec.provider_.auth.cert.client_cert`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--provider_--auth--cert--secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.cert.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--provider_--auth--iam"></a>
+### Nested Schema for `spec.provider_.auth.iam`
+
+Optional:
+
+- `external_id` (String)
+- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--iam--jwt))
+- `path` (String)
+- `region` (String)
+- `role` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--iam--secret_ref))
+- `vault_aws_iam_server_id` (String)
+- `vault_role` (String)
+
+<a id="nestedobjatt--spec--provider_--auth--iam--jwt"></a>
+### Nested Schema for `spec.provider_.auth.iam.jwt`
+
+Optional:
+
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--iam--jwt--service_account_ref))
+
+<a id="nestedobjatt--spec--provider_--auth--iam--jwt--service_account_ref"></a>
+### Nested Schema for `spec.provider_.auth.iam.jwt.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--provider_--auth--iam--secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.iam.secret_ref`
+
+Optional:
+
+- `access_key_id_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--iam--secret_ref--access_key_id_secret_ref))
+- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--iam--secret_ref--secret_access_key_secret_ref))
+- `session_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--iam--secret_ref--session_token_secret_ref))
+
+<a id="nestedobjatt--spec--provider_--auth--iam--secret_ref--access_key_id_secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.iam.secret_ref.access_key_id_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--provider_--auth--iam--secret_ref--secret_access_key_secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.iam.secret_ref.secret_access_key_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--provider_--auth--iam--secret_ref--session_token_secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.iam.secret_ref.session_token_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+<a id="nestedobjatt--spec--provider_--auth--jwt"></a>
+### Nested Schema for `spec.provider_.auth.jwt`
+
+Optional:
+
+- `kubernetes_service_account_token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--jwt--kubernetes_service_account_token))
+- `path` (String)
+- `role` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--jwt--secret_ref))
+
+<a id="nestedobjatt--spec--provider_--auth--jwt--kubernetes_service_account_token"></a>
+### Nested Schema for `spec.provider_.auth.jwt.kubernetes_service_account_token`
+
+Optional:
+
+- `audiences` (List of String)
+- `expiration_seconds` (Number)
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--jwt--kubernetes_service_account_token--service_account_ref))
+
+<a id="nestedobjatt--spec--provider_--auth--jwt--kubernetes_service_account_token--service_account_ref"></a>
+### Nested Schema for `spec.provider_.auth.jwt.kubernetes_service_account_token.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--provider_--auth--jwt--secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.jwt.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--provider_--auth--kubernetes"></a>
+### Nested Schema for `spec.provider_.auth.kubernetes`
+
+Optional:
+
+- `mount_path` (String)
+- `role` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--kubernetes--secret_ref))
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--kubernetes--service_account_ref))
+
+<a id="nestedobjatt--spec--provider_--auth--kubernetes--secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.kubernetes.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--provider_--auth--kubernetes--service_account_ref"></a>
+### Nested Schema for `spec.provider_.auth.kubernetes.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--provider_--auth--ldap"></a>
+### Nested Schema for `spec.provider_.auth.ldap`
+
+Optional:
+
+- `path` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--ldap--secret_ref))
+- `username` (String)
+
+<a id="nestedobjatt--spec--provider_--auth--ldap--secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.ldap.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--provider_--auth--token_secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.token_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--provider_--auth--user_pass"></a>
+### Nested Schema for `spec.provider_.auth.user_pass`
+
+Optional:
+
+- `path` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--auth--user_pass--secret_ref))
+- `username` (String)
+
+<a id="nestedobjatt--spec--provider_--auth--user_pass--secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.user_pass.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+<a id="nestedobjatt--spec--provider_--ca_provider"></a>
+### Nested Schema for `spec.provider_.ca_provider`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--provider_--tls"></a>
+### Nested Schema for `spec.provider_.tls`
+
+Optional:
+
+- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--tls--cert_secret_ref))
+- `key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--tls--key_secret_ref))
+
+<a id="nestedobjatt--spec--provider_--tls--cert_secret_ref"></a>
+### Nested Schema for `spec.provider_.tls.cert_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--provider_--tls--key_secret_ref"></a>
+### Nested Schema for `spec.provider_.tls.key_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)

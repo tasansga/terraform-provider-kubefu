@@ -21,8 +21,8 @@ ResourceSlice provides information about available resources on individual nodes
 
 ### Optional
 
-- `metadata` (Map of String) Standard object metadata
-- `named_resources` (Map of String) NamedResources describes available resources using the named resources model.
+- `metadata` (List of Object) Standard object metadata (see [below for nested schema](#nestedatt--metadata))
+- `named_resources` (List of Object) NamedResources describes available resources using the named resources model. (see [below for nested schema](#nestedatt--named_resources))
 - `node_name` (String) NodeName identifies the node which provides the resources if they are local to a node.
 
 A field selector can be used to list only ResourceSlice objects with a certain node name.
@@ -34,3 +34,96 @@ A field selector can be used to list only ResourceSlice objects with a certain n
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--named_resources"></a>
+### Nested Schema for `named_resources`
+
+Optional:
+
+- `instances` (List of Object) (see [below for nested schema](#nestedobjatt--named_resources--instances))
+
+<a id="nestedobjatt--named_resources--instances"></a>
+### Nested Schema for `named_resources.instances`
+
+Optional:
+
+- `attributes` (List of Object) (see [below for nested schema](#nestedobjatt--named_resources--instances--attributes))
+- `name` (String)
+
+<a id="nestedobjatt--named_resources--instances--attributes"></a>
+### Nested Schema for `named_resources.instances.attributes`
+
+Optional:
+
+- `bool` (Boolean)
+- `int` (Number)
+- `int_slice` (List of Object) (see [below for nested schema](#nestedobjatt--named_resources--instances--attributes--int_slice))
+- `name` (String)
+- `quantity` (String)
+- `string` (String)
+- `string_slice` (List of Object) (see [below for nested schema](#nestedobjatt--named_resources--instances--attributes--string_slice))
+- `version` (String)
+
+<a id="nestedobjatt--named_resources--instances--attributes--int_slice"></a>
+### Nested Schema for `named_resources.instances.attributes.int_slice`
+
+Optional:
+
+- `ints` (List of Number)
+
+
+<a id="nestedobjatt--named_resources--instances--attributes--string_slice"></a>
+### Nested Schema for `named_resources.instances.attributes.string_slice`
+
+Optional:
+
+- `strings` (List of String)

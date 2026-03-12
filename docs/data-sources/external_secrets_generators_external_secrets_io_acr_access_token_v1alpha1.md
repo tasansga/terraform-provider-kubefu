@@ -32,9 +32,9 @@ See docs: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) ACRAccessTokenSpec defines how to generate the access token
+- `spec` (List of Object) ACRAccessTokenSpec defines how to generate the access token
 e.g. how to authenticate and which registry to use.
-see: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md#overview
+see: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md#overview (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -50,3 +50,84 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth))
+- `environment_type` (String)
+- `registry` (String)
+- `scope` (String)
+- `tenant_id` (String)
+
+<a id="nestedobjatt--spec--auth"></a>
+### Nested Schema for `spec.auth`
+
+Optional:
+
+- `managed_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--managed_identity))
+- `service_principal` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--service_principal))
+- `workload_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--workload_identity))
+
+<a id="nestedobjatt--spec--auth--managed_identity"></a>
+### Nested Schema for `spec.auth.managed_identity`
+
+Optional:
+
+- `identity_id` (String)
+
+
+<a id="nestedobjatt--spec--auth--service_principal"></a>
+### Nested Schema for `spec.auth.service_principal`
+
+Optional:
+
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--service_principal--secret_ref))
+
+<a id="nestedobjatt--spec--auth--service_principal--secret_ref"></a>
+### Nested Schema for `spec.auth.service_principal.secret_ref`
+
+Optional:
+
+- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--service_principal--secret_ref--client_id))
+- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--service_principal--secret_ref--client_secret))
+
+<a id="nestedobjatt--spec--auth--service_principal--secret_ref--client_id"></a>
+### Nested Schema for `spec.auth.service_principal.secret_ref.client_id`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--auth--service_principal--secret_ref--client_secret"></a>
+### Nested Schema for `spec.auth.service_principal.secret_ref.client_secret`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+<a id="nestedobjatt--spec--auth--workload_identity"></a>
+### Nested Schema for `spec.auth.workload_identity`
+
+Optional:
+
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--workload_identity--service_account_ref))
+
+<a id="nestedobjatt--spec--auth--workload_identity--service_account_ref"></a>
+### Nested Schema for `spec.auth.workload_identity.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)

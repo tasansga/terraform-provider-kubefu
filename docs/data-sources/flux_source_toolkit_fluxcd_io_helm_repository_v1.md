@@ -18,9 +18,9 @@ HelmRepository is the Schema for the helmrepositories API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) HelmRepositorySpec specifies the required configuration to produce an
-Artifact for a Helm repository index YAML.
-- `status` (Map of String) HelmRepositoryStatus records the observed state of the HelmRepository.
+- `spec` (List of Object) HelmRepositorySpec specifies the required configuration to produce an
+Artifact for a Helm repository index YAML. (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) HelmRepositoryStatus records the observed state of the HelmRepository. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -36,3 +36,90 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `access_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--access_from))
+- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cert_secret_ref))
+- `insecure` (Boolean)
+- `interval` (String)
+- `pass_credentials` (Boolean)
+- `provider_` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
+- `suspend` (Boolean)
+- `timeout` (String)
+- `type` (String)
+- `url` (String)
+
+<a id="nestedobjatt--spec--access_from"></a>
+### Nested Schema for `spec.access_from`
+
+Optional:
+
+- `namespace_selectors` (List of Object) (see [below for nested schema](#nestedobjatt--spec--access_from--namespace_selectors))
+
+<a id="nestedobjatt--spec--access_from--namespace_selectors"></a>
+### Nested Schema for `spec.access_from.namespace_selectors`
+
+Optional:
+
+- `match_labels` (Map of String)
+
+
+
+<a id="nestedobjatt--spec--cert_secret_ref"></a>
+### Nested Schema for `spec.cert_secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--secret_ref"></a>
+### Nested Schema for `spec.secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `last_handled_reconcile_at` (String)
+- `observed_generation` (Number)
+- `url` (String)
+
+<a id="nestedobjatt--status--artifact"></a>
+### Nested Schema for `status.artifact`
+
+Optional:
+
+- `digest` (String)
+- `last_update_time` (String)
+- `metadata` (Map of String)
+- `path` (String)
+- `revision` (String)
+- `size` (Number)
+- `url` (String)
+
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

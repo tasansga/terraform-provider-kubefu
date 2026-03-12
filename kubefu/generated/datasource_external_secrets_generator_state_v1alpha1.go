@@ -49,18 +49,89 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGeneratorStateV1Alpha1(
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"garbage_collection_deadline": {
+						Type:        schema.TypeString,
+						Description: "GarbageCollectionDeadline is the time after which the generator state\nwill be deleted.\nIt is set by the controller which creates the generator state and\ncan be set configured by the user.\nIf the garbage collection deadline is not set the generator state will not be deleted.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"resource": {
+						Type:        schema.TypeString,
+						Description: "Resource is the generator manifest that produced the state.\nIt is a snapshot of the generator manifest at the time the state was produced.\nThis manifest will be used to delete the resource. Any configuration that is referenced\nin the manifest should be available at the time of garbage collection. If that is not the case deletion will\nbe blocked by a finalizer.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"state": {
+						Type:        schema.TypeString,
+						Description: "State is the state that was produced by the generator implementation.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 			"status": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"conditions": {
+						Type:        schema.TypeList,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"reason": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"status": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+				}},
 			},
 		},
 	}
@@ -72,7 +143,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGeneratorStateV1Alpha1R
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "GeneratorState", "generators.external-secrets.io/v1alpha1/GeneratorState"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

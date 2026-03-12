@@ -49,18 +49,191 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Beta1() *schema.Resource {
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "ImagePolicySpec defines the parameters for calculating the ImagePolicy",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"filter_tags": {
+						Type:        schema.TypeList,
+						Description: "FilterTags enables filtering for only a subset of tags based on a set of rules. If no rules are provided, all the tags from the repository will be ordered and compared.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"extract": {
+								Type:        schema.TypeString,
+								Description: "Extract allows a capture group to be extracted from the specified regular expression pattern, useful before tag evaluation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"pattern": {
+								Type:        schema.TypeString,
+								Description: "Pattern specifies a regular expression pattern used to filter for image tags.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"image_repository_ref": {
+						Type:        schema.TypeList,
+						Description: "ImageRepositoryRef points at the object specifying the image being scanned",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"policy": {
+						Type:        schema.TypeList,
+						Description: "Policy gives the particulars of the policy to be followed in selecting the most recent image",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"alphabetical": {
+								Type:        schema.TypeList,
+								Description: "Alphabetical set of rules to use for alphabetical ordering of the tags.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"order": {
+										Type:        schema.TypeString,
+										Description: "Order specifies the sorting order of the tags. Given the letters of the alphabet as tags, ascending order would select Z, and descending order would select A.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"numerical": {
+								Type:        schema.TypeList,
+								Description: "Numerical set of rules to use for numerical ordering of the tags.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"order": {
+										Type:        schema.TypeString,
+										Description: "Order specifies the sorting order of the tags. Given the integer values from 0 to 9 as tags, ascending order would select 9, and descending order would select 0.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"semver": {
+								Type:        schema.TypeList,
+								Description: "SemVer gives a semantic version range to check against the tags available.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"range": {
+										Type:        schema.TypeString,
+										Description: "Range gives a semver range for the image tag; the highest version within the range that's a tag yields the latest image.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
+				}},
 			},
 			"status": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "ImagePolicyStatus defines the observed state of ImagePolicy",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"conditions": {
+						Type:        schema.TypeList,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message": {
+								Type:        schema.TypeString,
+								Description: "message is a human readable message indicating details about the transition. This may be an empty string.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"reason": {
+								Type:        schema.TypeString,
+								Description: "reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"status": {
+								Type:        schema.TypeString,
+								Description: "status of the condition, one of True, False, Unknown.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"latest_image": {
+						Type:        schema.TypeString,
+						Description: "LatestImage gives the first in the list of images scanned by the image repository, when filtered and ordered according to the policy.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"observed_generation": {
+						Type:        schema.TypeInt,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -72,7 +245,7 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Beta1Read(_ context.Context,
 	if err := manifestpkg.SetDataSourceDefaults(d, "image.toolkit.fluxcd.io/v1beta1", "ImagePolicy", "image.toolkit.fluxcd.io/v1beta1/ImagePolicy"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.filter_tags", "spec.image_repository_ref", "spec.policy", "spec.policy.alphabetical", "spec.policy.numerical", "spec.policy.semver", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

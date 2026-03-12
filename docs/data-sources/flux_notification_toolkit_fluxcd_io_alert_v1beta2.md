@@ -18,8 +18,8 @@ Alert is the Schema for the alerts API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) AlertSpec defines an alerting rule for events involving a list of objects.
-- `status` (Map of String) AlertStatus defines the observed state of the Alert.
+- `spec` (List of Object) AlertSpec defines an alerting rule for events involving a list of objects. (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) AlertStatus defines the observed state of the Alert. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -28,3 +28,57 @@ Alert is the Schema for the alerts API
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `event_severity` (String)
+- `event_sources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--event_sources))
+- `exclusion_list` (List of String)
+- `provider_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_ref))
+- `summary` (String)
+- `suspend` (Boolean)
+
+<a id="nestedobjatt--spec--event_sources"></a>
+### Nested Schema for `spec.event_sources`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `match_labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--provider_ref"></a>
+### Nested Schema for `spec.provider_ref`
+
+Optional:
+
+- `name` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `last_handled_reconcile_at` (String)
+- `observed_generation` (Number)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

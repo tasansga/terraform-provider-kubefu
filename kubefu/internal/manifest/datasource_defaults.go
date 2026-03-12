@@ -34,7 +34,25 @@ func SetDataSourceDefaults(d *schema.ResourceData, apiVersion, kind, id string) 
 
 // SetDataSourceManifest renders kubefu_manifest_json/yaml from known schema keys.
 func SetDataSourceManifest(d *schema.ResourceData, keys []string) error {
+	return SetDataSourceManifestWithObjectPaths(d, keys, nil)
+}
+
+// SetDataSourceManifestWithObjectKeys is kept for backward compatibility.
+func SetDataSourceManifestWithObjectKeys(d *schema.ResourceData, keys []string, objectKeys []string) error {
+	return SetDataSourceManifestWithObjectPaths(d, keys, objectKeys)
+}
+
+// SetDataSourceManifestWithObjectPaths renders kubefu_manifest_json/yaml from known schema keys,
+// treating paths in objectPaths as single-object attributes.
+func SetDataSourceManifestWithObjectPaths(d *schema.ResourceData, keys []string, objectPaths []string) error {
 	manifest := make(map[string]interface{})
+	objectPathSet := make(map[string]struct{}, len(objectPaths))
+	for _, path := range objectPaths {
+		if path == "" {
+			continue
+		}
+		objectPathSet[path] = struct{}{}
+	}
 	if v, ok := d.GetOk("api_version"); ok {
 		if s := strings.TrimSpace(v.(string)); s != "" {
 			manifest["apiVersion"] = s
@@ -53,7 +71,7 @@ func SetDataSourceManifest(d *schema.ResourceData, keys []string) error {
 		if !ok {
 			continue
 		}
-		manifest[toLowerCamel(key)] = v
+		manifest[toLowerCamel(key)] = normalizeManifestValue(v, key, objectPathSet)
 	}
 	if len(manifest) == 0 {
 		return nil
@@ -74,6 +92,39 @@ func SetDataSourceManifest(d *schema.ResourceData, keys []string) error {
 		return fmt.Errorf("set kubefu_manifest_yaml: %w", err)
 	}
 	return nil
+}
+
+func normalizeManifestValue(value interface{}, path string, objectPaths map[string]struct{}) interface{} {
+	switch v := value.(type) {
+	case []interface{}:
+		if _, ok := objectPaths[path]; ok && len(v) == 1 {
+			if m, ok := v[0].(map[string]interface{}); ok {
+				return normalizeManifestValue(m, path, objectPaths)
+			}
+		}
+		normalized := make([]interface{}, len(v))
+		for i := range v {
+			normalized[i] = normalizeManifestValue(v[i], path, objectPaths)
+		}
+		return normalized
+	case map[string]interface{}:
+		normalized := make(map[string]interface{}, len(v))
+		_, isObjectPath := objectPaths[path]
+		for k, child := range v {
+			childPath := k
+			if path != "" {
+				childPath = path + "." + k
+			}
+			outKey := k
+			if isObjectPath {
+				outKey = toLowerCamel(k)
+			}
+			normalized[outKey] = normalizeManifestValue(child, childPath, objectPaths)
+		}
+		return normalized
+	default:
+		return v
+	}
 }
 
 func toLowerCamel(value string) string {

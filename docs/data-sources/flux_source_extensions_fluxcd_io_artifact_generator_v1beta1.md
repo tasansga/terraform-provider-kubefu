@@ -18,8 +18,8 @@ ArtifactGenerator is the Schema for the artifactgenerators API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) ArtifactGeneratorSpec defines the desired state of ArtifactGenerator.
-- `status` (Map of String) ArtifactGeneratorStatus defines the observed state of ArtifactGenerator.
+- `spec` (List of Object) ArtifactGeneratorSpec defines the desired state of ArtifactGenerator. (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) ArtifactGeneratorStatus defines the observed state of ArtifactGenerator. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -35,3 +35,78 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `artifacts` (List of Object) (see [below for nested schema](#nestedobjatt--spec--artifacts))
+- `sources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--sources))
+
+<a id="nestedobjatt--spec--artifacts"></a>
+### Nested Schema for `spec.artifacts`
+
+Optional:
+
+- `copy` (List of Object) (see [below for nested schema](#nestedobjatt--spec--artifacts--copy))
+- `name` (String)
+- `origin_revision` (String)
+- `revision` (String)
+
+<a id="nestedobjatt--spec--artifacts--copy"></a>
+### Nested Schema for `spec.artifacts.copy`
+
+Optional:
+
+- `exclude` (List of String)
+- `from` (String)
+- `strategy` (String)
+- `to` (String)
+
+
+
+<a id="nestedobjatt--spec--sources"></a>
+### Nested Schema for `spec.sources`
+
+Optional:
+
+- `alias` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `inventory` (List of Object) (see [below for nested schema](#nestedobjatt--status--inventory))
+- `last_handled_reconcile_at` (String)
+- `observed_sources_digest` (String)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--inventory"></a>
+### Nested Schema for `status.inventory`
+
+Optional:
+
+- `digest` (String)
+- `filename` (String)
+- `name` (String)
+- `namespace` (String)

@@ -22,7 +22,7 @@ EndpointSlice represents a subset of the endpoints that implement a service. For
 
 ### Optional
 
-- `metadata` (Map of String) Standard object's metadata.
+- `metadata` (List of Object) Standard object's metadata. (see [below for nested schema](#nestedatt--metadata))
 - `ports` (Block List) ports specifies the list of network ports exposed by each endpoint in this slice. Each port must have a unique name. When ports is empty, it indicates that there are no defined ports. When a port is defined with a nil port value, it indicates "all ports". Each slice may include a maximum of 100 ports. (see [below for nested schema](#nestedblock--ports))
 
 ### Read-Only
@@ -36,6 +36,101 @@ EndpointSlice represents a subset of the endpoints that implement a service. For
 <a id="nestedblock--endpoints"></a>
 ### Nested Schema for `endpoints`
 
+Required:
+
+- `addresses` (List of String) addresses of this endpoint. The contents of this field are interpreted according to the corresponding EndpointSlice addressType field. Consumers must handle different types of addresses in the context of their own capabilities. This must contain at least one address but no more than 100.
+
+Optional:
+
+- `conditions` (List of Object) conditions contains information about the current status of the endpoint. (see [below for nested schema](#nestedatt--endpoints--conditions))
+- `hostname` (String) hostname of this endpoint. This field may be used by consumers of endpoints to distinguish endpoints from each other (e.g. in DNS names). Multiple endpoints which use the same hostname should be considered fungible (e.g. multiple A values in DNS). Must pass DNS Label (RFC 1123) validation.
+- `target_ref` (List of Object) targetRef is a reference to a Kubernetes object that represents this endpoint. (see [below for nested schema](#nestedatt--endpoints--target_ref))
+- `topology` (Map of String) topology contains arbitrary topology information associated with the endpoint. These key/value pairs must conform with the label format. https://kubernetes.io/docs/concepts/overview/working-with-objects/labels Topology may include a maximum of 16 key/value pairs. This includes, but is not limited to the following well known keys: * kubernetes.io/hostname: the value indicates the hostname of the node
+  where the endpoint is located. This should match the corresponding
+  node label.
+* topology.kubernetes.io/zone: the value indicates the zone where the
+  endpoint is located. This should match the corresponding node label.
+* topology.kubernetes.io/region: the value indicates the region where the
+  endpoint is located. This should match the corresponding node label.
+
+<a id="nestedatt--endpoints--conditions"></a>
+### Nested Schema for `endpoints.conditions`
+
+Optional:
+
+- `ready` (Boolean)
+
+
+<a id="nestedatt--endpoints--target_ref"></a>
+### Nested Schema for `endpoints.target_ref`
+
+Optional:
+
+- `api_version` (String)
+- `field_path` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
 
 <a id="nestedblock--ports"></a>
 ### Nested Schema for `ports`
+
+Optional:
+
+- `app_protocol` (String) The application protocol for this port. This field follows standard Kubernetes label syntax. Un-prefixed names are reserved for IANA standard service names (as per RFC-6335 and http://www.iana.org/assignments/service-names). Non-standard protocols should use prefixed names. Default is empty string.
+- `name` (String) The name of this port. All ports in an EndpointSlice must have a unique name. If the EndpointSlice is dervied from a Kubernetes service, this corresponds to the Service.ports[].name. Name must either be an empty string or pass DNS_LABEL validation: * must be no more than 63 characters long. * must consist of lower case alphanumeric characters or '-'. * must start and end with an alphanumeric character. Default is empty string.
+- `port` (Number) The port number of the endpoint. If this is not specified, ports are not restricted and must be interpreted in the context of the specific consumer.
+- `protocol` (String) The IP protocol for this port. Must be UDP, TCP, or SCTP. Default is TCP.

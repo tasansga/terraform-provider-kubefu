@@ -49,18 +49,150 @@ func dataSourceCertManagerCertManagerIoCertificateRequestV1() *schema.Resource {
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "Desired state of the CertificateRequest resource.",
 				Optional:    false,
 				Required:    true,
 				Computed:    false,
+				MinItems:    1,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"duration": {
+						Type:        schema.TypeString,
+						Description: "The requested 'duration' (i.e. lifetime) of the Certificate. This option may be ignored/overridden by some issuer types.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"is_ca": {
+						Type:        schema.TypeBool,
+						Description: "IsCA will request to mark the certificate as valid for certificate signing when submitting to the issuer. This will automatically add the `cert sign` usage to the list of `usages`.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"issuer_ref": {
+						Type:        schema.TypeList,
+						Description: "IssuerRef is a reference to the issuer for this CertificateRequest.  If the 'kind' field is not set, or set to 'Issuer', an Issuer resource with the given name in the same namespace as the CertificateRequest will be used.  If the 'kind' field is set to 'ClusterIssuer', a ClusterIssuer with the provided name will be used. The 'name' field in this stanza is required at all times. The group field refers to the API group of the issuer which defaults to 'cert-manager.io' if empty.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"group": {
+								Type:        schema.TypeString,
+								Description: "Group of the resource being referred to.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kind": {
+								Type:        schema.TypeString,
+								Description: "Kind of the resource being referred to.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the resource being referred to.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"request": {
+						Type:        schema.TypeString,
+						Description: "The PEM-encoded x509 certificate signing request to be submitted to the CA for signing.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"usages": {
+						Type:        schema.TypeList,
+						Description: "Usages is the set of x509 usages that are requested for the certificate. If usages are set they SHOULD be encoded inside the CSR spec Defaults to `digital signature` and `key encipherment` if not specified.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
+				}},
 			},
 			"status": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "Status of the CertificateRequest. This is set and managed automatically.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"ca": {
+						Type:        schema.TypeString,
+						Description: "The PEM encoded x509 certificate of the signer, also known as the CA (Certificate Authority). This is set on a best-effort basis by different issuers. If not set, the CA is assumed to be unknown/not available.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"certificate": {
+						Type:        schema.TypeString,
+						Description: "The PEM encoded x509 certificate resulting from the certificate signing request. If not set, the CertificateRequest has either not been completed or has failed. More information on failure can be found by checking the `conditions` field.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"conditions": {
+						Type:        schema.TypeList,
+						Description: "List of status conditions to indicate the status of a CertificateRequest. Known condition types are `Ready` and `InvalidRequest`.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "LastTransitionTime is the timestamp corresponding to the last status change of this condition.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message": {
+								Type:        schema.TypeString,
+								Description: "Message is a human readable description of the details of the last transition, complementing reason.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"reason": {
+								Type:        schema.TypeString,
+								Description: "Reason is a brief machine readable explanation for the condition's last transition.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"status": {
+								Type:        schema.TypeString,
+								Description: "Status of the condition, one of ('True', 'False', 'Unknown').",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "Type of the condition, known values are ('Ready', 'InvalidRequest').",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"failure_time": {
+						Type:        schema.TypeString,
+						Description: "FailureTime stores the time that this CertificateRequest failed. This is used to influence garbage collection and back-off.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -72,7 +204,7 @@ func dataSourceCertManagerCertManagerIoCertificateRequestV1Read(_ context.Contex
 	if err := manifestpkg.SetDataSourceDefaults(d, "cert-manager.io/v1", "CertificateRequest", "cert-manager.io/v1/CertificateRequest"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -21,12 +21,12 @@ A CertificateRequest is used to request a signed certificate from one of the con
 
 ### Required
 
-- `spec` (Map of String) Desired state of the CertificateRequest resource.
+- `spec` (List of Object) Desired state of the CertificateRequest resource. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
 - `metadata` (Map of String)
-- `status` (Map of String) Status of the CertificateRequest. This is set and managed automatically.
+- `status` (List of Object) Status of the CertificateRequest. This is set and managed automatically. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -35,3 +35,46 @@ A CertificateRequest is used to request a signed certificate from one of the con
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `duration` (String)
+- `is_ca` (Boolean)
+- `issuer_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--issuer_ref))
+- `request` (String)
+- `usages` (List of String)
+
+<a id="nestedobjatt--spec--issuer_ref"></a>
+### Nested Schema for `spec.issuer_ref`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `ca` (String)
+- `certificate` (String)
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `failure_time` (String)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

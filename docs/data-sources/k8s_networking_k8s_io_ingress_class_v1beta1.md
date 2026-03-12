@@ -17,8 +17,8 @@ IngressClass represents the class of the Ingress, referenced by the Ingress Spec
 
 ### Optional
 
-- `metadata` (Map of String) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
-- `spec` (Map of String) Spec is the desired state of the IngressClass. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+- `metadata` (List of Object) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata (see [below for nested schema](#nestedatt--metadata))
+- `spec` (List of Object) Spec is the desired state of the IngressClass. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -27,3 +27,69 @@ IngressClass represents the class of the Ingress, referenced by the Ingress Spec
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `controller` (String)
+- `parameters` (List of Object) (see [below for nested schema](#nestedobjatt--spec--parameters))
+
+<a id="nestedobjatt--spec--parameters"></a>
+### Nested Schema for `spec.parameters`
+
+Optional:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)

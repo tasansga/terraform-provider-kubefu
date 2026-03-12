@@ -19,12 +19,12 @@ A Certificate resource should be created to ensure an up to date and signed x509
 
 ### Required
 
-- `spec` (Map of String) Desired state of the Certificate resource.
+- `spec` (List of Object) Desired state of the Certificate resource. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
 - `metadata` (Map of String)
-- `status` (Map of String) Status of the Certificate. This is set and managed automatically.
+- `status` (List of Object) Status of the Certificate. This is set and managed automatically. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -33,3 +33,129 @@ A Certificate resource should be created to ensure an up to date and signed x509
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `common_name` (String)
+- `dns_names` (List of String)
+- `duration` (String)
+- `email_sa_ns` (List of String)
+- `ip_addresses` (List of String)
+- `is_ca` (Boolean)
+- `issuer_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--issuer_ref))
+- `keystores` (List of Object) (see [below for nested schema](#nestedobjatt--spec--keystores))
+- `private_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--private_key))
+- `renew_before` (String)
+- `secret_name` (String)
+- `subject` (List of Object) (see [below for nested schema](#nestedobjatt--spec--subject))
+- `uri_sa_ns` (List of String)
+- `usages` (List of String)
+
+<a id="nestedobjatt--spec--issuer_ref"></a>
+### Nested Schema for `spec.issuer_ref`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--keystores"></a>
+### Nested Schema for `spec.keystores`
+
+Required:
+
+- `jks` (List of Object) (see [below for nested schema](#nestedobjatt--spec--keystores--jks))
+- `pkcs12` (List of Object) (see [below for nested schema](#nestedobjatt--spec--keystores--pkcs12))
+
+<a id="nestedobjatt--spec--keystores--jks"></a>
+### Nested Schema for `spec.keystores.jks`
+
+Required:
+
+- `create` (Boolean)
+- `password_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--keystores--jks--password_secret_ref))
+
+<a id="nestedobjatt--spec--keystores--jks--password_secret_ref"></a>
+### Nested Schema for `spec.keystores.jks.password_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--keystores--pkcs12"></a>
+### Nested Schema for `spec.keystores.pkcs12`
+
+Required:
+
+- `create` (Boolean)
+- `password_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--keystores--pkcs12--password_secret_ref))
+
+<a id="nestedobjatt--spec--keystores--pkcs12--password_secret_ref"></a>
+### Nested Schema for `spec.keystores.pkcs12.password_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+
+
+<a id="nestedobjatt--spec--private_key"></a>
+### Nested Schema for `spec.private_key`
+
+Required:
+
+- `algorithm` (String)
+- `encoding` (String)
+- `rotation_policy` (String)
+- `size` (Number)
+
+
+<a id="nestedobjatt--spec--subject"></a>
+### Nested Schema for `spec.subject`
+
+Required:
+
+- `countries` (List of String)
+- `localities` (List of String)
+- `organizational_units` (List of String)
+- `organizations` (List of String)
+- `postal_codes` (List of String)
+- `provinces` (List of String)
+- `serial_number` (String)
+- `street_addresses` (List of String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `last_failure_time` (String)
+- `next_private_key_secret_name` (String)
+- `not_after` (String)
+- `not_before` (String)
+- `renewal_time` (String)
+- `revision` (Number)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

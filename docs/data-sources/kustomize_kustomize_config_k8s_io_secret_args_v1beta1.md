@@ -17,7 +17,7 @@ Generated data source for io.k8s.api.apps.v1.SecretArgs
 
 ### Optional
 
-- `generator_args` (Map of String)
+- `generator_args` (List of Object) (see [below for nested schema](#nestedatt--generator_args))
 - `type` (String)
 
 ### Read-Only
@@ -25,3 +25,22 @@ Generated data source for io.k8s.api.apps.v1.SecretArgs
 - `id` (String) The ID of this resource.
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--generator_args"></a>
+### Nested Schema for `generator_args`
+
+Optional:
+
+- `behavior` (String)
+- `kv_pair_sources` (List of Object) (see [below for nested schema](#nestedobjatt--generator_args--kv_pair_sources))
+- `name` (String)
+- `namespace` (String)
+
+<a id="nestedobjatt--generator_args--kv_pair_sources"></a>
+### Nested Schema for `generator_args.kv_pair_sources`
+
+Optional:
+
+- `envs` (List of String)
+- `files` (List of String)
+- `literals` (List of String)

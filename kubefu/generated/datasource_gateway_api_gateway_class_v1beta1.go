@@ -49,18 +49,128 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayClassV1Beta1() *schema.Res
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "Spec defines the desired state of GatewayClass.",
 				Optional:    false,
 				Required:    true,
 				Computed:    false,
+				MinItems:    1,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"controller_name": {
+						Type:        schema.TypeString,
+						Description: "ControllerName is the name of the controller that is managing Gateways of this class. The value of this field MUST be a domain prefixed path. \n Example: \"example.net/gateway-controller\". \n This field is not mutable and cannot be empty. \n Support: Core",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"description": {
+						Type:        schema.TypeString,
+						Description: "Description helps describe a GatewayClass with more details.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"parameters_ref": {
+						Type:        schema.TypeList,
+						Description: "ParametersRef is a reference to a resource that contains the configuration parameters corresponding to the GatewayClass. This is optional if the controller does not require any additional configuration. \n ParametersRef can reference a standard Kubernetes resource, i.e. ConfigMap, or an implementation-specific custom resource. The resource can be cluster-scoped or namespace-scoped. \n If the referent cannot be found, the GatewayClass's \"InvalidParameters\" status condition will be true. \n Support: Custom",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"group": {
+								Type:        schema.TypeString,
+								Description: "Group is the group of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kind": {
+								Type:        schema.TypeString,
+								Description: "Kind is kind of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name is the name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "Namespace is the namespace of the referent. This field is required when referring to a Namespace-scoped resource and MUST be unset when referring to a Cluster-scoped resource.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+				}},
 			},
 			"status": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "Status defines the current state of GatewayClass.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"conditions": {
+						Type:        schema.TypeList,
+						Description: "Conditions is the current status from the controller for this GatewayClass. \n Controllers should prefer to publish conditions using values of GatewayClassConditionType for the type of each Condition.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message": {
+								Type:        schema.TypeString,
+								Description: "message is a human readable message indicating details about the transition. This may be an empty string.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"reason": {
+								Type:        schema.TypeString,
+								Description: "reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"status": {
+								Type:        schema.TypeString,
+								Description: "status of the condition, one of True, False, Unknown.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+				}},
 			},
 		},
 	}
@@ -72,7 +182,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayClassV1Beta1Read(_ context
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1beta1", "GatewayClass", "gateway.networking.k8s.io/v1beta1/GatewayClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.parameters_ref", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -49,11 +49,28 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoFakeV1Alpha1() *schema.
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "FakeSpec contains the static data.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"controller": {
+						Type:        schema.TypeString,
+						Description: "Used to select the correct ESO controller (think: ingress.ingressClassName)\nThe ESO controller is instantiated with a specific controller name and filters VDS based on this property",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"data": {
+						Type:        schema.TypeMap,
+						Description: "Data defines the static data returned\nby this generator.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +82,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoFakeV1Alpha1Read(_ cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "Fake", "generators.external-secrets.io/v1alpha1/Fake"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

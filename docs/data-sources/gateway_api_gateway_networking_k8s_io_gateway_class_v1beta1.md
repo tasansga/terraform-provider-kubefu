@@ -23,12 +23,12 @@ GatewayClass describes a class of Gateways available to the user for creating Ga
 
 ### Required
 
-- `spec` (Map of String) Spec defines the desired state of GatewayClass.
+- `spec` (List of Object) Spec defines the desired state of GatewayClass. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
 - `metadata` (Map of String)
-- `status` (Map of String) Status defines the current state of GatewayClass.
+- `status` (List of Object) Status defines the current state of GatewayClass. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -37,3 +37,43 @@ GatewayClass describes a class of Gateways available to the user for creating Ga
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `controller_name` (String)
+- `description` (String)
+- `parameters_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--parameters_ref))
+
+<a id="nestedobjatt--spec--parameters_ref"></a>
+### Nested Schema for `spec.parameters_ref`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

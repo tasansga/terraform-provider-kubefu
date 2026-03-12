@@ -49,11 +49,56 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoPasswordV1Alpha1() *sch
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "PasswordSpec controls the behavior of the password generator.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"allow_repeat": {
+						Type:        schema.TypeBool,
+						Description: "set AllowRepeat to true to allow repeating characters.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"digits": {
+						Type:        schema.TypeInt,
+						Description: "Digits specifies the number of digits in the generated\npassword. If omitted it defaults to 25% of the length of the password",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"length": {
+						Type:        schema.TypeInt,
+						Description: "Length of the password to be generated.\nDefaults to 24",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"no_upper": {
+						Type:        schema.TypeBool,
+						Description: "Set NoUpper to disable uppercase characters",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"symbol_characters": {
+						Type:        schema.TypeString,
+						Description: "SymbolCharacters specifies the special characters that should be used\nin the generated password.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"symbols": {
+						Type:        schema.TypeInt,
+						Description: "Symbols specifies the number of symbol characters in the generated\npassword. If omitted it defaults to 25% of the length of the password",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +110,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoPasswordV1Alpha1Read(_ 
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "Password", "generators.external-secrets.io/v1alpha1/Password"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -49,11 +49,97 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta3() *schema.Resource
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "ProviderSpec defines the desired state of the Provider.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"address": {
+						Type:        schema.TypeString,
+						Description: "Address specifies the endpoint, in a generic sense, to where alerts are sent. What kind of endpoint depends on the specific Provider type being used. For the generic Provider, for example, this is an HTTP/S address. For other Provider types this could be a project ID or a namespace.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"cert_secret_ref": {
+						Type:        schema.TypeList,
+						Description: "CertSecretRef specifies the Secret containing a PEM-encoded CA certificate (in the `ca.crt` key). \n Note: Support for the `caFile` key has been deprecated.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"channel": {
+						Type:        schema.TypeString,
+						Description: "Channel specifies the destination channel where events should be posted.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"proxy": {
+						Type:        schema.TypeString,
+						Description: "Proxy the HTTP/S address of the proxy server.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"secret_ref": {
+						Type:        schema.TypeList,
+						Description: "SecretRef specifies the Secret containing the authentication credentials for this Provider.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"suspend": {
+						Type:        schema.TypeBool,
+						Description: "Suspend tells the controller to suspend subsequent events handling for this Provider.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"timeout": {
+						Type:        schema.TypeString,
+						Description: "Timeout for sending alerts to the Provider.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"type": {
+						Type:        schema.TypeString,
+						Description: "Type specifies which Provider implementation to use.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"username": {
+						Type:        schema.TypeString,
+						Description: "Username specifies the name under which events are posted.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +151,7 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta3Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "notification.toolkit.fluxcd.io/v1beta3", "Provider", "notification.toolkit.fluxcd.io/v1beta3/Provider"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.cert_secret_ref", "spec.secret_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

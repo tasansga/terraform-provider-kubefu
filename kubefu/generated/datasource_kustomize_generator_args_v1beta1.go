@@ -35,11 +35,38 @@ func dataSourceKustomizeKustomizeConfigK8sIoGeneratorArgsV1Beta1() *schema.Resou
 				Computed:    true,
 			},
 			"kv_pair_sources": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"envs": {
+						Type:        schema.TypeList,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
+					"files": {
+						Type:        schema.TypeList,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
+					"literals": {
+						Type:        schema.TypeList,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
+				}},
 			},
 			"name": {
 				Type:        schema.TypeString,
@@ -65,7 +92,7 @@ func dataSourceKustomizeKustomizeConfigK8sIoGeneratorArgsV1Beta1Read(_ context.C
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.config.k8s.io/v1beta1", "GeneratorArgs", "kustomize.config.k8s.io/v1beta1/GeneratorArgs"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"behavior", "kv_pair_sources", "name", "namespace"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"behavior", "kv_pair_sources", "name", "namespace"}, []string{"kv_pair_sources"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

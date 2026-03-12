@@ -17,7 +17,7 @@ PrometheusRule defines recording and alerting rules for a Prometheus instance
 
 ### Required
 
-- `spec` (Map of String) Specification of desired alerting rule definitions for Prometheus.
+- `spec` (List of Object) Specification of desired alerting rule definitions for Prometheus. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
@@ -30,3 +30,32 @@ PrometheusRule defines recording and alerting rules for a Prometheus instance
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `groups` (List of Object) (see [below for nested schema](#nestedobjatt--spec--groups))
+
+<a id="nestedobjatt--spec--groups"></a>
+### Nested Schema for `spec.groups`
+
+Required:
+
+- `interval` (String)
+- `name` (String)
+- `partial_response_strategy` (String)
+- `rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--groups--rules))
+
+<a id="nestedobjatt--spec--groups--rules"></a>
+### Nested Schema for `spec.groups.rules`
+
+Required:
+
+- `alert` (String)
+- `annotations` (Map of String)
+- `expr` (String)
+- `for` (String)
+- `labels` (Map of String)
+- `record` (String)

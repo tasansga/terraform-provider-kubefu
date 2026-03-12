@@ -19,12 +19,12 @@ connects to a Backend via TLS.
 
 ### Required
 
-- `spec` (Map of String) Spec defines the desired state of BackendTLSPolicy.
+- `spec` (List of Object) Spec defines the desired state of BackendTLSPolicy. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
 - `metadata` (Map of String)
-- `status` (Map of String) Status defines the current state of BackendTLSPolicy.
+- `status` (List of Object) Status defines the current state of BackendTLSPolicy. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -40,3 +40,96 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `options` (Map of String)
+- `target_refs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--target_refs))
+- `validation` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation))
+
+<a id="nestedobjatt--spec--target_refs"></a>
+### Nested Schema for `spec.target_refs`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `section_name` (String)
+
+
+<a id="nestedobjatt--spec--validation"></a>
+### Nested Schema for `spec.validation`
+
+Required:
+
+- `ca_certificate_refs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--ca_certificate_refs))
+- `hostname` (String)
+- `subject_alt_names` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--subject_alt_names))
+- `well_known_ca_certificates` (String)
+
+<a id="nestedobjatt--spec--validation--ca_certificate_refs"></a>
+### Nested Schema for `spec.validation.ca_certificate_refs`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--validation--subject_alt_names"></a>
+### Nested Schema for `spec.validation.subject_alt_names`
+
+Required:
+
+- `hostname` (String)
+- `type` (String)
+- `uri` (String)
+
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `ancestors` (List of Object) (see [below for nested schema](#nestedobjatt--status--ancestors))
+
+<a id="nestedobjatt--status--ancestors"></a>
+### Nested Schema for `status.ancestors`
+
+Optional:
+
+- `ancestor_ref` (List of Object) (see [below for nested schema](#nestedobjatt--status--ancestors--ancestor_ref))
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--ancestors--conditions))
+- `controller_name` (String)
+
+<a id="nestedobjatt--status--ancestors--ancestor_ref"></a>
+### Nested Schema for `status.ancestors.ancestor_ref`
+
+Optional:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `port` (Number)
+- `section_name` (String)
+
+
+<a id="nestedobjatt--status--ancestors--conditions"></a>
+### Nested Schema for `status.ancestors.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

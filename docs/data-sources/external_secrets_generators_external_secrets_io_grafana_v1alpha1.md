@@ -18,7 +18,7 @@ Generated data source for crd.generators.external-secrets.io.v1alpha1.Grafana
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) GrafanaSpec controls the behavior of the grafana generator.
+- `spec` (List of Object) GrafanaSpec controls the behavior of the grafana generator. (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -34,3 +34,37 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth))
+- `service_account` (List of Object) (see [below for nested schema](#nestedobjatt--spec--service_account))
+- `url` (String)
+
+<a id="nestedobjatt--spec--auth"></a>
+### Nested Schema for `spec.auth`
+
+Optional:
+
+- `token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--token))
+
+<a id="nestedobjatt--spec--auth--token"></a>
+### Nested Schema for `spec.auth.token`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--service_account"></a>
+### Nested Schema for `spec.service_account`
+
+Optional:
+
+- `name` (String)
+- `role` (String)

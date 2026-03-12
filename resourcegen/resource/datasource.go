@@ -11,16 +11,17 @@ import (
 // DataSource describes enough of a Terraform data source to emit a Go source file
 // similar to ./example_datasource_group.go.
 type DataSource struct {
-	PackageName        string
-	FuncName           string
-	Description        string
-	Schema             map[string]*schema.Schema
-	ProviderName       string
-	CompatibleVersions []string
-	APIVersion         string
-	Kind               string
-	ID                 string
-	ManifestKeys       []string
+	PackageName         string
+	FuncName            string
+	Description         string
+	Schema              map[string]*schema.Schema
+	ProviderName        string
+	CompatibleVersions  []string
+	APIVersion          string
+	Kind                string
+	ID                  string
+	ManifestKeys        []string
+	ManifestObjectPaths []string
 }
 
 // WriteFile emits the data source as a Go source file to the provided path.
@@ -89,12 +90,12 @@ func %sRead(_ context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
 	if err := manifestpkg.SetDataSourceDefaults(d, %q, %q, %q); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{%s}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{%s}, []string{%s}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
 }
-`, d.FuncName, d.APIVersion, d.Kind, d.ID, renderStringSlice(d.ManifestKeys))
+`, d.FuncName, d.APIVersion, d.Kind, d.ID, renderStringSlice(d.ManifestKeys), renderStringSlice(d.ManifestObjectPaths))
 	_, err := buf.WriteString(stubs)
 	return err
 }

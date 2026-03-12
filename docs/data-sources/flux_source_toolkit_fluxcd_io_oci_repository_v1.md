@@ -18,8 +18,8 @@ OCIRepository is the Schema for the ocirepositories API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) OCIRepositorySpec defines the desired state of OCIRepository
-- `status` (Map of String) OCIRepositoryStatus defines the observed state of OCIRepository
+- `spec` (List of Object) OCIRepositorySpec defines the desired state of OCIRepository (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) OCIRepositoryStatus defines the observed state of OCIRepository (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -35,3 +35,143 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cert_secret_ref))
+- `ignore` (String)
+- `insecure` (Boolean)
+- `interval` (String)
+- `layer_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--layer_selector))
+- `provider_` (String)
+- `proxy_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--proxy_secret_ref))
+- `ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ref))
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
+- `service_account_name` (String)
+- `suspend` (Boolean)
+- `timeout` (String)
+- `url` (String)
+- `verify` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify))
+
+<a id="nestedobjatt--spec--cert_secret_ref"></a>
+### Nested Schema for `spec.cert_secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--layer_selector"></a>
+### Nested Schema for `spec.layer_selector`
+
+Optional:
+
+- `media_type` (String)
+- `operation` (String)
+
+
+<a id="nestedobjatt--spec--proxy_secret_ref"></a>
+### Nested Schema for `spec.proxy_secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--ref"></a>
+### Nested Schema for `spec.ref`
+
+Optional:
+
+- `digest` (String)
+- `semver` (String)
+- `semver_filter` (String)
+- `tag` (String)
+
+
+<a id="nestedobjatt--spec--secret_ref"></a>
+### Nested Schema for `spec.secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--verify"></a>
+### Nested Schema for `spec.verify`
+
+Optional:
+
+- `match_oidc_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify--match_oidc_identity))
+- `provider_` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify--secret_ref))
+
+<a id="nestedobjatt--spec--verify--match_oidc_identity"></a>
+### Nested Schema for `spec.verify.match_oidc_identity`
+
+Optional:
+
+- `issuer` (String)
+- `subject` (String)
+
+
+<a id="nestedobjatt--spec--verify--secret_ref"></a>
+### Nested Schema for `spec.verify.secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `last_handled_reconcile_at` (String)
+- `observed_generation` (Number)
+- `observed_ignore` (String)
+- `observed_layer_selector` (List of Object) (see [below for nested schema](#nestedobjatt--status--observed_layer_selector))
+- `url` (String)
+
+<a id="nestedobjatt--status--artifact"></a>
+### Nested Schema for `status.artifact`
+
+Optional:
+
+- `digest` (String)
+- `last_update_time` (String)
+- `metadata` (Map of String)
+- `path` (String)
+- `revision` (String)
+- `size` (Number)
+- `url` (String)
+
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--observed_layer_selector"></a>
+### Nested Schema for `status.observed_layer_selector`
+
+Optional:
+
+- `media_type` (String)
+- `operation` (String)

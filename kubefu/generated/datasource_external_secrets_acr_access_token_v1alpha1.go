@@ -49,11 +49,193 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "ACRAccessTokenSpec defines how to generate the access token\ne.g. how to authenticate and which registry to use.\nsee: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md#overview",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"auth": {
+						Type:        schema.TypeList,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"managed_identity": {
+								Type:        schema.TypeList,
+								Description: "ManagedIdentity uses Azure Managed Identity to authenticate with Azure.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"identity_id": {
+										Type:        schema.TypeString,
+										Description: "If multiple Managed Identity is assigned to the pod, you can select the one to be used",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"service_principal": {
+								Type:        schema.TypeList,
+								Description: "ServicePrincipal uses Azure Service Principal credentials to authenticate with Azure.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"secret_ref": {
+										Type:        schema.TypeList,
+										Description: "Configuration used to authenticate with Azure using static\ncredentials stored in a Kind=Secret.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"client_id": {
+												Type:        schema.TypeList,
+												Description: "The Azure clientId of the service principle used for authentication.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"key": {
+														Type:        schema.TypeString,
+														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"name": {
+														Type:        schema.TypeString,
+														Description: "The name of the Secret resource being referred to.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"namespace": {
+														Type:        schema.TypeString,
+														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+											"client_secret": {
+												Type:        schema.TypeList,
+												Description: "The Azure ClientSecret of the service principle used for authentication.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"key": {
+														Type:        schema.TypeString,
+														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"name": {
+														Type:        schema.TypeString,
+														Description: "The name of the Secret resource being referred to.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"namespace": {
+														Type:        schema.TypeString,
+														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+										}},
+									},
+								}},
+							},
+							"workload_identity": {
+								Type:        schema.TypeList,
+								Description: "WorkloadIdentity uses Azure Workload Identity to authenticate with Azure.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"service_account_ref": {
+										Type:        schema.TypeList,
+										Description: "ServiceAccountRef specified the service account\nthat should be used when authenticating with WorkloadIdentity.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"audiences": {
+												Type:        schema.TypeList,
+												Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Schema{Type: schema.TypeString},
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the ServiceAccount resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+						}},
+					},
+					"environment_type": {
+						Type:        schema.TypeString,
+						Description: "EnvironmentType specifies the Azure cloud environment endpoints to use for\nconnecting and authenticating with Azure. By default it points to the public cloud AAD endpoint.\nThe following endpoints are available, also see here: https://github.com/Azure/go-autorest/blob/main/autorest/azure/environments.go#L152\nPublicCloud, USGovernmentCloud, ChinaCloud, GermanCloud",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"registry": {
+						Type:        schema.TypeString,
+						Description: "the domain name of the ACR registry\ne.g. foobarexample.azurecr.io",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"scope": {
+						Type:        schema.TypeString,
+						Description: "Define the scope for the access token, e.g. pull/push access for a repository.\nif not provided it will return a refresh token that has full scope.\nNote: you need to pin it down to the repository level, there is no wildcard available.\n\n\nexamples:\nrepository:my-repository:pull,push\nrepository:my-repository:pull\n\n\nsee docs for details: https://docs.docker.com/registry/spec/auth/scope/",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"tenant_id": {
+						Type:        schema.TypeString,
+						Description: "TenantID configures the Azure Tenant to send requests to. Required for ServicePrincipal auth type.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +247,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1R
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "ACRAccessToken", "generators.external-secrets.io/v1alpha1/ACRAccessToken"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.managed_identity", "spec.auth.service_principal", "spec.auth.service_principal.secret_ref", "spec.auth.service_principal.secret_ref.client_id", "spec.auth.service_principal.secret_ref.client_secret", "spec.auth.workload_identity", "spec.auth.workload_identity.service_account_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

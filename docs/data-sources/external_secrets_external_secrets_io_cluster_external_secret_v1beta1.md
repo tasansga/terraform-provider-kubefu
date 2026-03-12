@@ -18,8 +18,8 @@ ClusterExternalSecret is the Schema for the clusterexternalsecrets API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) ClusterExternalSecretSpec defines the desired state of ClusterExternalSecret.
-- `status` (Map of String) ClusterExternalSecretStatus defines the observed state of ClusterExternalSecret.
+- `spec` (List of Object) ClusterExternalSecretSpec defines the desired state of ClusterExternalSecret. (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) ClusterExternalSecretStatus defines the observed state of ClusterExternalSecret. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -35,3 +35,343 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `external_secret_metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_metadata))
+- `external_secret_name` (String)
+- `external_secret_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec))
+- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--namespace_selector))
+- `namespace_selectors` (List of Object) (see [below for nested schema](#nestedobjatt--spec--namespace_selectors))
+- `namespaces` (List of String)
+- `refresh_time` (String)
+
+<a id="nestedobjatt--spec--external_secret_metadata"></a>
+### Nested Schema for `spec.external_secret_metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `labels` (Map of String)
+
+
+<a id="nestedobjatt--spec--external_secret_spec"></a>
+### Nested Schema for `spec.external_secret_spec`
+
+Optional:
+
+- `data` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data))
+- `data_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data_from))
+- `refresh_interval` (String)
+- `secret_store_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--secret_store_ref))
+- `target` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--target))
+
+<a id="nestedobjatt--spec--external_secret_spec--data"></a>
+### Nested Schema for `spec.external_secret_spec.data`
+
+Optional:
+
+- `remote_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data--remote_ref))
+- `secret_key` (String)
+- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data--source_ref))
+
+<a id="nestedobjatt--spec--external_secret_spec--data--remote_ref"></a>
+### Nested Schema for `spec.external_secret_spec.data.remote_ref`
+
+Optional:
+
+- `conversion_strategy` (String)
+- `decoding_strategy` (String)
+- `key` (String)
+- `metadata_policy` (String)
+- `property` (String)
+- `version` (String)
+
+
+<a id="nestedobjatt--spec--external_secret_spec--data--source_ref"></a>
+### Nested Schema for `spec.external_secret_spec.data.source_ref`
+
+Optional:
+
+- `generator_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data--source_ref--generator_ref))
+- `store_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data--source_ref--store_ref))
+
+<a id="nestedobjatt--spec--external_secret_spec--data--source_ref--generator_ref"></a>
+### Nested Schema for `spec.external_secret_spec.data.source_ref.generator_ref`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--external_secret_spec--data--source_ref--store_ref"></a>
+### Nested Schema for `spec.external_secret_spec.data.source_ref.store_ref`
+
+Optional:
+
+- `kind` (String)
+- `name` (String)
+
+
+
+
+<a id="nestedobjatt--spec--external_secret_spec--data_from"></a>
+### Nested Schema for `spec.external_secret_spec.data_from`
+
+Optional:
+
+- `extract` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data_from--extract))
+- `find` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data_from--find))
+- `rewrite` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data_from--rewrite))
+- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data_from--source_ref))
+
+<a id="nestedobjatt--spec--external_secret_spec--data_from--extract"></a>
+### Nested Schema for `spec.external_secret_spec.data_from.extract`
+
+Optional:
+
+- `conversion_strategy` (String)
+- `decoding_strategy` (String)
+- `key` (String)
+- `metadata_policy` (String)
+- `property` (String)
+- `version` (String)
+
+
+<a id="nestedobjatt--spec--external_secret_spec--data_from--find"></a>
+### Nested Schema for `spec.external_secret_spec.data_from.find`
+
+Optional:
+
+- `conversion_strategy` (String)
+- `decoding_strategy` (String)
+- `name` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data_from--find--name))
+- `path` (String)
+- `tags` (Map of String)
+
+<a id="nestedobjatt--spec--external_secret_spec--data_from--find--name"></a>
+### Nested Schema for `spec.external_secret_spec.data_from.find.name`
+
+Optional:
+
+- `regexp` (String)
+
+
+
+<a id="nestedobjatt--spec--external_secret_spec--data_from--rewrite"></a>
+### Nested Schema for `spec.external_secret_spec.data_from.rewrite`
+
+Optional:
+
+- `regexp` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data_from--rewrite--regexp))
+- `transform` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data_from--rewrite--transform))
+
+<a id="nestedobjatt--spec--external_secret_spec--data_from--rewrite--regexp"></a>
+### Nested Schema for `spec.external_secret_spec.data_from.rewrite.regexp`
+
+Optional:
+
+- `source` (String)
+- `target` (String)
+
+
+<a id="nestedobjatt--spec--external_secret_spec--data_from--rewrite--transform"></a>
+### Nested Schema for `spec.external_secret_spec.data_from.rewrite.transform`
+
+Optional:
+
+- `template` (String)
+
+
+
+<a id="nestedobjatt--spec--external_secret_spec--data_from--source_ref"></a>
+### Nested Schema for `spec.external_secret_spec.data_from.source_ref`
+
+Optional:
+
+- `generator_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data_from--source_ref--generator_ref))
+- `store_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--data_from--source_ref--store_ref))
+
+<a id="nestedobjatt--spec--external_secret_spec--data_from--source_ref--generator_ref"></a>
+### Nested Schema for `spec.external_secret_spec.data_from.source_ref.generator_ref`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--external_secret_spec--data_from--source_ref--store_ref"></a>
+### Nested Schema for `spec.external_secret_spec.data_from.source_ref.store_ref`
+
+Optional:
+
+- `kind` (String)
+- `name` (String)
+
+
+
+
+<a id="nestedobjatt--spec--external_secret_spec--secret_store_ref"></a>
+### Nested Schema for `spec.external_secret_spec.secret_store_ref`
+
+Optional:
+
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--external_secret_spec--target"></a>
+### Nested Schema for `spec.external_secret_spec.target`
+
+Optional:
+
+- `creation_policy` (String)
+- `deletion_policy` (String)
+- `immutable` (Boolean)
+- `name` (String)
+- `template` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--target--template))
+
+<a id="nestedobjatt--spec--external_secret_spec--target--template"></a>
+### Nested Schema for `spec.external_secret_spec.target.template`
+
+Optional:
+
+- `data` (Map of String)
+- `engine_version` (String)
+- `merge_policy` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--target--template--metadata))
+- `template_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--target--template--template_from))
+- `type` (String)
+
+<a id="nestedobjatt--spec--external_secret_spec--target--template--metadata"></a>
+### Nested Schema for `spec.external_secret_spec.target.template.metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `labels` (Map of String)
+
+
+<a id="nestedobjatt--spec--external_secret_spec--target--template--template_from"></a>
+### Nested Schema for `spec.external_secret_spec.target.template.template_from`
+
+Optional:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--target--template--template_from--config_map))
+- `literal` (String)
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--target--template--template_from--secret))
+- `target` (String)
+
+<a id="nestedobjatt--spec--external_secret_spec--target--template--template_from--config_map"></a>
+### Nested Schema for `spec.external_secret_spec.target.template.template_from.config_map`
+
+Optional:
+
+- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--target--template--template_from--config_map--items))
+- `name` (String)
+
+<a id="nestedobjatt--spec--external_secret_spec--target--template--template_from--config_map--items"></a>
+### Nested Schema for `spec.external_secret_spec.target.template.template_from.config_map.items`
+
+Optional:
+
+- `key` (String)
+- `template_as` (String)
+
+
+
+<a id="nestedobjatt--spec--external_secret_spec--target--template--template_from--secret"></a>
+### Nested Schema for `spec.external_secret_spec.target.template.template_from.secret`
+
+Optional:
+
+- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--external_secret_spec--target--template--template_from--secret--items))
+- `name` (String)
+
+<a id="nestedobjatt--spec--external_secret_spec--target--template--template_from--secret--items"></a>
+### Nested Schema for `spec.external_secret_spec.target.template.template_from.secret.items`
+
+Optional:
+
+- `key` (String)
+- `template_as` (String)
+
+
+
+
+
+
+
+<a id="nestedobjatt--spec--namespace_selector"></a>
+### Nested Schema for `spec.namespace_selector`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--namespace_selectors"></a>
+### Nested Schema for `spec.namespace_selectors`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--namespace_selectors--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--namespace_selectors--match_expressions"></a>
+### Nested Schema for `spec.namespace_selectors.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `external_secret_name` (String)
+- `failed_namespaces` (List of Object) (see [below for nested schema](#nestedobjatt--status--failed_namespaces))
+- `provisioned_namespaces` (List of String)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `message` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--failed_namespaces"></a>
+### Nested Schema for `status.failed_namespaces`
+
+Optional:
+
+- `namespace` (String)
+- `reason` (String)

@@ -20,7 +20,7 @@ that can be used to authenticate with GCR.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -36,3 +36,56 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth))
+- `project_id` (String)
+
+<a id="nestedobjatt--spec--auth"></a>
+### Nested Schema for `spec.auth`
+
+Optional:
+
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--secret_ref))
+- `workload_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--workload_identity))
+
+<a id="nestedobjatt--spec--auth--secret_ref"></a>
+### Nested Schema for `spec.auth.secret_ref`
+
+Optional:
+
+- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--secret_ref--secret_access_key_secret_ref))
+
+<a id="nestedobjatt--spec--auth--secret_ref--secret_access_key_secret_ref"></a>
+### Nested Schema for `spec.auth.secret_ref.secret_access_key_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--auth--workload_identity"></a>
+### Nested Schema for `spec.auth.workload_identity`
+
+Optional:
+
+- `cluster_location` (String)
+- `cluster_name` (String)
+- `cluster_project_id` (String)
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--workload_identity--service_account_ref))
+
+<a id="nestedobjatt--spec--auth--workload_identity--service_account_ref"></a>
+### Nested Schema for `spec.auth.workload_identity.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)

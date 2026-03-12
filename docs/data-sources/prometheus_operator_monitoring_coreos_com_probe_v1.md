@@ -17,7 +17,7 @@ Probe defines monitoring for a set of static targets or ingresses.
 
 ### Required
 
-- `spec` (Map of String) Specification of desired Ingress selection for target discovery by Prometheus.
+- `spec` (List of Object) Specification of desired Ingress selection for target discovery by Prometheus. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
@@ -30,3 +30,323 @@ Probe defines monitoring for a set of static targets or ingresses.
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--basic_auth))
+- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--bearer_token_secret))
+- `interval` (String)
+- `job_name` (String)
+- `label_limit` (Number)
+- `label_name_length_limit` (Number)
+- `label_value_length_limit` (Number)
+- `metric_relabelings` (List of Object) (see [below for nested schema](#nestedobjatt--spec--metric_relabelings))
+- `module` (String)
+- `oauth2` (List of Object) (see [below for nested schema](#nestedobjatt--spec--oauth2))
+- `prober` (List of Object) (see [below for nested schema](#nestedobjatt--spec--prober))
+- `sample_limit` (Number)
+- `scrape_timeout` (String)
+- `target_limit` (Number)
+- `targets` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets))
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config))
+
+<a id="nestedobjatt--spec--authorization"></a>
+### Nested Schema for `spec.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--authorization--credentials))
+- `type` (String)
+
+<a id="nestedobjatt--spec--authorization--credentials"></a>
+### Nested Schema for `spec.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--basic_auth"></a>
+### Nested Schema for `spec.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--basic_auth--username))
+
+<a id="nestedobjatt--spec--basic_auth--password"></a>
+### Nested Schema for `spec.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--basic_auth--username"></a>
+### Nested Schema for `spec.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--bearer_token_secret"></a>
+### Nested Schema for `spec.bearer_token_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--metric_relabelings"></a>
+### Nested Schema for `spec.metric_relabelings`
+
+Required:
+
+- `action` (String)
+- `modulus` (Number)
+- `regex` (String)
+- `replacement` (String)
+- `separator` (String)
+- `source_labels` (List of String)
+- `target_label` (String)
+
+
+<a id="nestedobjatt--spec--oauth2"></a>
+### Nested Schema for `spec.oauth2`
+
+Required:
+
+- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--oauth2--client_id))
+- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--oauth2--client_secret))
+- `endpoint_params` (Map of String)
+- `scopes` (List of String)
+- `token_url` (String)
+
+<a id="nestedobjatt--spec--oauth2--client_id"></a>
+### Nested Schema for `spec.oauth2.client_id`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--oauth2--client_id--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--oauth2--client_id--secret))
+
+<a id="nestedobjatt--spec--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.oauth2.client_id.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.oauth2.client_id.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--oauth2--client_secret"></a>
+### Nested Schema for `spec.oauth2.client_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--prober"></a>
+### Nested Schema for `spec.prober`
+
+Required:
+
+- `path` (String)
+- `proxy_url` (String)
+- `scheme` (String)
+- `url` (String)
+
+
+<a id="nestedobjatt--spec--targets"></a>
+### Nested Schema for `spec.targets`
+
+Required:
+
+- `ingress` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--ingress))
+- `static_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--static_config))
+
+<a id="nestedobjatt--spec--targets--ingress"></a>
+### Nested Schema for `spec.targets.ingress`
+
+Required:
+
+- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--ingress--namespace_selector))
+- `relabeling_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--ingress--relabeling_configs))
+- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--ingress--selector))
+
+<a id="nestedobjatt--spec--targets--ingress--namespace_selector"></a>
+### Nested Schema for `spec.targets.ingress.namespace_selector`
+
+Required:
+
+- `any` (Boolean)
+- `match_names` (List of String)
+
+
+<a id="nestedobjatt--spec--targets--ingress--relabeling_configs"></a>
+### Nested Schema for `spec.targets.ingress.relabeling_configs`
+
+Required:
+
+- `action` (String)
+- `modulus` (Number)
+- `regex` (String)
+- `replacement` (String)
+- `separator` (String)
+- `source_labels` (List of String)
+- `target_label` (String)
+
+
+<a id="nestedobjatt--spec--targets--ingress--selector"></a>
+### Nested Schema for `spec.targets.ingress.selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--ingress--selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--targets--ingress--selector--match_expressions"></a>
+### Nested Schema for `spec.targets.ingress.selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+<a id="nestedobjatt--spec--targets--static_config"></a>
+### Nested Schema for `spec.targets.static_config`
+
+Required:
+
+- `labels` (Map of String)
+- `relabeling_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--static_config--relabeling_configs))
+- `static` (List of String)
+
+<a id="nestedobjatt--spec--targets--static_config--relabeling_configs"></a>
+### Nested Schema for `spec.targets.static_config.relabeling_configs`
+
+Required:
+
+- `action` (String)
+- `modulus` (Number)
+- `regex` (String)
+- `replacement` (String)
+- `separator` (String)
+- `source_labels` (List of String)
+- `target_label` (String)
+
+
+
+
+<a id="nestedobjatt--spec--tls_config"></a>
+### Nested Schema for `spec.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--tls_config--ca"></a>
+### Nested Schema for `spec.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--tls_config--ca--secret"></a>
+### Nested Schema for `spec.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--tls_config--cert"></a>
+### Nested Schema for `spec.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--tls_config--cert--secret"></a>
+### Nested Schema for `spec.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--tls_config--key_secret"></a>
+### Nested Schema for `spec.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)

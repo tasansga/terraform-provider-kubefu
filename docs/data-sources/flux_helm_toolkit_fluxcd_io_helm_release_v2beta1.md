@@ -18,8 +18,8 @@ HelmRelease is the Schema for the helmreleases API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) HelmReleaseSpec defines the desired state of a Helm release.
-- `status` (Map of String) HelmReleaseStatus defines the observed state of a HelmRelease.
+- `spec` (List of Object) HelmReleaseSpec defines the desired state of a Helm release. (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) HelmReleaseStatus defines the observed state of a HelmRelease. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -28,3 +28,273 @@ HelmRelease is the Schema for the helmreleases API
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `chart` (List of Object) (see [below for nested schema](#nestedobjatt--spec--chart))
+- `depends_on_` (List of Object) (see [below for nested schema](#nestedobjatt--spec--depends_on_))
+- `install` (List of Object) (see [below for nested schema](#nestedobjatt--spec--install))
+- `interval` (String)
+- `kube_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--kube_config))
+- `max_history` (Number)
+- `post_renderers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers))
+- `release_name` (String)
+- `rollback` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rollback))
+- `service_account_name` (String)
+- `storage_namespace` (String)
+- `suspend` (Boolean)
+- `target_namespace` (String)
+- `test` (List of Object) (see [below for nested schema](#nestedobjatt--spec--test))
+- `timeout` (String)
+- `uninstall` (List of Object) (see [below for nested schema](#nestedobjatt--spec--uninstall))
+- `upgrade` (List of Object) (see [below for nested schema](#nestedobjatt--spec--upgrade))
+- `values` (String)
+- `values_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--values_from))
+
+<a id="nestedobjatt--spec--chart"></a>
+### Nested Schema for `spec.chart`
+
+Optional:
+
+- `spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--chart--spec))
+
+<a id="nestedobjatt--spec--chart--spec"></a>
+### Nested Schema for `spec.chart.spec`
+
+Optional:
+
+- `chart` (String)
+- `interval` (String)
+- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--chart--spec--source_ref))
+- `values_file` (String)
+- `version` (String)
+
+<a id="nestedobjatt--spec--chart--spec--source_ref"></a>
+### Nested Schema for `spec.chart.spec.source_ref`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+<a id="nestedobjatt--spec--depends_on_"></a>
+### Nested Schema for `spec.depends_on_`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--install"></a>
+### Nested Schema for `spec.install`
+
+Optional:
+
+- `create_namespace` (Boolean)
+- `disable_hooks` (Boolean)
+- `disable_open_api_validation` (Boolean)
+- `disable_wait` (Boolean)
+- `remediation` (List of Object) (see [below for nested schema](#nestedobjatt--spec--install--remediation))
+- `replace` (Boolean)
+- `skip_cr_ds` (Boolean)
+- `timeout` (String)
+
+<a id="nestedobjatt--spec--install--remediation"></a>
+### Nested Schema for `spec.install.remediation`
+
+Optional:
+
+- `ignore_test_failures` (Boolean)
+- `remediate_last_failure` (Boolean)
+- `retries` (Number)
+
+
+
+<a id="nestedobjatt--spec--kube_config"></a>
+### Nested Schema for `spec.kube_config`
+
+Optional:
+
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--kube_config--secret_ref))
+
+<a id="nestedobjatt--spec--kube_config--secret_ref"></a>
+### Nested Schema for `spec.kube_config.secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--post_renderers"></a>
+### Nested Schema for `spec.post_renderers`
+
+Optional:
+
+- `kustomize` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers--kustomize))
+
+<a id="nestedobjatt--spec--post_renderers--kustomize"></a>
+### Nested Schema for `spec.post_renderers.kustomize`
+
+Optional:
+
+- `images` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers--kustomize--images))
+- `patches_json6902` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers--kustomize--patches_json6902))
+- `patches_strategic_merge` (List of String)
+
+<a id="nestedobjatt--spec--post_renderers--kustomize--images"></a>
+### Nested Schema for `spec.post_renderers.kustomize.images`
+
+Optional:
+
+- `digest` (String)
+- `name` (String)
+- `new_name` (String)
+- `new_tag` (String)
+
+
+<a id="nestedobjatt--spec--post_renderers--kustomize--patches_json6902"></a>
+### Nested Schema for `spec.post_renderers.kustomize.patches_json6902`
+
+Optional:
+
+- `patch` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers--kustomize--patches_json6902--patch))
+- `target` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers--kustomize--patches_json6902--target))
+
+<a id="nestedobjatt--spec--post_renderers--kustomize--patches_json6902--patch"></a>
+### Nested Schema for `spec.post_renderers.kustomize.patches_json6902.patch`
+
+Optional:
+
+- `from` (String)
+- `op` (String)
+- `path` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--post_renderers--kustomize--patches_json6902--target"></a>
+### Nested Schema for `spec.post_renderers.kustomize.patches_json6902.target`
+
+Optional:
+
+- `annotation_selector` (String)
+- `group` (String)
+- `kind` (String)
+- `label_selector` (String)
+- `name` (String)
+- `namespace` (String)
+- `version` (String)
+
+
+
+
+
+<a id="nestedobjatt--spec--rollback"></a>
+### Nested Schema for `spec.rollback`
+
+Optional:
+
+- `cleanup_on_fail` (Boolean)
+- `disable_hooks` (Boolean)
+- `disable_wait` (Boolean)
+- `force` (Boolean)
+- `recreate` (Boolean)
+- `timeout` (String)
+
+
+<a id="nestedobjatt--spec--test"></a>
+### Nested Schema for `spec.test`
+
+Optional:
+
+- `enable` (Boolean)
+- `ignore_failures` (Boolean)
+- `timeout` (String)
+
+
+<a id="nestedobjatt--spec--uninstall"></a>
+### Nested Schema for `spec.uninstall`
+
+Optional:
+
+- `disable_hooks` (Boolean)
+- `keep_history` (Boolean)
+- `timeout` (String)
+
+
+<a id="nestedobjatt--spec--upgrade"></a>
+### Nested Schema for `spec.upgrade`
+
+Optional:
+
+- `cleanup_on_fail` (Boolean)
+- `disable_hooks` (Boolean)
+- `disable_open_api_validation` (Boolean)
+- `disable_wait` (Boolean)
+- `force` (Boolean)
+- `preserve_values` (Boolean)
+- `remediation` (List of Object) (see [below for nested schema](#nestedobjatt--spec--upgrade--remediation))
+- `timeout` (String)
+
+<a id="nestedobjatt--spec--upgrade--remediation"></a>
+### Nested Schema for `spec.upgrade.remediation`
+
+Optional:
+
+- `ignore_test_failures` (Boolean)
+- `remediate_last_failure` (Boolean)
+- `retries` (Number)
+- `strategy` (String)
+
+
+
+<a id="nestedobjatt--spec--values_from"></a>
+### Nested Schema for `spec.values_from`
+
+Optional:
+
+- `kind` (String)
+- `name` (String)
+- `optional` (Boolean)
+- `target_path` (String)
+- `values_key` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `failures` (Number)
+- `helm_chart` (String)
+- `install_failures` (Number)
+- `last_applied_revision` (String)
+- `last_attempted_revision` (String)
+- `last_attempted_values_checksum` (String)
+- `last_handled_reconcile_at` (String)
+- `last_release_revision` (Number)
+- `observed_generation` (Number)
+- `upgrade_failures` (Number)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

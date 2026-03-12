@@ -17,23 +17,23 @@ Event is a report of an event somewhere in the cluster.
 
 ### Required
 
-- `involved_object` (Map of String) The object that this event is about.
-- `metadata` (Map of String) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
+- `involved_object` (List of Object) The object that this event is about. (see [below for nested schema](#nestedatt--involved_object))
+- `metadata` (List of Object) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata (see [below for nested schema](#nestedatt--metadata))
 
 ### Optional
 
 - `action` (String) What action was taken/failed regarding to the Regarding object.
 - `count_` (Number) The number of times this event has occurred.
-- `event_time` (Map of String) Time when this Event was first observed.
-- `first_timestamp` (Map of String) The time at which the event was first recorded. (Time of server receipt is in TypeMeta.)
-- `last_timestamp` (Map of String) The time at which the most recent occurrence of this event was recorded.
+- `event_time` (String) Time when this Event was first observed.
+- `first_timestamp` (String) The time at which the event was first recorded. (Time of server receipt is in TypeMeta.)
+- `last_timestamp` (String) The time at which the most recent occurrence of this event was recorded.
 - `message` (String) A human-readable description of the status of this operation.
 - `reason` (String) This should be a short, machine understandable string that gives the reason for the transition into the object's current status.
-- `related` (Map of String) Optional secondary object for more complex actions.
+- `related` (List of Object) Optional secondary object for more complex actions. (see [below for nested schema](#nestedatt--related))
 - `reporting_component` (String) Name of the controller that emitted this Event, e.g. `kubernetes.io/kubelet`.
 - `reporting_instance` (String) ID of the controller instance, e.g. `kubelet-xyzf`.
-- `series` (Map of String) Data about the Event series this event represents or nil if it's a singleton Event.
-- `source` (Map of String) The component reporting this event. Should be a short machine understandable string.
+- `series` (List of Object) Data about the Event series this event represents or nil if it's a singleton Event. (see [below for nested schema](#nestedatt--series))
+- `source` (List of Object) The component reporting this event. Should be a short machine understandable string. (see [below for nested schema](#nestedatt--source))
 - `type` (String) Type of this event (Normal, Warning), new types could be added in the future
 
 ### Read-Only
@@ -43,3 +43,150 @@ Event is a report of an event somewhere in the cluster.
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--involved_object"></a>
+### Nested Schema for `involved_object`
+
+Required:
+
+- `api_version` (String)
+- `field_path` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Required:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Required:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Required:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Required:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Required:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Required:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Required:
+
+- `continue` (String)
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Required:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--related"></a>
+### Nested Schema for `related`
+
+Optional:
+
+- `api_version` (String)
+- `field_path` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
+
+
+<a id="nestedatt--series"></a>
+### Nested Schema for `series`
+
+Optional:
+
+- `count_` (Number)
+- `last_observed_time` (String)
+- `state` (String)
+
+
+<a id="nestedatt--source"></a>
+### Nested Schema for `source`
+
+Optional:
+
+- `component` (String)
+- `host` (String)

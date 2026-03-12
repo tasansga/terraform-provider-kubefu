@@ -20,15 +20,15 @@ This is an alpha type and requires enabling the DynamicResourceAllocation featur
 
 ### Required
 
-- `spec` (Map of String) Spec defines what can be allocated and how to configure it.
+- `spec` (List of Object) Spec defines what can be allocated and how to configure it.
 
 This is mutable. Consumers have to be prepared for classes changing at any time, either because they get updated or replaced. Claim allocations are done once based on whatever was set in classes at the time of allocation.
 
-Changing the spec automatically increments the metadata.generation number.
+Changing the spec automatically increments the metadata.generation number. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
-- `metadata` (Map of String) Standard object metadata
+- `metadata` (List of Object) Standard object metadata (see [below for nested schema](#nestedatt--metadata))
 
 ### Read-Only
 
@@ -37,3 +37,92 @@ Changing the spec automatically increments the metadata.generation number.
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--config))
+- `selectors` (List of Object) (see [below for nested schema](#nestedobjatt--spec--selectors))
+
+<a id="nestedobjatt--spec--config"></a>
+### Nested Schema for `spec.config`
+
+Required:
+
+- `opaque` (List of Object) (see [below for nested schema](#nestedobjatt--spec--config--opaque))
+
+<a id="nestedobjatt--spec--config--opaque"></a>
+### Nested Schema for `spec.config.opaque`
+
+Required:
+
+- `driver` (String)
+- `parameters` (Map of String)
+
+
+
+<a id="nestedobjatt--spec--selectors"></a>
+### Nested Schema for `spec.selectors`
+
+Required:
+
+- `cel` (List of Object) (see [below for nested schema](#nestedobjatt--spec--selectors--cel))
+
+<a id="nestedobjatt--spec--selectors--cel"></a>
+### Nested Schema for `spec.selectors.cel`
+
+Required:
+
+- `expression` (String)
+
+
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)

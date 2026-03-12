@@ -49,11 +49,74 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1Alpha2() *schema.
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "Spec defines the desired state of ReferenceGrant.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"from": {
+						Type:        schema.TypeList,
+						Description: "From describes the trusted namespaces and kinds that can reference the resources described in \"To\". Each entry in this list MUST be considered to be an additional place that references can be valid from, or to put this another way, entries MUST be combined using OR. \n Support: Core",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"group": {
+								Type:        schema.TypeString,
+								Description: "Group is the group of the referent. When empty, the Kubernetes core API group is inferred. \n Support: Core",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kind": {
+								Type:        schema.TypeString,
+								Description: "Kind is the kind of the referent. Although implementations may support additional resources, the following types are part of the \"Core\" support level for this field. \n When used to permit a SecretObjectReference: \n * Gateway \n When used to permit a BackendObjectReference: \n * GRPCRoute * HTTPRoute * TCPRoute * TLSRoute * UDPRoute",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "Namespace is the namespace of the referent. \n Support: Core",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"to": {
+						Type:        schema.TypeList,
+						Description: "To describes the resources that may be referenced by the resources described in \"From\". Each entry in this list MUST be considered to be an additional place that references can be valid to, or to put this another way, entries MUST be combined using OR. \n Support: Core",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"group": {
+								Type:        schema.TypeString,
+								Description: "Group is the group of the referent. When empty, the Kubernetes core API group is inferred. \n Support: Core",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kind": {
+								Type:        schema.TypeString,
+								Description: "Kind is the kind of the referent. Although implementations may support additional resources, the following types are part of the \"Core\" support level for this field: \n * Secret when used to permit a SecretObjectReference * Service when used to permit a BackendObjectReference",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name is the name of the referent. When unspecified, this policy refers to all resources of the specified Group and Kind in the local namespace.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +128,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1Alpha2Read(_ cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1alpha2", "ReferenceGrant", "gateway.networking.k8s.io/v1alpha2/ReferenceGrant"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

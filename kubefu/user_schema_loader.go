@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"unicode"
 
@@ -164,6 +165,7 @@ func buildUserSchemaDataSource(entry resourcegen.ResourceEntry, provider string)
 		}
 		manifestKeys = append(manifestKeys, name)
 	}
+	manifestObjectPaths := objectPathsForSchema(schemaMap)
 	apiVersion := apiVersionFor(entry.Group, entry.Version)
 	id := def.ID()
 	description := entry.DefinitionDescription
@@ -175,7 +177,7 @@ func buildUserSchemaDataSource(entry resourcegen.ResourceEntry, provider string)
 			if err := manifest.SetDataSourceDefaults(d, apiVersion, entry.Kind, id); err != nil {
 				return diag.FromErr(err)
 			}
-			if err := manifest.SetDataSourceManifest(d, manifestKeys); err != nil {
+			if err := manifest.SetDataSourceManifestWithObjectPaths(d, manifestKeys, manifestObjectPaths); err != nil {
 				return diag.FromErr(err)
 			}
 			return nil
@@ -215,6 +217,44 @@ func ensureComputedString(schemaMap map[string]*schema.Schema, key, description 
 		Type:        schema.TypeString,
 		Description: description,
 		Computed:    true,
+	}
+}
+
+func objectPathsForSchema(schemaMap map[string]*schema.Schema) []string {
+	if len(schemaMap) == 0 {
+		return nil
+	}
+	paths := make(map[string]struct{})
+	collectObjectPaths(schemaMap, "", paths)
+	if len(paths) == 0 {
+		return nil
+	}
+	keys := make([]string, 0, len(paths))
+	for key := range paths {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func collectObjectPaths(schemaMap map[string]*schema.Schema, prefix string, paths map[string]struct{}) {
+	for name, entry := range schemaMap {
+		if entry == nil {
+			continue
+		}
+		path := name
+		if prefix != "" {
+			path = prefix + "." + name
+		}
+		elem, ok := entry.Elem.(*schema.Resource)
+		if entry.Type == schema.TypeList && ok {
+			if entry.MaxItems == 1 {
+				paths[path] = struct{}{}
+			}
+			if elem != nil {
+				collectObjectPaths(elem.Schema, path, paths)
+			}
+		}
 	}
 }
 

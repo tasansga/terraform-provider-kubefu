@@ -17,11 +17,11 @@ Workload allows for expressing scheduling constraints that should be used when m
 
 ### Required
 
-- `spec` (Map of String) Spec defines the desired behavior of a Workload.
+- `spec` (List of Object) Spec defines the desired behavior of a Workload. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
-- `metadata` (Map of String) Standard object's metadata. Name must be a DNS subdomain.
+- `metadata` (List of Object) Standard object's metadata. Name must be a DNS subdomain. (see [below for nested schema](#nestedatt--metadata))
 
 ### Read-Only
 
@@ -30,3 +30,95 @@ Workload allows for expressing scheduling constraints that should be used when m
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `controller_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--controller_ref))
+- `pod_groups` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_groups))
+
+<a id="nestedobjatt--spec--controller_ref"></a>
+### Nested Schema for `spec.controller_ref`
+
+Required:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--pod_groups"></a>
+### Nested Schema for `spec.pod_groups`
+
+Required:
+
+- `name` (String)
+- `policy` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_groups--policy))
+
+<a id="nestedobjatt--spec--pod_groups--policy"></a>
+### Nested Schema for `spec.pod_groups.policy`
+
+Required:
+
+- `basic` (Map of String)
+- `gang` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_groups--policy--gang))
+
+<a id="nestedobjatt--spec--pod_groups--policy--gang"></a>
+### Nested Schema for `spec.pod_groups.policy.gang`
+
+Required:
+
+- `min_count` (Number)
+
+
+
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)

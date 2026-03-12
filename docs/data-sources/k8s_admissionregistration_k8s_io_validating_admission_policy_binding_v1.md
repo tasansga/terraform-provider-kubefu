@@ -23,8 +23,8 @@ The CEL expressions of a policy must have a computed CEL cost below the maximum 
 
 ### Optional
 
-- `metadata` (Map of String) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.
-- `spec` (Map of String) Specification of the desired behavior of the ValidatingAdmissionPolicyBinding.
+- `metadata` (List of Object) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata. (see [below for nested schema](#nestedatt--metadata))
+- `spec` (List of Object) Specification of the desired behavior of the ValidatingAdmissionPolicyBinding. (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -33,3 +33,165 @@ The CEL expressions of a policy must have a computed CEL cost below the maximum 
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `match_resources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_resources))
+- `param_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--param_ref))
+- `policy_name` (String)
+- `validation_actions` (List of String)
+
+<a id="nestedobjatt--spec--match_resources"></a>
+### Nested Schema for `spec.match_resources`
+
+Optional:
+
+- `exclude_resource_rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_resources--exclude_resource_rules))
+- `match_policy` (String)
+- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_resources--namespace_selector))
+- `object_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_resources--object_selector))
+- `resource_rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_resources--resource_rules))
+
+<a id="nestedobjatt--spec--match_resources--exclude_resource_rules"></a>
+### Nested Schema for `spec.match_resources.exclude_resource_rules`
+
+Optional:
+
+- `api_groups` (List of String)
+- `api_versions` (List of String)
+- `operations` (List of String)
+- `resource_names` (List of String)
+- `resources` (List of String)
+- `scope` (String)
+
+
+<a id="nestedobjatt--spec--match_resources--namespace_selector"></a>
+### Nested Schema for `spec.match_resources.namespace_selector`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_resources--namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--match_resources--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.match_resources.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--match_resources--object_selector"></a>
+### Nested Schema for `spec.match_resources.object_selector`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_resources--object_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--match_resources--object_selector--match_expressions"></a>
+### Nested Schema for `spec.match_resources.object_selector.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--match_resources--resource_rules"></a>
+### Nested Schema for `spec.match_resources.resource_rules`
+
+Optional:
+
+- `api_groups` (List of String)
+- `api_versions` (List of String)
+- `operations` (List of String)
+- `resource_names` (List of String)
+- `resources` (List of String)
+- `scope` (String)
+
+
+
+<a id="nestedobjatt--spec--param_ref"></a>
+### Nested Schema for `spec.param_ref`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+- `parameter_not_found_action` (String)
+- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--param_ref--selector))
+
+<a id="nestedobjatt--spec--param_ref--selector"></a>
+### Nested Schema for `spec.param_ref.selector`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--param_ref--selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--param_ref--selector--match_expressions"></a>
+### Nested Schema for `spec.param_ref.selector.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)

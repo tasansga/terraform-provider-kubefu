@@ -18,8 +18,8 @@ Generated data source for crd.generators.external-secrets.io.v1alpha1.GeneratorS
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String)
-- `status` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -35,3 +35,31 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `garbage_collection_deadline` (String)
+- `resource` (String)
+- `state` (String)
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

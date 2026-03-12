@@ -18,11 +18,11 @@ Order is a type to represent an Order with an ACME server
 ### Required
 
 - `metadata` (Map of String)
-- `spec` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
-- `status` (Map of String)
+- `status` (List of Object) (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -31,3 +31,57 @@ Order is a type to represent an Order with an ACME server
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `common_name` (String)
+- `dns_names` (List of String)
+- `issuer_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--issuer_ref))
+- `request` (String)
+
+<a id="nestedobjatt--spec--issuer_ref"></a>
+### Nested Schema for `spec.issuer_ref`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `authorizations` (List of Object) (see [below for nested schema](#nestedobjatt--status--authorizations))
+- `certificate` (String)
+- `failure_time` (String)
+- `finalize_url` (String)
+- `reason` (String)
+- `state` (String)
+- `url` (String)
+
+<a id="nestedobjatt--status--authorizations"></a>
+### Nested Schema for `status.authorizations`
+
+Optional:
+
+- `challenges` (List of Object) (see [below for nested schema](#nestedobjatt--status--authorizations--challenges))
+- `identifier` (String)
+- `initial_state` (String)
+- `url` (String)
+- `wildcard` (Boolean)
+
+<a id="nestedobjatt--status--authorizations--challenges"></a>
+### Nested Schema for `status.authorizations.challenges`
+
+Optional:
+
+- `token` (String)
+- `type` (String)
+- `url` (String)

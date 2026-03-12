@@ -49,11 +49,151 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoWebhookV1Alpha1() *sche
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "WebhookSpec controls the behavior of the external generator. Any body parameters should be passed to the server through the parameters field.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"body": {
+						Type:        schema.TypeString,
+						Description: "Body",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"ca_bundle": {
+						Type:        schema.TypeString,
+						Description: "PEM encoded CA bundle used to validate webhook server certificate. Only used\nif the Server URL is using HTTPS protocol. This parameter is ignored for\nplain HTTP protocol connection. If not set the system root certificates\nare used to validate the TLS connection.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"ca_provider": {
+						Type:        schema.TypeList,
+						Description: "The provider for the CA bundle to use to validate webhook server certificate.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"key": {
+								Type:        schema.TypeString,
+								Description: "The key the value inside of the provider type to use, only used with \"Secret\" type",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "The name of the object located at the provider type.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "The namespace the Provider type is in.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "The type of provider to use such as \"Secret\", or \"ConfigMap\".",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"headers": {
+						Type:        schema.TypeMap,
+						Description: "Headers",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"method": {
+						Type:        schema.TypeString,
+						Description: "Webhook Method",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"result": {
+						Type:        schema.TypeList,
+						Description: "Result formatting",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"json_path": {
+								Type:        schema.TypeString,
+								Description: "Json path of return value",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"secrets": {
+						Type:        schema.TypeList,
+						Description: "Secrets to fill in templates\nThese secrets will be passed to the templating function as key value pairs under the given name",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of this secret in templates",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"secret_ref": {
+								Type:        schema.TypeList,
+								Description: "Secret ref to fill in credentials",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"key": {
+										Type:        schema.TypeString,
+										Description: "The key where the token is found.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"name": {
+										Type:        schema.TypeString,
+										Description: "The name of the Secret resource being referred to.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
+					"timeout": {
+						Type:        schema.TypeString,
+						Description: "Timeout",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"url": {
+						Type:        schema.TypeString,
+						Description: "Webhook url to call",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +205,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoWebhookV1Alpha1Read(_ c
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "Webhook", "generators.external-secrets.io/v1alpha1/Webhook"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.ca_provider", "spec.result", "spec.secrets.secret_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -18,8 +18,8 @@ Receiver is the Schema for the receivers API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) ReceiverSpec defines the desired state of Receiver
-- `status` (Map of String) ReceiverStatus defines the observed state of Receiver
+- `spec` (List of Object) ReceiverSpec defines the desired state of Receiver (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) ReceiverStatus defines the observed state of Receiver (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -28,3 +28,55 @@ Receiver is the Schema for the receivers API
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `events` (List of String)
+- `resources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--resources))
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
+- `suspend` (Boolean)
+- `type` (String)
+
+<a id="nestedobjatt--spec--resources"></a>
+### Nested Schema for `spec.resources`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--secret_ref"></a>
+### Nested Schema for `spec.secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `observed_generation` (Number)
+- `url` (String)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

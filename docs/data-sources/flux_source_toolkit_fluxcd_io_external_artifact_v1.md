@@ -18,8 +18,8 @@ ExternalArtifact is the Schema for the external artifacts API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) ExternalArtifactSpec defines the desired state of ExternalArtifact
-- `status` (Map of String) ExternalArtifactStatus defines the observed state of ExternalArtifact
+- `spec` (List of Object) ExternalArtifactSpec defines the desired state of ExternalArtifact (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) ExternalArtifactStatus defines the observed state of ExternalArtifact (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -35,3 +35,56 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--source_ref))
+
+<a id="nestedobjatt--spec--source_ref"></a>
+### Nested Schema for `spec.source_ref`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+
+<a id="nestedobjatt--status--artifact"></a>
+### Nested Schema for `status.artifact`
+
+Optional:
+
+- `digest` (String)
+- `last_update_time` (String)
+- `metadata` (Map of String)
+- `path` (String)
+- `revision` (String)
+- `size` (Number)
+- `url` (String)
+
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

@@ -26,11 +26,11 @@ Resource drivers have a unique name in forward domain order (acme.example.com).
 
 ### Optional
 
-- `metadata` (Map of String) Standard object metadata
-- `parameters_ref` (Map of String) ParametersRef references an arbitrary separate object that may hold parameters that will be used by the driver when allocating a resource that uses this class. A dynamic resource driver can distinguish between parameters stored here and and those stored in ResourceClaimSpec.
-- `suitable_nodes` (Map of String) Only nodes matching the selector will be considered by the scheduler when trying to find a Node that fits a Pod when that Pod uses a ResourceClaim that has not been allocated yet.
+- `metadata` (List of Object) Standard object metadata (see [below for nested schema](#nestedatt--metadata))
+- `parameters_ref` (List of Object) ParametersRef references an arbitrary separate object that may hold parameters that will be used by the driver when allocating a resource that uses this class. A dynamic resource driver can distinguish between parameters stored here and and those stored in ResourceClaimSpec. (see [below for nested schema](#nestedatt--parameters_ref))
+- `suitable_nodes` (List of Object) Only nodes matching the selector will be considered by the scheduler when trying to find a Node that fits a Pod when that Pod uses a ResourceClaim that has not been allocated yet.
 
-Setting this field is optional. If null, all nodes are candidates.
+Setting this field is optional. If null, all nodes are candidates. (see [below for nested schema](#nestedatt--suitable_nodes))
 
 ### Read-Only
 
@@ -39,3 +39,97 @@ Setting this field is optional. If null, all nodes are candidates.
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--parameters_ref"></a>
+### Nested Schema for `parameters_ref`
+
+Optional:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedatt--suitable_nodes"></a>
+### Nested Schema for `suitable_nodes`
+
+Optional:
+
+- `node_selector_terms` (List of Object) (see [below for nested schema](#nestedobjatt--suitable_nodes--node_selector_terms))
+
+<a id="nestedobjatt--suitable_nodes--node_selector_terms"></a>
+### Nested Schema for `suitable_nodes.node_selector_terms`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--suitable_nodes--node_selector_terms--match_expressions))
+- `match_fields` (List of Object) (see [below for nested schema](#nestedobjatt--suitable_nodes--node_selector_terms--match_fields))
+
+<a id="nestedobjatt--suitable_nodes--node_selector_terms--match_expressions"></a>
+### Nested Schema for `suitable_nodes.node_selector_terms.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+<a id="nestedobjatt--suitable_nodes--node_selector_terms--match_fields"></a>
+### Nested Schema for `suitable_nodes.node_selector_terms.match_fields`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)

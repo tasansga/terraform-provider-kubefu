@@ -19,7 +19,73 @@ func dataSourceKustomizeKustomizeConfigK8sIoKustomizationV1Beta1() *schema.Resou
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
-				Elem: &schema.Resource{Schema: map[string]*schema.Schema{}},
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"generator_args": {
+						Type:        schema.TypeList,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"behavior": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kv_pair_sources": {
+								Type:        schema.TypeList,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"envs": {
+										Type:        schema.TypeList,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"files": {
+										Type:        schema.TypeList,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"literals": {
+										Type:        schema.TypeList,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+								}},
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+				}},
 			},
 			"kubefu_manifest_json": {
 				Type:        schema.TypeString,
@@ -41,7 +107,80 @@ func dataSourceKustomizeKustomizeConfigK8sIoKustomizationV1Beta1() *schema.Resou
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
-				Elem: &schema.Resource{Schema: map[string]*schema.Schema{}},
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"generator_args": {
+						Type:        schema.TypeList,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"behavior": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kv_pair_sources": {
+								Type:        schema.TypeList,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"envs": {
+										Type:        schema.TypeList,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"files": {
+										Type:        schema.TypeList,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"literals": {
+										Type:        schema.TypeList,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+								}},
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"type": {
+						Type:        schema.TypeString,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -53,7 +192,7 @@ func dataSourceKustomizeKustomizeConfigK8sIoKustomizationV1Beta1Read(_ context.C
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.config.k8s.io/v1beta1", "Kustomization", "kustomize.config.k8s.io/v1beta1/Kustomization"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"config_map_generator", "secret_generator"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"config_map_generator", "secret_generator"}, []string{"config_map_generator.generator_args", "config_map_generator.generator_args.kv_pair_sources", "secret_generator.generator_args", "secret_generator.generator_args.kv_pair_sources"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

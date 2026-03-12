@@ -20,8 +20,8 @@ ResourceClaimParameters defines resource requests for a ResourceClaim in an in-t
 - `driver_requests` (Block List) DriverRequests describes all resources that are needed for the allocated claim. A single claim may use resources coming from different drivers. For each driver, this array has at most one entry which then may have one or more per-driver requests.
 
 May be empty, in which case the claim can always be allocated. (see [below for nested schema](#nestedblock--driver_requests))
-- `generated_from` (Map of String) If this object was created from some other resource, then this links back to that resource. This field is used to find the in-tree representation of the claim parameters when the parameter reference of the claim refers to some unknown type.
-- `metadata` (Map of String) Standard object metadata
+- `generated_from` (List of Object) If this object was created from some other resource, then this links back to that resource. This field is used to find the in-tree representation of the claim parameters when the parameter reference of the claim refers to some unknown type. (see [below for nested schema](#nestedatt--generated_from))
+- `metadata` (List of Object) Standard object metadata (see [below for nested schema](#nestedatt--metadata))
 - `shareable` (Boolean) Shareable indicates whether the allocated claim is meant to be shareable by multiple consumers at the same time.
 
 ### Read-Only
@@ -34,3 +34,84 @@ May be empty, in which case the claim can always be allocated. (see [below for n
 
 <a id="nestedblock--driver_requests"></a>
 ### Nested Schema for `driver_requests`
+
+Optional:
+
+- `driver_name` (String) DriverName is the name used by the DRA driver kubelet plugin.
+- `requests` (Block List) Requests describes all resources that are needed from the driver. (see [below for nested schema](#nestedblock--driver_requests--requests))
+- `vendor_parameters` (Map of String) VendorParameters are arbitrary setup parameters for all requests of the claim. They are ignored while allocating the claim.
+
+<a id="nestedblock--driver_requests--requests"></a>
+### Nested Schema for `driver_requests.requests`
+
+Optional:
+
+- `named_resources` (List of Object) NamedResources describes a request for resources with the named resources model. (see [below for nested schema](#nestedatt--driver_requests--requests--named_resources))
+- `vendor_parameters` (Map of String) VendorParameters are arbitrary setup parameters for the requested resource. They are ignored while allocating a claim.
+
+<a id="nestedatt--driver_requests--requests--named_resources"></a>
+### Nested Schema for `driver_requests.requests.named_resources`
+
+Optional:
+
+- `selector` (String)
+
+
+
+
+<a id="nestedatt--generated_from"></a>
+### Nested Schema for `generated_from`
+
+Optional:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)

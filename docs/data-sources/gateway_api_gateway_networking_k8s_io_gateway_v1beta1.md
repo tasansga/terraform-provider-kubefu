@@ -17,12 +17,12 @@ Gateway represents an instance of a service-traffic handling infrastructure by b
 
 ### Required
 
-- `spec` (Map of String) Spec defines the desired state of Gateway.
+- `spec` (List of Object) Spec defines the desired state of Gateway. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
 - `metadata` (Map of String)
-- `status` (Map of String) Status defines the current state of Gateway.
+- `status` (List of Object) Status defines the current state of Gateway. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -31,3 +31,164 @@ Gateway represents an instance of a service-traffic handling infrastructure by b
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `addresses` (List of Object) (see [below for nested schema](#nestedobjatt--spec--addresses))
+- `gateway_class_name` (String)
+- `listeners` (List of Object) (see [below for nested schema](#nestedobjatt--spec--listeners))
+
+<a id="nestedobjatt--spec--addresses"></a>
+### Nested Schema for `spec.addresses`
+
+Required:
+
+- `type` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--listeners"></a>
+### Nested Schema for `spec.listeners`
+
+Required:
+
+- `allowed_routes` (List of Object) (see [below for nested schema](#nestedobjatt--spec--listeners--allowed_routes))
+- `hostname` (String)
+- `name` (String)
+- `port` (Number)
+- `protocol` (String)
+- `tls` (List of Object) (see [below for nested schema](#nestedobjatt--spec--listeners--tls))
+
+<a id="nestedobjatt--spec--listeners--allowed_routes"></a>
+### Nested Schema for `spec.listeners.allowed_routes`
+
+Required:
+
+- `kinds` (List of Object) (see [below for nested schema](#nestedobjatt--spec--listeners--allowed_routes--kinds))
+- `namespaces` (List of Object) (see [below for nested schema](#nestedobjatt--spec--listeners--allowed_routes--namespaces))
+
+<a id="nestedobjatt--spec--listeners--allowed_routes--kinds"></a>
+### Nested Schema for `spec.listeners.allowed_routes.kinds`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+
+
+<a id="nestedobjatt--spec--listeners--allowed_routes--namespaces"></a>
+### Nested Schema for `spec.listeners.allowed_routes.namespaces`
+
+Required:
+
+- `from` (String)
+- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--listeners--allowed_routes--namespaces--selector))
+
+<a id="nestedobjatt--spec--listeners--allowed_routes--namespaces--selector"></a>
+### Nested Schema for `spec.listeners.allowed_routes.namespaces.selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--listeners--allowed_routes--namespaces--selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--listeners--allowed_routes--namespaces--selector--match_expressions"></a>
+### Nested Schema for `spec.listeners.allowed_routes.namespaces.selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--spec--listeners--tls"></a>
+### Nested Schema for `spec.listeners.tls`
+
+Required:
+
+- `certificate_refs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--listeners--tls--certificate_refs))
+- `mode` (String)
+- `options` (Map of String)
+
+<a id="nestedobjatt--spec--listeners--tls--certificate_refs"></a>
+### Nested Schema for `spec.listeners.tls.certificate_refs`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `addresses` (List of Object) (see [below for nested schema](#nestedobjatt--status--addresses))
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `listeners` (List of Object) (see [below for nested schema](#nestedobjatt--status--listeners))
+
+<a id="nestedobjatt--status--addresses"></a>
+### Nested Schema for `status.addresses`
+
+Optional:
+
+- `type` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--listeners"></a>
+### Nested Schema for `status.listeners`
+
+Optional:
+
+- `attached_routes` (Number)
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--listeners--conditions))
+- `name` (String)
+- `supported_kinds` (List of Object) (see [below for nested schema](#nestedobjatt--status--listeners--supported_kinds))
+
+<a id="nestedobjatt--status--listeners--conditions"></a>
+### Nested Schema for `status.listeners.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--listeners--supported_kinds"></a>
+### Nested Schema for `status.listeners.supported_kinds`
+
+Optional:
+
+- `group` (String)
+- `kind` (String)

@@ -18,11 +18,11 @@ Challenge is a type to represent a Challenge request with an ACME server
 ### Required
 
 - `metadata` (Map of String)
-- `spec` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
-- `status` (Map of String)
+- `status` (List of Object) (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -31,3 +31,595 @@ Challenge is a type to represent a Challenge request with an ACME server
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `authorization_url` (String)
+- `dns_name` (String)
+- `issuer_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--issuer_ref))
+- `key` (String)
+- `solver` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver))
+- `token` (String)
+- `type` (String)
+- `url` (String)
+- `wildcard` (Boolean)
+
+<a id="nestedobjatt--spec--issuer_ref"></a>
+### Nested Schema for `spec.issuer_ref`
+
+Required:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--solver"></a>
+### Nested Schema for `spec.solver`
+
+Required:
+
+- `dns01` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01))
+- `http01` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01))
+- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--selector))
+
+<a id="nestedobjatt--spec--solver--dns01"></a>
+### Nested Schema for `spec.solver.dns01`
+
+Required:
+
+- `acme_dns` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--acme_dns))
+- `akamai` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--akamai))
+- `azure_dns` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--azure_dns))
+- `cloud_dns` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--cloud_dns))
+- `cloudflare` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--cloudflare))
+- `cname_strategy` (String)
+- `digitalocean` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--digitalocean))
+- `rfc2136` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--rfc2136))
+- `route53` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--route53))
+- `webhook` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--webhook))
+
+<a id="nestedobjatt--spec--solver--dns01--acme_dns"></a>
+### Nested Schema for `spec.solver.dns01.acme_dns`
+
+Required:
+
+- `account_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--acme_dns--account_secret_ref))
+- `host` (String)
+
+<a id="nestedobjatt--spec--solver--dns01--acme_dns--account_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.acme_dns.account_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--solver--dns01--akamai"></a>
+### Nested Schema for `spec.solver.dns01.akamai`
+
+Required:
+
+- `access_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--akamai--access_token_secret_ref))
+- `client_secret_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--akamai--client_secret_secret_ref))
+- `client_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--akamai--client_token_secret_ref))
+- `service_consumer_domain` (String)
+
+<a id="nestedobjatt--spec--solver--dns01--akamai--access_token_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.akamai.access_token_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--solver--dns01--akamai--client_secret_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.akamai.client_secret_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--solver--dns01--akamai--client_token_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.akamai.client_token_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--solver--dns01--azure_dns"></a>
+### Nested Schema for `spec.solver.dns01.azure_dns`
+
+Required:
+
+- `client_id` (String)
+- `client_secret_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--azure_dns--client_secret_secret_ref))
+- `environment` (String)
+- `hosted_zone_name` (String)
+- `resource_group_name` (String)
+- `subscription_id` (String)
+- `tenant_id` (String)
+
+<a id="nestedobjatt--spec--solver--dns01--azure_dns--client_secret_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.azure_dns.client_secret_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--solver--dns01--cloud_dns"></a>
+### Nested Schema for `spec.solver.dns01.cloud_dns`
+
+Required:
+
+- `hosted_zone_name` (String)
+- `project` (String)
+- `service_account_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--cloud_dns--service_account_secret_ref))
+
+<a id="nestedobjatt--spec--solver--dns01--cloud_dns--service_account_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.cloud_dns.service_account_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--solver--dns01--cloudflare"></a>
+### Nested Schema for `spec.solver.dns01.cloudflare`
+
+Required:
+
+- `api_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--cloudflare--api_key_secret_ref))
+- `api_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--cloudflare--api_token_secret_ref))
+- `email` (String)
+
+<a id="nestedobjatt--spec--solver--dns01--cloudflare--api_key_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.cloudflare.api_key_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--solver--dns01--cloudflare--api_token_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.cloudflare.api_token_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--solver--dns01--digitalocean"></a>
+### Nested Schema for `spec.solver.dns01.digitalocean`
+
+Required:
+
+- `token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--digitalocean--token_secret_ref))
+
+<a id="nestedobjatt--spec--solver--dns01--digitalocean--token_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.digitalocean.token_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--solver--dns01--rfc2136"></a>
+### Nested Schema for `spec.solver.dns01.rfc2136`
+
+Required:
+
+- `nameserver` (String)
+- `tsig_algorithm` (String)
+- `tsig_key_name` (String)
+- `tsig_secret_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--rfc2136--tsig_secret_secret_ref))
+
+<a id="nestedobjatt--spec--solver--dns01--rfc2136--tsig_secret_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.rfc2136.tsig_secret_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--solver--dns01--route53"></a>
+### Nested Schema for `spec.solver.dns01.route53`
+
+Required:
+
+- `access_key_id` (String)
+- `hosted_zone_id` (String)
+- `region` (String)
+- `role` (String)
+- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--dns01--route53--secret_access_key_secret_ref))
+
+<a id="nestedobjatt--spec--solver--dns01--route53--secret_access_key_secret_ref"></a>
+### Nested Schema for `spec.solver.dns01.route53.secret_access_key_secret_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--solver--dns01--webhook"></a>
+### Nested Schema for `spec.solver.dns01.webhook`
+
+Required:
+
+- `config` (String)
+- `group_name` (String)
+- `solver_name` (String)
+
+
+
+<a id="nestedobjatt--spec--solver--http01"></a>
+### Nested Schema for `spec.solver.http01`
+
+Required:
+
+- `ingress` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress))
+
+<a id="nestedobjatt--spec--solver--http01--ingress"></a>
+### Nested Schema for `spec.solver.http01.ingress`
+
+Required:
+
+- `class` (String)
+- `ingress_template` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--ingress_template))
+- `name` (String)
+- `pod_template` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template))
+- `service_type` (String)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--ingress_template"></a>
+### Nested Schema for `spec.solver.http01.ingress.ingress_template`
+
+Required:
+
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--ingress_template--metadata))
+
+<a id="nestedobjatt--spec--solver--http01--ingress--ingress_template--metadata"></a>
+### Nested Schema for `spec.solver.http01.ingress.ingress_template.metadata`
+
+Required:
+
+- `annotations` (Map of String)
+- `labels` (Map of String)
+
+
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template`
+
+Required:
+
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--metadata))
+- `spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec))
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--metadata"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.metadata`
+
+Required:
+
+- `annotations` (Map of String)
+- `labels` (Map of String)
+
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec`
+
+Required:
+
+- `affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity))
+- `node_selector` (Map of String)
+- `priority_class_name` (String)
+- `service_account_name` (String)
+- `tolerations` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--tolerations))
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity`
+
+Required:
+
+- `node_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity))
+- `pod_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity))
+- `pod_anti_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity))
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity`
+
+Required:
+
+- `preferred_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution))
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `preference` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference))
+- `weight` (Number)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_expressions))
+- `match_fields` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_fields))
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_expressions"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_fields"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_fields`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `node_selector_terms` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms))
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_expressions))
+- `match_fields` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_fields))
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_expressions"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_fields"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_fields`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity`
+
+Required:
+
+- `preferred_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution))
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `pod_affinity_term` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term))
+- `weight` (Number)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term`
+
+Required:
+
+- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `namespaces` (List of String)
+- `topology_key` (String)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `namespaces` (List of String)
+- `topology_key` (String)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity`
+
+Required:
+
+- `preferred_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution))
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `pod_affinity_term` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term))
+- `weight` (Number)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term`
+
+Required:
+
+- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `namespaces` (List of String)
+- `topology_key` (String)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `namespaces` (List of String)
+- `topology_key` (String)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+
+<a id="nestedobjatt--spec--solver--http01--ingress--pod_template--spec--tolerations"></a>
+### Nested Schema for `spec.solver.http01.ingress.pod_template.spec.tolerations`
+
+Required:
+
+- `effect` (String)
+- `key` (String)
+- `operator` (String)
+- `toleration_seconds` (Number)
+- `value` (String)
+
+
+
+
+
+
+<a id="nestedobjatt--spec--solver--selector"></a>
+### Nested Schema for `spec.solver.selector`
+
+Required:
+
+- `dns_names` (List of String)
+- `dns_zones` (List of String)
+- `match_labels` (Map of String)
+
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `presented` (Boolean)
+- `processing` (Boolean)
+- `reason` (String)
+- `state` (String)

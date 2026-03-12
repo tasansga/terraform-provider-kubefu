@@ -24,7 +24,7 @@ See documentation for the full API specification for requests and responses.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) WebhookSpec controls the behavior of the external generator. Any body parameters should be passed to the server through the parameters field.
+- `spec` (List of Object) WebhookSpec controls the behavior of the external generator. Any body parameters should be passed to the server through the parameters field. (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -40,3 +40,53 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `body` (String)
+- `ca_bundle` (String)
+- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ca_provider))
+- `headers` (Map of String)
+- `method` (String)
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--spec--result))
+- `secrets` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secrets))
+- `timeout` (String)
+- `url` (String)
+
+<a id="nestedobjatt--spec--ca_provider"></a>
+### Nested Schema for `spec.ca_provider`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--result"></a>
+### Nested Schema for `spec.result`
+
+Optional:
+
+- `json_path` (String)
+
+
+<a id="nestedobjatt--spec--secrets"></a>
+### Nested Schema for `spec.secrets`
+
+Optional:
+
+- `name` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secrets--secret_ref))
+
+<a id="nestedobjatt--spec--secrets--secret_ref"></a>
+### Nested Schema for `spec.secrets.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)

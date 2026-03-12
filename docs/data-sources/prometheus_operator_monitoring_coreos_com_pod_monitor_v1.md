@@ -17,7 +17,7 @@ PodMonitor defines monitoring for a set of pods.
 
 ### Required
 
-- `spec` (Map of String) Specification of desired Pod selection for target discovery by Prometheus.
+- `spec` (List of Object) Specification of desired Pod selection for target discovery by Prometheus. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
@@ -30,3 +30,286 @@ PodMonitor defines monitoring for a set of pods.
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `job_label` (String)
+- `label_limit` (Number)
+- `label_name_length_limit` (Number)
+- `label_value_length_limit` (Number)
+- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--namespace_selector))
+- `pod_metrics_endpoints` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints))
+- `pod_target_labels` (List of String)
+- `sample_limit` (Number)
+- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--selector))
+- `target_limit` (Number)
+
+<a id="nestedobjatt--spec--namespace_selector"></a>
+### Nested Schema for `spec.namespace_selector`
+
+Required:
+
+- `any` (Boolean)
+- `match_names` (List of String)
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints"></a>
+### Nested Schema for `spec.pod_metrics_endpoints`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--basic_auth))
+- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--bearer_token_secret))
+- `honor_labels` (Boolean)
+- `honor_timestamps` (Boolean)
+- `interval` (String)
+- `metric_relabelings` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--metric_relabelings))
+- `oauth2` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--oauth2))
+- `params` (Map of String)
+- `path` (String)
+- `port` (String)
+- `proxy_url` (String)
+- `relabelings` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--relabelings))
+- `scheme` (String)
+- `scrape_timeout` (String)
+- `target_port` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--tls_config))
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--authorization"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--authorization--credentials))
+- `type` (String)
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--authorization--credentials"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--basic_auth"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--basic_auth--username))
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--basic_auth--password"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--basic_auth--username"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--bearer_token_secret"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.bearer_token_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--metric_relabelings"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.metric_relabelings`
+
+Required:
+
+- `action` (String)
+- `modulus` (Number)
+- `regex` (String)
+- `replacement` (String)
+- `separator` (String)
+- `source_labels` (List of String)
+- `target_label` (String)
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--oauth2"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2`
+
+Required:
+
+- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--oauth2--client_id))
+- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--oauth2--client_secret))
+- `endpoint_params` (Map of String)
+- `scopes` (List of String)
+- `token_url` (String)
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--oauth2--client_id"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.client_id`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--oauth2--client_id--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--oauth2--client_id--secret))
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.client_id.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.client_id.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--oauth2--client_secret"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.client_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--relabelings"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.relabelings`
+
+Required:
+
+- `action` (String)
+- `modulus` (Number)
+- `regex` (String)
+- `replacement` (String)
+- `separator` (String)
+- `source_labels` (List of String)
+- `target_label` (String)
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--tls_config"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--tls_config--ca"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--tls_config--ca--secret"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--tls_config--cert"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metrics_endpoints--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--tls_config--cert--secret"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--pod_metrics_endpoints--tls_config--key_secret"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--selector"></a>
+### Nested Schema for `spec.selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--selector--match_expressions"></a>
+### Nested Schema for `spec.selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)

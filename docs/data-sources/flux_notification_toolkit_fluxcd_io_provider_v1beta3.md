@@ -18,7 +18,7 @@ Provider is the Schema for the providers API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) ProviderSpec defines the desired state of the Provider.
+- `spec` (List of Object) ProviderSpec defines the desired state of the Provider. (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -27,3 +27,33 @@ Provider is the Schema for the providers API
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `address` (String)
+- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cert_secret_ref))
+- `channel` (String)
+- `proxy` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
+- `suspend` (Boolean)
+- `timeout` (String)
+- `type` (String)
+- `username` (String)
+
+<a id="nestedobjatt--spec--cert_secret_ref"></a>
+### Nested Schema for `spec.cert_secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--secret_ref"></a>
+### Nested Schema for `spec.secret_ref`
+
+Optional:
+
+- `name` (String)

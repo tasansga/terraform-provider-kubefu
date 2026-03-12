@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"unicode"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -263,6 +264,7 @@ func containsGroupSegment(name, group string) bool {
 type definition struct {
 	Description       string                `json:"description"`
 	Type              string                `json:"type"`
+	Items             *property             `json:"items"`
 	Properties        map[string]property   `json:"properties"`
 	Required          []string              `json:"required"`
 	XGroupVersionKind []groupVersionKind    `json:"x-kubernetes-group-version-kind"`
@@ -340,13 +342,50 @@ func (b *schemaBuilder) buildSchemaForProperty(name string, prop property, isReq
 		return sch
 	}
 	if prop.Ref != "" {
+		if name, def, ok := b.lookupDefinition(prop.Ref); ok {
+			if def.Type == "object" && len(def.Properties) == 0 {
+				sch.Type = schema.TypeMap
+				return sch
+			}
+			if def.Type == "object" || (def.Type == "" && len(def.Properties) > 0) {
+				return b.buildObjectSchema(&schema.Resource{Schema: b.buildDefinition(name, def)}, isRequired, prop.Description)
+			}
+			if def.Type == "array" {
+				sch.Type = schema.TypeList
+				sch.Elem = b.buildElemFromProperty(def.Items)
+				return sch
+			}
+			if def.Type != "" {
+				sch.Type = mapPropertyToSchemaType(property{Type: def.Type})
+				return sch
+			}
+		}
+		// Unknown ref falls back to free-form map to avoid rejecting user-supplied data.
 		sch.Type = schema.TypeMap
-		// Map of unknown/complex object. Avoid invalid TypeMap Elem *Resource.
 		return sch
 	}
 	sch.Type = mapPropertyToSchemaType(prop)
 	if prop.Type == "object" {
-		// Object properties render as a TypeMap with free-form values.
+		if len(prop.Properties) > 0 {
+			return b.buildObjectSchema(&schema.Resource{Schema: b.buildInlineProperties(prop.Properties)}, isRequired, prop.Description)
+		}
+		// Object without explicit properties stays as a free-form map.
+	}
+	return sch
+}
+
+func (b *schemaBuilder) buildObjectSchema(elem *schema.Resource, isRequired bool, description string) *schema.Schema {
+	sch := &schema.Schema{
+		Type:        schema.TypeList,
+		Description: description,
+		Optional:    !isRequired,
+		Required:    isRequired,
+		Computed:    !isRequired,
+		Elem:        elem,
+		MaxItems:    1,
+	}
+	if isRequired {
+		sch.MinItems = 1
 	}
 	return sch
 }
@@ -363,9 +402,9 @@ func (b *schemaBuilder) buildElemFromProperty(p *property) interface{} {
 		if len(p.Properties) > 0 {
 			return &schema.Resource{Schema: b.buildInlineProperties(p.Properties)}
 		}
-		return &schema.Resource{Schema: map[string]*schema.Schema{}}
+		return &schema.Schema{Type: schema.TypeMap}
 	case "array":
-		return &schema.Resource{Schema: map[string]*schema.Schema{}}
+		return &schema.Schema{Type: schema.TypeList, Elem: b.buildElemFromProperty(p.Items)}
 	default:
 		return &schema.Schema{Type: mapPropertyToSchemaType(*p)}
 	}
@@ -375,6 +414,12 @@ func (b *schemaBuilder) buildElemFromRef(ref string) interface{} {
 	name, def, ok := b.lookupDefinition(ref)
 	if !ok {
 		return &schema.Resource{Schema: map[string]*schema.Schema{}}
+	}
+	if def.Type == "object" && len(def.Properties) == 0 {
+		return &schema.Schema{Type: schema.TypeMap}
+	}
+	if def.Type == "array" {
+		return &schema.Schema{Type: schema.TypeList, Elem: b.buildElemFromProperty(def.Items)}
 	}
 	return &schema.Resource{Schema: b.buildDefinition(name, def)}
 }
@@ -405,14 +450,42 @@ func normalizedPropertyName(name string) string {
 	if name == "" {
 		return ""
 	}
-	normalized := toSnakeCase(name)
+	normalized := sanitizeSchemaName(toSnakeCase(name))
 	if normalized == "" {
-		return name
+		return "field"
 	}
 	if isReservedTerraformName(normalized) {
 		return normalized + "_"
 	}
 	return normalized
+}
+
+func sanitizeSchemaName(name string) string {
+	if name == "" {
+		return ""
+	}
+	var b strings.Builder
+	b.Grow(len(name))
+	prevUnderscore := false
+	for _, r := range name {
+		switch {
+		case r == '_':
+			if !prevUnderscore {
+				b.WriteRune('_')
+				prevUnderscore = true
+			}
+		case unicode.IsLetter(r) || unicode.IsDigit(r):
+			b.WriteRune(unicode.ToLower(r))
+			prevUnderscore = false
+		default:
+			if !prevUnderscore {
+				b.WriteRune('_')
+				prevUnderscore = true
+			}
+		}
+	}
+	out := strings.Trim(b.String(), "_")
+	return out
 }
 
 func isReservedTerraformName(name string) bool {

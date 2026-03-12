@@ -49,11 +49,86 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGithubAccessTokenV1Alph
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"app_id": {
+						Type:        schema.TypeString,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"auth": {
+						Type:        schema.TypeList,
+						Description: "Auth configures how ESO authenticates with a Github instance.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"private_key": {
+								Type:        schema.TypeList,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"secret_ref": {
+										Type:        schema.TypeList,
+										Description: "A reference to a specific 'key' within a Secret resource,\nIn some instances, `key` is a required field.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"key": {
+												Type:        schema.TypeString,
+												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the Secret resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+						}},
+					},
+					"install_id": {
+						Type:        schema.TypeString,
+						Description: "",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"url": {
+						Type:        schema.TypeString,
+						Description: "URL configures the Github instance URL. Defaults to https://github.com/.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +140,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGithubAccessTokenV1Alph
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "GithubAccessToken", "generators.external-secrets.io/v1alpha1/GithubAccessToken"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.private_key", "spec.auth.private_key.secret_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

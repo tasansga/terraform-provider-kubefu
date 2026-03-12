@@ -17,23 +17,23 @@ Event is a report of an event somewhere in the cluster. It generally denotes som
 
 ### Required
 
-- `event_time` (Map of String) Required. Time when this Event was first observed.
+- `event_time` (String) Required. Time when this Event was first observed.
 
 ### Optional
 
 - `action` (String) What action was taken/failed regarding to the regarding object.
 - `deprecated_count` (Number) Deprecated field assuring backward compatibility with core.v1 Event type
-- `deprecated_first_timestamp` (Map of String) Deprecated field assuring backward compatibility with core.v1 Event type
-- `deprecated_last_timestamp` (Map of String) Deprecated field assuring backward compatibility with core.v1 Event type
-- `deprecated_source` (Map of String) Deprecated field assuring backward compatibility with core.v1 Event type
-- `metadata` (Map of String)
+- `deprecated_first_timestamp` (String) Deprecated field assuring backward compatibility with core.v1 Event type
+- `deprecated_last_timestamp` (String) Deprecated field assuring backward compatibility with core.v1 Event type
+- `deprecated_source` (List of Object) Deprecated field assuring backward compatibility with core.v1 Event type (see [below for nested schema](#nestedatt--deprecated_source))
+- `metadata` (List of Object) (see [below for nested schema](#nestedatt--metadata))
 - `note` (String) Optional. A human-readable description of the status of this operation. Maximal length of the note is 1kB, but libraries should be prepared to handle values up to 64kB.
 - `reason` (String) Why the action was taken.
-- `regarding` (Map of String) The object this Event is about. In most cases it's an Object reporting controller implements. E.g. ReplicaSetController implements ReplicaSets and this event is emitted because it acts on some changes in a ReplicaSet object.
-- `related` (Map of String) Optional secondary object for more complex actions. E.g. when regarding object triggers a creation or deletion of related object.
+- `regarding` (List of Object) The object this Event is about. In most cases it's an Object reporting controller implements. E.g. ReplicaSetController implements ReplicaSets and this event is emitted because it acts on some changes in a ReplicaSet object. (see [below for nested schema](#nestedatt--regarding))
+- `related` (List of Object) Optional secondary object for more complex actions. E.g. when regarding object triggers a creation or deletion of related object. (see [below for nested schema](#nestedatt--related))
 - `reporting_controller` (String) Name of the controller that emitted this Event, e.g. `kubernetes.io/kubelet`.
 - `reporting_instance` (String) ID of the controller instance, e.g. `kubelet-xyzf`.
-- `series` (Map of String) Data about the Event series this event represents or nil if it's a singleton Event.
+- `series` (List of Object) Data about the Event series this event represents or nil if it's a singleton Event. (see [below for nested schema](#nestedatt--series))
 - `type` (String) Type of this event (Normal, Warning), new types could be added in the future.
 
 ### Read-Only
@@ -43,3 +43,150 @@ Event is a report of an event somewhere in the cluster. It generally denotes som
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--deprecated_source"></a>
+### Nested Schema for `deprecated_source`
+
+Optional:
+
+- `component` (String)
+- `host` (String)
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Optional:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Optional:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Optional:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Optional:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Optional:
+
+- `continue` (String)
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--regarding"></a>
+### Nested Schema for `regarding`
+
+Optional:
+
+- `api_version` (String)
+- `field_path` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
+
+
+<a id="nestedatt--related"></a>
+### Nested Schema for `related`
+
+Optional:
+
+- `api_version` (String)
+- `field_path` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
+
+
+<a id="nestedatt--series"></a>
+### Nested Schema for `series`
+
+Optional:
+
+- `count_` (Number)
+- `last_observed_time` (String)
+- `state` (String)

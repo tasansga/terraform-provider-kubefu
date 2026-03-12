@@ -17,12 +17,12 @@ CustomResourceDefinition represents a resource that should be exposed on the API
 
 ### Required
 
-- `spec` (Map of String) spec describes how the user wants the resources to appear
+- `spec` (List of Object) spec describes how the user wants the resources to appear (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
-- `metadata` (Map of String)
-- `status` (Map of String) status indicates the actual state of the CustomResourceDefinition
+- `metadata` (List of Object) (see [below for nested schema](#nestedatt--metadata))
+- `status` (List of Object) status indicates the actual state of the CustomResourceDefinition (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -31,3 +31,296 @@ CustomResourceDefinition represents a resource that should be exposed on the API
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `conversion` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conversion))
+- `group` (String)
+- `names` (List of Object) (see [below for nested schema](#nestedobjatt--spec--names))
+- `preserve_unknown_fields` (Boolean)
+- `scope` (String)
+- `versions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions))
+
+<a id="nestedobjatt--spec--conversion"></a>
+### Nested Schema for `spec.conversion`
+
+Required:
+
+- `strategy` (String)
+- `webhook` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conversion--webhook))
+
+<a id="nestedobjatt--spec--conversion--webhook"></a>
+### Nested Schema for `spec.conversion.webhook`
+
+Required:
+
+- `client_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conversion--webhook--client_config))
+- `conversion_review_versions` (List of String)
+
+<a id="nestedobjatt--spec--conversion--webhook--client_config"></a>
+### Nested Schema for `spec.conversion.webhook.client_config`
+
+Required:
+
+- `ca_bundle` (String)
+- `service` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conversion--webhook--client_config--service))
+- `url` (String)
+
+<a id="nestedobjatt--spec--conversion--webhook--client_config--service"></a>
+### Nested Schema for `spec.conversion.webhook.client_config.service`
+
+Required:
+
+- `name` (String)
+- `namespace` (String)
+- `path` (String)
+- `port` (Number)
+
+
+
+
+
+<a id="nestedobjatt--spec--names"></a>
+### Nested Schema for `spec.names`
+
+Required:
+
+- `categories` (List of String)
+- `kind` (String)
+- `list_kind` (String)
+- `plural` (String)
+- `short_names` (List of String)
+- `singular` (String)
+
+
+<a id="nestedobjatt--spec--versions"></a>
+### Nested Schema for `spec.versions`
+
+Required:
+
+- `additional_printer_columns` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--additional_printer_columns))
+- `name` (String)
+- `schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema))
+- `served` (Boolean)
+- `storage` (Boolean)
+- `subresources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--subresources))
+
+<a id="nestedobjatt--spec--versions--additional_printer_columns"></a>
+### Nested Schema for `spec.versions.additional_printer_columns`
+
+Required:
+
+- `description` (String)
+- `format` (String)
+- `json_path` (String)
+- `name` (String)
+- `priority` (Number)
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--versions--schema"></a>
+### Nested Schema for `spec.versions.schema`
+
+Required:
+
+- `open_apiv3_schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema))
+
+<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema"></a>
+### Nested Schema for `spec.versions.schema.open_apiv3_schema`
+
+Required:
+
+- `$ref` (String)
+- `$schema` (String)
+- `additional_items` (Map of String)
+- `additional_properties` (Map of String)
+- `all_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--all_of))
+- `any_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--any_of))
+- `default` (Map of String)
+- `definitions` (Map of String)
+- `dependencies` (Map of String)
+- `description` (String)
+- `enum` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--enum))
+- `example` (Map of String)
+- `exclusive_maximum` (Boolean)
+- `exclusive_minimum` (Boolean)
+- `external_docs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--external_docs))
+- `format` (String)
+- `id` (String)
+- `items` (Map of String)
+- `max_items` (Number)
+- `max_length` (Number)
+- `max_properties` (Number)
+- `maximum` (Number)
+- `min_items` (Number)
+- `min_length` (Number)
+- `min_properties` (Number)
+- `minimum` (Number)
+- `multiple_of` (Number)
+- `not` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--not))
+- `nullable` (Boolean)
+- `one_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--one_of))
+- `pattern` (String)
+- `pattern_properties` (Map of String)
+- `properties` (Map of String)
+- `required` (List of String)
+- `title` (String)
+- `type` (String)
+- `unique_items` (Boolean)
+- `x-kubernetes-embedded-resource` (Boolean)
+- `x-kubernetes-int-or-string` (Boolean)
+- `x-kubernetes-list-map-keys` (List of String)
+- `x-kubernetes-list-type` (String)
+- `x-kubernetes-preserve-unknown-fields` (Boolean)
+
+<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--all_of"></a>
+### Nested Schema for `spec.versions.schema.open_apiv3_schema.all_of`
+
+Required:
+
+
+
+<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--any_of"></a>
+### Nested Schema for `spec.versions.schema.open_apiv3_schema.any_of`
+
+Required:
+
+
+
+<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--enum"></a>
+### Nested Schema for `spec.versions.schema.open_apiv3_schema.enum`
+
+Required:
+
+
+
+<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--external_docs"></a>
+### Nested Schema for `spec.versions.schema.open_apiv3_schema.external_docs`
+
+Required:
+
+- `description` (String)
+- `url` (String)
+
+
+<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--not"></a>
+### Nested Schema for `spec.versions.schema.open_apiv3_schema.not`
+
+Required:
+
+
+
+<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--one_of"></a>
+### Nested Schema for `spec.versions.schema.open_apiv3_schema.one_of`
+
+Required:
+
+
+
+
+
+<a id="nestedobjatt--spec--versions--subresources"></a>
+### Nested Schema for `spec.versions.subresources`
+
+Required:
+
+- `scale` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--subresources--scale))
+- `status` (Map of String)
+
+<a id="nestedobjatt--spec--versions--subresources--scale"></a>
+### Nested Schema for `spec.versions.subresources.scale`
+
+Required:
+
+- `label_selector_path` (String)
+- `spec_replicas_path` (String)
+- `status_replicas_path` (String)
+
+
+
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `accepted_names` (List of Object) (see [below for nested schema](#nestedobjatt--status--accepted_names))
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `stored_versions` (List of String)
+
+<a id="nestedobjatt--status--accepted_names"></a>
+### Nested Schema for `status.accepted_names`
+
+Optional:
+
+- `categories` (List of String)
+- `kind` (String)
+- `list_kind` (String)
+- `plural` (String)
+- `short_names` (List of String)
+- `singular` (String)
+
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

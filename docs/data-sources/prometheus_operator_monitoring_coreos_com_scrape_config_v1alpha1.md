@@ -17,7 +17,7 @@ ScrapeConfig defines a namespaced Prometheus scrape_config to be aggregated acro
 
 ### Required
 
-- `spec` (Map of String) ScrapeConfigSpec is a specification of the desired configuration for a scrape configuration.
+- `spec` (List of Object) ScrapeConfigSpec is a specification of the desired configuration for a scrape configuration. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
@@ -30,3 +30,56 @@ ScrapeConfig defines a namespaced Prometheus scrape_config to be aggregated acro
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `file_sd_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--file_sd_configs))
+- `honor_labels` (Boolean)
+- `honor_timestamps` (Boolean)
+- `http_sd_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--http_sd_configs))
+- `metrics_path` (String)
+- `relabelings` (List of Object) (see [below for nested schema](#nestedobjatt--spec--relabelings))
+- `static_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--static_configs))
+
+<a id="nestedobjatt--spec--file_sd_configs"></a>
+### Nested Schema for `spec.file_sd_configs`
+
+Required:
+
+- `files` (List of String)
+- `refresh_interval` (String)
+
+
+<a id="nestedobjatt--spec--http_sd_configs"></a>
+### Nested Schema for `spec.http_sd_configs`
+
+Required:
+
+- `refresh_interval` (String)
+- `url` (String)
+
+
+<a id="nestedobjatt--spec--relabelings"></a>
+### Nested Schema for `spec.relabelings`
+
+Required:
+
+- `action` (String)
+- `modulus` (Number)
+- `regex` (String)
+- `replacement` (String)
+- `separator` (String)
+- `source_labels` (List of String)
+- `target_label` (String)
+
+
+<a id="nestedobjatt--spec--static_configs"></a>
+### Nested Schema for `spec.static_configs`
+
+Required:
+
+- `labels` (Map of String)
+- `targets` (List of String)

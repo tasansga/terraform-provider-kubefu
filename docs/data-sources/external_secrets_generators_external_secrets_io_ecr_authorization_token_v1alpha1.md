@@ -28,7 +28,7 @@ For more information, see Registry authentication (https://docs.aws.amazon.com/A
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -44,3 +44,76 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth))
+- `region` (String)
+- `role` (String)
+
+<a id="nestedobjatt--spec--auth"></a>
+### Nested Schema for `spec.auth`
+
+Optional:
+
+- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--jwt))
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--secret_ref))
+
+<a id="nestedobjatt--spec--auth--jwt"></a>
+### Nested Schema for `spec.auth.jwt`
+
+Optional:
+
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--jwt--service_account_ref))
+
+<a id="nestedobjatt--spec--auth--jwt--service_account_ref"></a>
+### Nested Schema for `spec.auth.jwt.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedobjatt--spec--auth--secret_ref"></a>
+### Nested Schema for `spec.auth.secret_ref`
+
+Optional:
+
+- `access_key_id_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--secret_ref--access_key_id_secret_ref))
+- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--secret_ref--secret_access_key_secret_ref))
+- `session_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--secret_ref--session_token_secret_ref))
+
+<a id="nestedobjatt--spec--auth--secret_ref--access_key_id_secret_ref"></a>
+### Nested Schema for `spec.auth.secret_ref.access_key_id_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--auth--secret_ref--secret_access_key_secret_ref"></a>
+### Nested Schema for `spec.auth.secret_ref.secret_access_key_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--auth--secret_ref--session_token_secret_ref"></a>
+### Nested Schema for `spec.auth.secret_ref.session_token_secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)

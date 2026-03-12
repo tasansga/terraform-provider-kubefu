@@ -18,9 +18,9 @@ ImageRepository is the Schema for the imagerepositories API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) ImageRepositorySpec defines the parameters for scanning an image
-repository, e.g., `fluxcd/flux`.
-- `status` (Map of String) ImageRepositoryStatus defines the observed state of ImageRepository
+- `spec` (List of Object) ImageRepositorySpec defines the parameters for scanning an image
+repository, e.g., `fluxcd/flux`. (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) ImageRepositoryStatus defines the observed state of ImageRepository (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -36,3 +36,97 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `access_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--access_from))
+- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cert_secret_ref))
+- `exclusion_list` (List of String)
+- `image` (String)
+- `insecure` (Boolean)
+- `interval` (String)
+- `provider_` (String)
+- `proxy_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--proxy_secret_ref))
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
+- `service_account_name` (String)
+- `suspend` (Boolean)
+- `timeout` (String)
+
+<a id="nestedobjatt--spec--access_from"></a>
+### Nested Schema for `spec.access_from`
+
+Optional:
+
+- `namespace_selectors` (List of Object) (see [below for nested schema](#nestedobjatt--spec--access_from--namespace_selectors))
+
+<a id="nestedobjatt--spec--access_from--namespace_selectors"></a>
+### Nested Schema for `spec.access_from.namespace_selectors`
+
+Optional:
+
+- `match_labels` (Map of String)
+
+
+
+<a id="nestedobjatt--spec--cert_secret_ref"></a>
+### Nested Schema for `spec.cert_secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--proxy_secret_ref"></a>
+### Nested Schema for `spec.proxy_secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--secret_ref"></a>
+### Nested Schema for `spec.secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `canonical_image_name` (String)
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `last_handled_reconcile_at` (String)
+- `last_scan_result` (List of Object) (see [below for nested schema](#nestedobjatt--status--last_scan_result))
+- `observed_exclusion_list` (List of String)
+- `observed_generation` (Number)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--last_scan_result"></a>
+### Nested Schema for `status.last_scan_result`
+
+Optional:
+
+- `latest_tags` (List of String)
+- `revision` (String)
+- `scan_time` (String)
+- `tag_count` (Number)

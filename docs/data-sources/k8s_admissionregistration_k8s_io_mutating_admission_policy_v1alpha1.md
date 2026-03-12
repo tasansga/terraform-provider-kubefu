@@ -17,8 +17,8 @@ MutatingAdmissionPolicy describes the definition of an admission mutation policy
 
 ### Optional
 
-- `metadata` (Map of String) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.
-- `spec` (Map of String) Specification of the desired behavior of the MutatingAdmissionPolicy.
+- `metadata` (List of Object) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata. (see [below for nested schema](#nestedatt--metadata))
+- `spec` (List of Object) Specification of the desired behavior of the MutatingAdmissionPolicy. (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -27,3 +27,193 @@ MutatingAdmissionPolicy describes the definition of an admission mutation policy
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `failure_policy` (String)
+- `match_conditions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_conditions))
+- `match_constraints` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints))
+- `mutations` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mutations))
+- `param_kind` (List of Object) (see [below for nested schema](#nestedobjatt--spec--param_kind))
+- `reinvocation_policy` (String)
+- `variables` (List of Object) (see [below for nested schema](#nestedobjatt--spec--variables))
+
+<a id="nestedobjatt--spec--match_conditions"></a>
+### Nested Schema for `spec.match_conditions`
+
+Optional:
+
+- `expression` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--match_constraints"></a>
+### Nested Schema for `spec.match_constraints`
+
+Optional:
+
+- `exclude_resource_rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--exclude_resource_rules))
+- `match_policy` (String)
+- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--namespace_selector))
+- `object_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--object_selector))
+- `resource_rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--resource_rules))
+
+<a id="nestedobjatt--spec--match_constraints--exclude_resource_rules"></a>
+### Nested Schema for `spec.match_constraints.exclude_resource_rules`
+
+Optional:
+
+- `api_groups` (List of String)
+- `api_versions` (List of String)
+- `operations` (List of String)
+- `resource_names` (List of String)
+- `resources` (List of String)
+- `scope` (String)
+
+
+<a id="nestedobjatt--spec--match_constraints--namespace_selector"></a>
+### Nested Schema for `spec.match_constraints.namespace_selector`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--match_constraints--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.match_constraints.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--match_constraints--object_selector"></a>
+### Nested Schema for `spec.match_constraints.object_selector`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--object_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--match_constraints--object_selector--match_expressions"></a>
+### Nested Schema for `spec.match_constraints.object_selector.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--match_constraints--resource_rules"></a>
+### Nested Schema for `spec.match_constraints.resource_rules`
+
+Optional:
+
+- `api_groups` (List of String)
+- `api_versions` (List of String)
+- `operations` (List of String)
+- `resource_names` (List of String)
+- `resources` (List of String)
+- `scope` (String)
+
+
+
+<a id="nestedobjatt--spec--mutations"></a>
+### Nested Schema for `spec.mutations`
+
+Optional:
+
+- `apply_configuration` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mutations--apply_configuration))
+- `json_patch` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mutations--json_patch))
+- `patch_type` (String)
+
+<a id="nestedobjatt--spec--mutations--apply_configuration"></a>
+### Nested Schema for `spec.mutations.apply_configuration`
+
+Optional:
+
+- `expression` (String)
+
+
+<a id="nestedobjatt--spec--mutations--json_patch"></a>
+### Nested Schema for `spec.mutations.json_patch`
+
+Optional:
+
+- `expression` (String)
+
+
+
+<a id="nestedobjatt--spec--param_kind"></a>
+### Nested Schema for `spec.param_kind`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+
+
+<a id="nestedobjatt--spec--variables"></a>
+### Nested Schema for `spec.variables`
+
+Optional:
+
+- `expression` (String)
+- `name` (String)

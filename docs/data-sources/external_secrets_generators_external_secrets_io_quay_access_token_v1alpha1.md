@@ -18,7 +18,7 @@ QuayAccessToken generates Quay oauth token for pulling/pushing images
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -34,3 +34,21 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `robot_account` (String)
+- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--service_account_ref))
+- `url` (String)
+
+<a id="nestedobjatt--spec--service_account_ref"></a>
+### Nested Schema for `spec.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String)
+- `name` (String)
+- `namespace` (String)

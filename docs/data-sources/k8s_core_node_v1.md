@@ -17,9 +17,9 @@ Node is a worker node in Kubernetes. Each node will have a unique identifier in 
 
 ### Optional
 
-- `metadata` (Map of String) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
-- `spec` (Map of String) Spec defines the behavior of a node. https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status
-- `status` (Map of String) Most recently observed status of the node. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status
+- `metadata` (List of Object) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata (see [below for nested schema](#nestedatt--metadata))
+- `spec` (List of Object) Spec defines the behavior of a node. https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) Most recently observed status of the node. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -28,3 +28,240 @@ Node is a worker node in Kubernetes. Each node will have a unique identifier in 
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
+- `labels` (Map of String)
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers"></a>
+### Nested Schema for `metadata.initializers`
+
+Optional:
+
+- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
+- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+
+<a id="nestedobjatt--metadata--initializers--pending"></a>
+### Nested Schema for `metadata.initializers.pending`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--metadata--initializers--result"></a>
+### Nested Schema for `metadata.initializers.result`
+
+Optional:
+
+- `api_version` (String)
+- `code` (Number)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
+- `kind` (String)
+- `message` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
+- `reason` (String)
+- `status` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details"></a>
+### Nested Schema for `metadata.initializers.result.details`
+
+Optional:
+
+- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
+- `group` (String)
+- `kind` (String)
+- `name` (String)
+- `retry_after_seconds` (Number)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+### Nested Schema for `metadata.initializers.result.details.causes`
+
+Optional:
+
+- `field` (String)
+- `message` (String)
+- `reason` (String)
+
+
+
+<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+### Nested Schema for `metadata.initializers.result.metadata`
+
+Optional:
+
+- `continue` (String)
+- `resource_version` (String)
+- `self_link` (String)
+
+
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `config_source` (List of Object) (see [below for nested schema](#nestedobjatt--spec--config_source))
+- `external_id` (String)
+- `pod_cidr` (String)
+- `provider_id` (String)
+- `taints` (List of Object) (see [below for nested schema](#nestedobjatt--spec--taints))
+- `unschedulable` (Boolean)
+
+<a id="nestedobjatt--spec--config_source"></a>
+### Nested Schema for `spec.config_source`
+
+Optional:
+
+- `api_version` (String)
+- `config_map_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--config_source--config_map_ref))
+- `kind` (String)
+
+<a id="nestedobjatt--spec--config_source--config_map_ref"></a>
+### Nested Schema for `spec.config_source.config_map_ref`
+
+Optional:
+
+- `api_version` (String)
+- `field_path` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
+
+
+
+<a id="nestedobjatt--spec--taints"></a>
+### Nested Schema for `spec.taints`
+
+Optional:
+
+- `effect` (String)
+- `key` (String)
+- `time_added` (String)
+- `value` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `addresses` (List of Object) (see [below for nested schema](#nestedobjatt--status--addresses))
+- `allocatable` (Map of String)
+- `capacity` (Map of String)
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `daemon_endpoints` (List of Object) (see [below for nested schema](#nestedobjatt--status--daemon_endpoints))
+- `images` (List of Object) (see [below for nested schema](#nestedobjatt--status--images))
+- `node_info` (List of Object) (see [below for nested schema](#nestedobjatt--status--node_info))
+- `phase` (String)
+- `volumes_attached` (List of Object) (see [below for nested schema](#nestedobjatt--status--volumes_attached))
+- `volumes_in_use` (List of String)
+
+<a id="nestedobjatt--status--addresses"></a>
+### Nested Schema for `status.addresses`
+
+Optional:
+
+- `address` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_heartbeat_time` (String)
+- `last_transition_time` (String)
+- `message` (String)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--daemon_endpoints"></a>
+### Nested Schema for `status.daemon_endpoints`
+
+Optional:
+
+- `kubelet_endpoint` (List of Object) (see [below for nested schema](#nestedobjatt--status--daemon_endpoints--kubelet_endpoint))
+
+<a id="nestedobjatt--status--daemon_endpoints--kubelet_endpoint"></a>
+### Nested Schema for `status.daemon_endpoints.kubelet_endpoint`
+
+Optional:
+
+- `port` (Number)
+
+
+
+<a id="nestedobjatt--status--images"></a>
+### Nested Schema for `status.images`
+
+Optional:
+
+- `names` (List of String)
+- `size_bytes` (Number)
+
+
+<a id="nestedobjatt--status--node_info"></a>
+### Nested Schema for `status.node_info`
+
+Optional:
+
+- `architecture` (String)
+- `boot_id` (String)
+- `container_runtime_version` (String)
+- `kernel_version` (String)
+- `kube_proxy_version` (String)
+- `kubelet_version` (String)
+- `machine_id` (String)
+- `operating_system` (String)
+- `os_image` (String)
+- `system_uuid` (String)
+
+
+<a id="nestedobjatt--status--volumes_attached"></a>
+### Nested Schema for `status.volumes_attached`
+
+Optional:
+
+- `device_path` (String)
+- `name` (String)

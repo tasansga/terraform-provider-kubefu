@@ -17,12 +17,12 @@ PrometheusAgent defines a Prometheus agent deployment.
 
 ### Required
 
-- `spec` (Map of String) Specification of the desired behavior of the Prometheus agent. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+- `spec` (List of Object) Specification of the desired behavior of the Prometheus agent. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
 - `metadata` (Map of String)
-- `status` (Map of String) Most recent observed status of the Prometheus cluster. Read-only. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+- `status` (List of Object) Most recent observed status of the Prometheus cluster. Read-only. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -31,3 +31,3223 @@ PrometheusAgent defines a Prometheus agent deployment.
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `additional_args` (List of Object) (see [below for nested schema](#nestedobjatt--spec--additional_args))
+- `additional_scrape_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--additional_scrape_configs))
+- `affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity))
+- `apiserver_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config))
+- `arbitrary_fs_access_through_s_ms` (List of Object) (see [below for nested schema](#nestedobjatt--spec--arbitrary_fs_access_through_s_ms))
+- `config_maps` (List of String)
+- `containers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers))
+- `enable_features` (List of String)
+- `enable_remote_write_receiver` (Boolean)
+- `enforced_body_size_limit` (String)
+- `enforced_label_limit` (Number)
+- `enforced_label_name_length_limit` (Number)
+- `enforced_label_value_length_limit` (Number)
+- `enforced_namespace_label` (String)
+- `enforced_sample_limit` (Number)
+- `enforced_target_limit` (Number)
+- `excluded_from_enforcement` (List of Object) (see [below for nested schema](#nestedobjatt--spec--excluded_from_enforcement))
+- `external_labels` (Map of String)
+- `external_url` (String)
+- `host_aliases` (List of Object) (see [below for nested schema](#nestedobjatt--spec--host_aliases))
+- `host_network` (Boolean)
+- `ignore_namespace_selectors` (Boolean)
+- `image` (String)
+- `image_pull_policy` (String)
+- `image_pull_secrets` (List of Object) (see [below for nested schema](#nestedobjatt--spec--image_pull_secrets))
+- `init_containers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers))
+- `listen_local` (Boolean)
+- `log_format` (String)
+- `log_level` (String)
+- `min_ready_seconds` (Number)
+- `node_selector` (Map of String)
+- `override_honor_labels` (Boolean)
+- `override_honor_timestamps` (Boolean)
+- `paused` (Boolean)
+- `pod_metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_metadata))
+- `pod_monitor_namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_monitor_namespace_selector))
+- `pod_monitor_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_monitor_selector))
+- `pod_target_labels` (List of String)
+- `port_name` (String)
+- `priority_class_name` (String)
+- `probe_namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--probe_namespace_selector))
+- `probe_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--probe_selector))
+- `prometheus_external_label_name` (String)
+- `remote_write` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write))
+- `replica_external_label_name` (String)
+- `replicas` (Number)
+- `resources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--resources))
+- `route_prefix` (String)
+- `scrape_interval` (String)
+- `scrape_timeout` (String)
+- `secrets` (List of String)
+- `security_context` (List of Object) (see [below for nested schema](#nestedobjatt--spec--security_context))
+- `service_account_name` (String)
+- `service_monitor_namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--service_monitor_namespace_selector))
+- `service_monitor_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--service_monitor_selector))
+- `shards` (Number)
+- `storage` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage))
+- `tolerations` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tolerations))
+- `topology_spread_constraints` (List of Object) (see [below for nested schema](#nestedobjatt--spec--topology_spread_constraints))
+- `version` (String)
+- `volume_mounts` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volume_mounts))
+- `volumes` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes))
+- `wal_compression` (Boolean)
+- `web` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web))
+
+<a id="nestedobjatt--spec--additional_args"></a>
+### Nested Schema for `spec.additional_args`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--additional_scrape_configs"></a>
+### Nested Schema for `spec.additional_scrape_configs`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--affinity"></a>
+### Nested Schema for `spec.affinity`
+
+Required:
+
+- `node_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--node_affinity))
+- `pod_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity))
+- `pod_anti_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity))
+
+<a id="nestedobjatt--spec--affinity--node_affinity"></a>
+### Nested Schema for `spec.affinity.node_affinity`
+
+Required:
+
+- `preferred_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution))
+
+<a id="nestedobjatt--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `preference` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference))
+- `weight` (Number)
+
+<a id="nestedobjatt--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference"></a>
+### Nested Schema for `spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_expressions))
+- `match_fields` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_fields))
+
+<a id="nestedobjatt--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_expressions"></a>
+### Nested Schema for `spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+<a id="nestedobjatt--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_fields"></a>
+### Nested Schema for `spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_fields`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+<a id="nestedobjatt--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `node_selector_terms` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms))
+
+<a id="nestedobjatt--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms"></a>
+### Nested Schema for `spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_expressions))
+- `match_fields` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_fields))
+
+<a id="nestedobjatt--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_expressions"></a>
+### Nested Schema for `spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+<a id="nestedobjatt--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_fields"></a>
+### Nested Schema for `spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_fields`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--spec--affinity--pod_affinity"></a>
+### Nested Schema for `spec.affinity.pod_affinity`
+
+Required:
+
+- `preferred_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution))
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `pod_affinity_term` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term))
+- `weight` (Number)
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term"></a>
+### Nested Schema for `spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term`
+
+Required:
+
+- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
+- `namespaces` (List of String)
+- `topology_key` (String)
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector"></a>
+### Nested Schema for `spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions"></a>
+### Nested Schema for `spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector"></a>
+### Nested Schema for `spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
+- `namespaces` (List of String)
+- `topology_key` (String)
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector"></a>
+### Nested Schema for `spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
+### Nested Schema for `spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector"></a>
+### Nested Schema for `spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity`
+
+Required:
+
+- `preferred_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution))
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `pod_affinity_term` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term))
+- `weight` (Number)
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term`
+
+Required:
+
+- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
+- `namespaces` (List of String)
+- `topology_key` (String)
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution`
+
+Required:
+
+- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
+- `namespaces` (List of String)
+- `topology_key` (String)
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+
+<a id="nestedobjatt--spec--apiserver_config"></a>
+### Nested Schema for `spec.apiserver_config`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--basic_auth))
+- `bearer_token` (String)
+- `bearer_token_file` (String)
+- `host` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--tls_config))
+
+<a id="nestedobjatt--spec--apiserver_config--authorization"></a>
+### Nested Schema for `spec.apiserver_config.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--authorization--credentials))
+- `credentials_file` (String)
+- `type` (String)
+
+<a id="nestedobjatt--spec--apiserver_config--authorization--credentials"></a>
+### Nested Schema for `spec.apiserver_config.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--apiserver_config--basic_auth"></a>
+### Nested Schema for `spec.apiserver_config.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--basic_auth--username))
+
+<a id="nestedobjatt--spec--apiserver_config--basic_auth--password"></a>
+### Nested Schema for `spec.apiserver_config.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--apiserver_config--basic_auth--username"></a>
+### Nested Schema for `spec.apiserver_config.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--apiserver_config--tls_config"></a>
+### Nested Schema for `spec.apiserver_config.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--tls_config--ca))
+- `ca_file` (String)
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--tls_config--cert))
+- `cert_file` (String)
+- `insecure_skip_verify` (Boolean)
+- `key_file` (String)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--apiserver_config--tls_config--ca"></a>
+### Nested Schema for `spec.apiserver_config.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--apiserver_config--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.apiserver_config.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--apiserver_config--tls_config--ca--secret"></a>
+### Nested Schema for `spec.apiserver_config.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--apiserver_config--tls_config--cert"></a>
+### Nested Schema for `spec.apiserver_config.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--apiserver_config--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--apiserver_config--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.apiserver_config.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--apiserver_config--tls_config--cert--secret"></a>
+### Nested Schema for `spec.apiserver_config.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--apiserver_config--tls_config--key_secret"></a>
+### Nested Schema for `spec.apiserver_config.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--arbitrary_fs_access_through_s_ms"></a>
+### Nested Schema for `spec.arbitrary_fs_access_through_s_ms`
+
+Required:
+
+- `deny` (Boolean)
+
+
+<a id="nestedobjatt--spec--containers"></a>
+### Nested Schema for `spec.containers`
+
+Required:
+
+- `args` (List of String)
+- `command` (List of String)
+- `env` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--env))
+- `env_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--env_from))
+- `image` (String)
+- `image_pull_policy` (String)
+- `lifecycle_` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_))
+- `liveness_probe` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--liveness_probe))
+- `name` (String)
+- `ports` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--ports))
+- `readiness_probe` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--readiness_probe))
+- `resources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--resources))
+- `security_context` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--security_context))
+- `startup_probe` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--startup_probe))
+- `stdin` (Boolean)
+- `stdin_once` (Boolean)
+- `termination_message_path` (String)
+- `termination_message_policy` (String)
+- `tty` (Boolean)
+- `volume_devices` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--volume_devices))
+- `volume_mounts` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--volume_mounts))
+- `working_dir` (String)
+
+<a id="nestedobjatt--spec--containers--env"></a>
+### Nested Schema for `spec.containers.env`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+- `value_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--env--value_from))
+
+<a id="nestedobjatt--spec--containers--env--value_from"></a>
+### Nested Schema for `spec.containers.env.value_from`
+
+Required:
+
+- `config_map_key_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--env--value_from--config_map_key_ref))
+- `field_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--env--value_from--field_ref))
+- `resource_field_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--env--value_from--resource_field_ref))
+- `secret_key_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--env--value_from--secret_key_ref))
+
+<a id="nestedobjatt--spec--containers--env--value_from--config_map_key_ref"></a>
+### Nested Schema for `spec.containers.env.value_from.config_map_key_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--containers--env--value_from--field_ref"></a>
+### Nested Schema for `spec.containers.env.value_from.field_ref`
+
+Required:
+
+- `api_version` (String)
+- `field_path` (String)
+
+
+<a id="nestedobjatt--spec--containers--env--value_from--resource_field_ref"></a>
+### Nested Schema for `spec.containers.env.value_from.resource_field_ref`
+
+Required:
+
+- `container_name` (String)
+- `divisor` (String)
+- `resource` (String)
+
+
+<a id="nestedobjatt--spec--containers--env--value_from--secret_key_ref"></a>
+### Nested Schema for `spec.containers.env.value_from.secret_key_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--containers--env_from"></a>
+### Nested Schema for `spec.containers.env_from`
+
+Required:
+
+- `config_map_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--env_from--config_map_ref))
+- `prefix` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--env_from--secret_ref))
+
+<a id="nestedobjatt--spec--containers--env_from--config_map_ref"></a>
+### Nested Schema for `spec.containers.env_from.config_map_ref`
+
+Required:
+
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--containers--env_from--secret_ref"></a>
+### Nested Schema for `spec.containers.env_from.secret_ref`
+
+Required:
+
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--containers--lifecycle_"></a>
+### Nested Schema for `spec.containers.lifecycle_`
+
+Required:
+
+- `post_start` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_--post_start))
+- `pre_stop` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_--pre_stop))
+
+<a id="nestedobjatt--spec--containers--lifecycle_--post_start"></a>
+### Nested Schema for `spec.containers.lifecycle_.post_start`
+
+Required:
+
+- `exec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_--post_start--exec))
+- `http_get` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_--post_start--http_get))
+- `tcp_socket` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_--post_start--tcp_socket))
+
+<a id="nestedobjatt--spec--containers--lifecycle_--post_start--exec"></a>
+### Nested Schema for `spec.containers.lifecycle_.post_start.exec`
+
+Required:
+
+- `command` (List of String)
+
+
+<a id="nestedobjatt--spec--containers--lifecycle_--post_start--http_get"></a>
+### Nested Schema for `spec.containers.lifecycle_.post_start.http_get`
+
+Required:
+
+- `host` (String)
+- `http_headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_--post_start--http_get--http_headers))
+- `path` (String)
+- `port` (String)
+- `scheme` (String)
+
+<a id="nestedobjatt--spec--containers--lifecycle_--post_start--http_get--http_headers"></a>
+### Nested Schema for `spec.containers.lifecycle_.post_start.http_get.http_headers`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--lifecycle_--post_start--tcp_socket"></a>
+### Nested Schema for `spec.containers.lifecycle_.post_start.tcp_socket`
+
+Required:
+
+- `host` (String)
+- `port` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--lifecycle_--pre_stop"></a>
+### Nested Schema for `spec.containers.lifecycle_.pre_stop`
+
+Required:
+
+- `exec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_--pre_stop--exec))
+- `http_get` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_--pre_stop--http_get))
+- `tcp_socket` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_--pre_stop--tcp_socket))
+
+<a id="nestedobjatt--spec--containers--lifecycle_--pre_stop--exec"></a>
+### Nested Schema for `spec.containers.lifecycle_.pre_stop.exec`
+
+Required:
+
+- `command` (List of String)
+
+
+<a id="nestedobjatt--spec--containers--lifecycle_--pre_stop--http_get"></a>
+### Nested Schema for `spec.containers.lifecycle_.pre_stop.http_get`
+
+Required:
+
+- `host` (String)
+- `http_headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--lifecycle_--pre_stop--http_get--http_headers))
+- `path` (String)
+- `port` (String)
+- `scheme` (String)
+
+<a id="nestedobjatt--spec--containers--lifecycle_--pre_stop--http_get--http_headers"></a>
+### Nested Schema for `spec.containers.lifecycle_.pre_stop.http_get.http_headers`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--lifecycle_--pre_stop--tcp_socket"></a>
+### Nested Schema for `spec.containers.lifecycle_.pre_stop.tcp_socket`
+
+Required:
+
+- `host` (String)
+- `port` (String)
+
+
+
+
+<a id="nestedobjatt--spec--containers--liveness_probe"></a>
+### Nested Schema for `spec.containers.liveness_probe`
+
+Required:
+
+- `exec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--liveness_probe--exec))
+- `failure_threshold` (Number)
+- `grpc` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--liveness_probe--grpc))
+- `http_get` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--liveness_probe--http_get))
+- `initial_delay_seconds` (Number)
+- `period_seconds` (Number)
+- `success_threshold` (Number)
+- `tcp_socket` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--liveness_probe--tcp_socket))
+- `termination_grace_period_seconds` (Number)
+- `timeout_seconds` (Number)
+
+<a id="nestedobjatt--spec--containers--liveness_probe--exec"></a>
+### Nested Schema for `spec.containers.liveness_probe.exec`
+
+Required:
+
+- `command` (List of String)
+
+
+<a id="nestedobjatt--spec--containers--liveness_probe--grpc"></a>
+### Nested Schema for `spec.containers.liveness_probe.grpc`
+
+Required:
+
+- `port` (Number)
+- `service` (String)
+
+
+<a id="nestedobjatt--spec--containers--liveness_probe--http_get"></a>
+### Nested Schema for `spec.containers.liveness_probe.http_get`
+
+Required:
+
+- `host` (String)
+- `http_headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--liveness_probe--http_get--http_headers))
+- `path` (String)
+- `port` (String)
+- `scheme` (String)
+
+<a id="nestedobjatt--spec--containers--liveness_probe--http_get--http_headers"></a>
+### Nested Schema for `spec.containers.liveness_probe.http_get.http_headers`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--liveness_probe--tcp_socket"></a>
+### Nested Schema for `spec.containers.liveness_probe.tcp_socket`
+
+Required:
+
+- `host` (String)
+- `port` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--ports"></a>
+### Nested Schema for `spec.containers.ports`
+
+Required:
+
+- `container_port` (Number)
+- `host_ip` (String)
+- `host_port` (Number)
+- `name` (String)
+- `protocol` (String)
+
+
+<a id="nestedobjatt--spec--containers--readiness_probe"></a>
+### Nested Schema for `spec.containers.readiness_probe`
+
+Required:
+
+- `exec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--readiness_probe--exec))
+- `failure_threshold` (Number)
+- `grpc` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--readiness_probe--grpc))
+- `http_get` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--readiness_probe--http_get))
+- `initial_delay_seconds` (Number)
+- `period_seconds` (Number)
+- `success_threshold` (Number)
+- `tcp_socket` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--readiness_probe--tcp_socket))
+- `termination_grace_period_seconds` (Number)
+- `timeout_seconds` (Number)
+
+<a id="nestedobjatt--spec--containers--readiness_probe--exec"></a>
+### Nested Schema for `spec.containers.readiness_probe.exec`
+
+Required:
+
+- `command` (List of String)
+
+
+<a id="nestedobjatt--spec--containers--readiness_probe--grpc"></a>
+### Nested Schema for `spec.containers.readiness_probe.grpc`
+
+Required:
+
+- `port` (Number)
+- `service` (String)
+
+
+<a id="nestedobjatt--spec--containers--readiness_probe--http_get"></a>
+### Nested Schema for `spec.containers.readiness_probe.http_get`
+
+Required:
+
+- `host` (String)
+- `http_headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--readiness_probe--http_get--http_headers))
+- `path` (String)
+- `port` (String)
+- `scheme` (String)
+
+<a id="nestedobjatt--spec--containers--readiness_probe--http_get--http_headers"></a>
+### Nested Schema for `spec.containers.readiness_probe.http_get.http_headers`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--readiness_probe--tcp_socket"></a>
+### Nested Schema for `spec.containers.readiness_probe.tcp_socket`
+
+Required:
+
+- `host` (String)
+- `port` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--resources"></a>
+### Nested Schema for `spec.containers.resources`
+
+Required:
+
+- `claims` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--resources--claims))
+- `limits` (Map of String)
+- `requests` (Map of String)
+
+<a id="nestedobjatt--spec--containers--resources--claims"></a>
+### Nested Schema for `spec.containers.resources.claims`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--security_context"></a>
+### Nested Schema for `spec.containers.security_context`
+
+Required:
+
+- `allow_privilege_escalation` (Boolean)
+- `capabilities` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--security_context--capabilities))
+- `privileged` (Boolean)
+- `proc_mount` (String)
+- `read_only_root_filesystem` (Boolean)
+- `run_as_group` (Number)
+- `run_as_non_root` (Boolean)
+- `run_as_user` (Number)
+- `se_linux_options` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--security_context--se_linux_options))
+- `seccomp_profile` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--security_context--seccomp_profile))
+- `windows_options` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--security_context--windows_options))
+
+<a id="nestedobjatt--spec--containers--security_context--capabilities"></a>
+### Nested Schema for `spec.containers.security_context.capabilities`
+
+Required:
+
+- `add` (List of String)
+- `drop` (List of String)
+
+
+<a id="nestedobjatt--spec--containers--security_context--se_linux_options"></a>
+### Nested Schema for `spec.containers.security_context.se_linux_options`
+
+Required:
+
+- `level` (String)
+- `role` (String)
+- `type` (String)
+- `user` (String)
+
+
+<a id="nestedobjatt--spec--containers--security_context--seccomp_profile"></a>
+### Nested Schema for `spec.containers.security_context.seccomp_profile`
+
+Required:
+
+- `localhost_profile` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--containers--security_context--windows_options"></a>
+### Nested Schema for `spec.containers.security_context.windows_options`
+
+Required:
+
+- `gmsa_credential_spec` (String)
+- `gmsa_credential_spec_name` (String)
+- `host_process` (Boolean)
+- `run_as_user_name` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--startup_probe"></a>
+### Nested Schema for `spec.containers.startup_probe`
+
+Required:
+
+- `exec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--startup_probe--exec))
+- `failure_threshold` (Number)
+- `grpc` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--startup_probe--grpc))
+- `http_get` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--startup_probe--http_get))
+- `initial_delay_seconds` (Number)
+- `period_seconds` (Number)
+- `success_threshold` (Number)
+- `tcp_socket` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--startup_probe--tcp_socket))
+- `termination_grace_period_seconds` (Number)
+- `timeout_seconds` (Number)
+
+<a id="nestedobjatt--spec--containers--startup_probe--exec"></a>
+### Nested Schema for `spec.containers.startup_probe.exec`
+
+Required:
+
+- `command` (List of String)
+
+
+<a id="nestedobjatt--spec--containers--startup_probe--grpc"></a>
+### Nested Schema for `spec.containers.startup_probe.grpc`
+
+Required:
+
+- `port` (Number)
+- `service` (String)
+
+
+<a id="nestedobjatt--spec--containers--startup_probe--http_get"></a>
+### Nested Schema for `spec.containers.startup_probe.http_get`
+
+Required:
+
+- `host` (String)
+- `http_headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--containers--startup_probe--http_get--http_headers))
+- `path` (String)
+- `port` (String)
+- `scheme` (String)
+
+<a id="nestedobjatt--spec--containers--startup_probe--http_get--http_headers"></a>
+### Nested Schema for `spec.containers.startup_probe.http_get.http_headers`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--startup_probe--tcp_socket"></a>
+### Nested Schema for `spec.containers.startup_probe.tcp_socket`
+
+Required:
+
+- `host` (String)
+- `port` (String)
+
+
+
+<a id="nestedobjatt--spec--containers--volume_devices"></a>
+### Nested Schema for `spec.containers.volume_devices`
+
+Required:
+
+- `device_path` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--containers--volume_mounts"></a>
+### Nested Schema for `spec.containers.volume_mounts`
+
+Required:
+
+- `mount_path` (String)
+- `mount_propagation` (String)
+- `name` (String)
+- `read_only` (Boolean)
+- `sub_path` (String)
+- `sub_path_expr` (String)
+
+
+
+<a id="nestedobjatt--spec--excluded_from_enforcement"></a>
+### Nested Schema for `spec.excluded_from_enforcement`
+
+Required:
+
+- `group` (String)
+- `name` (String)
+- `namespace` (String)
+- `resource` (String)
+
+
+<a id="nestedobjatt--spec--host_aliases"></a>
+### Nested Schema for `spec.host_aliases`
+
+Required:
+
+- `hostnames` (List of String)
+- `ip` (String)
+
+
+<a id="nestedobjatt--spec--image_pull_secrets"></a>
+### Nested Schema for `spec.image_pull_secrets`
+
+Required:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--init_containers"></a>
+### Nested Schema for `spec.init_containers`
+
+Required:
+
+- `args` (List of String)
+- `command` (List of String)
+- `env` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--env))
+- `env_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--env_from))
+- `image` (String)
+- `image_pull_policy` (String)
+- `lifecycle_` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_))
+- `liveness_probe` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--liveness_probe))
+- `name` (String)
+- `ports` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--ports))
+- `readiness_probe` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--readiness_probe))
+- `resources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--resources))
+- `security_context` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--security_context))
+- `startup_probe` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--startup_probe))
+- `stdin` (Boolean)
+- `stdin_once` (Boolean)
+- `termination_message_path` (String)
+- `termination_message_policy` (String)
+- `tty` (Boolean)
+- `volume_devices` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--volume_devices))
+- `volume_mounts` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--volume_mounts))
+- `working_dir` (String)
+
+<a id="nestedobjatt--spec--init_containers--env"></a>
+### Nested Schema for `spec.init_containers.env`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+- `value_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--env--value_from))
+
+<a id="nestedobjatt--spec--init_containers--env--value_from"></a>
+### Nested Schema for `spec.init_containers.env.value_from`
+
+Required:
+
+- `config_map_key_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--env--value_from--config_map_key_ref))
+- `field_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--env--value_from--field_ref))
+- `resource_field_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--env--value_from--resource_field_ref))
+- `secret_key_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--env--value_from--secret_key_ref))
+
+<a id="nestedobjatt--spec--init_containers--env--value_from--config_map_key_ref"></a>
+### Nested Schema for `spec.init_containers.env.value_from.config_map_key_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--init_containers--env--value_from--field_ref"></a>
+### Nested Schema for `spec.init_containers.env.value_from.field_ref`
+
+Required:
+
+- `api_version` (String)
+- `field_path` (String)
+
+
+<a id="nestedobjatt--spec--init_containers--env--value_from--resource_field_ref"></a>
+### Nested Schema for `spec.init_containers.env.value_from.resource_field_ref`
+
+Required:
+
+- `container_name` (String)
+- `divisor` (String)
+- `resource` (String)
+
+
+<a id="nestedobjatt--spec--init_containers--env--value_from--secret_key_ref"></a>
+### Nested Schema for `spec.init_containers.env.value_from.secret_key_ref`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--init_containers--env_from"></a>
+### Nested Schema for `spec.init_containers.env_from`
+
+Required:
+
+- `config_map_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--env_from--config_map_ref))
+- `prefix` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--env_from--secret_ref))
+
+<a id="nestedobjatt--spec--init_containers--env_from--config_map_ref"></a>
+### Nested Schema for `spec.init_containers.env_from.config_map_ref`
+
+Required:
+
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--init_containers--env_from--secret_ref"></a>
+### Nested Schema for `spec.init_containers.env_from.secret_ref`
+
+Required:
+
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_"></a>
+### Nested Schema for `spec.init_containers.lifecycle_`
+
+Required:
+
+- `post_start` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_--post_start))
+- `pre_stop` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_--pre_stop))
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_--post_start"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.post_start`
+
+Required:
+
+- `exec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_--post_start--exec))
+- `http_get` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_--post_start--http_get))
+- `tcp_socket` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_--post_start--tcp_socket))
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_--post_start--exec"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.post_start.exec`
+
+Required:
+
+- `command` (List of String)
+
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_--post_start--http_get"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.post_start.http_get`
+
+Required:
+
+- `host` (String)
+- `http_headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_--post_start--http_get--http_headers))
+- `path` (String)
+- `port` (String)
+- `scheme` (String)
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_--post_start--http_get--http_headers"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.post_start.http_get.http_headers`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_--post_start--tcp_socket"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.post_start.tcp_socket`
+
+Required:
+
+- `host` (String)
+- `port` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_--pre_stop"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.pre_stop`
+
+Required:
+
+- `exec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_--pre_stop--exec))
+- `http_get` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_--pre_stop--http_get))
+- `tcp_socket` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_--pre_stop--tcp_socket))
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_--pre_stop--exec"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.pre_stop.exec`
+
+Required:
+
+- `command` (List of String)
+
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_--pre_stop--http_get"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.pre_stop.http_get`
+
+Required:
+
+- `host` (String)
+- `http_headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--lifecycle_--pre_stop--http_get--http_headers))
+- `path` (String)
+- `port` (String)
+- `scheme` (String)
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_--pre_stop--http_get--http_headers"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.pre_stop.http_get.http_headers`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--lifecycle_--pre_stop--tcp_socket"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.pre_stop.tcp_socket`
+
+Required:
+
+- `host` (String)
+- `port` (String)
+
+
+
+
+<a id="nestedobjatt--spec--init_containers--liveness_probe"></a>
+### Nested Schema for `spec.init_containers.liveness_probe`
+
+Required:
+
+- `exec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--liveness_probe--exec))
+- `failure_threshold` (Number)
+- `grpc` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--liveness_probe--grpc))
+- `http_get` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--liveness_probe--http_get))
+- `initial_delay_seconds` (Number)
+- `period_seconds` (Number)
+- `success_threshold` (Number)
+- `tcp_socket` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--liveness_probe--tcp_socket))
+- `termination_grace_period_seconds` (Number)
+- `timeout_seconds` (Number)
+
+<a id="nestedobjatt--spec--init_containers--liveness_probe--exec"></a>
+### Nested Schema for `spec.init_containers.liveness_probe.exec`
+
+Required:
+
+- `command` (List of String)
+
+
+<a id="nestedobjatt--spec--init_containers--liveness_probe--grpc"></a>
+### Nested Schema for `spec.init_containers.liveness_probe.grpc`
+
+Required:
+
+- `port` (Number)
+- `service` (String)
+
+
+<a id="nestedobjatt--spec--init_containers--liveness_probe--http_get"></a>
+### Nested Schema for `spec.init_containers.liveness_probe.http_get`
+
+Required:
+
+- `host` (String)
+- `http_headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--liveness_probe--http_get--http_headers))
+- `path` (String)
+- `port` (String)
+- `scheme` (String)
+
+<a id="nestedobjatt--spec--init_containers--liveness_probe--http_get--http_headers"></a>
+### Nested Schema for `spec.init_containers.liveness_probe.http_get.http_headers`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--liveness_probe--tcp_socket"></a>
+### Nested Schema for `spec.init_containers.liveness_probe.tcp_socket`
+
+Required:
+
+- `host` (String)
+- `port` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--ports"></a>
+### Nested Schema for `spec.init_containers.ports`
+
+Required:
+
+- `container_port` (Number)
+- `host_ip` (String)
+- `host_port` (Number)
+- `name` (String)
+- `protocol` (String)
+
+
+<a id="nestedobjatt--spec--init_containers--readiness_probe"></a>
+### Nested Schema for `spec.init_containers.readiness_probe`
+
+Required:
+
+- `exec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--readiness_probe--exec))
+- `failure_threshold` (Number)
+- `grpc` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--readiness_probe--grpc))
+- `http_get` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--readiness_probe--http_get))
+- `initial_delay_seconds` (Number)
+- `period_seconds` (Number)
+- `success_threshold` (Number)
+- `tcp_socket` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--readiness_probe--tcp_socket))
+- `termination_grace_period_seconds` (Number)
+- `timeout_seconds` (Number)
+
+<a id="nestedobjatt--spec--init_containers--readiness_probe--exec"></a>
+### Nested Schema for `spec.init_containers.readiness_probe.exec`
+
+Required:
+
+- `command` (List of String)
+
+
+<a id="nestedobjatt--spec--init_containers--readiness_probe--grpc"></a>
+### Nested Schema for `spec.init_containers.readiness_probe.grpc`
+
+Required:
+
+- `port` (Number)
+- `service` (String)
+
+
+<a id="nestedobjatt--spec--init_containers--readiness_probe--http_get"></a>
+### Nested Schema for `spec.init_containers.readiness_probe.http_get`
+
+Required:
+
+- `host` (String)
+- `http_headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--readiness_probe--http_get--http_headers))
+- `path` (String)
+- `port` (String)
+- `scheme` (String)
+
+<a id="nestedobjatt--spec--init_containers--readiness_probe--http_get--http_headers"></a>
+### Nested Schema for `spec.init_containers.readiness_probe.http_get.http_headers`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--readiness_probe--tcp_socket"></a>
+### Nested Schema for `spec.init_containers.readiness_probe.tcp_socket`
+
+Required:
+
+- `host` (String)
+- `port` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--resources"></a>
+### Nested Schema for `spec.init_containers.resources`
+
+Required:
+
+- `claims` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--resources--claims))
+- `limits` (Map of String)
+- `requests` (Map of String)
+
+<a id="nestedobjatt--spec--init_containers--resources--claims"></a>
+### Nested Schema for `spec.init_containers.resources.claims`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--security_context"></a>
+### Nested Schema for `spec.init_containers.security_context`
+
+Required:
+
+- `allow_privilege_escalation` (Boolean)
+- `capabilities` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--security_context--capabilities))
+- `privileged` (Boolean)
+- `proc_mount` (String)
+- `read_only_root_filesystem` (Boolean)
+- `run_as_group` (Number)
+- `run_as_non_root` (Boolean)
+- `run_as_user` (Number)
+- `se_linux_options` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--security_context--se_linux_options))
+- `seccomp_profile` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--security_context--seccomp_profile))
+- `windows_options` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--security_context--windows_options))
+
+<a id="nestedobjatt--spec--init_containers--security_context--capabilities"></a>
+### Nested Schema for `spec.init_containers.security_context.capabilities`
+
+Required:
+
+- `add` (List of String)
+- `drop` (List of String)
+
+
+<a id="nestedobjatt--spec--init_containers--security_context--se_linux_options"></a>
+### Nested Schema for `spec.init_containers.security_context.se_linux_options`
+
+Required:
+
+- `level` (String)
+- `role` (String)
+- `type` (String)
+- `user` (String)
+
+
+<a id="nestedobjatt--spec--init_containers--security_context--seccomp_profile"></a>
+### Nested Schema for `spec.init_containers.security_context.seccomp_profile`
+
+Required:
+
+- `localhost_profile` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--init_containers--security_context--windows_options"></a>
+### Nested Schema for `spec.init_containers.security_context.windows_options`
+
+Required:
+
+- `gmsa_credential_spec` (String)
+- `gmsa_credential_spec_name` (String)
+- `host_process` (Boolean)
+- `run_as_user_name` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--startup_probe"></a>
+### Nested Schema for `spec.init_containers.startup_probe`
+
+Required:
+
+- `exec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--startup_probe--exec))
+- `failure_threshold` (Number)
+- `grpc` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--startup_probe--grpc))
+- `http_get` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--startup_probe--http_get))
+- `initial_delay_seconds` (Number)
+- `period_seconds` (Number)
+- `success_threshold` (Number)
+- `tcp_socket` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--startup_probe--tcp_socket))
+- `termination_grace_period_seconds` (Number)
+- `timeout_seconds` (Number)
+
+<a id="nestedobjatt--spec--init_containers--startup_probe--exec"></a>
+### Nested Schema for `spec.init_containers.startup_probe.exec`
+
+Required:
+
+- `command` (List of String)
+
+
+<a id="nestedobjatt--spec--init_containers--startup_probe--grpc"></a>
+### Nested Schema for `spec.init_containers.startup_probe.grpc`
+
+Required:
+
+- `port` (Number)
+- `service` (String)
+
+
+<a id="nestedobjatt--spec--init_containers--startup_probe--http_get"></a>
+### Nested Schema for `spec.init_containers.startup_probe.http_get`
+
+Required:
+
+- `host` (String)
+- `http_headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--init_containers--startup_probe--http_get--http_headers))
+- `path` (String)
+- `port` (String)
+- `scheme` (String)
+
+<a id="nestedobjatt--spec--init_containers--startup_probe--http_get--http_headers"></a>
+### Nested Schema for `spec.init_containers.startup_probe.http_get.http_headers`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--startup_probe--tcp_socket"></a>
+### Nested Schema for `spec.init_containers.startup_probe.tcp_socket`
+
+Required:
+
+- `host` (String)
+- `port` (String)
+
+
+
+<a id="nestedobjatt--spec--init_containers--volume_devices"></a>
+### Nested Schema for `spec.init_containers.volume_devices`
+
+Required:
+
+- `device_path` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--init_containers--volume_mounts"></a>
+### Nested Schema for `spec.init_containers.volume_mounts`
+
+Required:
+
+- `mount_path` (String)
+- `mount_propagation` (String)
+- `name` (String)
+- `read_only` (Boolean)
+- `sub_path` (String)
+- `sub_path_expr` (String)
+
+
+
+<a id="nestedobjatt--spec--pod_metadata"></a>
+### Nested Schema for `spec.pod_metadata`
+
+Required:
+
+- `annotations` (Map of String)
+- `labels` (Map of String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--pod_monitor_namespace_selector"></a>
+### Nested Schema for `spec.pod_monitor_namespace_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_monitor_namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--pod_monitor_namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.pod_monitor_namespace_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--pod_monitor_selector"></a>
+### Nested Schema for `spec.pod_monitor_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_monitor_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--pod_monitor_selector--match_expressions"></a>
+### Nested Schema for `spec.pod_monitor_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--probe_namespace_selector"></a>
+### Nested Schema for `spec.probe_namespace_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--probe_namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--probe_namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.probe_namespace_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--probe_selector"></a>
+### Nested Schema for `spec.probe_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--probe_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--probe_selector--match_expressions"></a>
+### Nested Schema for `spec.probe_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--remote_write"></a>
+### Nested Schema for `spec.remote_write`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--basic_auth))
+- `bearer_token` (String)
+- `bearer_token_file` (String)
+- `headers` (Map of String)
+- `metadata_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--metadata_config))
+- `name` (String)
+- `oauth2` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--oauth2))
+- `proxy_url` (String)
+- `queue_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--queue_config))
+- `remote_timeout` (String)
+- `send_exemplars` (Boolean)
+- `sigv4` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--sigv4))
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--tls_config))
+- `url` (String)
+- `write_relabel_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--write_relabel_configs))
+
+<a id="nestedobjatt--spec--remote_write--authorization"></a>
+### Nested Schema for `spec.remote_write.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--authorization--credentials))
+- `credentials_file` (String)
+- `type` (String)
+
+<a id="nestedobjatt--spec--remote_write--authorization--credentials"></a>
+### Nested Schema for `spec.remote_write.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--remote_write--basic_auth"></a>
+### Nested Schema for `spec.remote_write.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--basic_auth--username))
+
+<a id="nestedobjatt--spec--remote_write--basic_auth--password"></a>
+### Nested Schema for `spec.remote_write.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--remote_write--basic_auth--username"></a>
+### Nested Schema for `spec.remote_write.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--remote_write--metadata_config"></a>
+### Nested Schema for `spec.remote_write.metadata_config`
+
+Required:
+
+- `send` (Boolean)
+- `send_interval` (String)
+
+
+<a id="nestedobjatt--spec--remote_write--oauth2"></a>
+### Nested Schema for `spec.remote_write.oauth2`
+
+Required:
+
+- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--oauth2--client_id))
+- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--oauth2--client_secret))
+- `endpoint_params` (Map of String)
+- `scopes` (List of String)
+- `token_url` (String)
+
+<a id="nestedobjatt--spec--remote_write--oauth2--client_id"></a>
+### Nested Schema for `spec.remote_write.oauth2.client_id`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--oauth2--client_id--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--oauth2--client_id--secret))
+
+<a id="nestedobjatt--spec--remote_write--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.remote_write.oauth2.client_id.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--remote_write--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.remote_write.oauth2.client_id.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--remote_write--oauth2--client_secret"></a>
+### Nested Schema for `spec.remote_write.oauth2.client_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--remote_write--queue_config"></a>
+### Nested Schema for `spec.remote_write.queue_config`
+
+Required:
+
+- `batch_send_deadline` (String)
+- `capacity` (Number)
+- `max_backoff` (String)
+- `max_retries` (Number)
+- `max_samples_per_send` (Number)
+- `max_shards` (Number)
+- `min_backoff` (String)
+- `min_shards` (Number)
+- `retry_on_rate_limit` (Boolean)
+
+
+<a id="nestedobjatt--spec--remote_write--sigv4"></a>
+### Nested Schema for `spec.remote_write.sigv4`
+
+Required:
+
+- `access_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--sigv4--access_key))
+- `profile` (String)
+- `region` (String)
+- `role_arn` (String)
+- `secret_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--sigv4--secret_key))
+
+<a id="nestedobjatt--spec--remote_write--sigv4--access_key"></a>
+### Nested Schema for `spec.remote_write.sigv4.access_key`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--remote_write--sigv4--secret_key"></a>
+### Nested Schema for `spec.remote_write.sigv4.secret_key`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--remote_write--tls_config"></a>
+### Nested Schema for `spec.remote_write.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--tls_config--ca))
+- `ca_file` (String)
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--tls_config--cert))
+- `cert_file` (String)
+- `insecure_skip_verify` (Boolean)
+- `key_file` (String)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--remote_write--tls_config--ca"></a>
+### Nested Schema for `spec.remote_write.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--remote_write--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.remote_write.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--remote_write--tls_config--ca--secret"></a>
+### Nested Schema for `spec.remote_write.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--remote_write--tls_config--cert"></a>
+### Nested Schema for `spec.remote_write.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--remote_write--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--remote_write--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.remote_write.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--remote_write--tls_config--cert--secret"></a>
+### Nested Schema for `spec.remote_write.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--remote_write--tls_config--key_secret"></a>
+### Nested Schema for `spec.remote_write.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--remote_write--write_relabel_configs"></a>
+### Nested Schema for `spec.remote_write.write_relabel_configs`
+
+Required:
+
+- `action` (String)
+- `modulus` (Number)
+- `regex` (String)
+- `replacement` (String)
+- `separator` (String)
+- `source_labels` (List of String)
+- `target_label` (String)
+
+
+
+<a id="nestedobjatt--spec--resources"></a>
+### Nested Schema for `spec.resources`
+
+Required:
+
+- `claims` (List of Object) (see [below for nested schema](#nestedobjatt--spec--resources--claims))
+- `limits` (Map of String)
+- `requests` (Map of String)
+
+<a id="nestedobjatt--spec--resources--claims"></a>
+### Nested Schema for `spec.resources.claims`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--security_context"></a>
+### Nested Schema for `spec.security_context`
+
+Required:
+
+- `fs_group` (Number)
+- `fs_group_change_policy` (String)
+- `run_as_group` (Number)
+- `run_as_non_root` (Boolean)
+- `run_as_user` (Number)
+- `se_linux_options` (List of Object) (see [below for nested schema](#nestedobjatt--spec--security_context--se_linux_options))
+- `seccomp_profile` (List of Object) (see [below for nested schema](#nestedobjatt--spec--security_context--seccomp_profile))
+- `supplemental_groups` (List of Number)
+- `sysctls` (List of Object) (see [below for nested schema](#nestedobjatt--spec--security_context--sysctls))
+- `windows_options` (List of Object) (see [below for nested schema](#nestedobjatt--spec--security_context--windows_options))
+
+<a id="nestedobjatt--spec--security_context--se_linux_options"></a>
+### Nested Schema for `spec.security_context.se_linux_options`
+
+Required:
+
+- `level` (String)
+- `role` (String)
+- `type` (String)
+- `user` (String)
+
+
+<a id="nestedobjatt--spec--security_context--seccomp_profile"></a>
+### Nested Schema for `spec.security_context.seccomp_profile`
+
+Required:
+
+- `localhost_profile` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--security_context--sysctls"></a>
+### Nested Schema for `spec.security_context.sysctls`
+
+Required:
+
+- `name` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--security_context--windows_options"></a>
+### Nested Schema for `spec.security_context.windows_options`
+
+Required:
+
+- `gmsa_credential_spec` (String)
+- `gmsa_credential_spec_name` (String)
+- `host_process` (Boolean)
+- `run_as_user_name` (String)
+
+
+
+<a id="nestedobjatt--spec--service_monitor_namespace_selector"></a>
+### Nested Schema for `spec.service_monitor_namespace_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--service_monitor_namespace_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--service_monitor_namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.service_monitor_namespace_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--service_monitor_selector"></a>
+### Nested Schema for `spec.service_monitor_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--service_monitor_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--service_monitor_selector--match_expressions"></a>
+### Nested Schema for `spec.service_monitor_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--storage"></a>
+### Nested Schema for `spec.storage`
+
+Required:
+
+- `disable_mount_sub_path` (Boolean)
+- `empty_dir` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--empty_dir))
+- `ephemeral` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--ephemeral))
+- `volume_claim_template` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template))
+
+<a id="nestedobjatt--spec--storage--empty_dir"></a>
+### Nested Schema for `spec.storage.empty_dir`
+
+Required:
+
+- `medium` (String)
+- `size_limit` (String)
+
+
+<a id="nestedobjatt--spec--storage--ephemeral"></a>
+### Nested Schema for `spec.storage.ephemeral`
+
+Required:
+
+- `volume_claim_template` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--ephemeral--volume_claim_template))
+
+<a id="nestedobjatt--spec--storage--ephemeral--volume_claim_template"></a>
+### Nested Schema for `spec.storage.ephemeral.volume_claim_template`
+
+Required:
+
+- `metadata` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec))
+
+<a id="nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec"></a>
+### Nested Schema for `spec.storage.ephemeral.volume_claim_template.spec`
+
+Required:
+
+- `access_modes` (List of String)
+- `data_source` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--data_source))
+- `data_source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--data_source_ref))
+- `resources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--resources))
+- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--selector))
+- `storage_class_name` (String)
+- `volume_mode` (String)
+- `volume_name` (String)
+
+<a id="nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--data_source"></a>
+### Nested Schema for `spec.storage.ephemeral.volume_claim_template.spec.data_source`
+
+Required:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--data_source_ref"></a>
+### Nested Schema for `spec.storage.ephemeral.volume_claim_template.spec.data_source_ref`
+
+Required:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--resources"></a>
+### Nested Schema for `spec.storage.ephemeral.volume_claim_template.spec.resources`
+
+Required:
+
+- `claims` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--resources--claims))
+- `limits` (Map of String)
+- `requests` (Map of String)
+
+<a id="nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--resources--claims"></a>
+### Nested Schema for `spec.storage.ephemeral.volume_claim_template.spec.resources.claims`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--selector"></a>
+### Nested Schema for `spec.storage.ephemeral.volume_claim_template.spec.selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--storage--ephemeral--volume_claim_template--spec--selector--match_expressions"></a>
+### Nested Schema for `spec.storage.ephemeral.volume_claim_template.spec.selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+
+<a id="nestedobjatt--spec--storage--volume_claim_template"></a>
+### Nested Schema for `spec.storage.volume_claim_template`
+
+Required:
+
+- `api_version` (String)
+- `kind` (String)
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template--metadata))
+- `spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template--spec))
+- `status` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template--status))
+
+<a id="nestedobjatt--spec--storage--volume_claim_template--metadata"></a>
+### Nested Schema for `spec.storage.volume_claim_template.metadata`
+
+Required:
+
+- `annotations` (Map of String)
+- `labels` (Map of String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--storage--volume_claim_template--spec"></a>
+### Nested Schema for `spec.storage.volume_claim_template.spec`
+
+Required:
+
+- `access_modes` (List of String)
+- `data_source` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template--spec--data_source))
+- `data_source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template--spec--data_source_ref))
+- `resources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template--spec--resources))
+- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template--spec--selector))
+- `storage_class_name` (String)
+- `volume_mode` (String)
+- `volume_name` (String)
+
+<a id="nestedobjatt--spec--storage--volume_claim_template--spec--data_source"></a>
+### Nested Schema for `spec.storage.volume_claim_template.spec.data_source`
+
+Required:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--storage--volume_claim_template--spec--data_source_ref"></a>
+### Nested Schema for `spec.storage.volume_claim_template.spec.data_source_ref`
+
+Required:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--storage--volume_claim_template--spec--resources"></a>
+### Nested Schema for `spec.storage.volume_claim_template.spec.resources`
+
+Required:
+
+- `claims` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template--spec--resources--claims))
+- `limits` (Map of String)
+- `requests` (Map of String)
+
+<a id="nestedobjatt--spec--storage--volume_claim_template--spec--resources--claims"></a>
+### Nested Schema for `spec.storage.volume_claim_template.spec.resources.claims`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--storage--volume_claim_template--spec--selector"></a>
+### Nested Schema for `spec.storage.volume_claim_template.spec.selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template--spec--selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--storage--volume_claim_template--spec--selector--match_expressions"></a>
+### Nested Schema for `spec.storage.volume_claim_template.spec.selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+<a id="nestedobjatt--spec--storage--volume_claim_template--status"></a>
+### Nested Schema for `spec.storage.volume_claim_template.status`
+
+Required:
+
+- `access_modes` (List of String)
+- `allocated_resources` (Map of String)
+- `capacity` (Map of String)
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storage--volume_claim_template--status--conditions))
+- `phase` (String)
+- `resize_status` (String)
+
+<a id="nestedobjatt--spec--storage--volume_claim_template--status--conditions"></a>
+### Nested Schema for `spec.storage.volume_claim_template.status.conditions`
+
+Required:
+
+- `last_probe_time` (String)
+- `last_transition_time` (String)
+- `message` (String)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+
+
+
+<a id="nestedobjatt--spec--tolerations"></a>
+### Nested Schema for `spec.tolerations`
+
+Required:
+
+- `effect` (String)
+- `key` (String)
+- `operator` (String)
+- `toleration_seconds` (Number)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--topology_spread_constraints"></a>
+### Nested Schema for `spec.topology_spread_constraints`
+
+Required:
+
+- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--topology_spread_constraints--label_selector))
+- `match_label_keys` (List of String)
+- `max_skew` (Number)
+- `min_domains` (Number)
+- `node_affinity_policy` (String)
+- `node_taints_policy` (String)
+- `topology_key` (String)
+- `when_unsatisfiable` (String)
+
+<a id="nestedobjatt--spec--topology_spread_constraints--label_selector"></a>
+### Nested Schema for `spec.topology_spread_constraints.label_selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--topology_spread_constraints--label_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--topology_spread_constraints--label_selector--match_expressions"></a>
+### Nested Schema for `spec.topology_spread_constraints.label_selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+<a id="nestedobjatt--spec--volume_mounts"></a>
+### Nested Schema for `spec.volume_mounts`
+
+Required:
+
+- `mount_path` (String)
+- `mount_propagation` (String)
+- `name` (String)
+- `read_only` (Boolean)
+- `sub_path` (String)
+- `sub_path_expr` (String)
+
+
+<a id="nestedobjatt--spec--volumes"></a>
+### Nested Schema for `spec.volumes`
+
+Required:
+
+- `aws_elastic_block_store` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--aws_elastic_block_store))
+- `azure_disk` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--azure_disk))
+- `azure_file` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--azure_file))
+- `cephfs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--cephfs))
+- `cinder` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--cinder))
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--config_map))
+- `csi` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--csi))
+- `downward_api` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--downward_api))
+- `empty_dir` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--empty_dir))
+- `ephemeral` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--ephemeral))
+- `fc` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--fc))
+- `flex_volume` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--flex_volume))
+- `flocker` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--flocker))
+- `gce_persistent_disk` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--gce_persistent_disk))
+- `git_repo` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--git_repo))
+- `glusterfs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--glusterfs))
+- `host_path` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--host_path))
+- `iscsi` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--iscsi))
+- `name` (String)
+- `nfs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--nfs))
+- `persistent_volume_claim` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--persistent_volume_claim))
+- `photon_persistent_disk` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--photon_persistent_disk))
+- `portworx_volume` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--portworx_volume))
+- `projected` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected))
+- `quobyte` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--quobyte))
+- `rbd` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--rbd))
+- `scale_io` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--scale_io))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--secret))
+- `storageos` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--storageos))
+- `vsphere_volume` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--vsphere_volume))
+
+<a id="nestedobjatt--spec--volumes--aws_elastic_block_store"></a>
+### Nested Schema for `spec.volumes.aws_elastic_block_store`
+
+Required:
+
+- `fs_type` (String)
+- `partition` (Number)
+- `read_only` (Boolean)
+- `volume_id` (String)
+
+
+<a id="nestedobjatt--spec--volumes--azure_disk"></a>
+### Nested Schema for `spec.volumes.azure_disk`
+
+Required:
+
+- `caching_mode` (String)
+- `disk_name` (String)
+- `disk_uri` (String)
+- `fs_type` (String)
+- `kind` (String)
+- `read_only` (Boolean)
+
+
+<a id="nestedobjatt--spec--volumes--azure_file"></a>
+### Nested Schema for `spec.volumes.azure_file`
+
+Required:
+
+- `read_only` (Boolean)
+- `secret_name` (String)
+- `share_name` (String)
+
+
+<a id="nestedobjatt--spec--volumes--cephfs"></a>
+### Nested Schema for `spec.volumes.cephfs`
+
+Required:
+
+- `monitors` (List of String)
+- `path` (String)
+- `read_only` (Boolean)
+- `secret_file` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--cephfs--secret_ref))
+- `user` (String)
+
+<a id="nestedobjatt--spec--volumes--cephfs--secret_ref"></a>
+### Nested Schema for `spec.volumes.cephfs.secret_ref`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--cinder"></a>
+### Nested Schema for `spec.volumes.cinder`
+
+Required:
+
+- `fs_type` (String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--cinder--secret_ref))
+- `volume_id` (String)
+
+<a id="nestedobjatt--spec--volumes--cinder--secret_ref"></a>
+### Nested Schema for `spec.volumes.cinder.secret_ref`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--config_map"></a>
+### Nested Schema for `spec.volumes.config_map`
+
+Required:
+
+- `default_mode` (Number)
+- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--config_map--items))
+- `name` (String)
+- `optional` (Boolean)
+
+<a id="nestedobjatt--spec--volumes--config_map--items"></a>
+### Nested Schema for `spec.volumes.config_map.items`
+
+Required:
+
+- `key` (String)
+- `mode` (Number)
+- `path` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--csi"></a>
+### Nested Schema for `spec.volumes.csi`
+
+Required:
+
+- `driver` (String)
+- `fs_type` (String)
+- `node_publish_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--csi--node_publish_secret_ref))
+- `read_only` (Boolean)
+- `volume_attributes` (Map of String)
+
+<a id="nestedobjatt--spec--volumes--csi--node_publish_secret_ref"></a>
+### Nested Schema for `spec.volumes.csi.node_publish_secret_ref`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--downward_api"></a>
+### Nested Schema for `spec.volumes.downward_api`
+
+Required:
+
+- `default_mode` (Number)
+- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--downward_api--items))
+
+<a id="nestedobjatt--spec--volumes--downward_api--items"></a>
+### Nested Schema for `spec.volumes.downward_api.items`
+
+Required:
+
+- `field_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--downward_api--items--field_ref))
+- `mode` (Number)
+- `path` (String)
+- `resource_field_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--downward_api--items--resource_field_ref))
+
+<a id="nestedobjatt--spec--volumes--downward_api--items--field_ref"></a>
+### Nested Schema for `spec.volumes.downward_api.items.field_ref`
+
+Required:
+
+- `api_version` (String)
+- `field_path` (String)
+
+
+<a id="nestedobjatt--spec--volumes--downward_api--items--resource_field_ref"></a>
+### Nested Schema for `spec.volumes.downward_api.items.resource_field_ref`
+
+Required:
+
+- `container_name` (String)
+- `divisor` (String)
+- `resource` (String)
+
+
+
+
+<a id="nestedobjatt--spec--volumes--empty_dir"></a>
+### Nested Schema for `spec.volumes.empty_dir`
+
+Required:
+
+- `medium` (String)
+- `size_limit` (String)
+
+
+<a id="nestedobjatt--spec--volumes--ephemeral"></a>
+### Nested Schema for `spec.volumes.ephemeral`
+
+Required:
+
+- `volume_claim_template` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--ephemeral--volume_claim_template))
+
+<a id="nestedobjatt--spec--volumes--ephemeral--volume_claim_template"></a>
+### Nested Schema for `spec.volumes.ephemeral.volume_claim_template`
+
+Required:
+
+- `metadata` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec))
+
+<a id="nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec"></a>
+### Nested Schema for `spec.volumes.ephemeral.volume_claim_template.spec`
+
+Required:
+
+- `access_modes` (List of String)
+- `data_source` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--data_source))
+- `data_source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--data_source_ref))
+- `resources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--resources))
+- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--selector))
+- `storage_class_name` (String)
+- `volume_mode` (String)
+- `volume_name` (String)
+
+<a id="nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--data_source"></a>
+### Nested Schema for `spec.volumes.ephemeral.volume_claim_template.spec.data_source`
+
+Required:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--data_source_ref"></a>
+### Nested Schema for `spec.volumes.ephemeral.volume_claim_template.spec.data_source_ref`
+
+Required:
+
+- `api_group` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--resources"></a>
+### Nested Schema for `spec.volumes.ephemeral.volume_claim_template.spec.resources`
+
+Required:
+
+- `claims` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--resources--claims))
+- `limits` (Map of String)
+- `requests` (Map of String)
+
+<a id="nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--resources--claims"></a>
+### Nested Schema for `spec.volumes.ephemeral.volume_claim_template.spec.resources.claims`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--selector"></a>
+### Nested Schema for `spec.volumes.ephemeral.volume_claim_template.spec.selector`
+
+Required:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--volumes--ephemeral--volume_claim_template--spec--selector--match_expressions"></a>
+### Nested Schema for `spec.volumes.ephemeral.volume_claim_template.spec.selector.match_expressions`
+
+Required:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+
+<a id="nestedobjatt--spec--volumes--fc"></a>
+### Nested Schema for `spec.volumes.fc`
+
+Required:
+
+- `fs_type` (String)
+- `lun` (Number)
+- `read_only` (Boolean)
+- `target_ww_ns` (List of String)
+- `wwids` (List of String)
+
+
+<a id="nestedobjatt--spec--volumes--flex_volume"></a>
+### Nested Schema for `spec.volumes.flex_volume`
+
+Required:
+
+- `driver` (String)
+- `fs_type` (String)
+- `options` (Map of String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--flex_volume--secret_ref))
+
+<a id="nestedobjatt--spec--volumes--flex_volume--secret_ref"></a>
+### Nested Schema for `spec.volumes.flex_volume.secret_ref`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--flocker"></a>
+### Nested Schema for `spec.volumes.flocker`
+
+Required:
+
+- `dataset_name` (String)
+- `dataset_uuid` (String)
+
+
+<a id="nestedobjatt--spec--volumes--gce_persistent_disk"></a>
+### Nested Schema for `spec.volumes.gce_persistent_disk`
+
+Required:
+
+- `fs_type` (String)
+- `partition` (Number)
+- `pd_name` (String)
+- `read_only` (Boolean)
+
+
+<a id="nestedobjatt--spec--volumes--git_repo"></a>
+### Nested Schema for `spec.volumes.git_repo`
+
+Required:
+
+- `directory` (String)
+- `repository` (String)
+- `revision` (String)
+
+
+<a id="nestedobjatt--spec--volumes--glusterfs"></a>
+### Nested Schema for `spec.volumes.glusterfs`
+
+Required:
+
+- `endpoints` (String)
+- `path` (String)
+- `read_only` (Boolean)
+
+
+<a id="nestedobjatt--spec--volumes--host_path"></a>
+### Nested Schema for `spec.volumes.host_path`
+
+Required:
+
+- `path` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--volumes--iscsi"></a>
+### Nested Schema for `spec.volumes.iscsi`
+
+Required:
+
+- `chap_auth_discovery` (Boolean)
+- `chap_auth_session` (Boolean)
+- `fs_type` (String)
+- `initiator_name` (String)
+- `iqn` (String)
+- `iscsi_interface` (String)
+- `lun` (Number)
+- `portals` (List of String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--iscsi--secret_ref))
+- `target_portal` (String)
+
+<a id="nestedobjatt--spec--volumes--iscsi--secret_ref"></a>
+### Nested Schema for `spec.volumes.iscsi.secret_ref`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--nfs"></a>
+### Nested Schema for `spec.volumes.nfs`
+
+Required:
+
+- `path` (String)
+- `read_only` (Boolean)
+- `server` (String)
+
+
+<a id="nestedobjatt--spec--volumes--persistent_volume_claim"></a>
+### Nested Schema for `spec.volumes.persistent_volume_claim`
+
+Required:
+
+- `claim_name` (String)
+- `read_only` (Boolean)
+
+
+<a id="nestedobjatt--spec--volumes--photon_persistent_disk"></a>
+### Nested Schema for `spec.volumes.photon_persistent_disk`
+
+Required:
+
+- `fs_type` (String)
+- `pd_id` (String)
+
+
+<a id="nestedobjatt--spec--volumes--portworx_volume"></a>
+### Nested Schema for `spec.volumes.portworx_volume`
+
+Required:
+
+- `fs_type` (String)
+- `read_only` (Boolean)
+- `volume_id` (String)
+
+
+<a id="nestedobjatt--spec--volumes--projected"></a>
+### Nested Schema for `spec.volumes.projected`
+
+Required:
+
+- `default_mode` (Number)
+- `sources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected--sources))
+
+<a id="nestedobjatt--spec--volumes--projected--sources"></a>
+### Nested Schema for `spec.volumes.projected.sources`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected--sources--config_map))
+- `downward_api` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected--sources--downward_api))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected--sources--secret))
+- `service_account_token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected--sources--service_account_token))
+
+<a id="nestedobjatt--spec--volumes--projected--sources--config_map"></a>
+### Nested Schema for `spec.volumes.projected.sources.config_map`
+
+Required:
+
+- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected--sources--config_map--items))
+- `name` (String)
+- `optional` (Boolean)
+
+<a id="nestedobjatt--spec--volumes--projected--sources--config_map--items"></a>
+### Nested Schema for `spec.volumes.projected.sources.config_map.items`
+
+Required:
+
+- `key` (String)
+- `mode` (Number)
+- `path` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--projected--sources--downward_api"></a>
+### Nested Schema for `spec.volumes.projected.sources.downward_api`
+
+Required:
+
+- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected--sources--downward_api--items))
+
+<a id="nestedobjatt--spec--volumes--projected--sources--downward_api--items"></a>
+### Nested Schema for `spec.volumes.projected.sources.downward_api.items`
+
+Required:
+
+- `field_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected--sources--downward_api--items--field_ref))
+- `mode` (Number)
+- `path` (String)
+- `resource_field_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected--sources--downward_api--items--resource_field_ref))
+
+<a id="nestedobjatt--spec--volumes--projected--sources--downward_api--items--field_ref"></a>
+### Nested Schema for `spec.volumes.projected.sources.downward_api.items.field_ref`
+
+Required:
+
+- `api_version` (String)
+- `field_path` (String)
+
+
+<a id="nestedobjatt--spec--volumes--projected--sources--downward_api--items--resource_field_ref"></a>
+### Nested Schema for `spec.volumes.projected.sources.downward_api.items.resource_field_ref`
+
+Required:
+
+- `container_name` (String)
+- `divisor` (String)
+- `resource` (String)
+
+
+
+
+<a id="nestedobjatt--spec--volumes--projected--sources--secret"></a>
+### Nested Schema for `spec.volumes.projected.sources.secret`
+
+Required:
+
+- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--projected--sources--secret--items))
+- `name` (String)
+- `optional` (Boolean)
+
+<a id="nestedobjatt--spec--volumes--projected--sources--secret--items"></a>
+### Nested Schema for `spec.volumes.projected.sources.secret.items`
+
+Required:
+
+- `key` (String)
+- `mode` (Number)
+- `path` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--projected--sources--service_account_token"></a>
+### Nested Schema for `spec.volumes.projected.sources.service_account_token`
+
+Required:
+
+- `audience` (String)
+- `expiration_seconds` (Number)
+- `path` (String)
+
+
+
+
+<a id="nestedobjatt--spec--volumes--quobyte"></a>
+### Nested Schema for `spec.volumes.quobyte`
+
+Required:
+
+- `group` (String)
+- `read_only` (Boolean)
+- `registry` (String)
+- `tenant` (String)
+- `user` (String)
+- `volume` (String)
+
+
+<a id="nestedobjatt--spec--volumes--rbd"></a>
+### Nested Schema for `spec.volumes.rbd`
+
+Required:
+
+- `fs_type` (String)
+- `image` (String)
+- `keyring` (String)
+- `monitors` (List of String)
+- `pool` (String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--rbd--secret_ref))
+- `user` (String)
+
+<a id="nestedobjatt--spec--volumes--rbd--secret_ref"></a>
+### Nested Schema for `spec.volumes.rbd.secret_ref`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--scale_io"></a>
+### Nested Schema for `spec.volumes.scale_io`
+
+Required:
+
+- `fs_type` (String)
+- `gateway` (String)
+- `protection_domain` (String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--scale_io--secret_ref))
+- `ssl_enabled` (Boolean)
+- `storage_mode` (String)
+- `storage_pool` (String)
+- `system` (String)
+- `volume_name` (String)
+
+<a id="nestedobjatt--spec--volumes--scale_io--secret_ref"></a>
+### Nested Schema for `spec.volumes.scale_io.secret_ref`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--secret"></a>
+### Nested Schema for `spec.volumes.secret`
+
+Required:
+
+- `default_mode` (Number)
+- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--secret--items))
+- `optional` (Boolean)
+- `secret_name` (String)
+
+<a id="nestedobjatt--spec--volumes--secret--items"></a>
+### Nested Schema for `spec.volumes.secret.items`
+
+Required:
+
+- `key` (String)
+- `mode` (Number)
+- `path` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--storageos"></a>
+### Nested Schema for `spec.volumes.storageos`
+
+Required:
+
+- `fs_type` (String)
+- `read_only` (Boolean)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--volumes--storageos--secret_ref))
+- `volume_name` (String)
+- `volume_namespace` (String)
+
+<a id="nestedobjatt--spec--volumes--storageos--secret_ref"></a>
+### Nested Schema for `spec.volumes.storageos.secret_ref`
+
+Required:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--volumes--vsphere_volume"></a>
+### Nested Schema for `spec.volumes.vsphere_volume`
+
+Required:
+
+- `fs_type` (String)
+- `storage_policy_id` (String)
+- `storage_policy_name` (String)
+- `volume_path` (String)
+
+
+
+<a id="nestedobjatt--spec--web"></a>
+### Nested Schema for `spec.web`
+
+Required:
+
+- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web--http_config))
+- `max_connections` (Number)
+- `page_title` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web--tls_config))
+
+<a id="nestedobjatt--spec--web--http_config"></a>
+### Nested Schema for `spec.web.http_config`
+
+Required:
+
+- `headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web--http_config--headers))
+- `http2` (Boolean)
+
+<a id="nestedobjatt--spec--web--http_config--headers"></a>
+### Nested Schema for `spec.web.http_config.headers`
+
+Required:
+
+- `content_security_policy` (String)
+- `strict_transport_security` (String)
+- `x_content_type_options` (String)
+- `x_frame_options` (String)
+- `x_xss_protection` (String)
+
+
+
+<a id="nestedobjatt--spec--web--tls_config"></a>
+### Nested Schema for `spec.web.tls_config`
+
+Required:
+
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web--tls_config--cert))
+- `cipher_suites` (List of String)
+- `client_auth_type` (String)
+- `client_ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web--tls_config--client_ca))
+- `curve_preferences` (List of String)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web--tls_config--key_secret))
+- `max_version` (String)
+- `min_version` (String)
+- `prefer_server_cipher_suites` (Boolean)
+
+<a id="nestedobjatt--spec--web--tls_config--cert"></a>
+### Nested Schema for `spec.web.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--web--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.web.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--web--tls_config--cert--secret"></a>
+### Nested Schema for `spec.web.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--web--tls_config--client_ca"></a>
+### Nested Schema for `spec.web.tls_config.client_ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web--tls_config--client_ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--web--tls_config--client_ca--secret))
+
+<a id="nestedobjatt--spec--web--tls_config--client_ca--config_map"></a>
+### Nested Schema for `spec.web.tls_config.client_ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--web--tls_config--client_ca--secret"></a>
+### Nested Schema for `spec.web.tls_config.client_ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--web--tls_config--key_secret"></a>
+### Nested Schema for `spec.web.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `available_replicas` (Number)
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `paused` (Boolean)
+- `replicas` (Number)
+- `shard_statuses` (List of Object) (see [below for nested schema](#nestedobjatt--status--shard_statuses))
+- `unavailable_replicas` (Number)
+- `updated_replicas` (Number)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--shard_statuses"></a>
+### Nested Schema for `status.shard_statuses`
+
+Optional:
+
+- `available_replicas` (Number)
+- `replicas` (Number)
+- `shard_id` (String)
+- `unavailable_replicas` (Number)
+- `updated_replicas` (Number)

@@ -49,18 +49,179 @@ func dataSourceFluxNotificationToolkitFluxcdIoAlertV1Beta2() *schema.Resource {
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "AlertSpec defines an alerting rule for events involving a list of objects.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"event_severity": {
+						Type:        schema.TypeString,
+						Description: "EventSeverity specifies how to filter events based on severity. If set to 'info' no events will be filtered.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"event_sources": {
+						Type:        schema.TypeList,
+						Description: "EventSources specifies how to filter events based on the involved object kind, name and namespace.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"api_version": {
+								Type:        schema.TypeString,
+								Description: "API version of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kind": {
+								Type:        schema.TypeString,
+								Description: "Kind of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"match_labels": {
+								Type:        schema.TypeMap,
+								Description: "MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "Namespace of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"exclusion_list": {
+						Type:        schema.TypeList,
+						Description: "ExclusionList specifies a list of Golang regular expressions to be used for excluding messages.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
+					"provider_ref": {
+						Type:        schema.TypeList,
+						Description: "ProviderRef specifies which Provider this Alert should use.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"summary": {
+						Type:        schema.TypeString,
+						Description: "Summary holds a short description of the impact and affected cluster.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"suspend": {
+						Type:        schema.TypeBool,
+						Description: "Suspend tells the controller to suspend subsequent events handling for this Alert.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 			"status": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "AlertStatus defines the observed state of the Alert.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"conditions": {
+						Type:        schema.TypeList,
+						Description: "Conditions holds the conditions for the Alert.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message": {
+								Type:        schema.TypeString,
+								Description: "message is a human readable message indicating details about the transition. This may be an empty string.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"reason": {
+								Type:        schema.TypeString,
+								Description: "reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"status": {
+								Type:        schema.TypeString,
+								Description: "status of the condition, one of True, False, Unknown.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"last_handled_reconcile_at": {
+						Type:        schema.TypeString,
+						Description: "LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"observed_generation": {
+						Type:        schema.TypeInt,
+						Description: "ObservedGeneration is the last observed generation.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -72,7 +233,7 @@ func dataSourceFluxNotificationToolkitFluxcdIoAlertV1Beta2Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "notification.toolkit.fluxcd.io/v1beta2", "Alert", "notification.toolkit.fluxcd.io/v1beta2/Alert"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.provider_ref", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

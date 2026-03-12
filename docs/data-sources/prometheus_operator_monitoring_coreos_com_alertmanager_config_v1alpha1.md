@@ -17,7 +17,7 @@ AlertmanagerConfig defines a namespaced AlertmanagerConfig to be aggregated acro
 
 ### Required
 
-- `spec` (Map of String) AlertmanagerConfigSpec is a specification of the desired behavior of the Alertmanager configuration. By definition, the Alertmanager configuration only applies to alerts for which the `namespace` label is equal to the namespace of the AlertmanagerConfig resource.
+- `spec` (List of Object) AlertmanagerConfigSpec is a specification of the desired behavior of the Alertmanager configuration. By definition, the Alertmanager configuration only applies to alerts for which the `namespace` label is equal to the namespace of the AlertmanagerConfig resource. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
@@ -30,3 +30,1824 @@ AlertmanagerConfig defines a namespaced AlertmanagerConfig to be aggregated acro
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `inhibit_rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--inhibit_rules))
+- `mute_time_intervals` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mute_time_intervals))
+- `receivers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers))
+- `route` (List of Object) (see [below for nested schema](#nestedobjatt--spec--route))
+
+<a id="nestedobjatt--spec--inhibit_rules"></a>
+### Nested Schema for `spec.inhibit_rules`
+
+Required:
+
+- `equal` (List of String)
+- `source_match` (List of Object) (see [below for nested schema](#nestedobjatt--spec--inhibit_rules--source_match))
+- `target_match` (List of Object) (see [below for nested schema](#nestedobjatt--spec--inhibit_rules--target_match))
+
+<a id="nestedobjatt--spec--inhibit_rules--source_match"></a>
+### Nested Schema for `spec.inhibit_rules.source_match`
+
+Required:
+
+- `match_type` (String)
+- `name` (String)
+- `regex` (Boolean)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--inhibit_rules--target_match"></a>
+### Nested Schema for `spec.inhibit_rules.target_match`
+
+Required:
+
+- `match_type` (String)
+- `name` (String)
+- `regex` (Boolean)
+- `value` (String)
+
+
+
+<a id="nestedobjatt--spec--mute_time_intervals"></a>
+### Nested Schema for `spec.mute_time_intervals`
+
+Required:
+
+- `name` (String)
+- `time_intervals` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mute_time_intervals--time_intervals))
+
+<a id="nestedobjatt--spec--mute_time_intervals--time_intervals"></a>
+### Nested Schema for `spec.mute_time_intervals.time_intervals`
+
+Required:
+
+- `days_of_month` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mute_time_intervals--time_intervals--days_of_month))
+- `months` (List of String)
+- `times` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mute_time_intervals--time_intervals--times))
+- `weekdays` (List of String)
+- `years` (List of String)
+
+<a id="nestedobjatt--spec--mute_time_intervals--time_intervals--days_of_month"></a>
+### Nested Schema for `spec.mute_time_intervals.time_intervals.days_of_month`
+
+Required:
+
+- `end` (Number)
+- `start` (Number)
+
+
+<a id="nestedobjatt--spec--mute_time_intervals--time_intervals--times"></a>
+### Nested Schema for `spec.mute_time_intervals.time_intervals.times`
+
+Required:
+
+- `end_time` (String)
+- `start_time` (String)
+
+
+
+
+<a id="nestedobjatt--spec--receivers"></a>
+### Nested Schema for `spec.receivers`
+
+Required:
+
+- `email_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs))
+- `name` (String)
+- `opsgenie_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs))
+- `pagerduty_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs))
+- `pushover_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs))
+- `slack_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs))
+- `sns_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs))
+- `victorops_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs))
+- `webhook_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs))
+- `wechat_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs))
+
+<a id="nestedobjatt--spec--receivers--email_configs"></a>
+### Nested Schema for `spec.receivers.email_configs`
+
+Required:
+
+- `auth_identity` (String)
+- `auth_password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--auth_password))
+- `auth_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--auth_secret))
+- `auth_username` (String)
+- `from` (String)
+- `headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--headers))
+- `hello` (String)
+- `html` (String)
+- `require_tls` (Boolean)
+- `send_resolved` (Boolean)
+- `smarthost` (String)
+- `text` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config))
+- `to` (String)
+
+<a id="nestedobjatt--spec--receivers--email_configs--auth_password"></a>
+### Nested Schema for `spec.receivers.email_configs.auth_password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--email_configs--auth_secret"></a>
+### Nested Schema for `spec.receivers.email_configs.auth_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--email_configs--headers"></a>
+### Nested Schema for `spec.receivers.email_configs.headers`
+
+Required:
+
+- `key` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--receivers--email_configs--tls_config"></a>
+### Nested Schema for `spec.receivers.email_configs.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--receivers--email_configs--tls_config--ca"></a>
+### Nested Schema for `spec.receivers.email_configs.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--receivers--email_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.receivers.email_configs.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--email_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.receivers.email_configs.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--email_configs--tls_config--cert"></a>
+### Nested Schema for `spec.receivers.email_configs.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--receivers--email_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.receivers.email_configs.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--email_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.receivers.email_configs.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--email_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.receivers.email_configs.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs`
+
+Required:
+
+- `api_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--api_key))
+- `api_url` (String)
+- `description` (String)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--details))
+- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config))
+- `message` (String)
+- `note` (String)
+- `priority` (String)
+- `responders` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--responders))
+- `send_resolved` (Boolean)
+- `source` (String)
+- `tags` (String)
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--api_key"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.api_key`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--details"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.details`
+
+Required:
+
+- `key` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth))
+- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--bearer_token_secret))
+- `proxy_url` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config))
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--authorization"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--authorization--credentials))
+- `type` (String)
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--authorization--credentials"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth--username))
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth--password"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth--username"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--bearer_token_secret"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.bearer_token_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca--secret"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert--secret"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--key_secret"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--receivers--opsgenie_configs--responders"></a>
+### Nested Schema for `spec.receivers.opsgenie_configs.responders`
+
+Required:
+
+- `id` (String)
+- `name` (String)
+- `type` (String)
+- `username` (String)
+
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs`
+
+Required:
+
+- `class` (String)
+- `client` (String)
+- `client_url` (String)
+- `component` (String)
+- `description` (String)
+- `details` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--details))
+- `group` (String)
+- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config))
+- `pager_duty_image_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--pager_duty_image_configs))
+- `pager_duty_link_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--pager_duty_link_configs))
+- `routing_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--routing_key))
+- `send_resolved` (Boolean)
+- `service_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--service_key))
+- `severity` (String)
+- `url` (String)
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--details"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.details`
+
+Required:
+
+- `key` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth))
+- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--bearer_token_secret))
+- `proxy_url` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config))
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--authorization"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--authorization--credentials))
+- `type` (String)
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--authorization--credentials"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth--username))
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth--password"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth--username"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--bearer_token_secret"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.bearer_token_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca--secret"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert--secret"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--key_secret"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--pager_duty_image_configs"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.pager_duty_image_configs`
+
+Required:
+
+- `alt` (String)
+- `href` (String)
+- `src` (String)
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--pager_duty_link_configs"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.pager_duty_link_configs`
+
+Required:
+
+- `alt` (String)
+- `href` (String)
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--routing_key"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.routing_key`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--pagerduty_configs--service_key"></a>
+### Nested Schema for `spec.receivers.pagerduty_configs.service_key`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs"></a>
+### Nested Schema for `spec.receivers.pushover_configs`
+
+Required:
+
+- `expire` (String)
+- `html` (Boolean)
+- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config))
+- `message` (String)
+- `priority` (String)
+- `retry` (String)
+- `send_resolved` (Boolean)
+- `sound` (String)
+- `title` (String)
+- `token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--token))
+- `url` (String)
+- `url_title` (String)
+- `user_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--user_key))
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth))
+- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--bearer_token_secret))
+- `proxy_url` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config))
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--authorization"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--authorization--credentials))
+- `type` (String)
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--authorization--credentials"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth--username))
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth--password"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth--username"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--bearer_token_secret"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.bearer_token_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca--secret"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert--secret"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--key_secret"></a>
+### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--token"></a>
+### Nested Schema for `spec.receivers.pushover_configs.token`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--pushover_configs--user_key"></a>
+### Nested Schema for `spec.receivers.pushover_configs.user_key`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs"></a>
+### Nested Schema for `spec.receivers.slack_configs`
+
+Required:
+
+- `actions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--actions))
+- `api_url` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--api_url))
+- `callback_id` (String)
+- `channel` (String)
+- `color` (String)
+- `fallback` (String)
+- `fields` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--fields))
+- `footer` (String)
+- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config))
+- `icon_emoji` (String)
+- `icon_url` (String)
+- `image_url` (String)
+- `link_names` (Boolean)
+- `mrkdwn_in` (List of String)
+- `pretext` (String)
+- `send_resolved` (Boolean)
+- `short_fields` (Boolean)
+- `text` (String)
+- `thumb_url` (String)
+- `title` (String)
+- `title_link` (String)
+- `username` (String)
+
+<a id="nestedobjatt--spec--receivers--slack_configs--actions"></a>
+### Nested Schema for `spec.receivers.slack_configs.actions`
+
+Required:
+
+- `confirm` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--actions--confirm))
+- `name` (String)
+- `style` (String)
+- `text` (String)
+- `type` (String)
+- `url` (String)
+- `value` (String)
+
+<a id="nestedobjatt--spec--receivers--slack_configs--actions--confirm"></a>
+### Nested Schema for `spec.receivers.slack_configs.actions.confirm`
+
+Required:
+
+- `dismiss_text` (String)
+- `ok_text` (String)
+- `text` (String)
+- `title` (String)
+
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--api_url"></a>
+### Nested Schema for `spec.receivers.slack_configs.api_url`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--fields"></a>
+### Nested Schema for `spec.receivers.slack_configs.fields`
+
+Required:
+
+- `short` (Boolean)
+- `title` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth))
+- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--bearer_token_secret))
+- `proxy_url` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config))
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--authorization"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--authorization--credentials))
+- `type` (String)
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--authorization--credentials"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth--username))
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth--password"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth--username"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--bearer_token_secret"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.bearer_token_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca--secret"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert--secret"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--key_secret"></a>
+### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs"></a>
+### Nested Schema for `spec.receivers.sns_configs`
+
+Required:
+
+- `api_url` (String)
+- `attributes` (Map of String)
+- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config))
+- `message` (String)
+- `phone_number` (String)
+- `send_resolved` (Boolean)
+- `sigv4` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--sigv4))
+- `subject` (String)
+- `target_arn` (String)
+- `topic_arn` (String)
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth))
+- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--bearer_token_secret))
+- `proxy_url` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config))
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--authorization"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--authorization--credentials))
+- `type` (String)
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--authorization--credentials"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth--username))
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth--password"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth--username"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--bearer_token_secret"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.bearer_token_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca--secret"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert--secret"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--key_secret"></a>
+### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs--sigv4"></a>
+### Nested Schema for `spec.receivers.sns_configs.sigv4`
+
+Required:
+
+- `access_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--sigv4--access_key))
+- `profile` (String)
+- `region` (String)
+- `role_arn` (String)
+- `secret_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--sigv4--secret_key))
+
+<a id="nestedobjatt--spec--receivers--sns_configs--sigv4--access_key"></a>
+### Nested Schema for `spec.receivers.sns_configs.sigv4.access_key`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--sns_configs--sigv4--secret_key"></a>
+### Nested Schema for `spec.receivers.sns_configs.sigv4.secret_key`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs"></a>
+### Nested Schema for `spec.receivers.victorops_configs`
+
+Required:
+
+- `api_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--api_key))
+- `api_url` (String)
+- `custom_fields` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--custom_fields))
+- `entity_display_name` (String)
+- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config))
+- `message_type` (String)
+- `monitoring_tool` (String)
+- `routing_key` (String)
+- `send_resolved` (Boolean)
+- `state_message` (String)
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--api_key"></a>
+### Nested Schema for `spec.receivers.victorops_configs.api_key`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--custom_fields"></a>
+### Nested Schema for `spec.receivers.victorops_configs.custom_fields`
+
+Required:
+
+- `key` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth))
+- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--bearer_token_secret))
+- `proxy_url` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config))
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--authorization"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--authorization--credentials))
+- `type` (String)
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--authorization--credentials"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth--username))
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth--password"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth--username"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--bearer_token_secret"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.bearer_token_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca--secret"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert--secret"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--key_secret"></a>
+### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+
+<a id="nestedobjatt--spec--receivers--webhook_configs"></a>
+### Nested Schema for `spec.receivers.webhook_configs`
+
+Required:
+
+- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config))
+- `max_alerts` (Number)
+- `send_resolved` (Boolean)
+- `url` (String)
+- `url_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--url_secret))
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth))
+- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--bearer_token_secret))
+- `proxy_url` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config))
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--authorization"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--authorization--credentials))
+- `type` (String)
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--authorization--credentials"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth--username))
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth--password"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth--username"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--bearer_token_secret"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.bearer_token_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca--secret"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert--secret"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--key_secret"></a>
+### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+<a id="nestedobjatt--spec--receivers--webhook_configs--url_secret"></a>
+### Nested Schema for `spec.receivers.webhook_configs.url_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--wechat_configs"></a>
+### Nested Schema for `spec.receivers.wechat_configs`
+
+Required:
+
+- `agent_id` (String)
+- `api_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--api_secret))
+- `api_url` (String)
+- `corp_id` (String)
+- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config))
+- `message` (String)
+- `message_type` (String)
+- `send_resolved` (Boolean)
+- `to_party` (String)
+- `to_tag` (String)
+- `to_user` (String)
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--api_secret"></a>
+### Nested Schema for `spec.receivers.wechat_configs.api_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config`
+
+Required:
+
+- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--authorization))
+- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth))
+- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--bearer_token_secret))
+- `proxy_url` (String)
+- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config))
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--authorization"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.authorization`
+
+Required:
+
+- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--authorization--credentials))
+- `type` (String)
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--authorization--credentials"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.authorization.credentials`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.basic_auth`
+
+Required:
+
+- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth--password))
+- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth--username))
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth--password"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.basic_auth.password`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth--username"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.basic_auth.username`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--bearer_token_secret"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.bearer_token_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config`
+
+Required:
+
+- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca))
+- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean)
+- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--key_secret))
+- `server_name` (String)
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.ca`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca--secret))
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.ca.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca--secret"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.ca.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.cert`
+
+Required:
+
+- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert--config_map))
+- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert--secret))
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.cert.config_map`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert--secret"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.cert.secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--key_secret"></a>
+### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.key_secret`
+
+Required:
+
+- `key` (String)
+- `name` (String)
+- `optional` (Boolean)
+
+
+
+
+
+
+<a id="nestedobjatt--spec--route"></a>
+### Nested Schema for `spec.route`
+
+Required:
+
+- `continue` (Boolean)
+- `group_by` (List of String)
+- `group_interval` (String)
+- `group_wait` (String)
+- `matchers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--route--matchers))
+- `mute_time_intervals` (List of String)
+- `receiver` (String)
+- `repeat_interval` (String)
+- `routes` (List of String)
+
+<a id="nestedobjatt--spec--route--matchers"></a>
+### Nested Schema for `spec.route.matchers`
+
+Required:
+
+- `match_type` (String)
+- `name` (String)
+- `regex` (Boolean)
+- `value` (String)

@@ -26,7 +26,7 @@ ReferenceGrant identifies kinds of resources in other namespaces that are truste
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) Spec defines the desired state of ReferenceGrant.
+- `spec` (List of Object) Spec defines the desired state of ReferenceGrant. (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -35,3 +35,30 @@ ReferenceGrant identifies kinds of resources in other namespaces that are truste
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--from))
+- `to` (List of Object) (see [below for nested schema](#nestedobjatt--spec--to))
+
+<a id="nestedobjatt--spec--from"></a>
+### Nested Schema for `spec.from`
+
+Optional:
+
+- `group` (String)
+- `kind` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--to"></a>
+### Nested Schema for `spec.to`
+
+Optional:
+
+- `group` (String)
+- `kind` (String)
+- `name` (String)

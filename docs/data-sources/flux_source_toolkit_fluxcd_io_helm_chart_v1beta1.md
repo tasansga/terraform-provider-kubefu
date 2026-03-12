@@ -18,8 +18,8 @@ HelmChart is the Schema for the helmcharts API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) HelmChartSpec defines the desired state of a Helm chart.
-- `status` (Map of String) HelmChartStatus defines the observed state of the HelmChart.
+- `spec` (List of Object) HelmChartSpec defines the desired state of a Helm chart. (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) HelmChartStatus defines the observed state of the HelmChart. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -28,3 +28,61 @@ HelmChart is the Schema for the helmcharts API
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `chart` (String)
+- `interval` (String)
+- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--source_ref))
+- `suspend` (Boolean)
+- `values_file` (String)
+- `version` (String)
+
+<a id="nestedobjatt--spec--source_ref"></a>
+### Nested Schema for `spec.source_ref`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `name` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `last_handled_reconcile_at` (String)
+- `observed_generation` (Number)
+- `url` (String)
+
+<a id="nestedobjatt--status--artifact"></a>
+### Nested Schema for `status.artifact`
+
+Optional:
+
+- `checksum` (String)
+- `last_update_time` (String)
+- `path` (String)
+- `revision` (String)
+- `url` (String)
+
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

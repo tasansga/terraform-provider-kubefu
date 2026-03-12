@@ -21,15 +21,15 @@ variable "apply_manifests" {
 }
 
 data "kubefu_k8s_core_namespace_v1" "inttest" {
-  metadata = {
+  metadata {
     name = "kubefu-inttest"
   }
 }
 
 data "kubefu_k8s_core_config_map_v1" "inttest" {
-  metadata = {
+  metadata {
     name      = "kubefu-inttest"
-    namespace = data.kubefu_k8s_core_namespace_v1.inttest.metadata["name"]
+    namespace = data.kubefu_k8s_core_namespace_v1.inttest.metadata[0].name
   }
   data = {
     hello = "world"

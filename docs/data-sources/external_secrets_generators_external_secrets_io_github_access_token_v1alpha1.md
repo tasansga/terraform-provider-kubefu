@@ -18,7 +18,7 @@ GithubAccessToken generates ghs_ accessToken
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String)
+- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
 
 ### Read-Only
 
@@ -34,3 +34,36 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `app_id` (String)
+- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth))
+- `install_id` (String)
+- `url` (String)
+
+<a id="nestedobjatt--spec--auth"></a>
+### Nested Schema for `spec.auth`
+
+Optional:
+
+- `private_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--private_key))
+
+<a id="nestedobjatt--spec--auth--private_key"></a>
+### Nested Schema for `spec.auth.private_key`
+
+Optional:
+
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--private_key--secret_ref))
+
+<a id="nestedobjatt--spec--auth--private_key--secret_ref"></a>
+### Nested Schema for `spec.auth.private_key.secret_ref`
+
+Optional:
+
+- `key` (String)
+- `name` (String)
+- `namespace` (String)

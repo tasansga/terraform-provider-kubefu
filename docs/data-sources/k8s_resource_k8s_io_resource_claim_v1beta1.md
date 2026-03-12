@@ -20,12 +20,12 @@ This is an alpha type and requires enabling the DynamicResourceAllocation featur
 
 ### Required
 
-- `spec` (Map of String) Spec describes what is being requested and how to configure it. The spec is immutable.
+- `spec` (List of Object) Spec describes what is being requested and how to configure it. The spec is immutable. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
-- `metadata` (Map of String) Standard object metadata
-- `status` (Map of String) Status describes whether the claim is ready to use and what has been allocated.
+- `metadata` (List of Object) Standard object metadata (see [below for nested schema](#nestedatt--metadata))
+- `status` (List of Object) Status describes whether the claim is ready to use and what has been allocated. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -34,3 +34,267 @@ This is an alpha type and requires enabling the DynamicResourceAllocation featur
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `devices` (List of Object) (see [below for nested schema](#nestedobjatt--spec--devices))
+
+<a id="nestedobjatt--spec--devices"></a>
+### Nested Schema for `spec.devices`
+
+Required:
+
+- `config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--devices--config))
+- `constraints` (List of Object) (see [below for nested schema](#nestedobjatt--spec--devices--constraints))
+- `requests` (List of Object) (see [below for nested schema](#nestedobjatt--spec--devices--requests))
+
+<a id="nestedobjatt--spec--devices--config"></a>
+### Nested Schema for `spec.devices.config`
+
+Required:
+
+- `opaque` (List of Object) (see [below for nested schema](#nestedobjatt--spec--devices--config--opaque))
+- `requests` (List of String)
+
+<a id="nestedobjatt--spec--devices--config--opaque"></a>
+### Nested Schema for `spec.devices.config.opaque`
+
+Required:
+
+- `driver` (String)
+- `parameters` (Map of String)
+
+
+
+<a id="nestedobjatt--spec--devices--constraints"></a>
+### Nested Schema for `spec.devices.constraints`
+
+Required:
+
+- `match_attribute` (String)
+- `requests` (List of String)
+
+
+<a id="nestedobjatt--spec--devices--requests"></a>
+### Nested Schema for `spec.devices.requests`
+
+Required:
+
+- `admin_access` (Boolean)
+- `allocation_mode` (String)
+- `count_` (Number)
+- `device_class_name` (String)
+- `name` (String)
+- `selectors` (List of Object) (see [below for nested schema](#nestedobjatt--spec--devices--requests--selectors))
+
+<a id="nestedobjatt--spec--devices--requests--selectors"></a>
+### Nested Schema for `spec.devices.requests.selectors`
+
+Required:
+
+- `cel` (List of Object) (see [below for nested schema](#nestedobjatt--spec--devices--requests--selectors--cel))
+
+<a id="nestedobjatt--spec--devices--requests--selectors--cel"></a>
+### Nested Schema for `spec.devices.requests.selectors.cel`
+
+Required:
+
+- `expression` (String)
+
+
+
+
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `allocation` (List of Object) (see [below for nested schema](#nestedobjatt--status--allocation))
+- `devices` (List of Object) (see [below for nested schema](#nestedobjatt--status--devices))
+- `reserved_for` (List of Object) (see [below for nested schema](#nestedobjatt--status--reserved_for))
+
+<a id="nestedobjatt--status--allocation"></a>
+### Nested Schema for `status.allocation`
+
+Optional:
+
+- `devices` (List of Object) (see [below for nested schema](#nestedobjatt--status--allocation--devices))
+- `node_selector` (List of Object) (see [below for nested schema](#nestedobjatt--status--allocation--node_selector))
+
+<a id="nestedobjatt--status--allocation--devices"></a>
+### Nested Schema for `status.allocation.devices`
+
+Optional:
+
+- `config` (List of Object) (see [below for nested schema](#nestedobjatt--status--allocation--devices--config))
+- `results` (List of Object) (see [below for nested schema](#nestedobjatt--status--allocation--devices--results))
+
+<a id="nestedobjatt--status--allocation--devices--config"></a>
+### Nested Schema for `status.allocation.devices.config`
+
+Optional:
+
+- `opaque` (List of Object) (see [below for nested schema](#nestedobjatt--status--allocation--devices--config--opaque))
+- `requests` (List of String)
+- `source` (String)
+
+<a id="nestedobjatt--status--allocation--devices--config--opaque"></a>
+### Nested Schema for `status.allocation.devices.config.opaque`
+
+Optional:
+
+- `driver` (String)
+- `parameters` (Map of String)
+
+
+
+<a id="nestedobjatt--status--allocation--devices--results"></a>
+### Nested Schema for `status.allocation.devices.results`
+
+Optional:
+
+- `admin_access` (Boolean)
+- `device` (String)
+- `driver` (String)
+- `pool` (String)
+- `request` (String)
+
+
+
+<a id="nestedobjatt--status--allocation--node_selector"></a>
+### Nested Schema for `status.allocation.node_selector`
+
+Optional:
+
+- `node_selector_terms` (List of Object) (see [below for nested schema](#nestedobjatt--status--allocation--node_selector--node_selector_terms))
+
+<a id="nestedobjatt--status--allocation--node_selector--node_selector_terms"></a>
+### Nested Schema for `status.allocation.node_selector.node_selector_terms`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--status--allocation--node_selector--node_selector_terms--match_expressions))
+- `match_fields` (List of Object) (see [below for nested schema](#nestedobjatt--status--allocation--node_selector--node_selector_terms--match_fields))
+
+<a id="nestedobjatt--status--allocation--node_selector--node_selector_terms--match_expressions"></a>
+### Nested Schema for `status.allocation.node_selector.node_selector_terms.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+<a id="nestedobjatt--status--allocation--node_selector--node_selector_terms--match_fields"></a>
+### Nested Schema for `status.allocation.node_selector.node_selector_terms.match_fields`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+
+
+<a id="nestedobjatt--status--devices"></a>
+### Nested Schema for `status.devices`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--devices--conditions))
+- `data` (Map of String)
+- `device` (String)
+- `driver` (String)
+- `network_data` (List of Object) (see [below for nested schema](#nestedobjatt--status--devices--network_data))
+- `pool` (String)
+
+<a id="nestedobjatt--status--devices--conditions"></a>
+### Nested Schema for `status.devices.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--devices--network_data"></a>
+### Nested Schema for `status.devices.network_data`
+
+Optional:
+
+- `hardware_address` (String)
+- `interface_name` (String)
+- `ips` (List of String)
+
+
+
+<a id="nestedobjatt--status--reserved_for"></a>
+### Nested Schema for `status.reserved_for`
+
+Optional:
+
+- `api_group` (String)
+- `name` (String)
+- `resource` (String)
+- `uid` (String)

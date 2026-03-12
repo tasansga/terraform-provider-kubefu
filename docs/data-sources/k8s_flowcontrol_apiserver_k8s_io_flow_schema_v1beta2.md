@@ -17,9 +17,9 @@ FlowSchema defines the schema of a group of flows. Note that a flow is made up o
 
 ### Optional
 
-- `metadata` (Map of String) `metadata` is the standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
-- `spec` (Map of String) `spec` is the specification of the desired behavior of a FlowSchema. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
-- `status` (Map of String) `status` is the current status of a FlowSchema. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+- `metadata` (List of Object) `metadata` is the standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata (see [below for nested schema](#nestedatt--metadata))
+- `spec` (List of Object) `spec` is the specification of the desired behavior of a FlowSchema. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) `status` is the current status of a FlowSchema. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -28,3 +28,165 @@ FlowSchema defines the schema of a group of flows. Note that a flow is made up o
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `distinguisher_method` (List of Object) (see [below for nested schema](#nestedobjatt--spec--distinguisher_method))
+- `matching_precedence` (Number)
+- `priority_level_configuration` (List of Object) (see [below for nested schema](#nestedobjatt--spec--priority_level_configuration))
+- `rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules))
+
+<a id="nestedobjatt--spec--distinguisher_method"></a>
+### Nested Schema for `spec.distinguisher_method`
+
+Optional:
+
+- `type` (String)
+
+
+<a id="nestedobjatt--spec--priority_level_configuration"></a>
+### Nested Schema for `spec.priority_level_configuration`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--rules"></a>
+### Nested Schema for `spec.rules`
+
+Optional:
+
+- `non_resource_rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--non_resource_rules))
+- `resource_rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--resource_rules))
+- `subjects` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--subjects))
+
+<a id="nestedobjatt--spec--rules--non_resource_rules"></a>
+### Nested Schema for `spec.rules.non_resource_rules`
+
+Optional:
+
+- `non_resource_ur_ls` (List of String)
+- `verbs` (List of String)
+
+
+<a id="nestedobjatt--spec--rules--resource_rules"></a>
+### Nested Schema for `spec.rules.resource_rules`
+
+Optional:
+
+- `api_groups` (List of String)
+- `cluster_scope` (Boolean)
+- `namespaces` (List of String)
+- `resources` (List of String)
+- `verbs` (List of String)
+
+
+<a id="nestedobjatt--spec--rules--subjects"></a>
+### Nested Schema for `spec.rules.subjects`
+
+Optional:
+
+- `group` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--subjects--group))
+- `kind` (String)
+- `service_account` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--subjects--service_account))
+- `user` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rules--subjects--user))
+
+<a id="nestedobjatt--spec--rules--subjects--group"></a>
+### Nested Schema for `spec.rules.subjects.group`
+
+Optional:
+
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--rules--subjects--service_account"></a>
+### Nested Schema for `spec.rules.subjects.service_account`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--rules--subjects--user"></a>
+### Nested Schema for `spec.rules.subjects.user`
+
+Optional:
+
+- `name` (String)
+
+
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `reason` (String)
+- `status` (String)
+- `type` (String)

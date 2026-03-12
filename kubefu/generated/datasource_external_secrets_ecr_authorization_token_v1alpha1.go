@@ -49,11 +49,183 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 				Computed:    true,
 			},
 			"spec": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"auth": {
+						Type:        schema.TypeList,
+						Description: "Auth defines how to authenticate with AWS",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"jwt": {
+								Type:        schema.TypeList,
+								Description: "Authenticate against AWS using service account tokens.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"service_account_ref": {
+										Type:        schema.TypeList,
+										Description: "A reference to a ServiceAccount resource.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"audiences": {
+												Type:        schema.TypeList,
+												Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Schema{Type: schema.TypeString},
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the ServiceAccount resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+							"secret_ref": {
+								Type:        schema.TypeList,
+								Description: "AWSAuthSecretRef holds secret references for AWS credentials\nboth AccessKeyID and SecretAccessKey must be defined in order to properly authenticate.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"access_key_id_secret_ref": {
+										Type:        schema.TypeList,
+										Description: "The AccessKeyID is used for authentication",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"key": {
+												Type:        schema.TypeString,
+												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the Secret resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"secret_access_key_secret_ref": {
+										Type:        schema.TypeList,
+										Description: "The SecretAccessKey is used for authentication",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"key": {
+												Type:        schema.TypeString,
+												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the Secret resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"session_token_secret_ref": {
+										Type:        schema.TypeList,
+										Description: "The SessionToken used for authentication\nThis must be defined if AccessKeyID and SecretAccessKey are temporary credentials\nsee: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"key": {
+												Type:        schema.TypeString,
+												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the Secret resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+						}},
+					},
+					"region": {
+						Type:        schema.TypeString,
+						Description: "Region specifies the region to operate in.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"role": {
+						Type:        schema.TypeString,
+						Description: "You can assume a role before making calls to the\ndesired AWS service.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
 			},
 		},
 	}
@@ -65,7 +237,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "ECRAuthorizationToken", "generators.external-secrets.io/v1alpha1/ECRAuthorizationToken"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifest(d, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.jwt", "spec.auth.jwt.service_account_ref", "spec.auth.secret_ref", "spec.auth.secret_ref.access_key_id_secret_ref", "spec.auth.secret_ref.secret_access_key_secret_ref", "spec.auth.secret_ref.session_token_secret_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

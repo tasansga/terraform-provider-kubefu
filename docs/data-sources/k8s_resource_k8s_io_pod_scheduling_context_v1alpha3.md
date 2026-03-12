@@ -20,12 +20,12 @@ This is an alpha type and requires enabling the DRAControlPlaneController featur
 
 ### Required
 
-- `spec` (Map of String) Spec describes where resources for the Pod are needed.
+- `spec` (List of Object) Spec describes where resources for the Pod are needed. (see [below for nested schema](#nestedatt--spec))
 
 ### Optional
 
-- `metadata` (Map of String) Standard object metadata
-- `status` (Map of String) Status describes where resources for the Pod can be allocated.
+- `metadata` (List of Object) Standard object metadata (see [below for nested schema](#nestedatt--metadata))
+- `status` (List of Object) Status describes where resources for the Pod can be allocated. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -34,3 +34,76 @@ This is an alpha type and requires enabling the DRAControlPlaneController featur
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Required:
+
+- `potential_nodes` (List of String)
+- `selected_node` (String)
+
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `subresource` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `resource_claims` (List of Object) (see [below for nested schema](#nestedobjatt--status--resource_claims))
+
+<a id="nestedobjatt--status--resource_claims"></a>
+### Nested Schema for `status.resource_claims`
+
+Optional:
+
+- `name` (String)
+- `unsuitable_nodes` (List of String)

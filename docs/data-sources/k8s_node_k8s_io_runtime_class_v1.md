@@ -21,11 +21,11 @@ RuntimeClass defines a class of container runtime supported in the cluster. The 
 
 ### Optional
 
-- `metadata` (Map of String) More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
-- `overhead` (Map of String) Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. For more details, see
+- `metadata` (List of Object) More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata (see [below for nested schema](#nestedatt--metadata))
+- `overhead` (List of Object) Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. For more details, see
  https://kubernetes.io/docs/concepts/scheduling-eviction/pod-overhead/
-This field is in beta starting v1.18 and is only honored by servers that enable the PodOverhead feature.
-- `scheduling` (Map of String) Scheduling holds the scheduling constraints to ensure that pods running with this RuntimeClass are scheduled to nodes that support it. If scheduling is nil, this RuntimeClass is assumed to be supported by all nodes.
+This field is in beta starting v1.18 and is only honored by servers that enable the PodOverhead feature. (see [below for nested schema](#nestedatt--overhead))
+- `scheduling` (List of Object) Scheduling holds the scheduling constraints to ensure that pods running with this RuntimeClass are scheduled to nodes that support it. If scheduling is nil, this RuntimeClass is assumed to be supported by all nodes. (see [below for nested schema](#nestedatt--scheduling))
 
 ### Read-Only
 
@@ -34,3 +34,79 @@ This field is in beta starting v1.18 and is only honored by servers that enable 
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String)
+- `cluster_name` (String)
+- `creation_timestamp` (String)
+- `deletion_grace_period_seconds` (Number)
+- `deletion_timestamp` (String)
+- `finalizers` (List of String)
+- `generate_name` (String)
+- `generation` (Number)
+- `labels` (Map of String)
+- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
+- `name` (String)
+- `namespace` (String)
+- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
+- `resource_version` (String)
+- `self_link` (String)
+- `uid` (String)
+
+<a id="nestedobjatt--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String)
+- `fields_type` (String)
+- `fields_v1` (Map of String)
+- `manager` (String)
+- `operation` (String)
+- `time` (String)
+
+
+<a id="nestedobjatt--metadata--owner_references"></a>
+### Nested Schema for `metadata.owner_references`
+
+Optional:
+
+- `api_version` (String)
+- `block_owner_deletion` (Boolean)
+- `controller` (Boolean)
+- `kind` (String)
+- `name` (String)
+- `uid` (String)
+
+
+
+<a id="nestedatt--overhead"></a>
+### Nested Schema for `overhead`
+
+Optional:
+
+- `pod_fixed` (Map of String)
+
+
+<a id="nestedatt--scheduling"></a>
+### Nested Schema for `scheduling`
+
+Optional:
+
+- `node_selector` (Map of String)
+- `tolerations` (List of Object) (see [below for nested schema](#nestedobjatt--scheduling--tolerations))
+
+<a id="nestedobjatt--scheduling--tolerations"></a>
+### Nested Schema for `scheduling.tolerations`
+
+Optional:
+
+- `effect` (String)
+- `key` (String)
+- `operator` (String)
+- `toleration_seconds` (Number)
+- `value` (String)

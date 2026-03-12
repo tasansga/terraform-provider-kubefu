@@ -18,8 +18,8 @@ Kustomization is the Schema for the kustomizations API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) KustomizationSpec defines the configuration to calculate the desired state from a Source using Kustomize.
-- `status` (Map of String) KustomizationStatus defines the observed state of a kustomization.
+- `spec` (List of Object) KustomizationSpec defines the configuration to calculate the desired state from a Source using Kustomize. (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) KustomizationStatus defines the observed state of a kustomization. (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -28,3 +28,221 @@ Kustomization is the Schema for the kustomizations API.
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `decryption` (List of Object) (see [below for nested schema](#nestedobjatt--spec--decryption))
+- `depends_on_` (List of Object) (see [below for nested schema](#nestedobjatt--spec--depends_on_))
+- `force` (Boolean)
+- `health_checks` (List of Object) (see [below for nested schema](#nestedobjatt--spec--health_checks))
+- `images` (List of Object) (see [below for nested schema](#nestedobjatt--spec--images))
+- `interval` (String)
+- `kube_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--kube_config))
+- `patches` (List of Object) (see [below for nested schema](#nestedobjatt--spec--patches))
+- `patches_json6902` (List of Object) (see [below for nested schema](#nestedobjatt--spec--patches_json6902))
+- `patches_strategic_merge` (List of String)
+- `path` (String)
+- `post_build` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_build))
+- `prune` (Boolean)
+- `retry_interval` (String)
+- `service_account_name` (String)
+- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--source_ref))
+- `suspend` (Boolean)
+- `target_namespace` (String)
+- `timeout` (String)
+- `validation` (String)
+- `wait` (Boolean)
+
+<a id="nestedobjatt--spec--decryption"></a>
+### Nested Schema for `spec.decryption`
+
+Optional:
+
+- `provider_` (String)
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--decryption--secret_ref))
+
+<a id="nestedobjatt--spec--decryption--secret_ref"></a>
+### Nested Schema for `spec.decryption.secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--depends_on_"></a>
+### Nested Schema for `spec.depends_on_`
+
+Optional:
+
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--health_checks"></a>
+### Nested Schema for `spec.health_checks`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--images"></a>
+### Nested Schema for `spec.images`
+
+Optional:
+
+- `digest` (String)
+- `name` (String)
+- `new_name` (String)
+- `new_tag` (String)
+
+
+<a id="nestedobjatt--spec--kube_config"></a>
+### Nested Schema for `spec.kube_config`
+
+Optional:
+
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--kube_config--secret_ref))
+
+<a id="nestedobjatt--spec--kube_config--secret_ref"></a>
+### Nested Schema for `spec.kube_config.secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--patches"></a>
+### Nested Schema for `spec.patches`
+
+Optional:
+
+- `patch` (String)
+- `target` (List of Object) (see [below for nested schema](#nestedobjatt--spec--patches--target))
+
+<a id="nestedobjatt--spec--patches--target"></a>
+### Nested Schema for `spec.patches.target`
+
+Optional:
+
+- `annotation_selector` (String)
+- `group` (String)
+- `kind` (String)
+- `label_selector` (String)
+- `name` (String)
+- `namespace` (String)
+- `version` (String)
+
+
+
+<a id="nestedobjatt--spec--patches_json6902"></a>
+### Nested Schema for `spec.patches_json6902`
+
+Optional:
+
+- `patch` (List of Object) (see [below for nested schema](#nestedobjatt--spec--patches_json6902--patch))
+- `target` (List of Object) (see [below for nested schema](#nestedobjatt--spec--patches_json6902--target))
+
+<a id="nestedobjatt--spec--patches_json6902--patch"></a>
+### Nested Schema for `spec.patches_json6902.patch`
+
+Optional:
+
+- `from` (String)
+- `op` (String)
+- `path` (String)
+- `value` (String)
+
+
+<a id="nestedobjatt--spec--patches_json6902--target"></a>
+### Nested Schema for `spec.patches_json6902.target`
+
+Optional:
+
+- `annotation_selector` (String)
+- `group` (String)
+- `kind` (String)
+- `label_selector` (String)
+- `name` (String)
+- `namespace` (String)
+- `version` (String)
+
+
+
+<a id="nestedobjatt--spec--post_build"></a>
+### Nested Schema for `spec.post_build`
+
+Optional:
+
+- `substitute` (Map of String)
+- `substitute_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_build--substitute_from))
+
+<a id="nestedobjatt--spec--post_build--substitute_from"></a>
+### Nested Schema for `spec.post_build.substitute_from`
+
+Optional:
+
+- `kind` (String)
+- `name` (String)
+
+
+
+<a id="nestedobjatt--spec--source_ref"></a>
+### Nested Schema for `spec.source_ref`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `inventory` (List of Object) (see [below for nested schema](#nestedobjatt--status--inventory))
+- `last_applied_revision` (String)
+- `last_attempted_revision` (String)
+- `last_handled_reconcile_at` (String)
+- `observed_generation` (Number)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
+
+
+<a id="nestedobjatt--status--inventory"></a>
+### Nested Schema for `status.inventory`
+
+Optional:
+
+- `entries` (List of Object) (see [below for nested schema](#nestedobjatt--status--inventory--entries))
+
+<a id="nestedobjatt--status--inventory--entries"></a>
+### Nested Schema for `status.inventory.entries`
+
+Optional:
+
+- `id` (String)
+- `v` (String)

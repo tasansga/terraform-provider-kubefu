@@ -18,8 +18,8 @@ ImageUpdateAutomation is the Schema for the imageupdateautomations API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Map of String) ImageUpdateAutomationSpec defines the desired state of ImageUpdateAutomation
-- `status` (Map of String) ImageUpdateAutomationStatus defines the observed state of ImageUpdateAutomation
+- `spec` (List of Object) ImageUpdateAutomationSpec defines the desired state of ImageUpdateAutomation (see [below for nested schema](#nestedatt--spec))
+- `status` (List of Object) ImageUpdateAutomationStatus defines the observed state of ImageUpdateAutomation (see [below for nested schema](#nestedatt--status))
 
 ### Read-Only
 
@@ -35,3 +35,156 @@ In CamelCase.
 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedatt--spec"></a>
+### Nested Schema for `spec`
+
+Optional:
+
+- `git` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git))
+- `interval` (String)
+- `policy_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--policy_selector))
+- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--source_ref))
+- `suspend` (Boolean)
+- `update` (List of Object) (see [below for nested schema](#nestedobjatt--spec--update))
+
+<a id="nestedobjatt--spec--git"></a>
+### Nested Schema for `spec.git`
+
+Optional:
+
+- `checkout` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--checkout))
+- `commit` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--commit))
+- `push` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--push))
+
+<a id="nestedobjatt--spec--git--checkout"></a>
+### Nested Schema for `spec.git.checkout`
+
+Optional:
+
+- `ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--checkout--ref))
+
+<a id="nestedobjatt--spec--git--checkout--ref"></a>
+### Nested Schema for `spec.git.checkout.ref`
+
+Optional:
+
+- `branch` (String)
+- `commit` (String)
+- `name` (String)
+- `semver` (String)
+- `tag` (String)
+
+
+
+<a id="nestedobjatt--spec--git--commit"></a>
+### Nested Schema for `spec.git.commit`
+
+Optional:
+
+- `author` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--commit--author))
+- `message_template` (String)
+- `signing_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--commit--signing_key))
+
+<a id="nestedobjatt--spec--git--commit--author"></a>
+### Nested Schema for `spec.git.commit.author`
+
+Optional:
+
+- `email` (String)
+- `name` (String)
+
+
+<a id="nestedobjatt--spec--git--commit--signing_key"></a>
+### Nested Schema for `spec.git.commit.signing_key`
+
+Optional:
+
+- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--commit--signing_key--secret_ref))
+
+<a id="nestedobjatt--spec--git--commit--signing_key--secret_ref"></a>
+### Nested Schema for `spec.git.commit.signing_key.secret_ref`
+
+Optional:
+
+- `name` (String)
+
+
+
+
+<a id="nestedobjatt--spec--git--push"></a>
+### Nested Schema for `spec.git.push`
+
+Optional:
+
+- `branch` (String)
+- `options` (Map of String)
+- `refspec` (String)
+
+
+
+<a id="nestedobjatt--spec--policy_selector"></a>
+### Nested Schema for `spec.policy_selector`
+
+Optional:
+
+- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--policy_selector--match_expressions))
+- `match_labels` (Map of String)
+
+<a id="nestedobjatt--spec--policy_selector--match_expressions"></a>
+### Nested Schema for `spec.policy_selector.match_expressions`
+
+Optional:
+
+- `key` (String)
+- `operator` (String)
+- `values` (List of String)
+
+
+
+<a id="nestedobjatt--spec--source_ref"></a>
+### Nested Schema for `spec.source_ref`
+
+Optional:
+
+- `api_version` (String)
+- `kind` (String)
+- `name` (String)
+- `namespace` (String)
+
+
+<a id="nestedobjatt--spec--update"></a>
+### Nested Schema for `spec.update`
+
+Optional:
+
+- `path` (String)
+- `strategy` (String)
+
+
+
+<a id="nestedatt--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `last_automation_run_time` (String)
+- `last_handled_reconcile_at` (String)
+- `last_push_commit` (String)
+- `last_push_time` (String)
+- `observed_generation` (Number)
+- `observed_policies` (Map of String)
+- `observed_source_revision` (String)
+
+<a id="nestedobjatt--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String)
+- `message` (String)
+- `observed_generation` (Number)
+- `reason` (String)
+- `status` (String)
+- `type` (String)
