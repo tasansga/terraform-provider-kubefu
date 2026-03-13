@@ -18,8 +18,8 @@ Generated data source for crd.external-secrets.io.v1alpha1.ClusterPushSecret
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -36,37 +36,44 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `namespace_selectors` (List of Object) (see [below for nested schema](#nestedobjatt--spec--namespace_selectors))
-- `push_secret_metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_metadata))
-- `push_secret_name` (String)
-- `push_secret_spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec))
-- `refresh_time` (String)
+- `namespace_selectors` (Block List) A list of labels to select by to find the Namespaces to create the ExternalSecrets in. The selectors are ORed. (see [below for nested schema](#nestedblock--spec--namespace_selectors))
+- `push_secret_metadata` (Block List, Max: 1) The metadata of the external secrets to be created (see [below for nested schema](#nestedblock--spec--push_secret_metadata))
+- `push_secret_name` (String) The name of the push secrets to be created.
+Defaults to the name of the ClusterPushSecret
+- `push_secret_spec` (Block List, Max: 1) PushSecretSpec defines what to do with the secrets. (see [below for nested schema](#nestedblock--spec--push_secret_spec))
+- `refresh_time` (String) The time in which the controller should reconcile its objects and recheck namespaces for labels.
 
-<a id="nestedobjatt--spec--namespace_selectors"></a>
+<a id="nestedblock--spec--namespace_selectors"></a>
 ### Nested Schema for `spec.namespace_selectors`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--namespace_selectors--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--namespace_selectors--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--namespace_selectors--match_expressions"></a>
+<a id="nestedblock--spec--namespace_selectors--match_expressions"></a>
 ### Nested Schema for `spec.namespace_selectors.match_expressions`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
 
 
 
-<a id="nestedobjatt--spec--push_secret_metadata"></a>
+<a id="nestedblock--spec--push_secret_metadata"></a>
 ### Nested Schema for `spec.push_secret_metadata`
 
 Optional:
@@ -75,136 +82,152 @@ Optional:
 - `labels` (Map of String)
 
 
-<a id="nestedobjatt--spec--push_secret_spec"></a>
+<a id="nestedblock--spec--push_secret_spec"></a>
 ### Nested Schema for `spec.push_secret_spec`
 
 Optional:
 
-- `data` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--data))
-- `deletion_policy` (String)
-- `refresh_interval` (String)
-- `secret_store_refs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--secret_store_refs))
-- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--selector))
-- `template` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--template))
-- `update_policy` (String)
+- `data` (Block List) Secret Data that should be pushed to providers (see [below for nested schema](#nestedblock--spec--push_secret_spec--data))
+- `deletion_policy` (String) Deletion Policy to handle Secrets in the provider.
+- `refresh_interval` (String) The Interval to which External Secrets will try to push a secret definition
+- `secret_store_refs` (Block List) (see [below for nested schema](#nestedblock--spec--push_secret_spec--secret_store_refs))
+- `selector` (Block List, Max: 1) The Secret Selector (k8s source) for the Push Secret (see [below for nested schema](#nestedblock--spec--push_secret_spec--selector))
+- `template` (Block List, Max: 1) Template defines a blueprint for the created Secret resource. (see [below for nested schema](#nestedblock--spec--push_secret_spec--template))
+- `update_policy` (String) UpdatePolicy to handle Secrets in the provider.
 
-<a id="nestedobjatt--spec--push_secret_spec--data"></a>
+<a id="nestedblock--spec--push_secret_spec--data"></a>
 ### Nested Schema for `spec.push_secret_spec.data`
 
 Optional:
 
-- `conversion_strategy` (String)
-- `match` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--data--match))
-- `metadata` (String)
+- `conversion_strategy` (String) Used to define a conversion Strategy for the secret keys
+- `match` (Block List, Max: 1) Match a given Secret Key to be pushed to the provider. (see [below for nested schema](#nestedblock--spec--push_secret_spec--data--match))
+- `metadata` (Map of String) Metadata is metadata attached to the secret.
+The structure of metadata is provider specific, please look it up in the provider documentation.
 
-<a id="nestedobjatt--spec--push_secret_spec--data--match"></a>
+<a id="nestedblock--spec--push_secret_spec--data--match"></a>
 ### Nested Schema for `spec.push_secret_spec.data.match`
 
 Optional:
 
-- `remote_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--data--match--remote_ref))
-- `secret_key` (String)
+- `remote_ref` (Block List, Max: 1) Remote Refs to push to providers. (see [below for nested schema](#nestedblock--spec--push_secret_spec--data--match--remote_ref))
+- `secret_key` (String) Secret Key to be pushed
 
-<a id="nestedobjatt--spec--push_secret_spec--data--match--remote_ref"></a>
+<a id="nestedblock--spec--push_secret_spec--data--match--remote_ref"></a>
 ### Nested Schema for `spec.push_secret_spec.data.match.remote_ref`
 
 Optional:
 
-- `property` (String)
-- `remote_key` (String)
+- `property` (String) Name of the property in the resulting secret
+- `remote_key` (String) Name of the resulting provider secret.
 
 
 
 
-<a id="nestedobjatt--spec--push_secret_spec--secret_store_refs"></a>
+<a id="nestedblock--spec--push_secret_spec--secret_store_refs"></a>
 ### Nested Schema for `spec.push_secret_spec.secret_store_refs`
 
 Optional:
 
-- `kind` (String)
-- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--secret_store_refs--label_selector))
-- `name` (String)
+- `kind` (String) Kind of the SecretStore resource (SecretStore or ClusterSecretStore)
+- `label_selector` (Block List, Max: 1) Optionally, sync to secret stores with label selector (see [below for nested schema](#nestedblock--spec--push_secret_spec--secret_store_refs--label_selector))
+- `name` (String) Optionally, sync to the SecretStore of the given name
 
-<a id="nestedobjatt--spec--push_secret_spec--secret_store_refs--label_selector"></a>
+<a id="nestedblock--spec--push_secret_spec--secret_store_refs--label_selector"></a>
 ### Nested Schema for `spec.push_secret_spec.secret_store_refs.label_selector`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--secret_store_refs--label_selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--push_secret_spec--secret_store_refs--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--push_secret_spec--secret_store_refs--label_selector--match_expressions"></a>
+<a id="nestedblock--spec--push_secret_spec--secret_store_refs--label_selector--match_expressions"></a>
 ### Nested Schema for `spec.push_secret_spec.secret_store_refs.label_selector.match_expressions`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
 
 
 
 
-<a id="nestedobjatt--spec--push_secret_spec--selector"></a>
+<a id="nestedblock--spec--push_secret_spec--selector"></a>
 ### Nested Schema for `spec.push_secret_spec.selector`
 
 Optional:
 
-- `generator_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--selector--generator_ref))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--selector--secret))
+- `generator_ref` (Block List, Max: 1) Point to a generator to create a Secret. (see [below for nested schema](#nestedblock--spec--push_secret_spec--selector--generator_ref))
+- `secret` (Block List, Max: 1) Select a Secret to Push. (see [below for nested schema](#nestedblock--spec--push_secret_spec--selector--secret))
 
-<a id="nestedobjatt--spec--push_secret_spec--selector--generator_ref"></a>
+<a id="nestedblock--spec--push_secret_spec--selector--generator_ref"></a>
 ### Nested Schema for `spec.push_secret_spec.selector.generator_ref`
 
 Optional:
 
-- `api_version` (String)
-- `kind` (String)
-- `name` (String)
+- `api_version` (String) Specify the apiVersion of the generator resource
+- `kind` (String) Specify the Kind of the generator resource
+- `name` (String) Specify the name of the generator resource
 
 
-<a id="nestedobjatt--spec--push_secret_spec--selector--secret"></a>
+<a id="nestedblock--spec--push_secret_spec--selector--secret"></a>
 ### Nested Schema for `spec.push_secret_spec.selector.secret`
 
 Optional:
 
-- `name` (String)
-- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--selector--secret--selector))
+- `name` (String) Name of the Secret.
+The Secret must exist in the same namespace as the PushSecret manifest.
+- `selector` (Block List, Max: 1) Selector chooses secrets using a labelSelector. (see [below for nested schema](#nestedblock--spec--push_secret_spec--selector--secret--selector))
 
-<a id="nestedobjatt--spec--push_secret_spec--selector--secret--selector"></a>
+<a id="nestedblock--spec--push_secret_spec--selector--secret--selector"></a>
 ### Nested Schema for `spec.push_secret_spec.selector.secret.selector`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--selector--secret--selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--push_secret_spec--selector--secret--selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--push_secret_spec--selector--secret--selector--match_expressions"></a>
+<a id="nestedblock--spec--push_secret_spec--selector--secret--selector--match_expressions"></a>
 ### Nested Schema for `spec.push_secret_spec.selector.secret.selector.match_expressions`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
 
 
 
 
 
-<a id="nestedobjatt--spec--push_secret_spec--template"></a>
+<a id="nestedblock--spec--push_secret_spec--template"></a>
 ### Nested Schema for `spec.push_secret_spec.template`
 
 Optional:
 
 - `data` (Map of String)
-- `engine_version` (String)
+- `engine_version` (String) EngineVersion specifies the template engine version
+that should be used to compile/execute the
+template specified in .data and .templateFrom[].
 - `merge_policy` (String)
-- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--template--metadata))
-- `template_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--template--template_from))
+- `metadata` (Block List, Max: 1) ExternalSecretTemplateMetadata defines metadata fields for the Secret blueprint. (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--metadata))
+- `template_from` (Block List) (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from))
 - `type` (String)
 
-<a id="nestedobjatt--spec--push_secret_spec--template--metadata"></a>
+<a id="nestedblock--spec--push_secret_spec--template--metadata"></a>
 ### Nested Schema for `spec.push_secret_spec.template.metadata`
 
 Optional:
@@ -213,48 +236,48 @@ Optional:
 - `labels` (Map of String)
 
 
-<a id="nestedobjatt--spec--push_secret_spec--template--template_from"></a>
+<a id="nestedblock--spec--push_secret_spec--template--template_from"></a>
 ### Nested Schema for `spec.push_secret_spec.template.template_from`
 
 Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--template--template_from--config_map))
+- `config_map` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from--config_map))
 - `literal` (String)
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--template--template_from--secret))
+- `secret` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from--secret))
 - `target` (String)
 
-<a id="nestedobjatt--spec--push_secret_spec--template--template_from--config_map"></a>
+<a id="nestedblock--spec--push_secret_spec--template--template_from--config_map"></a>
 ### Nested Schema for `spec.push_secret_spec.template.template_from.config_map`
 
 Optional:
 
-- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--template--template_from--config_map--items))
-- `name` (String)
+- `items` (Block List) A list of keys in the ConfigMap/Secret to use as templates for Secret data (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from--config_map--items))
+- `name` (String) The name of the ConfigMap/Secret resource
 
-<a id="nestedobjatt--spec--push_secret_spec--template--template_from--config_map--items"></a>
+<a id="nestedblock--spec--push_secret_spec--template--template_from--config_map--items"></a>
 ### Nested Schema for `spec.push_secret_spec.template.template_from.config_map.items`
 
 Optional:
 
-- `key` (String)
+- `key` (String) A key in the ConfigMap/Secret
 - `template_as` (String)
 
 
 
-<a id="nestedobjatt--spec--push_secret_spec--template--template_from--secret"></a>
+<a id="nestedblock--spec--push_secret_spec--template--template_from--secret"></a>
 ### Nested Schema for `spec.push_secret_spec.template.template_from.secret`
 
 Optional:
 
-- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--push_secret_spec--template--template_from--secret--items))
-- `name` (String)
+- `items` (Block List) A list of keys in the ConfigMap/Secret to use as templates for Secret data (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from--secret--items))
+- `name` (String) The name of the ConfigMap/Secret resource
 
-<a id="nestedobjatt--spec--push_secret_spec--template--template_from--secret--items"></a>
+<a id="nestedblock--spec--push_secret_spec--template--template_from--secret--items"></a>
 ### Nested Schema for `spec.push_secret_spec.template.template_from.secret.items`
 
 Optional:
 
-- `key` (String)
+- `key` (String) A key in the ConfigMap/Secret
 - `template_as` (String)
 
 
@@ -263,17 +286,17 @@ Optional:
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `failed_namespaces` (List of Object) (see [below for nested schema](#nestedobjatt--status--failed_namespaces))
-- `provisioned_namespaces` (List of String)
+- `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
+- `failed_namespaces` (Block List) Failed namespaces are the namespaces that failed to apply an PushSecret (see [below for nested schema](#nestedblock--status--failed_namespaces))
+- `provisioned_namespaces` (List of String) ProvisionedNamespaces are the namespaces where the ClusterPushSecret has secrets
 - `push_secret_name` (String)
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
@@ -282,13 +305,13 @@ Optional:
 - `message` (String)
 - `reason` (String)
 - `status` (String)
-- `type` (String)
+- `type` (String) PushSecretConditionType indicates the condition of the PushSecret.
 
 
-<a id="nestedobjatt--status--failed_namespaces"></a>
+<a id="nestedblock--status--failed_namespaces"></a>
 ### Nested Schema for `status.failed_namespaces`
 
 Optional:
 
-- `namespace` (String)
-- `reason` (String)
+- `namespace` (String) Namespace is the namespace that failed when trying to apply an PushSecret
+- `reason` (String) Reason is why the PushSecret failed to apply to the namespace

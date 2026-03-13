@@ -24,7 +24,7 @@ See documentation for the full API specification for requests and responses.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) WebhookSpec controls the behavior of the external generator. Any body parameters should be passed to the server through the parameters field. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Max: 1) WebhookSpec controls the behavior of the external generator. Any body parameters should be passed to the server through the parameters field. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -41,52 +41,56 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `body` (String)
-- `ca_bundle` (String)
-- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ca_provider))
-- `headers` (Map of String)
-- `method` (String)
-- `result` (List of Object) (see [below for nested schema](#nestedobjatt--spec--result))
-- `secrets` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secrets))
-- `timeout` (String)
-- `url` (String)
+- `body` (String) Body
+- `ca_bundle` (String) PEM encoded CA bundle used to validate webhook server certificate. Only used
+if the Server URL is using HTTPS protocol. This parameter is ignored for
+plain HTTP protocol connection. If not set the system root certificates
+are used to validate the TLS connection.
+- `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate webhook server certificate. (see [below for nested schema](#nestedblock--spec--ca_provider))
+- `headers` (Map of String) Headers
+- `method` (String) Webhook Method
+- `result` (Block List, Max: 1) Result formatting (see [below for nested schema](#nestedblock--spec--result))
+- `secrets` (Block List) Secrets to fill in templates
+These secrets will be passed to the templating function as key value pairs under the given name (see [below for nested schema](#nestedblock--spec--secrets))
+- `timeout` (String) Timeout
+- `url` (String) Webhook url to call
 
-<a id="nestedobjatt--spec--ca_provider"></a>
+<a id="nestedblock--spec--ca_provider"></a>
 ### Nested Schema for `spec.ca_provider`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
-- `type` (String)
+- `key` (String) The key the value inside of the provider type to use, only used with "Secret" type
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
 
 
-<a id="nestedobjatt--spec--result"></a>
+<a id="nestedblock--spec--result"></a>
 ### Nested Schema for `spec.result`
 
 Optional:
 
-- `json_path` (String)
+- `json_path` (String) Json path of return value
 
 
-<a id="nestedobjatt--spec--secrets"></a>
+<a id="nestedblock--spec--secrets"></a>
 ### Nested Schema for `spec.secrets`
 
 Optional:
 
-- `name` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secrets--secret_ref))
+- `name` (String) Name of this secret in templates
+- `secret_ref` (Block List, Max: 1) Secret ref to fill in credentials (see [below for nested schema](#nestedblock--spec--secrets--secret_ref))
 
-<a id="nestedobjatt--spec--secrets--secret_ref"></a>
+<a id="nestedblock--spec--secrets--secret_ref"></a>
 ### Nested Schema for `spec.secrets.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key where the token is found.
+- `name` (String) The name of the Secret resource being referred to.

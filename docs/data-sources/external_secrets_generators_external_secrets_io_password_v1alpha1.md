@@ -22,7 +22,7 @@ You can specify the length, characterset and other attributes.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) PasswordSpec controls the behavior of the password generator. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Max: 1) PasswordSpec controls the behavior of the password generator. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -39,14 +39,18 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `allow_repeat` (Boolean)
-- `digits` (Number)
-- `length` (Number)
-- `no_upper` (Boolean)
-- `symbol_characters` (String)
-- `symbols` (Number)
+- `allow_repeat` (Boolean) set AllowRepeat to true to allow repeating characters.
+- `digits` (Number) Digits specifies the number of digits in the generated
+password. If omitted it defaults to 25% of the length of the password
+- `length` (Number) Length of the password to be generated.
+Defaults to 24
+- `no_upper` (Boolean) Set NoUpper to disable uppercase characters
+- `symbol_characters` (String) SymbolCharacters specifies the special characters that should be used
+in the generated password.
+- `symbols` (Number) Symbols specifies the number of symbol characters in the generated
+password. If omitted it defaults to 25% of the length of the password

@@ -272,12 +272,13 @@ type definition struct {
 }
 
 type property struct {
-	Description string              `json:"description"`
-	Type        string              `json:"type"`
-	Format      string              `json:"format"`
-	Items       *property           `json:"items"`
-	Ref         string              `json:"$ref"`
-	Properties  map[string]property `json:"properties"`
+	Description                      string              `json:"description"`
+	Type                             string              `json:"type"`
+	Format                           string              `json:"format"`
+	Items                            *property           `json:"items"`
+	Ref                              string              `json:"$ref"`
+	Properties                       map[string]property `json:"properties"`
+	XKubernetesPreserveUnknownFields bool                `json:"x-kubernetes-preserve-unknown-fields" yaml:"x-kubernetes-preserve-unknown-fields"`
 }
 
 var jsonToSchemaType = map[string]schema.ValueType{
@@ -336,6 +337,10 @@ func (b *schemaBuilder) buildSchemaForProperty(name string, prop property, isReq
 		Required:    isRequired,
 		Computed:    !isRequired,
 	}
+	if prop.XKubernetesPreserveUnknownFields && len(prop.Properties) == 0 {
+		sch.Type = schema.TypeMap
+		return sch
+	}
 	if prop.Type == "array" {
 		sch.Type = schema.TypeList
 		sch.Elem = b.buildElemFromProperty(prop.Items)
@@ -393,6 +398,9 @@ func (b *schemaBuilder) buildObjectSchema(elem *schema.Resource, isRequired bool
 func (b *schemaBuilder) buildElemFromProperty(p *property) interface{} {
 	if p == nil {
 		return &schema.Resource{Schema: map[string]*schema.Schema{}}
+	}
+	if p.XKubernetesPreserveUnknownFields && len(p.Properties) == 0 {
+		return &schema.Schema{Type: schema.TypeMap}
 	}
 	if p.Ref != "" {
 		return b.buildElemFromRef(p.Ref)

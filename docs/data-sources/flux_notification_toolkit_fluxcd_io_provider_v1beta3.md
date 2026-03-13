@@ -18,7 +18,7 @@ Provider is the Schema for the providers API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) ProviderSpec defines the desired state of the Provider. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Max: 1) ProviderSpec defines the desired state of the Provider. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -28,32 +28,33 @@ Provider is the Schema for the providers API
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `address` (String)
-- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cert_secret_ref))
-- `channel` (String)
-- `proxy` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
-- `suspend` (Boolean)
-- `timeout` (String)
-- `type` (String)
-- `username` (String)
+- `address` (String) Address specifies the endpoint, in a generic sense, to where alerts are sent. What kind of endpoint depends on the specific Provider type being used. For the generic Provider, for example, this is an HTTP/S address. For other Provider types this could be a project ID or a namespace.
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef specifies the Secret containing a PEM-encoded CA certificate (in the `ca.crt` key).
+ Note: Support for the `caFile` key has been deprecated. (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
+- `channel` (String) Channel specifies the destination channel where events should be posted.
+- `proxy` (String) Proxy the HTTP/S address of the proxy server.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing the authentication credentials for this Provider. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `suspend` (Boolean) Suspend tells the controller to suspend subsequent events handling for this Provider.
+- `timeout` (String) Timeout for sending alerts to the Provider.
+- `type` (String) Type specifies which Provider implementation to use.
+- `username` (String) Username specifies the name under which events are posted.
 
-<a id="nestedobjatt--spec--cert_secret_ref"></a>
+<a id="nestedblock--spec--cert_secret_ref"></a>
 ### Nested Schema for `spec.cert_secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--secret_ref"></a>
+<a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.

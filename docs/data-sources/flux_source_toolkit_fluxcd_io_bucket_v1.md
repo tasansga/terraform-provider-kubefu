@@ -18,9 +18,9 @@ Bucket is the Schema for the buckets API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) BucketSpec specifies the required configuration to produce an Artifact for
-an object storage bucket. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) BucketStatus records the observed state of a Bucket. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) BucketSpec specifies the required configuration to produce an Artifact for
+an object storage bucket. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) BucketStatus records the observed state of a Bucket. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -37,112 +37,173 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `bucket_name` (String)
-- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cert_secret_ref))
-- `endpoint` (String)
-- `ignore` (String)
-- `insecure` (Boolean)
-- `interval` (String)
-- `prefix` (String)
-- `provider_` (String)
-- `proxy_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--proxy_secret_ref))
-- `region` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
-- `sts` (List of Object) (see [below for nested schema](#nestedobjatt--spec--sts))
-- `suspend` (Boolean)
-- `timeout` (String)
+- `bucket_name` (String) BucketName is the name of the object storage bucket.
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef can be given the name of a Secret containing
+either or both of
 
-<a id="nestedobjatt--spec--cert_secret_ref"></a>
+- a PEM-encoded client certificate (`tls.crt`) and private
+key (`tls.key`);
+- a PEM-encoded CA certificate (`ca.crt`)
+
+and whichever are supplied, will be used for connecting to the
+bucket. The client cert and key are useful if you are
+authenticating with a certificate; the CA cert is useful if
+you are using a self-signed server certificate. The Secret must
+be of type `Opaque` or `kubernetes.io/tls`.
+
+This field is only supported for the `generic` provider. (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
+- `endpoint` (String) Endpoint is the object storage address the BucketName is located at.
+- `ignore` (String) Ignore overrides the set of excluded patterns in the .sourceignore format
+(which is the same as .gitignore). If not provided, a default will be used,
+consult the documentation for your version to find out what those are.
+- `insecure` (Boolean) Insecure allows connecting to a non-TLS HTTP Endpoint.
+- `interval` (String) Interval at which the Bucket Endpoint is checked for updates.
+This interval is approximate and may be subject to jitter to ensure
+efficient use of resources.
+- `prefix` (String) Prefix to use for server-side filtering of files in the Bucket.
+- `provider_` (String) Provider of the object storage bucket.
+Defaults to 'generic', which expects an S3 (API) compatible object
+storage.
+- `proxy_secret_ref` (Block List, Max: 1) ProxySecretRef specifies the Secret containing the proxy configuration
+to use while communicating with the Bucket server. (see [below for nested schema](#nestedblock--spec--proxy_secret_ref))
+- `region` (String) Region of the Endpoint where the BucketName is located in.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing authentication credentials
+for the Bucket. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `sts` (Block List, Max: 1) STS specifies the required configuration to use a Security Token
+Service for fetching temporary credentials to authenticate in a
+Bucket provider.
+
+This field is only supported for the `aws` and `generic` providers. (see [below for nested schema](#nestedblock--spec--sts))
+- `suspend` (Boolean) Suspend tells the controller to suspend the reconciliation of this
+Bucket.
+- `timeout` (String) Timeout for fetch operations, defaults to 60s.
+
+<a id="nestedblock--spec--cert_secret_ref"></a>
 ### Nested Schema for `spec.cert_secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--proxy_secret_ref"></a>
+<a id="nestedblock--spec--proxy_secret_ref"></a>
 ### Nested Schema for `spec.proxy_secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--secret_ref"></a>
+<a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--sts"></a>
+<a id="nestedblock--spec--sts"></a>
 ### Nested Schema for `spec.sts`
 
 Optional:
 
-- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--sts--cert_secret_ref))
-- `endpoint` (String)
-- `provider_` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--sts--secret_ref))
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef can be given the name of a Secret containing
+either or both of
 
-<a id="nestedobjatt--spec--sts--cert_secret_ref"></a>
+- a PEM-encoded client certificate (`tls.crt`) and private
+key (`tls.key`);
+- a PEM-encoded CA certificate (`ca.crt`)
+
+and whichever are supplied, will be used for connecting to the
+STS endpoint. The client cert and key are useful if you are
+authenticating with a certificate; the CA cert is useful if
+you are using a self-signed server certificate. The Secret must
+be of type `Opaque` or `kubernetes.io/tls`.
+
+This field is only supported for the `ldap` provider. (see [below for nested schema](#nestedblock--spec--sts--cert_secret_ref))
+- `endpoint` (String) Endpoint is the HTTP/S endpoint of the Security Token Service from
+where temporary credentials will be fetched.
+- `provider_` (String) Provider of the Security Token Service.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing authentication credentials
+for the STS endpoint. This Secret must contain the fields `username`
+and `password` and is supported only for the `ldap` provider. (see [below for nested schema](#nestedblock--spec--sts--secret_ref))
+
+<a id="nestedblock--spec--sts--cert_secret_ref"></a>
 ### Nested Schema for `spec.sts.cert_secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--sts--secret_ref"></a>
+<a id="nestedblock--spec--sts--secret_ref"></a>
 ### Nested Schema for `spec.sts.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_handled_reconcile_at` (String)
-- `observed_generation` (Number)
-- `observed_ignore` (String)
-- `url` (String)
+- `artifact` (Block List, Max: 1) Artifact represents the last successful Bucket reconciliation. (see [below for nested schema](#nestedblock--status--artifact))
+- `conditions` (Block List) Conditions holds the conditions for the Bucket. (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent
+reconcile request value, so a change of the annotation value
+can be detected.
+- `observed_generation` (Number) ObservedGeneration is the last observed generation of the Bucket object.
+- `observed_ignore` (String) ObservedIgnore is the observed exclusion patterns used for constructing
+the source artifact.
+- `url` (String) URL is the dynamic fetch link for the latest Artifact.
+It is provided on a "best effort" basis, and using the precise
+BucketStatus.Artifact data is recommended.
 
-<a id="nestedobjatt--status--artifact"></a>
+<a id="nestedblock--status--artifact"></a>
 ### Nested Schema for `status.artifact`
 
 Optional:
 
-- `digest` (String)
-- `last_update_time` (String)
-- `metadata` (Map of String)
-- `path` (String)
-- `revision` (String)
-- `size` (Number)
-- `url` (String)
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
+- `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the
+Artifact.
+- `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
+- `path` (String) Path is the relative file path of the Artifact. It can be used to locate
+the file in the root of the Artifact storage on the local file system of
+the controller managing the Source.
+- `revision` (String) Revision is a human-readable identifier traceable in the origin source
+system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
+- `size` (Number) Size is the number of bytes in the file.
+- `url` (String) URL is the HTTP address of the Artifact as exposed by the controller
+managing the Source. It can be used to retrieve the Artifact for
+consumption, e.g. by another controller applying the Artifact contents.
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another.
+This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition.
+This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon.
+For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition.
+Producers of specific condition types may define expected values and meanings for this field,
+and whether the values are considered a guaranteed API.
+The value should be a CamelCase string.
+This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase.

@@ -17,9 +17,9 @@ PersistentVolume (PV) is a storage resource provisioned by an administrator. It 
 
 ### Optional
 
-- `metadata` (List of Object) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata (see [below for nested schema](#nestedatt--metadata))
-- `spec` (List of Object) Spec defines a specification of a persistent volume owned by the cluster. Provisioned by an administrator. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistent-volumes (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) Status represents the current information/status for the persistent volume. Populated by the system. Read-only. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistent-volumes (see [below for nested schema](#nestedatt--status))
+- `metadata` (Block List, Max: 1) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata (see [below for nested schema](#nestedblock--metadata))
+- `spec` (Block List, Max: 1) Spec defines a specification of a persistent volume owned by the cluster. Provisioned by an administrator. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistent-volumes (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) Status represents the current information/status for the persistent volume. Populated by the system. Read-only. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistent-volumes (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,541 +29,624 @@ PersistentVolume (PV) is a storage resource provisioned by an administrator. It 
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--metadata"></a>
+<a id="nestedblock--metadata"></a>
 ### Nested Schema for `metadata`
 
 Optional:
 
-- `annotations` (Map of String)
-- `cluster_name` (String)
-- `creation_timestamp` (String)
-- `deletion_grace_period_seconds` (Number)
-- `deletion_timestamp` (String)
-- `finalizers` (List of String)
-- `generate_name` (String)
-- `generation` (Number)
-- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
-- `labels` (Map of String)
-- `name` (String)
-- `namespace` (String)
-- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
-- `resource_version` (String)
-- `self_link` (String)
-- `uid` (String)
+- `annotations` (Map of String) Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: http://kubernetes.io/docs/user-guide/annotations
+- `cluster_name` (String) The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.
+- `creation_timestamp` (String) CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
 
-<a id="nestedobjatt--metadata--initializers"></a>
+Populated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
+- `deletion_grace_period_seconds` (Number) Number of seconds allowed for this object to gracefully terminate before it will be removed from the system. Only set when deletionTimestamp is also set. May only be shortened. Read-only.
+- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
+
+Populated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
+- `finalizers` (List of String) Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.
+- `generate_name` (String) GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided. If this field is used, the name returned to the client will be different than the name passed. This value will also be combined with a unique suffix. The provided value has the same validation rules as the Name field, and may be truncated by the length of the suffix required to make the value unique on the server.
+
+If this field is specified and the generated name exists, the server will NOT return a 409 - instead, it will either return 201 Created or 500 with Reason ServerTimeout indicating a unique name could not be found in the time allotted, and the client should retry (optionally after the time indicated in the Retry-After header).
+
+Applied only if Name is not specified. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#idempotency
+- `generation` (Number) A sequence number representing a specific generation of the desired state. Populated by the system. Read-only.
+- `initializers` (Block List, Max: 1) An initializer is a controller which enforces some system invariant at object creation time. This field is a list of initializers that have not yet acted on this object. If nil or empty, this object has been completely initialized. Otherwise, the object is considered uninitialized and is hidden (in list/watch and get calls) from clients that haven't explicitly asked to observe uninitialized objects.
+
+When an object is created, the system will populate this list with the current set of initializers. Only privileged users may set or modify this list. Once it is empty, it may not be modified further by any user. (see [below for nested schema](#nestedblock--metadata--initializers))
+- `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
+- `namespace` (String) Namespace defines the space within each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
+
+Must be a DNS_LABEL. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/namespaces
+- `owner_references` (Block List) List of objects depended by this object. If ALL objects in the list have been deleted, this object will be garbage collected. If this object is managed by a controller, then an entry in this list will point to this controller, with the controller field set to true. There cannot be more than one managing controller. (see [below for nested schema](#nestedblock--metadata--owner_references))
+- `resource_version` (String) An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed. May be used for optimistic concurrency, change detection, and the watch operation on a resource or set of resources. Clients must treat these values as opaque and passed unmodified back to the server. They may only be valid for a particular resource or set of resources.
+
+Populated by the system. Read-only. Value must be treated as opaque by clients and . More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
+- `self_link` (String) SelfLink is a URL representing this object. Populated by the system. Read-only.
+- `uid` (String) UID is the unique in time and space value for this object. It is typically generated by the server on successful creation of a resource and is not allowed to change on PUT operations.
+
+Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-guide/identifiers#uids
+
+<a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
+Required:
+
+- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
+
 Optional:
 
-- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
-- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+- `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
-<a id="nestedobjatt--metadata--initializers--pending"></a>
+<a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Optional:
+Required:
 
-- `name` (String)
+- `name` (String) name of the process that is responsible for initializing this object.
 
 
-<a id="nestedobjatt--metadata--initializers--result"></a>
+<a id="nestedblock--metadata--initializers--result"></a>
 ### Nested Schema for `metadata.initializers.result`
 
 Optional:
 
-- `api_version` (String)
-- `code` (Number)
-- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
-- `kind` (String)
-- `message` (String)
-- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
-- `reason` (String)
-- `status` (String)
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+- `code` (Number) Suggested HTTP return code for this status, 0 if not set.
+- `details` (Block List, Max: 1) Extended data associated with the reason.  Each reason may define its own extended details. This field is optional and the data returned is not guaranteed to conform to any schema except that defined by the reason type. (see [below for nested schema](#nestedblock--metadata--initializers--result--details))
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `message` (String) A human-readable description of the status of this operation.
+- `metadata` (Block List, Max: 1) Standard list metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds (see [below for nested schema](#nestedblock--metadata--initializers--result--metadata))
+- `reason` (String) A machine-readable description of why this operation is in the "Failure" status. If this value is empty there is no information available. A Reason clarifies an HTTP status code but does not override it.
+- `status` (String) Status of the operation. One of: "Success" or "Failure". More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status
 
-<a id="nestedobjatt--metadata--initializers--result--details"></a>
+<a id="nestedblock--metadata--initializers--result--details"></a>
 ### Nested Schema for `metadata.initializers.result.details`
 
 Optional:
 
-- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
-- `group` (String)
-- `kind` (String)
-- `name` (String)
-- `retry_after_seconds` (Number)
-- `uid` (String)
+- `causes` (Block List) The Causes array includes more details associated with the StatusReason failure. Not all StatusReasons may provide detailed causes. (see [below for nested schema](#nestedblock--metadata--initializers--result--details--causes))
+- `group` (String) The group attribute of the resource associated with the status StatusReason.
+- `kind` (String) The kind attribute of the resource associated with the status StatusReason. On some operations may differ from the requested resource Kind. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `name` (String) The name attribute of the resource associated with the status StatusReason (when there is a single name which can be described).
+- `retry_after_seconds` (Number) If specified, the time in seconds before the operation should be retried. Some errors may indicate the client must take an alternate action - for those errors this field may indicate how long to wait before taking the alternate action.
+- `uid` (String) UID of the resource. (when there is a single resource which can be described). More info: http://kubernetes.io/docs/user-guide/identifiers#uids
 
-<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+<a id="nestedblock--metadata--initializers--result--details--causes"></a>
 ### Nested Schema for `metadata.initializers.result.details.causes`
 
 Optional:
 
-- `field` (String)
-- `message` (String)
-- `reason` (String)
+- `field` (String) The field of the resource that has caused this error, as named by its JSON serialization. May include dot and postfix notation for nested attributes. Arrays are zero-indexed.  Fields may appear more than once in an array of causes due to fields having multiple errors. Optional.
+
+Examples:
+  "name" - the field "name" on the current resource
+  "items[0].name" - the field "name" on the first array entry in "items"
+- `message` (String) A human-readable description of the cause of the error.  This field may be presented as-is to a reader.
+- `reason` (String) A machine-readable description of the cause of the error. If this value is empty there is no information available.
 
 
 
-<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+<a id="nestedblock--metadata--initializers--result--metadata"></a>
 ### Nested Schema for `metadata.initializers.result.metadata`
 
 Optional:
 
-- `continue` (String)
-- `resource_version` (String)
-- `self_link` (String)
+- `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response.
+- `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
+- `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
 
 
 
 
-<a id="nestedobjatt--metadata--owner_references"></a>
+<a id="nestedblock--metadata--owner_references"></a>
 ### Nested Schema for `metadata.owner_references`
+
+Required:
+
+- `api_version` (String) API version of the referent.
+- `kind` (String) Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `name` (String) Name of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#names
+- `uid` (String) UID of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#uids
 
 Optional:
 
-- `api_version` (String)
-- `block_owner_deletion` (Boolean)
-- `controller` (Boolean)
-- `kind` (String)
-- `name` (String)
-- `uid` (String)
+- `block_owner_deletion` (Boolean) If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. Defaults to false. To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned.
+- `controller` (Boolean) If true, this reference points to the managing controller.
 
 
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `access_modes` (List of String)
-- `aws_elastic_block_store` (List of Object) (see [below for nested schema](#nestedobjatt--spec--aws_elastic_block_store))
-- `azure_disk` (List of Object) (see [below for nested schema](#nestedobjatt--spec--azure_disk))
-- `azure_file` (List of Object) (see [below for nested schema](#nestedobjatt--spec--azure_file))
-- `capacity` (Map of String)
-- `cephfs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cephfs))
-- `cinder` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cinder))
-- `claim_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--claim_ref))
-- `csi` (List of Object) (see [below for nested schema](#nestedobjatt--spec--csi))
-- `fc` (List of Object) (see [below for nested schema](#nestedobjatt--spec--fc))
-- `flex_volume` (List of Object) (see [below for nested schema](#nestedobjatt--spec--flex_volume))
-- `flocker` (List of Object) (see [below for nested schema](#nestedobjatt--spec--flocker))
-- `gce_persistent_disk` (List of Object) (see [below for nested schema](#nestedobjatt--spec--gce_persistent_disk))
-- `glusterfs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--glusterfs))
-- `host_path` (List of Object) (see [below for nested schema](#nestedobjatt--spec--host_path))
-- `iscsi` (List of Object) (see [below for nested schema](#nestedobjatt--spec--iscsi))
-- `local` (List of Object) (see [below for nested schema](#nestedobjatt--spec--local))
-- `mount_options` (List of String)
-- `nfs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--nfs))
-- `node_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--node_affinity))
-- `persistent_volume_reclaim_policy` (String)
-- `photon_persistent_disk` (List of Object) (see [below for nested schema](#nestedobjatt--spec--photon_persistent_disk))
-- `portworx_volume` (List of Object) (see [below for nested schema](#nestedobjatt--spec--portworx_volume))
-- `quobyte` (List of Object) (see [below for nested schema](#nestedobjatt--spec--quobyte))
-- `rbd` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rbd))
-- `scale_io` (List of Object) (see [below for nested schema](#nestedobjatt--spec--scale_io))
-- `storage_class_name` (String)
-- `storageos` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storageos))
-- `volume_mode` (String)
-- `vsphere_volume` (List of Object) (see [below for nested schema](#nestedobjatt--spec--vsphere_volume))
+- `access_modes` (List of String) AccessModes contains all ways the volume can be mounted. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes
+- `aws_elastic_block_store` (Block List, Max: 1) AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore (see [below for nested schema](#nestedblock--spec--aws_elastic_block_store))
+- `azure_disk` (Block List, Max: 1) AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod. (see [below for nested schema](#nestedblock--spec--azure_disk))
+- `azure_file` (Block List, Max: 1) AzureFile represents an Azure File Service mount on the host and bind mount to the pod. (see [below for nested schema](#nestedblock--spec--azure_file))
+- `capacity` (Map of String) A description of the persistent volume's resources and capacity. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity
+- `cephfs` (Block List, Max: 1) CephFS represents a Ceph FS mount on the host that shares a pod's lifetime (see [below for nested schema](#nestedblock--spec--cephfs))
+- `cinder` (Block List, Max: 1) Cinder represents a cinder volume attached and mounted on kubelets host machine More info: https://releases.k8s.io/HEAD/examples/mysql-cinder-pd/README.md (see [below for nested schema](#nestedblock--spec--cinder))
+- `claim_ref` (Block List, Max: 1) ClaimRef is part of a bi-directional binding between PersistentVolume and PersistentVolumeClaim. Expected to be non-nil when bound. claim.VolumeName is the authoritative bind between PV and PVC. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#binding (see [below for nested schema](#nestedblock--spec--claim_ref))
+- `csi` (Block List, Max: 1) CSI represents storage that handled by an external CSI driver (Beta feature). (see [below for nested schema](#nestedblock--spec--csi))
+- `fc` (Block List, Max: 1) FC represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod. (see [below for nested schema](#nestedblock--spec--fc))
+- `flex_volume` (Block List, Max: 1) FlexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin. (see [below for nested schema](#nestedblock--spec--flex_volume))
+- `flocker` (Block List, Max: 1) Flocker represents a Flocker volume attached to a kubelet's host machine and exposed to the pod for its usage. This depends on the Flocker control service being running (see [below for nested schema](#nestedblock--spec--flocker))
+- `gce_persistent_disk` (Block List, Max: 1) GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. Provisioned by an admin. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk (see [below for nested schema](#nestedblock--spec--gce_persistent_disk))
+- `glusterfs` (Block List, Max: 1) Glusterfs represents a Glusterfs volume that is attached to a host and exposed to the pod. Provisioned by an admin. More info: https://releases.k8s.io/HEAD/examples/volumes/glusterfs/README.md (see [below for nested schema](#nestedblock--spec--glusterfs))
+- `host_path` (Block List, Max: 1) HostPath represents a directory on the host. Provisioned by a developer or tester. This is useful for single-node development and testing only! On-host storage is not supported in any way and WILL NOT WORK in a multi-node cluster. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath (see [below for nested schema](#nestedblock--spec--host_path))
+- `iscsi` (Block List, Max: 1) ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. Provisioned by an admin. (see [below for nested schema](#nestedblock--spec--iscsi))
+- `local` (Block List, Max: 1) Local represents directly-attached storage with node affinity (see [below for nested schema](#nestedblock--spec--local))
+- `mount_options` (List of String) A list of mount options, e.g. ["ro", "soft"]. Not validated - mount will simply fail if one is invalid. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#mount-options
+- `nfs` (Block List, Max: 1) NFS represents an NFS mount on the host. Provisioned by an admin. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs (see [below for nested schema](#nestedblock--spec--nfs))
+- `node_affinity` (Block List, Max: 1) NodeAffinity defines constraints that limit what nodes this volume can be accessed from. This field influences the scheduling of pods that use this volume. (see [below for nested schema](#nestedblock--spec--node_affinity))
+- `persistent_volume_reclaim_policy` (String) What happens to a persistent volume when released from its claim. Valid options are Retain (default for manually created PersistentVolumes), Delete (default for dynamically provisioned PersistentVolumes), and Recycle (deprecated). Recycle must be supported by the volume plugin underlying this PersistentVolume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#reclaiming
+- `photon_persistent_disk` (Block List, Max: 1) PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine (see [below for nested schema](#nestedblock--spec--photon_persistent_disk))
+- `portworx_volume` (Block List, Max: 1) PortworxVolume represents a portworx volume attached and mounted on kubelets host machine (see [below for nested schema](#nestedblock--spec--portworx_volume))
+- `quobyte` (Block List, Max: 1) Quobyte represents a Quobyte mount on the host that shares a pod's lifetime (see [below for nested schema](#nestedblock--spec--quobyte))
+- `rbd` (Block List, Max: 1) RBD represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://releases.k8s.io/HEAD/examples/volumes/rbd/README.md (see [below for nested schema](#nestedblock--spec--rbd))
+- `scale_io` (Block List, Max: 1) ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes. (see [below for nested schema](#nestedblock--spec--scale_io))
+- `storage_class_name` (String) Name of StorageClass to which this persistent volume belongs. Empty value means that this volume does not belong to any StorageClass.
+- `storageos` (Block List, Max: 1) StorageOS represents a StorageOS volume that is attached to the kubelet's host machine and mounted into the pod More info: https://releases.k8s.io/HEAD/examples/volumes/storageos/README.md (see [below for nested schema](#nestedblock--spec--storageos))
+- `volume_mode` (String) volumeMode defines if a volume is intended to be used with a formatted filesystem or to remain in raw block state. Value of Filesystem is implied when not included in spec. This is an alpha feature and may change in the future.
+- `vsphere_volume` (Block List, Max: 1) VsphereVolume represents a vSphere volume attached and mounted on kubelets host machine (see [below for nested schema](#nestedblock--spec--vsphere_volume))
 
-<a id="nestedobjatt--spec--aws_elastic_block_store"></a>
+<a id="nestedblock--spec--aws_elastic_block_store"></a>
 ### Nested Schema for `spec.aws_elastic_block_store`
 
+Required:
+
+- `volume_id` (String) Unique ID of the persistent disk resource in AWS (Amazon EBS volume). More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+
 Optional:
 
-- `fs_type` (String)
-- `partition` (Number)
-- `read_only` (Boolean)
-- `volume_id` (String)
+- `fs_type` (String) Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+- `partition` (Number) The partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).
+- `read_only` (Boolean) Specify "true" to force and set the ReadOnly property in VolumeMounts to "true". If omitted, the default is "false". More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
 
 
-<a id="nestedobjatt--spec--azure_disk"></a>
+<a id="nestedblock--spec--azure_disk"></a>
 ### Nested Schema for `spec.azure_disk`
 
+Required:
+
+- `disk_name` (String) The Name of the data disk in the blob storage
+- `disk_uri` (String) The URI the data disk in the blob storage
+
 Optional:
 
-- `caching_mode` (String)
-- `disk_name` (String)
-- `disk_uri` (String)
-- `fs_type` (String)
-- `kind` (String)
-- `read_only` (Boolean)
+- `caching_mode` (String) Host Caching mode: None, Read Only, Read Write.
+- `fs_type` (String) Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+- `kind` (String) Expected values Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared
+- `read_only` (Boolean) Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.
 
 
-<a id="nestedobjatt--spec--azure_file"></a>
+<a id="nestedblock--spec--azure_file"></a>
 ### Nested Schema for `spec.azure_file`
 
+Required:
+
+- `secret_name` (String) the name of secret that contains Azure Storage Account Name and Key
+- `share_name` (String) Share Name
+
 Optional:
 
-- `read_only` (Boolean)
-- `secret_name` (String)
-- `secret_namespace` (String)
-- `share_name` (String)
+- `read_only` (Boolean) Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.
+- `secret_namespace` (String) the namespace of the secret that contains Azure Storage Account Name and Key default is the same as the Pod
 
 
-<a id="nestedobjatt--spec--cephfs"></a>
+<a id="nestedblock--spec--cephfs"></a>
 ### Nested Schema for `spec.cephfs`
 
+Required:
+
+- `monitors` (List of String) Required: Monitors is a collection of Ceph monitors More info: https://releases.k8s.io/HEAD/examples/volumes/cephfs/README.md#how-to-use-it
+
 Optional:
 
-- `monitors` (List of String)
-- `path` (String)
-- `read_only` (Boolean)
-- `secret_file` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cephfs--secret_ref))
-- `user` (String)
+- `path` (String) Optional: Used as the mounted root, rather than the full Ceph tree, default is /
+- `read_only` (Boolean) Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://releases.k8s.io/HEAD/examples/volumes/cephfs/README.md#how-to-use-it
+- `secret_file` (String) Optional: SecretFile is the path to key ring for User, default is /etc/ceph/user.secret More info: https://releases.k8s.io/HEAD/examples/volumes/cephfs/README.md#how-to-use-it
+- `secret_ref` (Block List, Max: 1) Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://releases.k8s.io/HEAD/examples/volumes/cephfs/README.md#how-to-use-it (see [below for nested schema](#nestedblock--spec--cephfs--secret_ref))
+- `user` (String) Optional: User is the rados user name, default is admin More info: https://releases.k8s.io/HEAD/examples/volumes/cephfs/README.md#how-to-use-it
 
-<a id="nestedobjatt--spec--cephfs--secret_ref"></a>
+<a id="nestedblock--spec--cephfs--secret_ref"></a>
 ### Nested Schema for `spec.cephfs.secret_ref`
 
 Optional:
 
-- `name` (String)
-- `namespace` (String)
+- `name` (String) Name is unique within a namespace to reference a secret resource.
+- `namespace` (String) Namespace defines the space within which the secret name must be unique.
 
 
 
-<a id="nestedobjatt--spec--cinder"></a>
+<a id="nestedblock--spec--cinder"></a>
 ### Nested Schema for `spec.cinder`
+
+Required:
+
+- `volume_id` (String) volume id used to identify the volume in cinder More info: https://releases.k8s.io/HEAD/examples/mysql-cinder-pd/README.md
 
 Optional:
 
-- `fs_type` (String)
-- `read_only` (Boolean)
-- `volume_id` (String)
+- `fs_type` (String) Filesystem type to mount. Must be a filesystem type supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://releases.k8s.io/HEAD/examples/mysql-cinder-pd/README.md
+- `read_only` (Boolean) Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://releases.k8s.io/HEAD/examples/mysql-cinder-pd/README.md
 
 
-<a id="nestedobjatt--spec--claim_ref"></a>
+<a id="nestedblock--spec--claim_ref"></a>
 ### Nested Schema for `spec.claim_ref`
 
 Optional:
 
-- `api_version` (String)
-- `field_path` (String)
-- `kind` (String)
-- `name` (String)
-- `namespace` (String)
-- `resource_version` (String)
-- `uid` (String)
+- `api_version` (String) API version of the referent.
+- `field_path` (String) If referring to a piece of an object instead of an entire object, this string should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2]. For example, if the object reference is to a container within a pod, this would take on a value like: "spec.containers{name}" (where "name" refers to the name of the container that triggered the event) or if no container name is specified "spec.containers[2]" (container with index 2 in this pod). This syntax is chosen only to have some well-defined way of referencing a part of an object.
+- `kind` (String) Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `namespace` (String) Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+- `resource_version` (String) Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
+- `uid` (String) UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
 
 
-<a id="nestedobjatt--spec--csi"></a>
+<a id="nestedblock--spec--csi"></a>
 ### Nested Schema for `spec.csi`
+
+Required:
+
+- `driver` (String) Driver is the name of the driver to use for this volume. Required.
+- `volume_handle` (String) VolumeHandle is the unique volume name returned by the CSI volume plugin’s CreateVolume to refer to the volume on all subsequent calls. Required.
 
 Optional:
 
-- `controller_publish_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--csi--controller_publish_secret_ref))
-- `driver` (String)
-- `fs_type` (String)
-- `node_publish_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--csi--node_publish_secret_ref))
-- `node_stage_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--csi--node_stage_secret_ref))
-- `read_only` (Boolean)
-- `volume_attributes` (Map of String)
-- `volume_handle` (String)
+- `controller_publish_secret_ref` (Block List, Max: 1) ControllerPublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI ControllerPublishVolume and ControllerUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secrets are passed. (see [below for nested schema](#nestedblock--spec--csi--controller_publish_secret_ref))
+- `fs_type` (String) Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs".
+- `node_publish_secret_ref` (Block List, Max: 1) NodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secrets are passed. (see [below for nested schema](#nestedblock--spec--csi--node_publish_secret_ref))
+- `node_stage_secret_ref` (Block List, Max: 1) NodeStageSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodeStageVolume and NodeStageVolume and NodeUnstageVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secrets are passed. (see [below for nested schema](#nestedblock--spec--csi--node_stage_secret_ref))
+- `read_only` (Boolean) Optional: The value to pass to ControllerPublishVolumeRequest. Defaults to false (read/write).
+- `volume_attributes` (Map of String) Attributes of the volume to publish.
 
-<a id="nestedobjatt--spec--csi--controller_publish_secret_ref"></a>
+<a id="nestedblock--spec--csi--controller_publish_secret_ref"></a>
 ### Nested Schema for `spec.csi.controller_publish_secret_ref`
 
 Optional:
 
-- `name` (String)
-- `namespace` (String)
+- `name` (String) Name is unique within a namespace to reference a secret resource.
+- `namespace` (String) Namespace defines the space within which the secret name must be unique.
 
 
-<a id="nestedobjatt--spec--csi--node_publish_secret_ref"></a>
+<a id="nestedblock--spec--csi--node_publish_secret_ref"></a>
 ### Nested Schema for `spec.csi.node_publish_secret_ref`
 
 Optional:
 
-- `name` (String)
-- `namespace` (String)
+- `name` (String) Name is unique within a namespace to reference a secret resource.
+- `namespace` (String) Namespace defines the space within which the secret name must be unique.
 
 
-<a id="nestedobjatt--spec--csi--node_stage_secret_ref"></a>
+<a id="nestedblock--spec--csi--node_stage_secret_ref"></a>
 ### Nested Schema for `spec.csi.node_stage_secret_ref`
 
 Optional:
 
-- `name` (String)
-- `namespace` (String)
+- `name` (String) Name is unique within a namespace to reference a secret resource.
+- `namespace` (String) Namespace defines the space within which the secret name must be unique.
 
 
 
-<a id="nestedobjatt--spec--fc"></a>
+<a id="nestedblock--spec--fc"></a>
 ### Nested Schema for `spec.fc`
 
 Optional:
 
-- `fs_type` (String)
-- `lun` (Number)
-- `read_only` (Boolean)
-- `target_ww_ns` (List of String)
-- `wwids` (List of String)
+- `fs_type` (String) Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+- `lun` (Number) Optional: FC target lun number
+- `read_only` (Boolean) Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.
+- `target_ww_ns` (List of String) Optional: FC target worldwide names (WWNs)
+- `wwids` (List of String) Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously.
 
 
-<a id="nestedobjatt--spec--flex_volume"></a>
+<a id="nestedblock--spec--flex_volume"></a>
 ### Nested Schema for `spec.flex_volume`
+
+Required:
+
+- `driver` (String) Driver is the name of the driver to use for this volume.
 
 Optional:
 
-- `driver` (String)
-- `fs_type` (String)
-- `options` (Map of String)
-- `read_only` (Boolean)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--flex_volume--secret_ref))
+- `fs_type` (String) Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem depends on FlexVolume script.
+- `options` (Map of String) Optional: Extra command options if any.
+- `read_only` (Boolean) Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.
+- `secret_ref` (Block List, Max: 1) Optional: SecretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts. (see [below for nested schema](#nestedblock--spec--flex_volume--secret_ref))
 
-<a id="nestedobjatt--spec--flex_volume--secret_ref"></a>
+<a id="nestedblock--spec--flex_volume--secret_ref"></a>
 ### Nested Schema for `spec.flex_volume.secret_ref`
 
 Optional:
 
-- `name` (String)
-- `namespace` (String)
+- `name` (String) Name is unique within a namespace to reference a secret resource.
+- `namespace` (String) Namespace defines the space within which the secret name must be unique.
 
 
 
-<a id="nestedobjatt--spec--flocker"></a>
+<a id="nestedblock--spec--flocker"></a>
 ### Nested Schema for `spec.flocker`
 
 Optional:
 
-- `dataset_name` (String)
-- `dataset_uuid` (String)
+- `dataset_name` (String) Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated
+- `dataset_uuid` (String) UUID of the dataset. This is unique identifier of a Flocker dataset
 
 
-<a id="nestedobjatt--spec--gce_persistent_disk"></a>
+<a id="nestedblock--spec--gce_persistent_disk"></a>
 ### Nested Schema for `spec.gce_persistent_disk`
 
+Required:
+
+- `pd_name` (String) Unique name of the PD resource in GCE. Used to identify the disk in GCE. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+
 Optional:
 
-- `fs_type` (String)
-- `partition` (Number)
-- `pd_name` (String)
-- `read_only` (Boolean)
+- `fs_type` (String) Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+- `partition` (Number) The partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty). More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+- `read_only` (Boolean) ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
 
 
-<a id="nestedobjatt--spec--glusterfs"></a>
+<a id="nestedblock--spec--glusterfs"></a>
 ### Nested Schema for `spec.glusterfs`
 
+Required:
+
+- `endpoints` (String) EndpointsName is the endpoint name that details Glusterfs topology. More info: https://releases.k8s.io/HEAD/examples/volumes/glusterfs/README.md#create-a-pod
+- `path` (String) Path is the Glusterfs volume path. More info: https://releases.k8s.io/HEAD/examples/volumes/glusterfs/README.md#create-a-pod
+
 Optional:
 
-- `endpoints` (String)
-- `path` (String)
-- `read_only` (Boolean)
+- `read_only` (Boolean) ReadOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://releases.k8s.io/HEAD/examples/volumes/glusterfs/README.md#create-a-pod
 
 
-<a id="nestedobjatt--spec--host_path"></a>
+<a id="nestedblock--spec--host_path"></a>
 ### Nested Schema for `spec.host_path`
 
+Required:
+
+- `path` (String) Path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath
+
 Optional:
 
-- `path` (String)
-- `type` (String)
+- `type` (String) Type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath
 
 
-<a id="nestedobjatt--spec--iscsi"></a>
+<a id="nestedblock--spec--iscsi"></a>
 ### Nested Schema for `spec.iscsi`
 
+Required:
+
+- `iqn` (String) Target iSCSI Qualified Name.
+- `lun` (Number) iSCSI Target Lun number.
+- `target_portal` (String) iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).
+
 Optional:
 
-- `chap_auth_discovery` (Boolean)
-- `chap_auth_session` (Boolean)
-- `fs_type` (String)
-- `initiator_name` (String)
-- `iqn` (String)
-- `iscsi_interface` (String)
-- `lun` (Number)
-- `portals` (List of String)
-- `read_only` (Boolean)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--iscsi--secret_ref))
-- `target_portal` (String)
+- `chap_auth_discovery` (Boolean) whether support iSCSI Discovery CHAP authentication
+- `chap_auth_session` (Boolean) whether support iSCSI Session CHAP authentication
+- `fs_type` (String) Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi
+- `initiator_name` (String) Custom iSCSI Initiator Name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection.
+- `iscsi_interface` (String) iSCSI Interface Name that uses an iSCSI transport. Defaults to 'default' (tcp).
+- `portals` (List of String) iSCSI Target Portal List. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).
+- `read_only` (Boolean) ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false.
+- `secret_ref` (Block List, Max: 1) CHAP Secret for iSCSI target and initiator authentication (see [below for nested schema](#nestedblock--spec--iscsi--secret_ref))
 
-<a id="nestedobjatt--spec--iscsi--secret_ref"></a>
+<a id="nestedblock--spec--iscsi--secret_ref"></a>
 ### Nested Schema for `spec.iscsi.secret_ref`
 
 Optional:
 
-- `name` (String)
-- `namespace` (String)
+- `name` (String) Name is unique within a namespace to reference a secret resource.
+- `namespace` (String) Namespace defines the space within which the secret name must be unique.
 
 
 
-<a id="nestedobjatt--spec--local"></a>
+<a id="nestedblock--spec--local"></a>
 ### Nested Schema for `spec.local`
 
-Optional:
+Required:
 
-- `path` (String)
+- `path` (String) The full path to the volume on the node For alpha, this path must be a directory Once block as a source is supported, then this path can point to a block device
 
 
-<a id="nestedobjatt--spec--nfs"></a>
+<a id="nestedblock--spec--nfs"></a>
 ### Nested Schema for `spec.nfs`
 
+Required:
+
+- `path` (String) Path that is exported by the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+- `server` (String) Server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+
 Optional:
 
-- `path` (String)
-- `read_only` (Boolean)
-- `server` (String)
+- `read_only` (Boolean) ReadOnly here will force the NFS export to be mounted with read-only permissions. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
 
 
-<a id="nestedobjatt--spec--node_affinity"></a>
+<a id="nestedblock--spec--node_affinity"></a>
 ### Nested Schema for `spec.node_affinity`
 
 Optional:
 
-- `required` (List of Object) (see [below for nested schema](#nestedobjatt--spec--node_affinity--required))
+- `required` (Block List, Max: 1) Required specifies hard node constraints that must be met. (see [below for nested schema](#nestedblock--spec--node_affinity--required))
 
-<a id="nestedobjatt--spec--node_affinity--required"></a>
+<a id="nestedblock--spec--node_affinity--required"></a>
 ### Nested Schema for `spec.node_affinity.required`
 
-Optional:
+Required:
 
-- `node_selector_terms` (List of Object) (see [below for nested schema](#nestedobjatt--spec--node_affinity--required--node_selector_terms))
+- `node_selector_terms` (Block List, Min: 1) Required. A list of node selector terms. The terms are ORed. (see [below for nested schema](#nestedblock--spec--node_affinity--required--node_selector_terms))
 
-<a id="nestedobjatt--spec--node_affinity--required--node_selector_terms"></a>
+<a id="nestedblock--spec--node_affinity--required--node_selector_terms"></a>
 ### Nested Schema for `spec.node_affinity.required.node_selector_terms`
 
-Optional:
+Required:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--node_affinity--required--node_selector_terms--match_expressions))
+- `match_expressions` (Block List, Min: 1) Required. A list of node selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--node_affinity--required--node_selector_terms--match_expressions))
 
-<a id="nestedobjatt--spec--node_affinity--required--node_selector_terms--match_expressions"></a>
+<a id="nestedblock--spec--node_affinity--required--node_selector_terms--match_expressions"></a>
 ### Nested Schema for `spec.node_affinity.required.node_selector_terms.match_expressions`
 
+Required:
+
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
 
 
 
 
 
-<a id="nestedobjatt--spec--photon_persistent_disk"></a>
+<a id="nestedblock--spec--photon_persistent_disk"></a>
 ### Nested Schema for `spec.photon_persistent_disk`
 
+Required:
+
+- `pd_id` (String) ID that identifies Photon Controller persistent disk
+
 Optional:
 
-- `fs_type` (String)
-- `pd_id` (String)
+- `fs_type` (String) Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
 
 
-<a id="nestedobjatt--spec--portworx_volume"></a>
+<a id="nestedblock--spec--portworx_volume"></a>
 ### Nested Schema for `spec.portworx_volume`
 
+Required:
+
+- `volume_id` (String) VolumeID uniquely identifies a Portworx volume
+
 Optional:
 
-- `fs_type` (String)
-- `read_only` (Boolean)
-- `volume_id` (String)
+- `fs_type` (String) FSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs". Implicitly inferred to be "ext4" if unspecified.
+- `read_only` (Boolean) Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.
 
 
-<a id="nestedobjatt--spec--quobyte"></a>
+<a id="nestedblock--spec--quobyte"></a>
 ### Nested Schema for `spec.quobyte`
 
+Required:
+
+- `registry` (String) Registry represents a single or multiple Quobyte Registry services specified as a string as host:port pair (multiple entries are separated with commas) which acts as the central registry for volumes
+- `volume` (String) Volume is a string that references an already created Quobyte volume by name.
+
 Optional:
 
-- `group` (String)
-- `read_only` (Boolean)
-- `registry` (String)
-- `user` (String)
-- `volume` (String)
+- `group` (String) Group to map volume access to Default is no group
+- `read_only` (Boolean) ReadOnly here will force the Quobyte volume to be mounted with read-only permissions. Defaults to false.
+- `user` (String) User to map volume access to Defaults to serivceaccount user
 
 
-<a id="nestedobjatt--spec--rbd"></a>
+<a id="nestedblock--spec--rbd"></a>
 ### Nested Schema for `spec.rbd`
 
+Required:
+
+- `image` (String) The rados image name. More info: https://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+- `monitors` (List of String) A collection of Ceph monitors. More info: https://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+
 Optional:
 
-- `fs_type` (String)
-- `image` (String)
-- `keyring` (String)
-- `monitors` (List of String)
-- `pool` (String)
-- `read_only` (Boolean)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rbd--secret_ref))
-- `user` (String)
+- `fs_type` (String) Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#rbd
+- `keyring` (String) Keyring is the path to key ring for RBDUser. Default is /etc/ceph/keyring. More info: https://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+- `pool` (String) The rados pool name. Default is rbd. More info: https://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+- `read_only` (Boolean) ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+- `secret_ref` (Block List, Max: 1) SecretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it (see [below for nested schema](#nestedblock--spec--rbd--secret_ref))
+- `user` (String) The rados user name. Default is admin. More info: https://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
 
-<a id="nestedobjatt--spec--rbd--secret_ref"></a>
+<a id="nestedblock--spec--rbd--secret_ref"></a>
 ### Nested Schema for `spec.rbd.secret_ref`
 
 Optional:
 
-- `name` (String)
-- `namespace` (String)
+- `name` (String) Name is unique within a namespace to reference a secret resource.
+- `namespace` (String) Namespace defines the space within which the secret name must be unique.
 
 
 
-<a id="nestedobjatt--spec--scale_io"></a>
+<a id="nestedblock--spec--scale_io"></a>
 ### Nested Schema for `spec.scale_io`
+
+Required:
+
+- `gateway` (String) The host address of the ScaleIO API Gateway.
+- `secret_ref` (Block List, Min: 1, Max: 1) SecretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail. (see [below for nested schema](#nestedblock--spec--scale_io--secret_ref))
+- `system` (String) The name of the storage system as configured in ScaleIO.
 
 Optional:
 
-- `fs_type` (String)
-- `gateway` (String)
-- `protection_domain` (String)
-- `read_only` (Boolean)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--scale_io--secret_ref))
-- `ssl_enabled` (Boolean)
-- `storage_mode` (String)
-- `storage_pool` (String)
-- `system` (String)
-- `volume_name` (String)
+- `fs_type` (String) Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+- `protection_domain` (String) The name of the ScaleIO Protection Domain for the configured storage.
+- `read_only` (Boolean) Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.
+- `ssl_enabled` (Boolean) Flag to enable/disable SSL communication with Gateway, default false
+- `storage_mode` (String) Indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned.
+- `storage_pool` (String) The ScaleIO Storage Pool associated with the protection domain.
+- `volume_name` (String) The name of a volume already created in the ScaleIO system that is associated with this volume source.
 
-<a id="nestedobjatt--spec--scale_io--secret_ref"></a>
+<a id="nestedblock--spec--scale_io--secret_ref"></a>
 ### Nested Schema for `spec.scale_io.secret_ref`
 
 Optional:
 
-- `name` (String)
-- `namespace` (String)
+- `name` (String) Name is unique within a namespace to reference a secret resource.
+- `namespace` (String) Namespace defines the space within which the secret name must be unique.
 
 
 
-<a id="nestedobjatt--spec--storageos"></a>
+<a id="nestedblock--spec--storageos"></a>
 ### Nested Schema for `spec.storageos`
 
 Optional:
 
-- `fs_type` (String)
-- `read_only` (Boolean)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--storageos--secret_ref))
-- `volume_name` (String)
-- `volume_namespace` (String)
+- `fs_type` (String) Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+- `read_only` (Boolean) Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted. (see [below for nested schema](#nestedblock--spec--storageos--secret_ref))
+- `volume_name` (String) VolumeName is the human-readable name of the StorageOS volume.  Volume names are only unique within a namespace.
+- `volume_namespace` (String) VolumeNamespace specifies the scope of the volume within StorageOS.  If no namespace is specified then the Pod's namespace will be used.  This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to "default" if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created.
 
-<a id="nestedobjatt--spec--storageos--secret_ref"></a>
+<a id="nestedblock--spec--storageos--secret_ref"></a>
 ### Nested Schema for `spec.storageos.secret_ref`
 
 Optional:
 
-- `api_version` (String)
-- `field_path` (String)
-- `kind` (String)
-- `name` (String)
-- `namespace` (String)
-- `resource_version` (String)
-- `uid` (String)
+- `api_version` (String) API version of the referent.
+- `field_path` (String) If referring to a piece of an object instead of an entire object, this string should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2]. For example, if the object reference is to a container within a pod, this would take on a value like: "spec.containers{name}" (where "name" refers to the name of the container that triggered the event) or if no container name is specified "spec.containers[2]" (container with index 2 in this pod). This syntax is chosen only to have some well-defined way of referencing a part of an object.
+- `kind` (String) Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `namespace` (String) Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+- `resource_version` (String) Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
+- `uid` (String) UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
 
 
 
-<a id="nestedobjatt--spec--vsphere_volume"></a>
+<a id="nestedblock--spec--vsphere_volume"></a>
 ### Nested Schema for `spec.vsphere_volume`
+
+Required:
+
+- `volume_path` (String) Path that identifies vSphere volume vmdk
 
 Optional:
 
-- `fs_type` (String)
-- `storage_policy_id` (String)
-- `storage_policy_name` (String)
-- `volume_path` (String)
+- `fs_type` (String) Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+- `storage_policy_id` (String) Storage Policy Based Management (SPBM) profile ID associated with the StoragePolicyName.
+- `storage_policy_name` (String) Storage Policy Based Management (SPBM) profile name.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `message` (String)
-- `phase` (String)
-- `reason` (String)
+- `message` (String) A human-readable message indicating details about why the volume is in this state.
+- `phase` (String) Phase indicates if a volume is available, bound to a claim, or released by a claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#phase
+- `reason` (String) Reason is a brief CamelCase string that describes any failure and is meant for machine parsing and tidy display in the CLI.

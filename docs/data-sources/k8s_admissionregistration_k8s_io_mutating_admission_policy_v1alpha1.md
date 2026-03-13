@@ -17,8 +17,8 @@ MutatingAdmissionPolicy describes the definition of an admission mutation policy
 
 ### Optional
 
-- `metadata` (List of Object) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata. (see [below for nested schema](#nestedatt--metadata))
-- `spec` (List of Object) Specification of the desired behavior of the MutatingAdmissionPolicy. (see [below for nested schema](#nestedatt--spec))
+- `metadata` (Block List, Max: 1) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata. (see [below for nested schema](#nestedblock--metadata))
+- `spec` (Block List, Max: 1) Specification of the desired behavior of the MutatingAdmissionPolicy. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -28,192 +28,377 @@ MutatingAdmissionPolicy describes the definition of an admission mutation policy
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--metadata"></a>
+<a id="nestedblock--metadata"></a>
 ### Nested Schema for `metadata`
 
 Optional:
 
-- `annotations` (Map of String)
-- `creation_timestamp` (String)
-- `deletion_grace_period_seconds` (Number)
-- `deletion_timestamp` (String)
-- `finalizers` (List of String)
-- `generate_name` (String)
-- `generation` (Number)
-- `labels` (Map of String)
-- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
-- `name` (String)
-- `namespace` (String)
-- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
-- `resource_version` (String)
-- `self_link` (String)
-- `uid` (String)
+- `annotations` (Map of String) Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations
+- `creation_timestamp` (String) CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
 
-<a id="nestedobjatt--metadata--managed_fields"></a>
+Populated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+- `deletion_grace_period_seconds` (Number) Number of seconds allowed for this object to gracefully terminate before it will be removed from the system. Only set when deletionTimestamp is also set. May only be shortened. Read-only.
+- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
+
+Populated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+- `finalizers` (List of String) Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed. Finalizers may be processed and removed in any order.  Order is NOT enforced because it introduces significant risk of stuck finalizers. finalizers is a shared field, any actor with permission can reorder it. If the finalizer list is processed in order, then this can lead to a situation in which the component responsible for the first finalizer in the list is waiting for a signal (field value, external system, or other) produced by a component responsible for a finalizer later in the list, resulting in a deadlock. Without enforced ordering finalizers are free to order amongst themselves and are not vulnerable to ordering changes in the list.
+- `generate_name` (String) GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided. If this field is used, the name returned to the client will be different than the name passed. This value will also be combined with a unique suffix. The provided value has the same validation rules as the Name field, and may be truncated by the length of the suffix required to make the value unique on the server.
+
+If this field is specified and the generated name exists, the server will return a 409.
+
+Applied only if Name is not specified. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#idempotency
+- `generation` (Number) A sequence number representing a specific generation of the desired state. Populated by the system. Read-only.
+- `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels
+- `managed_fields` (Block List) ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like "ci-cd". The set of fields is always in the version that the workflow used when modifying the object. (see [below for nested schema](#nestedblock--metadata--managed_fields))
+- `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names
+- `namespace` (String) Namespace defines the space within which each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
+
+Must be a DNS_LABEL. Cannot be updated. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces
+- `owner_references` (Block List) List of objects depended by this object. If ALL objects in the list have been deleted, this object will be garbage collected. If this object is managed by a controller, then an entry in this list will point to this controller, with the controller field set to true. There cannot be more than one managing controller. (see [below for nested schema](#nestedblock--metadata--owner_references))
+- `resource_version` (String) An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed. May be used for optimistic concurrency, change detection, and the watch operation on a resource or set of resources. Clients must treat these values as opaque and passed unmodified back to the server. They may only be valid for a particular resource or set of resources.
+
+Populated by the system. Read-only. Value must be treated as opaque by clients and . More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency
+- `self_link` (String) Deprecated: selfLink is a legacy read-only field that is no longer populated by the system.
+- `uid` (String) UID is the unique in time and space value for this object. It is typically generated by the server on successful creation of a resource and is not allowed to change on PUT operations.
+
+Populated by the system. Read-only. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#uids
+
+<a id="nestedblock--metadata--managed_fields"></a>
 ### Nested Schema for `metadata.managed_fields`
 
 Optional:
 
-- `api_version` (String)
-- `fields_type` (String)
-- `fields_v1` (Map of String)
-- `manager` (String)
-- `operation` (String)
-- `subresource` (String)
-- `time` (String)
+- `api_version` (String) APIVersion defines the version of this resource that this field set applies to. The format is "group/version" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.
+- `fields_type` (String) FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: "FieldsV1"
+- `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
+- `manager` (String) Manager is an identifier of the workflow managing these fields.
+- `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
+- `time` (String) Time is the timestamp of when the ManagedFields entry was added. The timestamp will also be updated if a field is added, the manager changes any of the owned fields value or removes a field. The timestamp does not update when a field is removed from the entry because another manager took it over.
 
 
-<a id="nestedobjatt--metadata--owner_references"></a>
+<a id="nestedblock--metadata--owner_references"></a>
 ### Nested Schema for `metadata.owner_references`
+
+Required:
+
+- `api_version` (String) API version of the referent.
+- `kind` (String) Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names
+- `uid` (String) UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#uids
 
 Optional:
 
-- `api_version` (String)
-- `block_owner_deletion` (Boolean)
-- `controller` (Boolean)
-- `kind` (String)
-- `name` (String)
-- `uid` (String)
+- `block_owner_deletion` (Boolean) If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. See https://kubernetes.io/docs/concepts/architecture/garbage-collection/#foreground-deletion for how the garbage collector interacts with this field and enforces the foreground deletion. Defaults to false. To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned.
+- `controller` (Boolean) If true, this reference points to the managing controller.
 
 
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `failure_policy` (String)
-- `match_conditions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_conditions))
-- `match_constraints` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints))
-- `mutations` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mutations))
-- `param_kind` (List of Object) (see [below for nested schema](#nestedobjatt--spec--param_kind))
-- `reinvocation_policy` (String)
-- `variables` (List of Object) (see [below for nested schema](#nestedobjatt--spec--variables))
+- `failure_policy` (String) failurePolicy defines how to handle failures for the admission policy. Failures can occur from CEL expression parse errors, type check errors, runtime errors and invalid or mis-configured policy definitions or bindings.
 
-<a id="nestedobjatt--spec--match_conditions"></a>
+A policy is invalid if paramKind refers to a non-existent Kind. A binding is invalid if paramRef.name refers to a non-existent resource.
+
+failurePolicy does not define how validations that evaluate to false are handled.
+
+Allowed values are Ignore or Fail. Defaults to Fail.
+- `match_conditions` (Block List) matchConditions is a list of conditions that must be met for a request to be validated. Match conditions filter requests that have already been matched by the matchConstraints. An empty list of matchConditions matches all requests. There are a maximum of 64 match conditions allowed.
+
+If a parameter object is provided, it can be accessed via the `params` handle in the same manner as validation expressions.
+
+The exact matching logic is (in order):
+  1. If ANY matchCondition evaluates to FALSE, the policy is skipped.
+  2. If ALL matchConditions evaluate to TRUE, the policy is evaluated.
+  3. If any matchCondition evaluates to an error (but none are FALSE):
+     - If failurePolicy=Fail, reject the request
+     - If failurePolicy=Ignore, the policy is skipped (see [below for nested schema](#nestedblock--spec--match_conditions))
+- `match_constraints` (Block List, Max: 1) matchConstraints specifies what resources this policy is designed to validate. The MutatingAdmissionPolicy cares about a request if it matches _all_ Constraints. However, in order to prevent clusters from being put into an unstable state that cannot be recovered from via the API MutatingAdmissionPolicy cannot match MutatingAdmissionPolicy and MutatingAdmissionPolicyBinding. The CREATE, UPDATE and CONNECT operations are allowed.  The DELETE operation may not be matched. '*' matches CREATE, UPDATE and CONNECT. Required. (see [below for nested schema](#nestedblock--spec--match_constraints))
+- `mutations` (Block List) mutations contain operations to perform on matching objects. mutations may not be empty; a minimum of one mutation is required. mutations are evaluated in order, and are reinvoked according to the reinvocationPolicy. The mutations of a policy are invoked for each binding of this policy and reinvocation of mutations occurs on a per binding basis. (see [below for nested schema](#nestedblock--spec--mutations))
+- `param_kind` (Block List, Max: 1) paramKind specifies the kind of resources used to parameterize this policy. If absent, there are no parameters for this policy and the param CEL variable will not be provided to validation expressions. If paramKind refers to a non-existent kind, this policy definition is mis-configured and the FailurePolicy is applied. If paramKind is specified but paramRef is unset in MutatingAdmissionPolicyBinding, the params variable will be null. (see [below for nested schema](#nestedblock--spec--param_kind))
+- `reinvocation_policy` (String) reinvocationPolicy indicates whether mutations may be called multiple times per MutatingAdmissionPolicyBinding as part of a single admission evaluation. Allowed values are "Never" and "IfNeeded".
+
+Never: These mutations will not be called more than once per binding in a single admission evaluation.
+
+IfNeeded: These mutations may be invoked more than once per binding for a single admission request and there is no guarantee of order with respect to other admission plugins, admission webhooks, bindings of this policy and admission policies.  Mutations are only reinvoked when mutations change the object after this mutation is invoked. Required.
+- `variables` (Block List) variables contain definitions of variables that can be used in composition of other expressions. Each variable is defined as a named CEL expression. The variables defined here will be available under `variables` in other expressions of the policy except matchConditions because matchConditions are evaluated before the rest of the policy.
+
+The expression of a variable can refer to other variables defined earlier in the list but not those after. Thus, variables must be sorted by the order of first appearance and acyclic. (see [below for nested schema](#nestedblock--spec--variables))
+
+<a id="nestedblock--spec--match_conditions"></a>
 ### Nested Schema for `spec.match_conditions`
 
-Optional:
+Required:
 
-- `expression` (String)
-- `name` (String)
+- `expression` (String) Expression represents the expression which will be evaluated by CEL. Must evaluate to bool. CEL expressions have access to the contents of the AdmissionRequest and Authorizer, organized into CEL variables:
+
+'object' - The object from the incoming request. The value is null for DELETE requests. 'oldObject' - The existing object. The value is null for CREATE requests. 'request' - Attributes of the admission request(/pkg/apis/admission/types.go#AdmissionRequest). 'authorizer' - A CEL Authorizer. May be used to perform authorization checks for the principal (user or service account) of the request.
+  See https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#Authz
+'authorizer.requestResource' - A CEL ResourceCheck constructed from the 'authorizer' and configured with the
+  request resource.
+Documentation on CEL: https://kubernetes.io/docs/reference/using-api/cel/
+
+Required.
+- `name` (String) Name is an identifier for this match condition, used for strategic merging of MatchConditions, as well as providing an identifier for logging purposes. A good name should be descriptive of the associated expression. Name must be a qualified name consisting of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]') with an optional DNS subdomain prefix and '/' (e.g. 'example.com/MyName')
+
+Required.
 
 
-<a id="nestedobjatt--spec--match_constraints"></a>
+<a id="nestedblock--spec--match_constraints"></a>
 ### Nested Schema for `spec.match_constraints`
 
 Optional:
 
-- `exclude_resource_rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--exclude_resource_rules))
-- `match_policy` (String)
-- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--namespace_selector))
-- `object_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--object_selector))
-- `resource_rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--resource_rules))
+- `exclude_resource_rules` (Block List) ExcludeResourceRules describes what operations on what resources/subresources the ValidatingAdmissionPolicy should not care about. The exclude rules take precedence over include rules (if a resource matches both, it is excluded) (see [below for nested schema](#nestedblock--spec--match_constraints--exclude_resource_rules))
+- `match_policy` (String) matchPolicy defines how the "MatchResources" list is used to match incoming requests. Allowed values are "Exact" or "Equivalent".
 
-<a id="nestedobjatt--spec--match_constraints--exclude_resource_rules"></a>
+- Exact: match a request only if it exactly matches a specified rule. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, but "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would not be sent to the ValidatingAdmissionPolicy.
+
+- Equivalent: match a request if modifies a resource listed in rules, even via another API group or version. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, and "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would be converted to apps/v1 and sent to the ValidatingAdmissionPolicy.
+
+Defaults to "Equivalent"
+- `namespace_selector` (Block List, Max: 1) NamespaceSelector decides whether to run the admission control policy on an object based on whether the namespace for that object matches the selector. If the object itself is a namespace, the matching is performed on object.metadata.labels. If the object is another cluster scoped resource, it never skips the policy.
+
+For example, to run the webhook on any objects whose namespace is not associated with "runlevel" of "0" or "1";  you will set the selector as follows: "namespaceSelector": {
+  "matchExpressions": [
+    {
+      "key": "runlevel",
+      "operator": "NotIn",
+      "values": [
+        "0",
+        "1"
+      ]
+    }
+  ]
+}
+
+If instead you want to only run the policy on any objects whose namespace is associated with the "environment" of "prod" or "staging"; you will set the selector as follows: "namespaceSelector": {
+  "matchExpressions": [
+    {
+      "key": "environment",
+      "operator": "In",
+      "values": [
+        "prod",
+        "staging"
+      ]
+    }
+  ]
+}
+
+See https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/ for more examples of label selectors.
+
+Default to the empty LabelSelector, which matches everything. (see [below for nested schema](#nestedblock--spec--match_constraints--namespace_selector))
+- `object_selector` (Block List, Max: 1) ObjectSelector decides whether to run the validation based on if the object has matching labels. objectSelector is evaluated against both the oldObject and newObject that would be sent to the cel validation, and is considered to match if either object matches the selector. A null object (oldObject in the case of create, or newObject in the case of delete) or an object that cannot have labels (like a DeploymentRollback or a PodProxyOptions object) is not considered to match. Use the object selector only if the webhook is opt-in, because end users may skip the admission webhook by setting the labels. Default to the empty LabelSelector, which matches everything. (see [below for nested schema](#nestedblock--spec--match_constraints--object_selector))
+- `resource_rules` (Block List) ResourceRules describes what operations on what resources/subresources the ValidatingAdmissionPolicy matches. The policy cares about an operation if it matches _any_ Rule. (see [below for nested schema](#nestedblock--spec--match_constraints--resource_rules))
+
+<a id="nestedblock--spec--match_constraints--exclude_resource_rules"></a>
 ### Nested Schema for `spec.match_constraints.exclude_resource_rules`
 
 Optional:
 
-- `api_groups` (List of String)
-- `api_versions` (List of String)
-- `operations` (List of String)
-- `resource_names` (List of String)
-- `resources` (List of String)
-- `scope` (String)
+- `api_groups` (List of String) APIGroups is the API groups the resources belong to. '*' is all groups. If '*' is present, the length of the slice must be one. Required.
+- `api_versions` (List of String) APIVersions is the API versions the resources belong to. '*' is all versions. If '*' is present, the length of the slice must be one. Required.
+- `operations` (List of String) Operations is the operations the admission hook cares about - CREATE, UPDATE, DELETE, CONNECT or * for all of those operations and any future admission operations that are added. If '*' is present, the length of the slice must be one. Required.
+- `resource_names` (List of String) ResourceNames is an optional white list of names that the rule applies to.  An empty set means that everything is allowed.
+- `resources` (List of String) Resources is a list of resources this rule applies to.
+
+For example: 'pods' means pods. 'pods/log' means the log subresource of pods. '*' means all resources, but not subresources. 'pods/*' means all subresources of pods. '*/scale' means all scale subresources. '*/*' means all resources and their subresources.
+
+If wildcard is present, the validation rule will ensure resources do not overlap with each other.
+
+Depending on the enclosing object, subresources might not be allowed. Required.
+- `scope` (String) scope specifies the scope of this rule. Valid values are "Cluster", "Namespaced", and "*" "Cluster" means that only cluster-scoped resources will match this rule. Namespace API objects are cluster-scoped. "Namespaced" means that only namespaced resources will match this rule. "*" means that there are no scope restrictions. Subresources match the scope of their parent resource. Default is "*".
 
 
-<a id="nestedobjatt--spec--match_constraints--namespace_selector"></a>
+<a id="nestedblock--spec--match_constraints--namespace_selector"></a>
 ### Nested Schema for `spec.match_constraints.namespace_selector`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--namespace_selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--match_constraints--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--match_constraints--namespace_selector--match_expressions"></a>
+<a id="nestedblock--spec--match_constraints--namespace_selector--match_expressions"></a>
 ### Nested Schema for `spec.match_constraints.namespace_selector.match_expressions`
+
+Required:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
 
 
 
-<a id="nestedobjatt--spec--match_constraints--object_selector"></a>
+<a id="nestedblock--spec--match_constraints--object_selector"></a>
 ### Nested Schema for `spec.match_constraints.object_selector`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--match_constraints--object_selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--match_constraints--object_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--match_constraints--object_selector--match_expressions"></a>
+<a id="nestedblock--spec--match_constraints--object_selector--match_expressions"></a>
 ### Nested Schema for `spec.match_constraints.object_selector.match_expressions`
+
+Required:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
 
 
 
-<a id="nestedobjatt--spec--match_constraints--resource_rules"></a>
+<a id="nestedblock--spec--match_constraints--resource_rules"></a>
 ### Nested Schema for `spec.match_constraints.resource_rules`
 
 Optional:
 
-- `api_groups` (List of String)
-- `api_versions` (List of String)
-- `operations` (List of String)
-- `resource_names` (List of String)
-- `resources` (List of String)
-- `scope` (String)
+- `api_groups` (List of String) APIGroups is the API groups the resources belong to. '*' is all groups. If '*' is present, the length of the slice must be one. Required.
+- `api_versions` (List of String) APIVersions is the API versions the resources belong to. '*' is all versions. If '*' is present, the length of the slice must be one. Required.
+- `operations` (List of String) Operations is the operations the admission hook cares about - CREATE, UPDATE, DELETE, CONNECT or * for all of those operations and any future admission operations that are added. If '*' is present, the length of the slice must be one. Required.
+- `resource_names` (List of String) ResourceNames is an optional white list of names that the rule applies to.  An empty set means that everything is allowed.
+- `resources` (List of String) Resources is a list of resources this rule applies to.
+
+For example: 'pods' means pods. 'pods/log' means the log subresource of pods. '*' means all resources, but not subresources. 'pods/*' means all subresources of pods. '*/scale' means all scale subresources. '*/*' means all resources and their subresources.
+
+If wildcard is present, the validation rule will ensure resources do not overlap with each other.
+
+Depending on the enclosing object, subresources might not be allowed. Required.
+- `scope` (String) scope specifies the scope of this rule. Valid values are "Cluster", "Namespaced", and "*" "Cluster" means that only cluster-scoped resources will match this rule. Namespace API objects are cluster-scoped. "Namespaced" means that only namespaced resources will match this rule. "*" means that there are no scope restrictions. Subresources match the scope of their parent resource. Default is "*".
 
 
 
-<a id="nestedobjatt--spec--mutations"></a>
+<a id="nestedblock--spec--mutations"></a>
 ### Nested Schema for `spec.mutations`
+
+Required:
+
+- `patch_type` (String) patchType indicates the patch strategy used. Allowed values are "ApplyConfiguration" and "JSONPatch". Required.
 
 Optional:
 
-- `apply_configuration` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mutations--apply_configuration))
-- `json_patch` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mutations--json_patch))
-- `patch_type` (String)
+- `apply_configuration` (Block List, Max: 1) applyConfiguration defines the desired configuration values of an object. The configuration is applied to the admission object using [structured merge diff](https://github.com/kubernetes-sigs/structured-merge-diff). A CEL expression is used to create apply configuration. (see [below for nested schema](#nestedblock--spec--mutations--apply_configuration))
+- `json_patch` (Block List, Max: 1) jsonPatch defines a [JSON patch](https://jsonpatch.com/) operation to perform a mutation to the object. A CEL expression is used to create the JSON patch. (see [below for nested schema](#nestedblock--spec--mutations--json_patch))
 
-<a id="nestedobjatt--spec--mutations--apply_configuration"></a>
+<a id="nestedblock--spec--mutations--apply_configuration"></a>
 ### Nested Schema for `spec.mutations.apply_configuration`
 
 Optional:
 
-- `expression` (String)
+- `expression` (String) expression will be evaluated by CEL to create an apply configuration. ref: https://github.com/google/cel-spec
+
+Apply configurations are declared in CEL using object initialization. For example, this CEL expression returns an apply configuration to set a single field:
+
+	Object{
+	  spec: Object.spec{
+	    serviceAccountName: "example"
+	  }
+	}
+
+Apply configurations may not modify atomic structs, maps or arrays due to the risk of accidental deletion of values not included in the apply configuration.
+
+CEL expressions have access to the object types needed to create apply configurations:
+
+- 'Object' - CEL type of the resource object. - 'Object.<fieldName>' - CEL type of object field (such as 'Object.spec') - 'Object.<fieldName1>.<fieldName2>...<fieldNameN>` - CEL type of nested field (such as 'Object.spec.containers')
+
+CEL expressions have access to the contents of the API request, organized into CEL variables as well as some other useful variables:
+
+- 'object' - The object from the incoming request. The value is null for DELETE requests. - 'oldObject' - The existing object. The value is null for CREATE requests. - 'request' - Attributes of the API request([ref](/pkg/apis/admission/types.go#AdmissionRequest)). - 'params' - Parameter resource referred to by the policy binding being evaluated. Only populated if the policy has a ParamKind. - 'namespaceObject' - The namespace object that the incoming object belongs to. The value is null for cluster-scoped resources. - 'variables' - Map of composited variables, from its name to its lazily evaluated value.
+  For example, a variable named 'foo' can be accessed as 'variables.foo'.
+- 'authorizer' - A CEL Authorizer. May be used to perform authorization checks for the principal (user or service account) of the request.
+  See https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#Authz
+- 'authorizer.requestResource' - A CEL ResourceCheck constructed from the 'authorizer' and configured with the
+  request resource.
+
+The `apiVersion`, `kind`, `metadata.name` and `metadata.generateName` are always accessible from the root of the object. No other metadata properties are accessible.
+
+Only property names of the form `[a-zA-Z_.-/][a-zA-Z0-9_.-/]*` are accessible. Required.
 
 
-<a id="nestedobjatt--spec--mutations--json_patch"></a>
+<a id="nestedblock--spec--mutations--json_patch"></a>
 ### Nested Schema for `spec.mutations.json_patch`
 
 Optional:
 
-- `expression` (String)
+- `expression` (String) expression will be evaluated by CEL to create a [JSON patch](https://jsonpatch.com/). ref: https://github.com/google/cel-spec
+
+expression must return an array of JSONPatch values.
+
+For example, this CEL expression returns a JSON patch to conditionally modify a value:
+
+	  [
+	    JSONPatch{op: "test", path: "/spec/example", value: "Red"},
+	    JSONPatch{op: "replace", path: "/spec/example", value: "Green"}
+	  ]
+
+To define an object for the patch value, use Object types. For example:
+
+	  [
+	    JSONPatch{
+	      op: "add",
+	      path: "/spec/selector",
+	      value: Object.spec.selector{matchLabels: {"environment": "test"}}
+	    }
+	  ]
+
+To use strings containing '/' and '~' as JSONPatch path keys, use "jsonpatch.escapeKey". For example:
+
+	  [
+	    JSONPatch{
+	      op: "add",
+	      path: "/metadata/labels/" + jsonpatch.escapeKey("example.com/environment"),
+	      value: "test"
+	    },
+	  ]
+
+CEL expressions have access to the types needed to create JSON patches and objects:
+
+- 'JSONPatch' - CEL type of JSON Patch operations. JSONPatch has the fields 'op', 'from', 'path' and 'value'.
+  See [JSON patch](https://jsonpatch.com/) for more details. The 'value' field may be set to any of: string,
+  integer, array, map or object.  If set, the 'path' and 'from' fields must be set to a
+  [JSON pointer](https://datatracker.ietf.org/doc/html/rfc6901/) string, where the 'jsonpatch.escapeKey()' CEL
+  function may be used to escape path keys containing '/' and '~'.
+- 'Object' - CEL type of the resource object. - 'Object.<fieldName>' - CEL type of object field (such as 'Object.spec') - 'Object.<fieldName1>.<fieldName2>...<fieldNameN>` - CEL type of nested field (such as 'Object.spec.containers')
+
+CEL expressions have access to the contents of the API request, organized into CEL variables as well as some other useful variables:
+
+- 'object' - The object from the incoming request. The value is null for DELETE requests. - 'oldObject' - The existing object. The value is null for CREATE requests. - 'request' - Attributes of the API request([ref](/pkg/apis/admission/types.go#AdmissionRequest)). - 'params' - Parameter resource referred to by the policy binding being evaluated. Only populated if the policy has a ParamKind. - 'namespaceObject' - The namespace object that the incoming object belongs to. The value is null for cluster-scoped resources. - 'variables' - Map of composited variables, from its name to its lazily evaluated value.
+  For example, a variable named 'foo' can be accessed as 'variables.foo'.
+- 'authorizer' - A CEL Authorizer. May be used to perform authorization checks for the principal (user or service account) of the request.
+  See https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#Authz
+- 'authorizer.requestResource' - A CEL ResourceCheck constructed from the 'authorizer' and configured with the
+  request resource.
+
+CEL expressions have access to [Kubernetes CEL function libraries](https://kubernetes.io/docs/reference/using-api/cel/#cel-options-language-features-and-libraries) as well as:
+
+- 'jsonpatch.escapeKey' - Performs JSONPatch key escaping. '~' and  '/' are escaped as '~0' and `~1' respectively).
+
+Only property names of the form `[a-zA-Z_.-/][a-zA-Z0-9_.-/]*` are accessible. Required.
 
 
 
-<a id="nestedobjatt--spec--param_kind"></a>
+<a id="nestedblock--spec--param_kind"></a>
 ### Nested Schema for `spec.param_kind`
 
 Optional:
 
-- `api_version` (String)
-- `kind` (String)
+- `api_version` (String) APIVersion is the API group version the resources belong to. In format of "group/version". Required.
+- `kind` (String) Kind is the API kind the resources belong to. Required.
 
 
-<a id="nestedobjatt--spec--variables"></a>
+<a id="nestedblock--spec--variables"></a>
 ### Nested Schema for `spec.variables`
 
-Optional:
+Required:
 
-- `expression` (String)
-- `name` (String)
+- `expression` (String) Expression is the expression that will be evaluated as the value of the variable. The CEL expression has access to the same identifiers as the CEL expressions in Validation.
+- `name` (String) Name is the name of the variable. The name must be a valid CEL identifier and unique among all variables. The variable can be accessed in other expressions through `variables` For example, if name is "foo", the variable will be available as `variables.foo`

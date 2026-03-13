@@ -17,7 +17,7 @@ ScrapeConfig defines a namespaced Prometheus scrape_config to be aggregated acro
 
 ### Required
 
-- `spec` (List of Object) ScrapeConfigSpec is a specification of the desired configuration for a scrape configuration. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Min: 1, Max: 1) ScrapeConfigSpec is a specification of the desired configuration for a scrape configuration. (see [below for nested schema](#nestedblock--spec))
 
 ### Optional
 
@@ -31,55 +31,55 @@ ScrapeConfig defines a namespaced Prometheus scrape_config to be aggregated acro
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
-Required:
+Optional:
 
-- `file_sd_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--file_sd_configs))
-- `honor_labels` (Boolean)
-- `honor_timestamps` (Boolean)
-- `http_sd_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--http_sd_configs))
-- `metrics_path` (String)
-- `relabelings` (List of Object) (see [below for nested schema](#nestedobjatt--spec--relabelings))
-- `static_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--static_configs))
+- `file_sd_configs` (Block List) FileSDConfigs defines a list of file service discovery configurations. (see [below for nested schema](#nestedblock--spec--file_sd_configs))
+- `honor_labels` (Boolean) HonorLabels chooses the metric's labels on collisions with target labels.
+- `honor_timestamps` (Boolean) HonorTimestamps controls whether Prometheus respects the timestamps present in scraped data.
+- `http_sd_configs` (Block List) HTTPSDConfigs defines a list of HTTP service discovery configurations. (see [below for nested schema](#nestedblock--spec--http_sd_configs))
+- `metrics_path` (String) MetricsPath HTTP path to scrape for metrics. If empty, Prometheus uses the default value (e.g. /metrics).
+- `relabelings` (Block List) RelabelConfigs defines how to rewrite the target's labels before scraping. Prometheus Operator automatically adds relabelings for a few standard Kubernetes fields. The original scrape job's name is available via the `__tmp_prometheus_job_name` label. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config (see [below for nested schema](#nestedblock--spec--relabelings))
+- `static_configs` (Block List) StaticConfigs defines a list of static targets with a common label set. (see [below for nested schema](#nestedblock--spec--static_configs))
 
-<a id="nestedobjatt--spec--file_sd_configs"></a>
+<a id="nestedblock--spec--file_sd_configs"></a>
 ### Nested Schema for `spec.file_sd_configs`
 
-Required:
+Optional:
 
-- `files` (List of String)
-- `refresh_interval` (String)
+- `files` (List of String) List of files to be used for file discovery. Recommendation: use absolute paths. While relative paths work, the prometheus-operator project makes no guarantees about the working directory where the configuration file is stored. Files must be mounted using Prometheus.ConfigMaps or Prometheus.Secrets.
+- `refresh_interval` (String) RefreshInterval configures the refresh interval at which Prometheus will reload the content of the files.
 
 
-<a id="nestedobjatt--spec--http_sd_configs"></a>
+<a id="nestedblock--spec--http_sd_configs"></a>
 ### Nested Schema for `spec.http_sd_configs`
 
-Required:
+Optional:
 
-- `refresh_interval` (String)
-- `url` (String)
+- `refresh_interval` (String) RefreshInterval configures the refresh interval at which Prometheus will re-query the endpoint to update the target list.
+- `url` (String) URL from which the targets are fetched.
 
 
-<a id="nestedobjatt--spec--relabelings"></a>
+<a id="nestedblock--spec--relabelings"></a>
 ### Nested Schema for `spec.relabelings`
 
-Required:
+Optional:
 
-- `action` (String)
-- `modulus` (Number)
-- `regex` (String)
-- `replacement` (String)
-- `separator` (String)
-- `source_labels` (List of String)
-- `target_label` (String)
+- `action` (String) Action to perform based on regex matching. Default is 'replace'. uppercase and lowercase actions require Prometheus >= 2.36.
+- `modulus` (Number) Modulus to take of the hash of the source label values.
+- `regex` (String) Regular expression against which the extracted value is matched. Default is '(.*)'
+- `replacement` (String) Replacement value against which a regex replace is performed if the regular expression matches. Regex capture groups are available. Default is '$1'
+- `separator` (String) Separator placed between concatenated source label values. default is ';'.
+- `source_labels` (List of String) The source labels select values from existing labels. Their content is concatenated using the configured separator and matched against the configured regular expression for the replace, keep, and drop actions.
+- `target_label` (String) Label to which the resulting value is written in a replace action. It is mandatory for replace actions. Regex capture groups are available.
 
 
-<a id="nestedobjatt--spec--static_configs"></a>
+<a id="nestedblock--spec--static_configs"></a>
 ### Nested Schema for `spec.static_configs`
 
-Required:
+Optional:
 
-- `labels` (Map of String)
-- `targets` (List of String)
+- `labels` (Map of String) Labels assigned to all metrics scraped from the targets.
+- `targets` (List of String) List of targets for this static configuration.

@@ -17,9 +17,9 @@ CustomResourceDefinition represents a resource that should be exposed on the API
 
 ### Optional
 
-- `metadata` (List of Object) (see [below for nested schema](#nestedatt--metadata))
-- `spec` (List of Object) Spec describes how the user wants the resources to appear (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) Status indicates the actual state of the CustomResourceDefinition (see [below for nested schema](#nestedatt--status))
+- `metadata` (Block List, Max: 1) (see [below for nested schema](#nestedblock--metadata))
+- `spec` (Block List, Max: 1) Spec describes how the user wants the resources to appear (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) Status indicates the actual state of the CustomResourceDefinition (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,181 +29,214 @@ CustomResourceDefinition represents a resource that should be exposed on the API
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--metadata"></a>
+<a id="nestedblock--metadata"></a>
 ### Nested Schema for `metadata`
 
 Optional:
 
-- `annotations` (Map of String)
-- `cluster_name` (String)
-- `creation_timestamp` (String)
-- `deletion_grace_period_seconds` (Number)
-- `deletion_timestamp` (String)
-- `finalizers` (List of String)
-- `generate_name` (String)
-- `generation` (Number)
-- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
-- `labels` (Map of String)
-- `name` (String)
-- `namespace` (String)
-- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
-- `resource_version` (String)
-- `self_link` (String)
-- `uid` (String)
+- `annotations` (Map of String) Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: http://kubernetes.io/docs/user-guide/annotations
+- `cluster_name` (String) The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.
+- `creation_timestamp` (String) CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
 
-<a id="nestedobjatt--metadata--initializers"></a>
+Populated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
+- `deletion_grace_period_seconds` (Number) Number of seconds allowed for this object to gracefully terminate before it will be removed from the system. Only set when deletionTimestamp is also set. May only be shortened. Read-only.
+- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
+
+Populated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
+- `finalizers` (List of String) Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.
+- `generate_name` (String) GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided. If this field is used, the name returned to the client will be different than the name passed. This value will also be combined with a unique suffix. The provided value has the same validation rules as the Name field, and may be truncated by the length of the suffix required to make the value unique on the server.
+
+If this field is specified and the generated name exists, the server will NOT return a 409 - instead, it will either return 201 Created or 500 with Reason ServerTimeout indicating a unique name could not be found in the time allotted, and the client should retry (optionally after the time indicated in the Retry-After header).
+
+Applied only if Name is not specified. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#idempotency
+- `generation` (Number) A sequence number representing a specific generation of the desired state. Populated by the system. Read-only.
+- `initializers` (Block List, Max: 1) An initializer is a controller which enforces some system invariant at object creation time. This field is a list of initializers that have not yet acted on this object. If nil or empty, this object has been completely initialized. Otherwise, the object is considered uninitialized and is hidden (in list/watch and get calls) from clients that haven't explicitly asked to observe uninitialized objects.
+
+When an object is created, the system will populate this list with the current set of initializers. Only privileged users may set or modify this list. Once it is empty, it may not be modified further by any user. (see [below for nested schema](#nestedblock--metadata--initializers))
+- `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
+- `namespace` (String) Namespace defines the space within each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
+
+Must be a DNS_LABEL. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/namespaces
+- `owner_references` (Block List) List of objects depended by this object. If ALL objects in the list have been deleted, this object will be garbage collected. If this object is managed by a controller, then an entry in this list will point to this controller, with the controller field set to true. There cannot be more than one managing controller. (see [below for nested schema](#nestedblock--metadata--owner_references))
+- `resource_version` (String) An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed. May be used for optimistic concurrency, change detection, and the watch operation on a resource or set of resources. Clients must treat these values as opaque and passed unmodified back to the server. They may only be valid for a particular resource or set of resources.
+
+Populated by the system. Read-only. Value must be treated as opaque by clients and . More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
+- `self_link` (String) SelfLink is a URL representing this object. Populated by the system. Read-only.
+- `uid` (String) UID is the unique in time and space value for this object. It is typically generated by the server on successful creation of a resource and is not allowed to change on PUT operations.
+
+Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-guide/identifiers#uids
+
+<a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
+Required:
+
+- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
+
 Optional:
 
-- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
-- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+- `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
-<a id="nestedobjatt--metadata--initializers--pending"></a>
+<a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Optional:
+Required:
 
-- `name` (String)
+- `name` (String) name of the process that is responsible for initializing this object.
 
 
-<a id="nestedobjatt--metadata--initializers--result"></a>
+<a id="nestedblock--metadata--initializers--result"></a>
 ### Nested Schema for `metadata.initializers.result`
 
 Optional:
 
-- `api_version` (String)
-- `code` (Number)
-- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
-- `kind` (String)
-- `message` (String)
-- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
-- `reason` (String)
-- `status` (String)
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+- `code` (Number) Suggested HTTP return code for this status, 0 if not set.
+- `details` (Block List, Max: 1) Extended data associated with the reason.  Each reason may define its own extended details. This field is optional and the data returned is not guaranteed to conform to any schema except that defined by the reason type. (see [below for nested schema](#nestedblock--metadata--initializers--result--details))
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `message` (String) A human-readable description of the status of this operation.
+- `metadata` (Block List, Max: 1) Standard list metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds (see [below for nested schema](#nestedblock--metadata--initializers--result--metadata))
+- `reason` (String) A machine-readable description of why this operation is in the "Failure" status. If this value is empty there is no information available. A Reason clarifies an HTTP status code but does not override it.
+- `status` (String) Status of the operation. One of: "Success" or "Failure". More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status
 
-<a id="nestedobjatt--metadata--initializers--result--details"></a>
+<a id="nestedblock--metadata--initializers--result--details"></a>
 ### Nested Schema for `metadata.initializers.result.details`
 
 Optional:
 
-- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
-- `group` (String)
-- `kind` (String)
-- `name` (String)
-- `retry_after_seconds` (Number)
-- `uid` (String)
+- `causes` (Block List) The Causes array includes more details associated with the StatusReason failure. Not all StatusReasons may provide detailed causes. (see [below for nested schema](#nestedblock--metadata--initializers--result--details--causes))
+- `group` (String) The group attribute of the resource associated with the status StatusReason.
+- `kind` (String) The kind attribute of the resource associated with the status StatusReason. On some operations may differ from the requested resource Kind. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `name` (String) The name attribute of the resource associated with the status StatusReason (when there is a single name which can be described).
+- `retry_after_seconds` (Number) If specified, the time in seconds before the operation should be retried. Some errors may indicate the client must take an alternate action - for those errors this field may indicate how long to wait before taking the alternate action.
+- `uid` (String) UID of the resource. (when there is a single resource which can be described). More info: http://kubernetes.io/docs/user-guide/identifiers#uids
 
-<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+<a id="nestedblock--metadata--initializers--result--details--causes"></a>
 ### Nested Schema for `metadata.initializers.result.details.causes`
 
 Optional:
 
-- `field` (String)
-- `message` (String)
-- `reason` (String)
+- `field` (String) The field of the resource that has caused this error, as named by its JSON serialization. May include dot and postfix notation for nested attributes. Arrays are zero-indexed.  Fields may appear more than once in an array of causes due to fields having multiple errors. Optional.
+
+Examples:
+  "name" - the field "name" on the current resource
+  "items[0].name" - the field "name" on the first array entry in "items"
+- `message` (String) A human-readable description of the cause of the error.  This field may be presented as-is to a reader.
+- `reason` (String) A machine-readable description of the cause of the error. If this value is empty there is no information available.
 
 
 
-<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+<a id="nestedblock--metadata--initializers--result--metadata"></a>
 ### Nested Schema for `metadata.initializers.result.metadata`
 
 Optional:
 
-- `continue` (String)
-- `resource_version` (String)
-- `self_link` (String)
+- `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response.
+- `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
+- `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
 
 
 
 
-<a id="nestedobjatt--metadata--owner_references"></a>
+<a id="nestedblock--metadata--owner_references"></a>
 ### Nested Schema for `metadata.owner_references`
 
+Required:
+
+- `api_version` (String) API version of the referent.
+- `kind` (String) Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `name` (String) Name of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#names
+- `uid` (String) UID of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#uids
+
 Optional:
 
-- `api_version` (String)
-- `block_owner_deletion` (Boolean)
-- `controller` (Boolean)
-- `kind` (String)
-- `name` (String)
-- `uid` (String)
+- `block_owner_deletion` (Boolean) If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. Defaults to false. To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned.
+- `controller` (Boolean) If true, this reference points to the managing controller.
 
 
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
+Required:
+
+- `group` (String) Group is the group this resource belongs in
+- `names` (Block List, Min: 1, Max: 1) Names are the names used to describe this custom resource (see [below for nested schema](#nestedblock--spec--names))
+- `scope` (String) Scope indicates whether this resource is cluster or namespace scoped.  Default is namespaced
+- `version` (String) Version is the version this resource belongs in
+
 Optional:
 
-- `group` (String)
-- `names` (List of Object) (see [below for nested schema](#nestedobjatt--spec--names))
-- `scope` (String)
-- `subresources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--subresources))
-- `validation` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation))
-- `version` (String)
+- `subresources` (Block List, Max: 1) Subresources describes the subresources for CustomResources This field is alpha-level and should only be sent to servers that enable subresources via the CustomResourceSubresources feature gate. (see [below for nested schema](#nestedblock--spec--subresources))
+- `validation` (Block List, Max: 1) Validation describes the validation methods for CustomResources (see [below for nested schema](#nestedblock--spec--validation))
 
-<a id="nestedobjatt--spec--names"></a>
+<a id="nestedblock--spec--names"></a>
 ### Nested Schema for `spec.names`
 
+Required:
+
+- `kind` (String) Kind is the serialized kind of the resource.  It is normally CamelCase and singular.
+- `plural` (String) Plural is the plural name of the resource to serve.  It must match the name of the CustomResourceDefinition-registration too: plural.group and it must be all lowercase.
+
 Optional:
 
-- `categories` (List of String)
-- `kind` (String)
-- `list_kind` (String)
-- `plural` (String)
-- `short_names` (List of String)
-- `singular` (String)
+- `categories` (List of String) Categories is a list of grouped resources custom resources belong to (e.g. 'all')
+- `list_kind` (String) ListKind is the serialized kind of the list for this resource.  Defaults to <kind>List.
+- `short_names` (List of String) ShortNames are short names for the resource.  It must be all lowercase.
+- `singular` (String) Singular is the singular name of the resource.  It must be all lowercase  Defaults to lowercased <kind>
 
 
-<a id="nestedobjatt--spec--subresources"></a>
+<a id="nestedblock--spec--subresources"></a>
 ### Nested Schema for `spec.subresources`
 
 Optional:
 
-- `scale` (List of Object) (see [below for nested schema](#nestedobjatt--spec--subresources--scale))
-- `status` (Map of String)
+- `scale` (Block List, Max: 1) Scale denotes the scale subresource for CustomResources (see [below for nested schema](#nestedblock--spec--subresources--scale))
+- `status` (Map of String) Status denotes the status subresource for CustomResources
 
-<a id="nestedobjatt--spec--subresources--scale"></a>
+<a id="nestedblock--spec--subresources--scale"></a>
 ### Nested Schema for `spec.subresources.scale`
+
+Required:
+
+- `spec_replicas_path` (String) SpecReplicasPath defines the JSON path inside of a CustomResource that corresponds to Scale.Spec.Replicas. Only JSON paths without the array notation are allowed. Must be a JSON Path under .spec. If there is no value under the given path in the CustomResource, the /scale subresource will return an error on GET.
+- `status_replicas_path` (String) StatusReplicasPath defines the JSON path inside of a CustomResource that corresponds to Scale.Status.Replicas. Only JSON paths without the array notation are allowed. Must be a JSON Path under .status. If there is no value under the given path in the CustomResource, the status replica value in the /scale subresource will default to 0.
 
 Optional:
 
-- `label_selector_path` (String)
-- `spec_replicas_path` (String)
-- `status_replicas_path` (String)
+- `label_selector_path` (String) LabelSelectorPath defines the JSON path inside of a CustomResource that corresponds to Scale.Status.Selector. Only JSON paths without the array notation are allowed. Must be a JSON Path under .status. Must be set to work with HPA. If there is no value under the given path in the CustomResource, the status label selector value in the /scale subresource will default to the empty string.
 
 
 
-<a id="nestedobjatt--spec--validation"></a>
+<a id="nestedblock--spec--validation"></a>
 ### Nested Schema for `spec.validation`
 
 Optional:
 
-- `open_apiv3_schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema))
+- `open_apiv3_schema` (Block List, Max: 1) OpenAPIV3Schema is the OpenAPI v3 schema to be validated against. (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema))
 
-<a id="nestedobjatt--spec--validation--open_apiv3_schema"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema`
 
 Optional:
 
-- `$ref` (String)
-- `$schema` (String)
-- `additional_items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--additional_items))
-- `additional_properties` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--additional_properties))
-- `all_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--all_of))
-- `any_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--any_of))
-- `default` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--default))
+- `additional_items` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--additional_items))
+- `additional_properties` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--additional_properties))
+- `all_of` (Block List) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--all_of))
+- `any_of` (Block List) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--any_of))
+- `default` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--default))
 - `definitions` (Map of String)
 - `dependencies` (Map of String)
 - `description` (String)
-- `enum` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--enum))
-- `example` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--example))
+- `enum` (Block List) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--enum))
+- `example` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--example))
 - `exclusive_maximum` (Boolean)
 - `exclusive_minimum` (Boolean)
-- `external_docs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--external_docs))
+- `external_docs` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--external_docs))
 - `format` (String)
 - `id` (String)
-- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--items))
+- `items` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--items))
 - `max_items` (Number)
 - `max_length` (Number)
 - `max_properties` (Number)
@@ -213,87 +246,77 @@ Optional:
 - `min_properties` (Number)
 - `minimum` (Number)
 - `multiple_of` (Number)
-- `not` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--not))
-- `one_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--one_of))
+- `not` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--not))
+- `one_of` (Block List) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--one_of))
 - `pattern` (String)
 - `pattern_properties` (Map of String)
 - `properties` (Map of String)
+- `ref` (String)
 - `required` (List of String)
+- `schema` (String)
 - `title` (String)
 - `type` (String)
 - `unique_items` (Boolean)
 
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--additional_items"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--additional_items"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.additional_items`
 
-Optional:
+Required:
 
 - `allows` (Boolean)
-- `schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--additional_items--schema))
+- `schema` (Block List, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--additional_items--schema))
 
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--additional_items--schema"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--additional_items--schema"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.additional_items.schema`
 
-Optional:
 
 
-
-
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--additional_properties"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--additional_properties"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.additional_properties`
 
-Optional:
+Required:
 
 - `allows` (Boolean)
-- `schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--additional_properties--schema))
+- `schema` (Block List, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--additional_properties--schema))
 
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--additional_properties--schema"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--additional_properties--schema"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.additional_properties.schema`
 
-Optional:
 
 
-
-
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--all_of"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--all_of"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.all_of`
 
-Optional:
 
-
-
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--any_of"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--any_of"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.any_of`
 
-Optional:
 
-
-
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--default"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--default"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.default`
 
-Optional:
+Required:
 
 - `raw` (String)
 
 
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--enum"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--enum"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.enum`
 
-Optional:
+Required:
 
 - `raw` (String)
 
 
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--example"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--example"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.example`
 
-Optional:
+Required:
 
 - `raw` (String)
 
 
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--external_docs"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--external_docs"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.external_docs`
 
 Optional:
@@ -302,74 +325,68 @@ Optional:
 - `url` (String)
 
 
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--items"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--items"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.items`
 
-Optional:
+Required:
 
-- `json_schemas` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--items--json_schemas))
-- `schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--validation--open_apiv3_schema--items--schema))
+- `json_schemas` (Block List, Min: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--items--json_schemas))
+- `schema` (Block List, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--spec--validation--open_apiv3_schema--items--schema))
 
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--items--json_schemas"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--items--json_schemas"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.items.json_schemas`
 
-Optional:
 
-
-
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--items--schema"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--items--schema"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.items.schema`
 
-Optional:
 
 
-
-
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--not"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--not"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.not`
 
-Optional:
 
-
-
-<a id="nestedobjatt--spec--validation--open_apiv3_schema--one_of"></a>
+<a id="nestedblock--spec--validation--open_apiv3_schema--one_of"></a>
 ### Nested Schema for `spec.validation.open_apiv3_schema.one_of`
 
-Optional:
 
 
 
 
-
-
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
-Optional:
+Required:
 
-- `accepted_names` (List of Object) (see [below for nested schema](#nestedobjatt--status--accepted_names))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `accepted_names` (Block List, Min: 1, Max: 1) AcceptedNames are the names that are actually being used to serve discovery They may be different than the names in spec. (see [below for nested schema](#nestedblock--status--accepted_names))
+- `conditions` (Block List, Min: 1) Conditions indicate state for particular aspects of a CustomResourceDefinition (see [below for nested schema](#nestedblock--status--conditions))
 
-<a id="nestedobjatt--status--accepted_names"></a>
+<a id="nestedblock--status--accepted_names"></a>
 ### Nested Schema for `status.accepted_names`
 
+Required:
+
+- `kind` (String) Kind is the serialized kind of the resource.  It is normally CamelCase and singular.
+- `plural` (String) Plural is the plural name of the resource to serve.  It must match the name of the CustomResourceDefinition-registration too: plural.group and it must be all lowercase.
+
 Optional:
 
-- `categories` (List of String)
-- `kind` (String)
-- `list_kind` (String)
-- `plural` (String)
-- `short_names` (List of String)
-- `singular` (String)
+- `categories` (List of String) Categories is a list of grouped resources custom resources belong to (e.g. 'all')
+- `list_kind` (String) ListKind is the serialized kind of the list for this resource.  Defaults to <kind>List.
+- `short_names` (List of String) ShortNames are short names for the resource.  It must be all lowercase.
+- `singular` (String) Singular is the singular name of the resource.  It must be all lowercase  Defaults to lowercased <kind>
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
+Required:
+
+- `status` (String) Status is the status of the condition. Can be True, False, Unknown.
+- `type` (String) Type is the type of the condition.
+
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) Last time the condition transitioned from one status to another.
+- `message` (String) Human-readable message indicating details about last transition.
+- `reason` (String) Unique, one-word, CamelCase reason for the condition's last transition.

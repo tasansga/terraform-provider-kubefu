@@ -17,7 +17,7 @@ Generated data source for io.k8s.api.apps.v1.ConfigMapArgs
 
 ### Optional
 
-- `generator_args` (List of Object) (see [below for nested schema](#nestedatt--generator_args))
+- `generator_args` (Block List, Max: 1) (see [below for nested schema](#nestedblock--generator_args))
 
 ### Read-Only
 
@@ -25,17 +25,17 @@ Generated data source for io.k8s.api.apps.v1.ConfigMapArgs
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--generator_args"></a>
+<a id="nestedblock--generator_args"></a>
 ### Nested Schema for `generator_args`
 
 Optional:
 
 - `behavior` (String)
-- `kv_pair_sources` (List of Object) (see [below for nested schema](#nestedobjatt--generator_args--kv_pair_sources))
+- `kv_pair_sources` (Block List, Max: 1) (see [below for nested schema](#nestedblock--generator_args--kv_pair_sources))
 - `name` (String)
 - `namespace` (String)
 
-<a id="nestedobjatt--generator_args--kv_pair_sources"></a>
+<a id="nestedblock--generator_args--kv_pair_sources"></a>
 ### Nested Schema for `generator_args.kv_pair_sources`
 
 Optional:

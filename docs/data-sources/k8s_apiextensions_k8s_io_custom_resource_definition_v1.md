@@ -17,12 +17,12 @@ CustomResourceDefinition represents a resource that should be exposed on the API
 
 ### Required
 
-- `spec` (List of Object) spec describes how the user wants the resources to appear (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Min: 1, Max: 1) spec describes how the user wants the resources to appear (see [below for nested schema](#nestedblock--spec))
 
 ### Optional
 
-- `metadata` (List of Object) (see [below for nested schema](#nestedatt--metadata))
-- `status` (List of Object) status indicates the actual state of the CustomResourceDefinition (see [below for nested schema](#nestedatt--status))
+- `metadata` (Block List, Max: 1) (see [below for nested schema](#nestedblock--metadata))
+- `status` (Block List, Max: 1) status indicates the actual state of the CustomResourceDefinition (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -32,122 +32,93 @@ CustomResourceDefinition represents a resource that should be exposed on the API
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Required:
 
-- `conversion` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conversion))
-- `group` (String)
-- `names` (List of Object) (see [below for nested schema](#nestedobjatt--spec--names))
-- `preserve_unknown_fields` (Boolean)
-- `scope` (String)
-- `versions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions))
+- `group` (String) group is the API group of the defined custom resource. The custom resources are served under `/apis/<group>/...`. Must match the name of the CustomResourceDefinition (in the form `<names.plural>.<group>`).
+- `names` (Block List, Min: 1, Max: 1) names specify the resource and kind names for the custom resource. (see [below for nested schema](#nestedblock--spec--names))
+- `scope` (String) scope indicates whether the defined custom resource is cluster- or namespace-scoped. Allowed values are `Cluster` and `Namespaced`. Default is `Namespaced`.
+- `versions` (Block List, Min: 1) versions is the list of all API versions of the defined custom resource. Version names are used to compute the order in which served versions are listed in API discovery. If the version string is "kube-like", it will sort above non "kube-like" version strings, which are ordered lexicographically. "Kube-like" versions start with a "v", then are followed by a number (the major version), then optionally the string "alpha" or "beta" and another number (the minor version). These are sorted first by GA > beta > alpha (where GA is a version with no suffix such as beta or alpha), and then by comparing major version, then minor version. An example sorted list of versions: v10, v2, v1, v11beta2, v10beta3, v3beta1, v12alpha1, v11alpha2, foo1, foo10. (see [below for nested schema](#nestedblock--spec--versions))
 
-<a id="nestedobjatt--spec--conversion"></a>
-### Nested Schema for `spec.conversion`
+Optional:
 
-Required:
+- `conversion` (Block List, Max: 1) conversion defines conversion settings for the CRD. (see [below for nested schema](#nestedblock--spec--conversion))
+- `preserve_unknown_fields` (Boolean) preserveUnknownFields indicates that object fields which are not specified in the OpenAPI schema should be preserved when persisting to storage. apiVersion, kind, metadata and known fields inside metadata are always preserved. This field is deprecated in favor of setting `x-preserve-unknown-fields` to true in `spec.versions[*].schema.openAPIV3Schema`. See https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#pruning-versus-preserving-unknown-fields for details.
 
-- `strategy` (String)
-- `webhook` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conversion--webhook))
-
-<a id="nestedobjatt--spec--conversion--webhook"></a>
-### Nested Schema for `spec.conversion.webhook`
-
-Required:
-
-- `client_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conversion--webhook--client_config))
-- `conversion_review_versions` (List of String)
-
-<a id="nestedobjatt--spec--conversion--webhook--client_config"></a>
-### Nested Schema for `spec.conversion.webhook.client_config`
-
-Required:
-
-- `ca_bundle` (String)
-- `service` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conversion--webhook--client_config--service))
-- `url` (String)
-
-<a id="nestedobjatt--spec--conversion--webhook--client_config--service"></a>
-### Nested Schema for `spec.conversion.webhook.client_config.service`
-
-Required:
-
-- `name` (String)
-- `namespace` (String)
-- `path` (String)
-- `port` (Number)
-
-
-
-
-
-<a id="nestedobjatt--spec--names"></a>
+<a id="nestedblock--spec--names"></a>
 ### Nested Schema for `spec.names`
 
 Required:
 
-- `categories` (List of String)
-- `kind` (String)
-- `list_kind` (String)
-- `plural` (String)
-- `short_names` (List of String)
-- `singular` (String)
+- `kind` (String) kind is the serialized kind of the resource. It is normally CamelCase and singular. Custom resource instances will use this value as the `kind` attribute in API calls.
+- `plural` (String) plural is the plural name of the resource to serve. The custom resources are served under `/apis/<group>/<version>/.../<plural>`. Must match the name of the CustomResourceDefinition (in the form `<names.plural>.<group>`). Must be all lowercase.
+
+Optional:
+
+- `categories` (List of String) categories is a list of grouped resources this custom resource belongs to (e.g. 'all'). This is published in API discovery documents, and used by clients to support invocations like `kubectl get all`.
+- `list_kind` (String) listKind is the serialized kind of the list for this resource. Defaults to "`kind`List".
+- `short_names` (List of String) shortNames are short names for the resource, exposed in API discovery documents, and used by clients to support invocations like `kubectl get <shortname>`. It must be all lowercase.
+- `singular` (String) singular is the singular name of the resource. It must be all lowercase. Defaults to lowercased `kind`.
 
 
-<a id="nestedobjatt--spec--versions"></a>
+<a id="nestedblock--spec--versions"></a>
 ### Nested Schema for `spec.versions`
 
 Required:
 
-- `additional_printer_columns` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--additional_printer_columns))
-- `name` (String)
-- `schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema))
-- `served` (Boolean)
-- `storage` (Boolean)
-- `subresources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--subresources))
+- `name` (String) name is the version name, e.g. “v1”, “v2beta1”, etc. The custom resources are served under this version at `/apis/<group>/<version>/...` if `served` is true.
+- `served` (Boolean) served is a flag enabling/disabling this version from being served via REST APIs
+- `storage` (Boolean) storage indicates this version should be used when persisting custom resources to storage. There must be exactly one version with storage=true.
 
-<a id="nestedobjatt--spec--versions--additional_printer_columns"></a>
+Optional:
+
+- `additional_printer_columns` (Block List) additionalPrinterColumns specifies additional columns returned in Table output. See https://kubernetes.io/docs/reference/using-api/api-concepts/#receiving-resources-as-tables for details. If no columns are specified, a single column displaying the age of the custom resource is used. (see [below for nested schema](#nestedblock--spec--versions--additional_printer_columns))
+- `schema` (Block List, Max: 1) schema describes the schema used for validation, pruning, and defaulting of this version of the custom resource. (see [below for nested schema](#nestedblock--spec--versions--schema))
+- `subresources` (Block List, Max: 1) subresources specify what subresources this version of the defined custom resource have. (see [below for nested schema](#nestedblock--spec--versions--subresources))
+
+<a id="nestedblock--spec--versions--additional_printer_columns"></a>
 ### Nested Schema for `spec.versions.additional_printer_columns`
 
 Required:
 
-- `description` (String)
-- `format` (String)
-- `json_path` (String)
-- `name` (String)
-- `priority` (Number)
-- `type` (String)
+- `json_path` (String) jsonPath is a simple JSON path (i.e. with array notation) which is evaluated against each custom resource to produce the value for this column.
+- `name` (String) name is a human readable name for the column.
+- `type` (String) type is an OpenAPI type definition for this column. See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types for details.
+
+Optional:
+
+- `description` (String) description is a human readable description of this column.
+- `format` (String) format is an optional OpenAPI type definition for this column. The 'name' format is applied to the primary identifier column to assist in clients identifying column is the resource name. See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types for details.
+- `priority` (Number) priority is an integer defining the relative importance of this column compared to others. Lower numbers are considered higher priority. Columns that may be omitted in limited space scenarios should be given a priority greater than 0.
 
 
-<a id="nestedobjatt--spec--versions--schema"></a>
+<a id="nestedblock--spec--versions--schema"></a>
 ### Nested Schema for `spec.versions.schema`
 
-Required:
+Optional:
 
-- `open_apiv3_schema` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema))
+- `open_apiv3_schema` (Block List, Max: 1) openAPIV3Schema is the OpenAPI v3 schema to use for validation and pruning. (see [below for nested schema](#nestedblock--spec--versions--schema--open_apiv3_schema))
 
-<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema"></a>
+<a id="nestedblock--spec--versions--schema--open_apiv3_schema"></a>
 ### Nested Schema for `spec.versions.schema.open_apiv3_schema`
 
-Required:
+Optional:
 
-- `$ref` (String)
-- `$schema` (String)
 - `additional_items` (Map of String)
 - `additional_properties` (Map of String)
-- `all_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--all_of))
-- `any_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--any_of))
-- `default` (Map of String)
+- `all_of` (Block List) (see [below for nested schema](#nestedblock--spec--versions--schema--open_apiv3_schema--all_of))
+- `any_of` (Block List) (see [below for nested schema](#nestedblock--spec--versions--schema--open_apiv3_schema--any_of))
+- `default` (Map of String) default is a default value for undefined object fields. Defaulting is a beta feature under the CustomResourceDefaulting feature gate. Defaulting requires spec.preserveUnknownFields to be false.
 - `definitions` (Map of String)
 - `dependencies` (Map of String)
 - `description` (String)
-- `enum` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--enum))
+- `enum` (Block List) (see [below for nested schema](#nestedblock--spec--versions--schema--open_apiv3_schema--enum))
 - `example` (Map of String)
 - `exclusive_maximum` (Boolean)
 - `exclusive_minimum` (Boolean)
-- `external_docs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--external_docs))
+- `external_docs` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--versions--schema--open_apiv3_schema--external_docs))
 - `format` (String)
 - `id` (String)
 - `items` (Map of String)
@@ -160,167 +131,270 @@ Required:
 - `min_properties` (Number)
 - `minimum` (Number)
 - `multiple_of` (Number)
-- `not` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--not))
+- `not` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--versions--schema--open_apiv3_schema--not))
 - `nullable` (Boolean)
-- `one_of` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--schema--open_apiv3_schema--one_of))
+- `one_of` (Block List) (see [below for nested schema](#nestedblock--spec--versions--schema--open_apiv3_schema--one_of))
 - `pattern` (String)
 - `pattern_properties` (Map of String)
 - `properties` (Map of String)
+- `ref` (String)
 - `required` (List of String)
+- `schema` (String)
 - `title` (String)
 - `type` (String)
 - `unique_items` (Boolean)
-- `x-kubernetes-embedded-resource` (Boolean)
-- `x-kubernetes-int-or-string` (Boolean)
-- `x-kubernetes-list-map-keys` (List of String)
-- `x-kubernetes-list-type` (String)
-- `x-kubernetes-preserve-unknown-fields` (Boolean)
+- `x_kubernetes_embedded_resource` (Boolean) x-kubernetes-embedded-resource defines that the value is an embedded Kubernetes runtime.Object, with TypeMeta and ObjectMeta. The type must be object. It is allowed to further restrict the embedded object. kind, apiVersion and metadata are validated automatically. x-kubernetes-preserve-unknown-fields is allowed to be true, but does not have to be if the object is fully specified (up to kind, apiVersion, metadata).
+- `x_kubernetes_int_or_string` (Boolean) x-kubernetes-int-or-string specifies that this value is either an integer or a string. If this is true, an empty type is allowed and type as child of anyOf is permitted if following one of the following patterns:
 
-<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--all_of"></a>
+1) anyOf:
+   - type: integer
+   - type: string
+2) allOf:
+   - anyOf:
+     - type: integer
+     - type: string
+   - ... zero or more
+- `x_kubernetes_list_map_keys` (List of String) x-kubernetes-list-map-keys annotates an array with the x-kubernetes-list-type `map` by specifying the keys used as the index of the map.
+
+This tag MUST only be used on lists that have the "x-kubernetes-list-type" extension set to "map". Also, the values specified for this attribute must be a scalar typed field of the child structure (no nesting is supported).
+- `x_kubernetes_list_type` (String) x-kubernetes-list-type annotates an array to further describe its topology. This extension must only be used on lists and may have 3 possible values:
+
+1) `atomic`: the list is treated as a single entity, like a scalar.
+     Atomic lists will be entirely replaced when updated. This extension
+     may be used on any type of list (struct, scalar, ...).
+2) `set`:
+     Sets are lists that must not have multiple items with the same value. Each
+     value must be a scalar, an object with x-kubernetes-map-type `atomic` or an
+     array with x-kubernetes-list-type `atomic`.
+3) `map`:
+     These lists are like maps in that their elements have a non-index key
+     used to identify them. Order is preserved upon merge. The map tag
+     must only be used on a list with elements of type object.
+Defaults to atomic for arrays.
+- `x_kubernetes_preserve_unknown_fields` (Boolean) x-kubernetes-preserve-unknown-fields stops the API server decoding step from pruning fields which are not specified in the validation schema. This affects fields recursively, but switches back to normal pruning behaviour if nested properties or additionalProperties are specified in the schema. This can either be true or undefined. False is forbidden.
+
+<a id="nestedblock--spec--versions--schema--open_apiv3_schema--all_of"></a>
 ### Nested Schema for `spec.versions.schema.open_apiv3_schema.all_of`
 
-Required:
 
-
-
-<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--any_of"></a>
+<a id="nestedblock--spec--versions--schema--open_apiv3_schema--any_of"></a>
 ### Nested Schema for `spec.versions.schema.open_apiv3_schema.any_of`
 
-Required:
 
-
-
-<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--enum"></a>
+<a id="nestedblock--spec--versions--schema--open_apiv3_schema--enum"></a>
 ### Nested Schema for `spec.versions.schema.open_apiv3_schema.enum`
 
-Required:
 
-
-
-<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--external_docs"></a>
+<a id="nestedblock--spec--versions--schema--open_apiv3_schema--external_docs"></a>
 ### Nested Schema for `spec.versions.schema.open_apiv3_schema.external_docs`
 
-Required:
+Optional:
 
 - `description` (String)
 - `url` (String)
 
 
-<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--not"></a>
+<a id="nestedblock--spec--versions--schema--open_apiv3_schema--not"></a>
 ### Nested Schema for `spec.versions.schema.open_apiv3_schema.not`
 
-Required:
 
-
-
-<a id="nestedobjatt--spec--versions--schema--open_apiv3_schema--one_of"></a>
+<a id="nestedblock--spec--versions--schema--open_apiv3_schema--one_of"></a>
 ### Nested Schema for `spec.versions.schema.open_apiv3_schema.one_of`
 
-Required:
 
 
 
-
-
-<a id="nestedobjatt--spec--versions--subresources"></a>
+<a id="nestedblock--spec--versions--subresources"></a>
 ### Nested Schema for `spec.versions.subresources`
 
-Required:
+Optional:
 
-- `scale` (List of Object) (see [below for nested schema](#nestedobjatt--spec--versions--subresources--scale))
-- `status` (Map of String)
+- `scale` (Block List, Max: 1) scale indicates the custom resource should serve a `/scale` subresource that returns an `autoscaling/v1` Scale object. (see [below for nested schema](#nestedblock--spec--versions--subresources--scale))
+- `status` (Map of String) status indicates the custom resource should serve a `/status` subresource. When enabled: 1. requests to the custom resource primary endpoint ignore changes to the `status` stanza of the object. 2. requests to the custom resource `/status` subresource ignore changes to anything other than the `status` stanza of the object.
 
-<a id="nestedobjatt--spec--versions--subresources--scale"></a>
+<a id="nestedblock--spec--versions--subresources--scale"></a>
 ### Nested Schema for `spec.versions.subresources.scale`
 
 Required:
 
-- `label_selector_path` (String)
-- `spec_replicas_path` (String)
-- `status_replicas_path` (String)
+- `spec_replicas_path` (String) specReplicasPath defines the JSON path inside of a custom resource that corresponds to Scale `spec.replicas`. Only JSON paths without the array notation are allowed. Must be a JSON Path under `.spec`. If there is no value under the given path in the custom resource, the `/scale` subresource will return an error on GET.
+- `status_replicas_path` (String) statusReplicasPath defines the JSON path inside of a custom resource that corresponds to Scale `status.replicas`. Only JSON paths without the array notation are allowed. Must be a JSON Path under `.status`. If there is no value under the given path in the custom resource, the `status.replicas` value in the `/scale` subresource will default to 0.
+
+Optional:
+
+- `label_selector_path` (String) labelSelectorPath defines the JSON path inside of a custom resource that corresponds to Scale `status.selector`. Only JSON paths without the array notation are allowed. Must be a JSON Path under `.status` or `.spec`. Must be set to work with HorizontalPodAutoscaler. The field pointed by this JSON path must be a string field (not a complex selector struct) which contains a serialized label selector in string form. More info: https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions#scale-subresource If there is no value under the given path in the custom resource, the `status.selector` value in the `/scale` subresource will default to the empty string.
+
+
+
+
+<a id="nestedblock--spec--conversion"></a>
+### Nested Schema for `spec.conversion`
+
+Required:
+
+- `strategy` (String) strategy specifies how custom resources are converted between versions. Allowed values are: - `None`: The converter only change the apiVersion and would not touch any other field in the custom resource. - `Webhook`: API Server will call to an external webhook to do the conversion. Additional information
+  is needed for this option. This requires spec.preserveUnknownFields to be false, and spec.conversion.webhook to be set.
+
+Optional:
+
+- `webhook` (Block List, Max: 1) webhook describes how to call the conversion webhook. Required when `strategy` is set to `Webhook`. (see [below for nested schema](#nestedblock--spec--conversion--webhook))
+
+<a id="nestedblock--spec--conversion--webhook"></a>
+### Nested Schema for `spec.conversion.webhook`
+
+Required:
+
+- `conversion_review_versions` (List of String) conversionReviewVersions is an ordered list of preferred `ConversionReview` versions the Webhook expects. The API server will use the first version in the list which it supports. If none of the versions specified in this list are supported by API server, conversion will fail for the custom resource. If a persisted Webhook configuration specifies allowed versions and does not include any versions known to the API Server, calls to the webhook will fail.
+
+Optional:
+
+- `client_config` (Block List, Max: 1) clientConfig is the instructions for how to call the webhook if strategy is `Webhook`. (see [below for nested schema](#nestedblock--spec--conversion--webhook--client_config))
+
+<a id="nestedblock--spec--conversion--webhook--client_config"></a>
+### Nested Schema for `spec.conversion.webhook.client_config`
+
+Optional:
+
+- `ca_bundle` (String) caBundle is a PEM encoded CA bundle which will be used to validate the webhook's server certificate. If unspecified, system trust roots on the apiserver are used.
+- `service` (Block List, Max: 1) service is a reference to the service for this webhook. Either service or url must be specified.
+
+If the webhook is running within the cluster, then you should use `service`. (see [below for nested schema](#nestedblock--spec--conversion--webhook--client_config--service))
+- `url` (String) url gives the location of the webhook, in standard URL form (`scheme://host:port/path`). Exactly one of `url` or `service` must be specified.
+
+The `host` should not refer to a service running in the cluster; use the `service` field instead. The host might be resolved via external DNS in some apiservers (e.g., `kube-apiserver` cannot resolve in-cluster DNS as that would be a layering violation). `host` may also be an IP address.
+
+Please note that using `localhost` or `127.0.0.1` as a `host` is risky unless you take great care to run this webhook on all hosts which run an apiserver which might need to make calls to this webhook. Such installs are likely to be non-portable, i.e., not easy to turn up in a new cluster.
+
+The scheme must be "https"; the URL must begin with "https://".
+
+A path is optional, and if present may be any string permissible in a URL. You may use the path to pass an arbitrary string to the webhook, for example, a cluster identifier.
+
+Attempting to use a user or basic auth e.g. "user:password@" is not allowed. Fragments ("#...") and query parameters ("?...") are not allowed, either.
+
+<a id="nestedblock--spec--conversion--webhook--client_config--service"></a>
+### Nested Schema for `spec.conversion.webhook.client_config.service`
+
+Required:
+
+- `name` (String) name is the name of the service. Required
+- `namespace` (String) namespace is the namespace of the service. Required
+
+Optional:
+
+- `path` (String) path is an optional URL path at which the webhook will be contacted.
+- `port` (Number) port is an optional service port at which the webhook will be contacted. `port` should be a valid port number (1-65535, inclusive). Defaults to 443 for backward compatibility.
 
 
 
 
 
-<a id="nestedatt--metadata"></a>
+
+<a id="nestedblock--metadata"></a>
 ### Nested Schema for `metadata`
 
 Optional:
 
-- `annotations` (Map of String)
-- `cluster_name` (String)
-- `creation_timestamp` (String)
-- `deletion_grace_period_seconds` (Number)
-- `deletion_timestamp` (String)
-- `finalizers` (List of String)
-- `generate_name` (String)
-- `generation` (Number)
-- `labels` (Map of String)
-- `managed_fields` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--managed_fields))
-- `name` (String)
-- `namespace` (String)
-- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
-- `resource_version` (String)
-- `self_link` (String)
-- `uid` (String)
+- `annotations` (Map of String) Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: http://kubernetes.io/docs/user-guide/annotations
+- `cluster_name` (String) The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.
+- `creation_timestamp` (String) CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
 
-<a id="nestedobjatt--metadata--managed_fields"></a>
+Populated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+- `deletion_grace_period_seconds` (Number) Number of seconds allowed for this object to gracefully terminate before it will be removed from the system. Only set when deletionTimestamp is also set. May only be shortened. Read-only.
+- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
+
+Populated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+- `finalizers` (List of String) Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.
+- `generate_name` (String) GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided. If this field is used, the name returned to the client will be different than the name passed. This value will also be combined with a unique suffix. The provided value has the same validation rules as the Name field, and may be truncated by the length of the suffix required to make the value unique on the server.
+
+If this field is specified and the generated name exists, the server will NOT return a 409 - instead, it will either return 201 Created or 500 with Reason ServerTimeout indicating a unique name could not be found in the time allotted, and the client should retry (optionally after the time indicated in the Retry-After header).
+
+Applied only if Name is not specified. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#idempotency
+- `generation` (Number) A sequence number representing a specific generation of the desired state. Populated by the system. Read-only.
+- `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `managed_fields` (Block List) ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like "ci-cd". The set of fields is always in the version that the workflow used when modifying the object. (see [below for nested schema](#nestedblock--metadata--managed_fields))
+- `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
+- `namespace` (String) Namespace defines the space within each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
+
+Must be a DNS_LABEL. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/namespaces
+- `owner_references` (Block List) List of objects depended by this object. If ALL objects in the list have been deleted, this object will be garbage collected. If this object is managed by a controller, then an entry in this list will point to this controller, with the controller field set to true. There cannot be more than one managing controller. (see [below for nested schema](#nestedblock--metadata--owner_references))
+- `resource_version` (String) An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed. May be used for optimistic concurrency, change detection, and the watch operation on a resource or set of resources. Clients must treat these values as opaque and passed unmodified back to the server. They may only be valid for a particular resource or set of resources.
+
+Populated by the system. Read-only. Value must be treated as opaque by clients and . More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency
+- `self_link` (String) SelfLink is a URL representing this object. Populated by the system. Read-only.
+
+DEPRECATED Kubernetes will stop propagating this field in 1.20 release and the field is planned to be removed in 1.21 release.
+- `uid` (String) UID is the unique in time and space value for this object. It is typically generated by the server on successful creation of a resource and is not allowed to change on PUT operations.
+
+Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-guide/identifiers#uids
+
+<a id="nestedblock--metadata--managed_fields"></a>
 ### Nested Schema for `metadata.managed_fields`
 
 Optional:
 
-- `api_version` (String)
-- `fields_type` (String)
-- `fields_v1` (Map of String)
-- `manager` (String)
-- `operation` (String)
-- `time` (String)
+- `api_version` (String) APIVersion defines the version of this resource that this field set applies to. The format is "group/version" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.
+- `fields_type` (String) FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: "FieldsV1"
+- `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
+- `manager` (String) Manager is an identifier of the workflow managing these fields.
+- `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
-<a id="nestedobjatt--metadata--owner_references"></a>
+<a id="nestedblock--metadata--owner_references"></a>
 ### Nested Schema for `metadata.owner_references`
 
+Required:
+
+- `api_version` (String) API version of the referent.
+- `kind` (String) Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+- `name` (String) Name of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#names
+- `uid` (String) UID of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#uids
+
 Optional:
 
-- `api_version` (String)
-- `block_owner_deletion` (Boolean)
-- `controller` (Boolean)
-- `kind` (String)
-- `name` (String)
-- `uid` (String)
+- `block_owner_deletion` (Boolean) If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. Defaults to false. To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned.
+- `controller` (Boolean) If true, this reference points to the managing controller.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
+Required:
+
+- `accepted_names` (Block List, Min: 1, Max: 1) acceptedNames are the names that are actually being used to serve discovery. They may be different than the names in spec. (see [below for nested schema](#nestedblock--status--accepted_names))
+- `stored_versions` (List of String) storedVersions lists all versions of CustomResources that were ever persisted. Tracking these versions allows a migration path for stored versions in etcd. The field is mutable so a migration controller can finish a migration to another version (ensuring no old objects are left in storage), and then remove the rest of the versions from this list. Versions may not be removed from `spec.versions` while they exist in this list.
+
 Optional:
 
-- `accepted_names` (List of Object) (see [below for nested schema](#nestedobjatt--status--accepted_names))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `stored_versions` (List of String)
+- `conditions` (Block List) conditions indicate state for particular aspects of a CustomResourceDefinition (see [below for nested schema](#nestedblock--status--conditions))
 
-<a id="nestedobjatt--status--accepted_names"></a>
+<a id="nestedblock--status--accepted_names"></a>
 ### Nested Schema for `status.accepted_names`
 
+Required:
+
+- `kind` (String) kind is the serialized kind of the resource. It is normally CamelCase and singular. Custom resource instances will use this value as the `kind` attribute in API calls.
+- `plural` (String) plural is the plural name of the resource to serve. The custom resources are served under `/apis/<group>/<version>/.../<plural>`. Must match the name of the CustomResourceDefinition (in the form `<names.plural>.<group>`). Must be all lowercase.
+
 Optional:
 
-- `categories` (List of String)
-- `kind` (String)
-- `list_kind` (String)
-- `plural` (String)
-- `short_names` (List of String)
-- `singular` (String)
+- `categories` (List of String) categories is a list of grouped resources this custom resource belongs to (e.g. 'all'). This is published in API discovery documents, and used by clients to support invocations like `kubectl get all`.
+- `list_kind` (String) listKind is the serialized kind of the list for this resource. Defaults to "`kind`List".
+- `short_names` (List of String) shortNames are short names for the resource, exposed in API discovery documents, and used by clients to support invocations like `kubectl get <shortname>`. It must be all lowercase.
+- `singular` (String) singular is the singular name of the resource. It must be all lowercase. Defaults to lowercased `kind`.
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
+Required:
+
+- `status` (String) status is the status of the condition. Can be True, False, Unknown.
+- `type` (String) type is the type of the condition. Types include Established, NamesAccepted and Terminating.
+
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime last time the condition transitioned from one status to another.
+- `message` (String) message is a human-readable message indicating details about last transition.
+- `reason` (String) reason is a unique, one-word, CamelCase reason for the condition's last transition.

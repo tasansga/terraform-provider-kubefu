@@ -18,7 +18,7 @@ MFA generates a new TOTP token that is compliant with RFC 6238.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) MFASpec controls the behavior of the mfa generator. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Max: 1) MFASpec controls the behavior of the mfa generator. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -35,22 +35,24 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `algorithm` (String)
-- `length` (Number)
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret))
-- `time_period` (Number)
-- `when` (String)
+- `algorithm` (String) Algorithm to use for encoding. Defaults to SHA1 as per the RFC.
+- `length` (Number) Length defines the token length. Defaults to 6 characters.
+- `secret` (Block List, Max: 1) Secret is a secret selector to a secret containing the seed secret to generate the TOTP value from. (see [below for nested schema](#nestedblock--spec--secret))
+- `time_period` (Number) TimePeriod defines how long the token can be active. Defaults to 30 seconds.
+- `when` (String) When defines a time parameter that can be used to pin the origin time of the generated token.
 
-<a id="nestedobjatt--spec--secret"></a>
+<a id="nestedblock--spec--secret"></a>
 ### Nested Schema for `spec.secret`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.

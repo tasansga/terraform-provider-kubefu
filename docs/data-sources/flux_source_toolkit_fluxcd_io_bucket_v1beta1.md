@@ -18,8 +18,8 @@ Bucket is the Schema for the buckets API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) BucketSpec defines the desired state of an S3 compatible bucket (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) BucketStatus defines the observed state of a bucket (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) BucketSpec defines the desired state of an S3 compatible bucket (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) BucketStatus defines the observed state of a bucket (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,62 +29,62 @@ Bucket is the Schema for the buckets API
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `bucket_name` (String)
-- `endpoint` (String)
-- `ignore` (String)
-- `insecure` (Boolean)
-- `interval` (String)
-- `provider_` (String)
-- `region` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
-- `suspend` (Boolean)
-- `timeout` (String)
+- `bucket_name` (String) The bucket name.
+- `endpoint` (String) The bucket endpoint address.
+- `ignore` (String) Ignore overrides the set of excluded patterns in the .sourceignore format (which is the same as .gitignore). If not provided, a default will be used, consult the documentation for your version to find out what those are.
+- `insecure` (Boolean) Insecure allows connecting to a non-TLS S3 HTTP endpoint.
+- `interval` (String) The interval at which to check for bucket updates.
+- `provider_` (String) The S3 compatible storage provider name, default ('generic').
+- `region` (String) The bucket region.
+- `secret_ref` (Block List, Max: 1) The name of the secret containing authentication credentials for the Bucket. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `suspend` (Boolean) This flag tells the controller to suspend the reconciliation of this source.
+- `timeout` (String) The timeout for download operations, defaults to 20s.
 
-<a id="nestedobjatt--spec--secret_ref"></a>
+<a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_handled_reconcile_at` (String)
-- `observed_generation` (Number)
-- `url` (String)
+- `artifact` (Block List, Max: 1) Artifact represents the output of the last successful Bucket sync. (see [below for nested schema](#nestedblock--status--artifact))
+- `conditions` (Block List) Conditions holds the conditions for the Bucket. (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change can be detected.
+- `observed_generation` (Number) ObservedGeneration is the last observed generation.
+- `url` (String) URL is the download link for the artifact output of the last Bucket sync.
 
-<a id="nestedobjatt--status--artifact"></a>
+<a id="nestedblock--status--artifact"></a>
 ### Nested Schema for `status.artifact`
 
 Optional:
 
-- `checksum` (String)
-- `last_update_time` (String)
-- `path` (String)
-- `revision` (String)
-- `url` (String)
+- `checksum` (String) Checksum is the SHA1 checksum of the artifact.
+- `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of this artifact.
+- `path` (String) Path is the relative file path of this artifact.
+- `revision` (String) Revision is a human readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm index timestamp, a Helm chart version, etc.
+- `url` (String) URL is the HTTP address of this artifact.
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)

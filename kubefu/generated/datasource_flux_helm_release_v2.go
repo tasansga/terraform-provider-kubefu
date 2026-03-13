@@ -971,7 +971,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 						}},
 					},
 					"values": {
-						Type:        schema.TypeString,
+						Type:        schema.TypeMap,
 						Description: "Values holds the values for this Helm release.",
 						Optional:    true,
 						Required:    false,

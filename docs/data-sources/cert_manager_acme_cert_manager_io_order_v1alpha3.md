@@ -21,8 +21,8 @@ Order is a type to represent an Order with an ACME server
 
 ### Optional
 
-- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -32,56 +32,56 @@ Order is a type to represent an Order with an ACME server
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `common_name` (String)
-- `csr` (String)
-- `dns_names` (List of String)
-- `issuer_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--issuer_ref))
+- `common_name` (String) CommonName is the common name as specified on the DER encoded CSR. If specified, this value must also be present in `dnsNames`. This field must match the corresponding field on the DER encoded CSR.
+- `csr` (String) Certificate signing request bytes in DER encoding. This will be used when finalizing the order. This field must be set on the order.
+- `dns_names` (List of String) DNSNames is a list of DNS names that should be included as part of the Order validation process. This field must match the corresponding field on the DER encoded CSR.
+- `issuer_ref` (Block List, Max: 1) IssuerRef references a properly configured ACME-type Issuer which should be used to create this Order. If the Issuer does not exist, processing will be retried. If the Issuer is not an 'ACME' Issuer, an error will be returned and the Order will be marked as failed. (see [below for nested schema](#nestedblock--spec--issuer_ref))
 
-<a id="nestedobjatt--spec--issuer_ref"></a>
+<a id="nestedblock--spec--issuer_ref"></a>
 ### Nested Schema for `spec.issuer_ref`
 
 Optional:
 
-- `group` (String)
-- `kind` (String)
-- `name` (String)
+- `group` (String) Group of the resource being referred to.
+- `kind` (String) Kind of the resource being referred to.
+- `name` (String) Name of the resource being referred to.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `authorizations` (List of Object) (see [below for nested schema](#nestedobjatt--status--authorizations))
-- `certificate` (String)
-- `failure_time` (String)
-- `finalize_url` (String)
-- `reason` (String)
-- `state` (String)
-- `url` (String)
+- `authorizations` (Block List) Authorizations contains data returned from the ACME server on what authorizations must be completed in order to validate the DNS names specified on the Order. (see [below for nested schema](#nestedblock--status--authorizations))
+- `certificate` (String) Certificate is a copy of the PEM encoded certificate for this Order. This field will be populated after the order has been successfully finalized with the ACME server, and the order has transitioned to the 'valid' state.
+- `failure_time` (String) FailureTime stores the time that this order failed. This is used to influence garbage collection and back-off.
+- `finalize_url` (String) FinalizeURL of the Order. This is used to obtain certificates for this order once it has been completed.
+- `reason` (String) Reason optionally provides more information about a why the order is in the current state.
+- `state` (String) State contains the current state of this Order resource. States 'success' and 'expired' are 'final'
+- `url` (String) URL of the Order. This will initially be empty when the resource is first created. The Order controller will populate this field when the Order is first processed. This field will be immutable after it is initially set.
 
-<a id="nestedobjatt--status--authorizations"></a>
+<a id="nestedblock--status--authorizations"></a>
 ### Nested Schema for `status.authorizations`
 
 Optional:
 
-- `challenges` (List of Object) (see [below for nested schema](#nestedobjatt--status--authorizations--challenges))
-- `identifier` (String)
-- `initial_state` (String)
-- `url` (String)
-- `wildcard` (Boolean)
+- `challenges` (Block List) Challenges specifies the challenge types offered by the ACME server. One of these challenge types will be selected when validating the DNS name and an appropriate Challenge resource will be created to perform the ACME challenge process. (see [below for nested schema](#nestedblock--status--authorizations--challenges))
+- `identifier` (String) Identifier is the DNS name to be validated as part of this authorization
+- `initial_state` (String) InitialState is the initial state of the ACME authorization when first fetched from the ACME server. If an Authorization is already 'valid', the Order controller will not create a Challenge resource for the authorization. This will occur when working with an ACME server that enables 'authz reuse' (such as Let's Encrypt's production endpoint). If not set and 'identifier' is set, the state is assumed to be pending and a Challenge will be created.
+- `url` (String) URL is the URL of the Authorization that must be completed
+- `wildcard` (Boolean) Wildcard will be true if this authorization is for a wildcard DNS name. If this is true, the identifier will be the *non-wildcard* version of the DNS name. For example, if '*.example.com' is the DNS name being validated, this field will be 'true' and the 'identifier' field will be 'example.com'.
 
-<a id="nestedobjatt--status--authorizations--challenges"></a>
+<a id="nestedblock--status--authorizations--challenges"></a>
 ### Nested Schema for `status.authorizations.challenges`
 
 Optional:
 
-- `token` (String)
-- `type` (String)
-- `url` (String)
+- `token` (String) Token is the token that must be presented for this challenge. This is used to compute the 'key' that must also be presented.
+- `type` (String) Type is the type of challenge being offered, e.g. 'http-01', 'dns-01', 'tls-sni-01', etc. This is the raw value retrieved from the ACME server. Only 'http-01' and 'dns-01' are supported by cert-manager, other values will be ignored.
+- `url` (String) URL is the URL of this challenge. It can be used to retrieve additional metadata about the Challenge from the ACME server.

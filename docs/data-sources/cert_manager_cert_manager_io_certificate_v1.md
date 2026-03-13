@@ -19,12 +19,12 @@ A Certificate resource should be created to ensure an up to date and signed x509
 
 ### Required
 
-- `spec` (List of Object) Desired state of the Certificate resource. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Min: 1, Max: 1) Desired state of the Certificate resource. (see [below for nested schema](#nestedblock--spec))
 
 ### Optional
 
 - `metadata` (Map of String)
-- `status` (List of Object) Status of the Certificate. This is set and managed automatically. (see [below for nested schema](#nestedatt--status))
+- `status` (Block List, Max: 1) Status of the Certificate. This is set and managed automatically. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -34,128 +34,131 @@ A Certificate resource should be created to ensure an up to date and signed x509
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
-Required:
+Optional:
 
-- `common_name` (String)
-- `dns_names` (List of String)
-- `duration` (String)
-- `email_addresses` (List of String)
-- `ip_addresses` (List of String)
-- `is_ca` (Boolean)
-- `issuer_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--issuer_ref))
-- `keystores` (List of Object) (see [below for nested schema](#nestedobjatt--spec--keystores))
-- `private_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--private_key))
-- `renew_before` (String)
-- `secret_name` (String)
-- `subject` (List of Object) (see [below for nested schema](#nestedobjatt--spec--subject))
-- `uris` (List of String)
-- `usages` (List of String)
+- `common_name` (String) CommonName is a common name to be used on the Certificate. The CommonName should have a length of 64 characters or fewer to avoid generating invalid CSRs. This value is ignored by TLS clients when any subject alt name is set. This is x509 behaviour: https://tools.ietf.org/html/rfc6125#section-6.4.4
+- `dns_names` (List of String) DNSNames is a list of DNS subjectAltNames to be set on the Certificate.
+- `duration` (String) The requested 'duration' (i.e. lifetime) of the Certificate. This option may be ignored/overridden by some issuer types. If overridden and `renewBefore` is greater than the actual certificate duration, the certificate will be automatically renewed 2/3rds of the way through the certificate's duration.
+- `email_addresses` (List of String) EmailAddresses is a list of email subjectAltNames to be set on the Certificate.
+- `ip_addresses` (List of String) IPAddresses is a list of IP address subjectAltNames to be set on the Certificate.
+- `is_ca` (Boolean) IsCA will mark this Certificate as valid for certificate signing. This will automatically add the `cert sign` usage to the list of `usages`.
+- `issuer_ref` (Block List, Max: 1) IssuerRef is a reference to the issuer for this certificate. If the 'kind' field is not set, or set to 'Issuer', an Issuer resource with the given name in the same namespace as the Certificate will be used. If the 'kind' field is set to 'ClusterIssuer', a ClusterIssuer with the provided name will be used. The 'name' field in this stanza is required at all times. (see [below for nested schema](#nestedblock--spec--issuer_ref))
+- `keystores` (Block List, Max: 1) Keystores configures additional keystore output formats stored in the `secretName` Secret resource. (see [below for nested schema](#nestedblock--spec--keystores))
+- `private_key` (Block List, Max: 1) Options to control private keys used for the Certificate. (see [below for nested schema](#nestedblock--spec--private_key))
+- `renew_before` (String) The amount of time before the currently issued certificate's `notAfter` time that cert-manager will begin to attempt to renew the certificate. If this value is greater than the total duration of the certificate (i.e. notAfter - notBefore), it will be automatically renewed 2/3rds of the way through the certificate's duration.
+- `secret_name` (String) SecretName is the name of the secret resource that will be automatically created and managed by this Certificate resource. It will be populated with a private key and certificate, signed by the denoted issuer.
+- `subject` (Block List, Max: 1) Full X509 name specification (https://golang.org/pkg/crypto/x509/pkix/#Name). (see [below for nested schema](#nestedblock--spec--subject))
+- `uris` (List of String) URIs is a list of URI subjectAltNames to be set on the Certificate.
+- `usages` (List of String) Usages is the set of x509 usages that are requested for the certificate. Defaults to `digital signature` and `key encipherment` if not specified.
 
-<a id="nestedobjatt--spec--issuer_ref"></a>
+<a id="nestedblock--spec--issuer_ref"></a>
 ### Nested Schema for `spec.issuer_ref`
 
-Required:
+Optional:
 
-- `group` (String)
-- `kind` (String)
-- `name` (String)
+- `group` (String) Group of the resource being referred to.
+- `kind` (String) Kind of the resource being referred to.
+- `name` (String) Name of the resource being referred to.
 
 
-<a id="nestedobjatt--spec--keystores"></a>
+<a id="nestedblock--spec--keystores"></a>
 ### Nested Schema for `spec.keystores`
 
-Required:
+Optional:
 
-- `jks` (List of Object) (see [below for nested schema](#nestedobjatt--spec--keystores--jks))
-- `pkcs12` (List of Object) (see [below for nested schema](#nestedobjatt--spec--keystores--pkcs12))
+- `jks` (Block List, Max: 1) JKS configures options for storing a JKS keystore in the `spec.secretName` Secret resource. (see [below for nested schema](#nestedblock--spec--keystores--jks))
+- `pkcs12` (Block List, Max: 1) PKCS12 configures options for storing a PKCS12 keystore in the `spec.secretName` Secret resource. (see [below for nested schema](#nestedblock--spec--keystores--pkcs12))
 
-<a id="nestedobjatt--spec--keystores--jks"></a>
+<a id="nestedblock--spec--keystores--jks"></a>
 ### Nested Schema for `spec.keystores.jks`
 
-Required:
+Optional:
 
-- `create` (Boolean)
-- `password_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--keystores--jks--password_secret_ref))
+- `create` (Boolean) Create enables JKS keystore creation for the Certificate. If true, a file named `keystore.jks` will be created in the target Secret resource, encrypted using the password stored in `passwordSecretRef`. The keystore file will only be updated upon re-issuance.
+- `password_secret_ref` (Block List, Max: 1) PasswordSecretRef is a reference to a key in a Secret resource containing the password used to encrypt the JKS keystore. (see [below for nested schema](#nestedblock--spec--keystores--jks--password_secret_ref))
 
-<a id="nestedobjatt--spec--keystores--jks--password_secret_ref"></a>
+<a id="nestedblock--spec--keystores--jks--password_secret_ref"></a>
 ### Nested Schema for `spec.keystores.jks.password_secret_ref`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--keystores--pkcs12"></a>
+<a id="nestedblock--spec--keystores--pkcs12"></a>
 ### Nested Schema for `spec.keystores.pkcs12`
 
-Required:
+Optional:
 
-- `create` (Boolean)
-- `password_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--keystores--pkcs12--password_secret_ref))
+- `create` (Boolean) Create enables PKCS12 keystore creation for the Certificate. If true, a file named `keystore.p12` will be created in the target Secret resource, encrypted using the password stored in `passwordSecretRef`. The keystore file will only be updated upon re-issuance.
+- `password_secret_ref` (Block List, Max: 1) PasswordSecretRef is a reference to a key in a Secret resource containing the password used to encrypt the PKCS12 keystore. (see [below for nested schema](#nestedblock--spec--keystores--pkcs12--password_secret_ref))
 
-<a id="nestedobjatt--spec--keystores--pkcs12--password_secret_ref"></a>
+<a id="nestedblock--spec--keystores--pkcs12--password_secret_ref"></a>
 ### Nested Schema for `spec.keystores.pkcs12.password_secret_ref`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-
-
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
-<a id="nestedobjatt--spec--private_key"></a>
+
+
+<a id="nestedblock--spec--private_key"></a>
 ### Nested Schema for `spec.private_key`
 
-Required:
+Optional:
 
-- `algorithm` (String)
-- `encoding` (String)
-- `rotation_policy` (String)
-- `size` (Number)
+- `algorithm` (String) Algorithm is the private key algorithm of the corresponding private key for this certificate. If provided, allowed values are either "rsa" or "ecdsa" If `algorithm` is specified and `size` is not provided, key size of 256 will be used for "ecdsa" key algorithm and key size of 2048 will be used for "rsa" key algorithm.
+- `encoding` (String) The private key cryptography standards (PKCS) encoding for this certificate's private key to be encoded in. If provided, allowed values are "pkcs1" and "pkcs8" standing for PKCS#1 and PKCS#8, respectively. Defaults to PKCS#1 if not specified.
+- `rotation_policy` (String) RotationPolicy controls how private keys should be regenerated when a re-issuance is being processed. If set to Never, a private key will only be generated if one does not already exist in the target `spec.secretName`. If one does exists but it does not have the correct algorithm or size, a warning will be raised to await user intervention. If set to Always, a private key matching the specified requirements will be generated whenever a re-issuance occurs. Default is 'Never' for backward compatibility.
+- `size` (Number) Size is the key bit size of the corresponding private key for this certificate. If `algorithm` is set to `RSA`, valid values are `2048`, `4096` or `8192`, and will default to `2048` if not specified. If `algorithm` is set to `ECDSA`, valid values are `256`, `384` or `521`, and will default to `256` if not specified. No other values are allowed.
 
 
-<a id="nestedobjatt--spec--subject"></a>
+<a id="nestedblock--spec--subject"></a>
 ### Nested Schema for `spec.subject`
 
-Required:
+Optional:
 
-- `countries` (List of String)
-- `localities` (List of String)
-- `organizational_units` (List of String)
-- `organizations` (List of String)
-- `postal_codes` (List of String)
-- `provinces` (List of String)
-- `serial_number` (String)
-- `street_addresses` (List of String)
+- `countries` (List of String) Countries to be used on the Certificate.
+- `localities` (List of String) Cities to be used on the Certificate.
+- `organizational_units` (List of String) Organizational Units to be used on the Certificate.
+- `organizations` (List of String) Organizations to be used on the Certificate.
+- `postal_codes` (List of String) Postal codes to be used on the Certificate.
+- `provinces` (List of String) State/Provinces to be used on the Certificate.
+- `serial_number` (String) Serial number to be used on the Certificate.
+- `street_addresses` (List of String) Street addresses to be used on the Certificate.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_failure_time` (String)
-- `next_private_key_secret_name` (String)
-- `not_after` (String)
-- `not_before` (String)
-- `renewal_time` (String)
-- `revision` (Number)
+- `conditions` (Block List) List of status conditions to indicate the status of certificates. Known condition types are `Ready` and `Issuing`. (see [below for nested schema](#nestedblock--status--conditions))
+- `last_failure_time` (String) LastFailureTime is the time as recorded by the Certificate controller of the most recent failure to complete a CertificateRequest for this Certificate resource. If set, cert-manager will not re-request another Certificate until 1 hour has elapsed from this time.
+- `next_private_key_secret_name` (String) The name of the Secret resource containing the private key to be used for the next certificate iteration. The keymanager controller will automatically set this field if the `Issuing` condition is set to `True`. It will automatically unset this field when the Issuing condition is not set or False.
+- `not_after` (String) The expiration time of the certificate stored in the secret named by this resource in `spec.secretName`.
+- `not_before` (String) The time after which the certificate stored in the secret named by this resource in spec.secretName is valid.
+- `renewal_time` (String) RenewalTime is the time at which the certificate will be next renewed. If not set, no upcoming renewal is scheduled.
+- `revision` (Number) The current 'revision' of the certificate as issued.
+ When a CertificateRequest resource is created, it will have the `cert-manager.io/certificate-revision` set to one greater than the current value of this field.
+ Upon issuance, this field will be set to the value of the annotation on the CertificateRequest resource used to issue the certificate.
+ Persisting the value on the CertificateRequest resource allows the certificates controller to know whether a request is part of an old issuance or if it is part of the ongoing revision's issuance by checking if the revision value in the annotation is greater than this field.
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) LastTransitionTime is the timestamp corresponding to the last status change of this condition.
+- `message` (String) Message is a human readable description of the details of the last transition, complementing reason.
+- `reason` (String) Reason is a brief machine readable explanation for the condition's last transition.
+- `status` (String) Status of the condition, one of ('True', 'False', 'Unknown').
+- `type` (String) Type of the condition, known values are ('Ready', `Issuing`).

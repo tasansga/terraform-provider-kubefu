@@ -17,7 +17,7 @@ AlertmanagerConfig defines a namespaced AlertmanagerConfig to be aggregated acro
 
 ### Required
 
-- `spec` (List of Object) AlertmanagerConfigSpec is a specification of the desired behavior of the Alertmanager configuration. By definition, the Alertmanager configuration only applies to alerts for which the `namespace` label is equal to the namespace of the AlertmanagerConfig resource. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Min: 1, Max: 1) AlertmanagerConfigSpec is a specification of the desired behavior of the Alertmanager configuration. By definition, the Alertmanager configuration only applies to alerts for which the `namespace` label is equal to the namespace of the AlertmanagerConfig resource. (see [below for nested schema](#nestedblock--spec))
 
 ### Optional
 
@@ -31,863 +31,863 @@ AlertmanagerConfig defines a namespaced AlertmanagerConfig to be aggregated acro
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
-Required:
+Optional:
 
-- `inhibit_rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--inhibit_rules))
-- `mute_time_intervals` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mute_time_intervals))
-- `receivers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers))
-- `route` (List of Object) (see [below for nested schema](#nestedobjatt--spec--route))
+- `inhibit_rules` (Block List) List of inhibition rules. The rules will only apply to alerts matching the resource’s namespace. (see [below for nested schema](#nestedblock--spec--inhibit_rules))
+- `mute_time_intervals` (Block List) List of MuteTimeInterval specifying when the routes should be muted. (see [below for nested schema](#nestedblock--spec--mute_time_intervals))
+- `receivers` (Block List) List of receivers. (see [below for nested schema](#nestedblock--spec--receivers))
+- `route` (Block List, Max: 1) The Alertmanager route definition for alerts matching the resource’s namespace. If present, it will be added to the generated Alertmanager configuration as a first-level route. (see [below for nested schema](#nestedblock--spec--route))
 
-<a id="nestedobjatt--spec--inhibit_rules"></a>
+<a id="nestedblock--spec--inhibit_rules"></a>
 ### Nested Schema for `spec.inhibit_rules`
 
-Required:
+Optional:
 
-- `equal` (List of String)
-- `source_match` (List of Object) (see [below for nested schema](#nestedobjatt--spec--inhibit_rules--source_match))
-- `target_match` (List of Object) (see [below for nested schema](#nestedobjatt--spec--inhibit_rules--target_match))
+- `equal` (List of String) Labels that must have an equal value in the source and target alert for the inhibition to take effect.
+- `source_match` (Block List) Matchers for which one or more alerts have to exist for the inhibition to take effect. The operator enforces that the alert matches the resource’s namespace. (see [below for nested schema](#nestedblock--spec--inhibit_rules--source_match))
+- `target_match` (Block List) Matchers that have to be fulfilled in the alerts to be muted. The operator enforces that the alert matches the resource’s namespace. (see [below for nested schema](#nestedblock--spec--inhibit_rules--target_match))
 
-<a id="nestedobjatt--spec--inhibit_rules--source_match"></a>
+<a id="nestedblock--spec--inhibit_rules--source_match"></a>
 ### Nested Schema for `spec.inhibit_rules.source_match`
 
-Required:
+Optional:
 
-- `match_type` (String)
-- `name` (String)
-- `regex` (Boolean)
-- `value` (String)
+- `match_type` (String) Match operation available with AlertManager >= v0.22.0 and takes precedence over Regex (deprecated) if non-empty.
+- `name` (String) Label to match.
+- `regex` (Boolean) Whether to match on equality (false) or regular-expression (true). Deprecated as of AlertManager >= v0.22.0 where a user should use MatchType instead.
+- `value` (String) Label value to match.
 
 
-<a id="nestedobjatt--spec--inhibit_rules--target_match"></a>
+<a id="nestedblock--spec--inhibit_rules--target_match"></a>
 ### Nested Schema for `spec.inhibit_rules.target_match`
 
-Required:
+Optional:
 
-- `match_type` (String)
-- `name` (String)
-- `regex` (Boolean)
-- `value` (String)
+- `match_type` (String) Match operation available with AlertManager >= v0.22.0 and takes precedence over Regex (deprecated) if non-empty.
+- `name` (String) Label to match.
+- `regex` (Boolean) Whether to match on equality (false) or regular-expression (true). Deprecated as of AlertManager >= v0.22.0 where a user should use MatchType instead.
+- `value` (String) Label value to match.
 
 
 
-<a id="nestedobjatt--spec--mute_time_intervals"></a>
+<a id="nestedblock--spec--mute_time_intervals"></a>
 ### Nested Schema for `spec.mute_time_intervals`
 
-Required:
+Optional:
 
-- `name` (String)
-- `time_intervals` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mute_time_intervals--time_intervals))
+- `name` (String) Name of the time interval
+- `time_intervals` (Block List) TimeIntervals is a list of TimeInterval (see [below for nested schema](#nestedblock--spec--mute_time_intervals--time_intervals))
 
-<a id="nestedobjatt--spec--mute_time_intervals--time_intervals"></a>
+<a id="nestedblock--spec--mute_time_intervals--time_intervals"></a>
 ### Nested Schema for `spec.mute_time_intervals.time_intervals`
 
-Required:
+Optional:
 
-- `days_of_month` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mute_time_intervals--time_intervals--days_of_month))
-- `months` (List of String)
-- `times` (List of Object) (see [below for nested schema](#nestedobjatt--spec--mute_time_intervals--time_intervals--times))
-- `weekdays` (List of String)
-- `years` (List of String)
+- `days_of_month` (Block List) DaysOfMonth is a list of DayOfMonthRange (see [below for nested schema](#nestedblock--spec--mute_time_intervals--time_intervals--days_of_month))
+- `months` (List of String) Months is a list of MonthRange
+- `times` (Block List) Times is a list of TimeRange (see [below for nested schema](#nestedblock--spec--mute_time_intervals--time_intervals--times))
+- `weekdays` (List of String) Weekdays is a list of WeekdayRange
+- `years` (List of String) Years is a list of YearRange
 
-<a id="nestedobjatt--spec--mute_time_intervals--time_intervals--days_of_month"></a>
+<a id="nestedblock--spec--mute_time_intervals--time_intervals--days_of_month"></a>
 ### Nested Schema for `spec.mute_time_intervals.time_intervals.days_of_month`
 
-Required:
+Optional:
 
-- `end` (Number)
-- `start` (Number)
+- `end` (Number) End of the inclusive range
+- `start` (Number) Start of the inclusive range
 
 
-<a id="nestedobjatt--spec--mute_time_intervals--time_intervals--times"></a>
+<a id="nestedblock--spec--mute_time_intervals--time_intervals--times"></a>
 ### Nested Schema for `spec.mute_time_intervals.time_intervals.times`
 
-Required:
+Optional:
 
-- `end_time` (String)
-- `start_time` (String)
-
-
+- `end_time` (String) EndTime is the end time in 24hr format.
+- `start_time` (String) StartTime is the start time in 24hr format.
 
 
-<a id="nestedobjatt--spec--receivers"></a>
+
+
+<a id="nestedblock--spec--receivers"></a>
 ### Nested Schema for `spec.receivers`
 
-Required:
+Optional:
 
-- `email_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs))
-- `name` (String)
-- `opsgenie_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs))
-- `pagerduty_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs))
-- `pushover_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs))
-- `slack_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs))
-- `sns_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs))
-- `victorops_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs))
-- `webhook_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs))
-- `wechat_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs))
+- `email_configs` (Block List) List of Email configurations. (see [below for nested schema](#nestedblock--spec--receivers--email_configs))
+- `name` (String) Name of the receiver. Must be unique across all items from the list.
+- `opsgenie_configs` (Block List) List of OpsGenie configurations. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs))
+- `pagerduty_configs` (Block List) List of PagerDuty configurations. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs))
+- `pushover_configs` (Block List) List of Pushover configurations. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs))
+- `slack_configs` (Block List) List of Slack configurations. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs))
+- `sns_configs` (Block List) List of SNS configurations (see [below for nested schema](#nestedblock--spec--receivers--sns_configs))
+- `victorops_configs` (Block List) List of VictorOps configurations. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs))
+- `webhook_configs` (Block List) List of webhook configurations. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs))
+- `wechat_configs` (Block List) List of WeChat configurations. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs))
 
-<a id="nestedobjatt--spec--receivers--email_configs"></a>
+<a id="nestedblock--spec--receivers--email_configs"></a>
 ### Nested Schema for `spec.receivers.email_configs`
 
-Required:
+Optional:
 
-- `auth_identity` (String)
-- `auth_password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--auth_password))
-- `auth_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--auth_secret))
-- `auth_username` (String)
-- `from` (String)
-- `headers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--headers))
-- `hello` (String)
-- `html` (String)
-- `require_tls` (Boolean)
-- `send_resolved` (Boolean)
-- `smarthost` (String)
-- `text` (String)
-- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config))
-- `to` (String)
+- `auth_identity` (String) The identity to use for authentication.
+- `auth_password` (Block List, Max: 1) The secret's key that contains the password to use for authentication. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--auth_password))
+- `auth_secret` (Block List, Max: 1) The secret's key that contains the CRAM-MD5 secret. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--auth_secret))
+- `auth_username` (String) The username to use for authentication.
+- `from` (String) The sender address.
+- `headers` (Block List) Further headers email header key/value pairs. Overrides any headers previously set by the notification implementation. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--headers))
+- `hello` (String) The hostname to identify to the SMTP server.
+- `html` (String) The HTML body of the email notification.
+- `require_tls` (Boolean) The SMTP TLS requirement. Note that Go does not support unencrypted connections to remote SMTP endpoints.
+- `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
+- `smarthost` (String) The SMTP host and port through which emails are sent. E.g. example.com:25
+- `text` (String) The text body of the email notification.
+- `tls_config` (Block List, Max: 1) TLS configuration (see [below for nested schema](#nestedblock--spec--receivers--email_configs--tls_config))
+- `to` (String) The email address to send notifications to.
 
-<a id="nestedobjatt--spec--receivers--email_configs--auth_password"></a>
+<a id="nestedblock--spec--receivers--email_configs--auth_password"></a>
 ### Nested Schema for `spec.receivers.email_configs.auth_password`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--email_configs--auth_secret"></a>
+<a id="nestedblock--spec--receivers--email_configs--auth_secret"></a>
 ### Nested Schema for `spec.receivers.email_configs.auth_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--email_configs--headers"></a>
+<a id="nestedblock--spec--receivers--email_configs--headers"></a>
 ### Nested Schema for `spec.receivers.email_configs.headers`
 
-Required:
+Optional:
 
-- `key` (String)
-- `value` (String)
+- `key` (String) Key of the tuple.
+- `value` (String) Value of the tuple.
 
 
-<a id="nestedobjatt--spec--receivers--email_configs--tls_config"></a>
+<a id="nestedblock--spec--receivers--email_configs--tls_config"></a>
 ### Nested Schema for `spec.receivers.email_configs.tls_config`
 
-Required:
+Optional:
 
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--ca))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--cert))
-- `insecure_skip_verify` (Boolean)
-- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--key_secret))
-- `server_name` (String)
+- `ca` (Block List, Max: 1) Struct containing the CA cert to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--tls_config--key_secret))
+- `server_name` (String) Used to verify the hostname for the targets.
 
-<a id="nestedobjatt--spec--receivers--email_configs--tls_config--ca"></a>
+<a id="nestedblock--spec--receivers--email_configs--tls_config--ca"></a>
 ### Nested Schema for `spec.receivers.email_configs.tls_config.ca`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--ca--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--ca--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--tls_config--ca--secret))
 
-<a id="nestedobjatt--spec--receivers--email_configs--tls_config--ca--config_map"></a>
+<a id="nestedblock--spec--receivers--email_configs--tls_config--ca--config_map"></a>
 ### Nested Schema for `spec.receivers.email_configs.tls_config.ca.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--email_configs--tls_config--ca--secret"></a>
+<a id="nestedblock--spec--receivers--email_configs--tls_config--ca--secret"></a>
 ### Nested Schema for `spec.receivers.email_configs.tls_config.ca.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--email_configs--tls_config--cert"></a>
+<a id="nestedblock--spec--receivers--email_configs--tls_config--cert"></a>
 ### Nested Schema for `spec.receivers.email_configs.tls_config.cert`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--cert--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--email_configs--tls_config--cert--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--tls_config--cert--secret))
 
-<a id="nestedobjatt--spec--receivers--email_configs--tls_config--cert--config_map"></a>
+<a id="nestedblock--spec--receivers--email_configs--tls_config--cert--config_map"></a>
 ### Nested Schema for `spec.receivers.email_configs.tls_config.cert.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--email_configs--tls_config--cert--secret"></a>
+<a id="nestedblock--spec--receivers--email_configs--tls_config--cert--secret"></a>
 ### Nested Schema for `spec.receivers.email_configs.tls_config.cert.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--email_configs--tls_config--key_secret"></a>
+<a id="nestedblock--spec--receivers--email_configs--tls_config--key_secret"></a>
 ### Nested Schema for `spec.receivers.email_configs.tls_config.key_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
-
-
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs"></a>
+
+
+<a id="nestedblock--spec--receivers--opsgenie_configs"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs`
 
-Required:
+Optional:
 
-- `api_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--api_key))
-- `api_url` (String)
-- `description` (String)
-- `details` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--details))
-- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config))
-- `message` (String)
-- `note` (String)
-- `priority` (String)
-- `responders` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--responders))
-- `send_resolved` (Boolean)
-- `source` (String)
-- `tags` (String)
+- `api_key` (Block List, Max: 1) The secret's key that contains the OpsGenie API key. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--api_key))
+- `api_url` (String) The URL to send OpsGenie API requests to.
+- `description` (String) Description of the incident.
+- `details` (Block List) A set of arbitrary key/value pairs that provide further detail about the incident. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--details))
+- `http_config` (Block List, Max: 1) HTTP client configuration. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config))
+- `message` (String) Alert text limited to 130 characters.
+- `note` (String) Additional alert note.
+- `priority` (String) Priority level of alert. Possible values are P1, P2, P3, P4, and P5.
+- `responders` (Block List) List of responders responsible for notifications. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--responders))
+- `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
+- `source` (String) Backlink to the sender of the notification.
+- `tags` (String) Comma separated list of tags attached to the notifications.
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--api_key"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--api_key"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.api_key`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--details"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--details"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.details`
 
-Required:
+Optional:
 
-- `key` (String)
-- `value` (String)
+- `key` (String) Key of the tuple.
+- `value` (String) Value of the tuple.
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config`
 
-Required:
+Optional:
 
-- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--authorization))
-- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth))
-- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--bearer_token_secret))
-- `proxy_url` (String)
-- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config))
+- `authorization` (Block List, Max: 1) Authorization header configuration for the client. This is mutually exclusive with BasicAuth and is only available starting from Alertmanager v0.22+. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth for the client. This is mutually exclusive with Authorization. If both are defined, BasicAuth takes precedence. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--basic_auth))
+- `bearer_token_secret` (Block List, Max: 1) The secret's key that contains the bearer token to be used by the client for authentication. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--bearer_token_secret))
+- `proxy_url` (String) Optional proxy URL.
+- `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config))
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--authorization"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--authorization"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.authorization`
 
-Required:
+Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--authorization--credentials))
-- `type` (String)
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--authorization--credentials"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--authorization--credentials"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.authorization.credentials`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--basic_auth"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.basic_auth`
 
-Required:
+Optional:
 
-- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth--password))
-- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth--username))
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--basic_auth--username))
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth--password"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--basic_auth--password"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.basic_auth.password`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--basic_auth--username"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--basic_auth--username"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.basic_auth.username`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--bearer_token_secret"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--bearer_token_secret"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.bearer_token_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config`
 
-Required:
+Optional:
 
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert))
-- `insecure_skip_verify` (Boolean)
-- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--key_secret))
-- `server_name` (String)
+- `ca` (Block List, Max: 1) Struct containing the CA cert to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--ca))
+- `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--key_secret))
+- `server_name` (String) Used to verify the hostname for the targets.
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--ca"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.ca`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--ca--secret))
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca--config_map"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--ca--config_map"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.ca.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--ca--secret"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--ca--secret"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.ca.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--cert"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.cert`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--cert--secret))
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert--config_map"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--cert--config_map"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.cert.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--cert--secret"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--cert--secret"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.cert.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--http_config--tls_config--key_secret"></a>
+<a id="nestedblock--spec--receivers--opsgenie_configs--http_config--tls_config--key_secret"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.http_config.tls_config.key_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
-
-
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--opsgenie_configs--responders"></a>
+
+
+<a id="nestedblock--spec--receivers--opsgenie_configs--responders"></a>
 ### Nested Schema for `spec.receivers.opsgenie_configs.responders`
 
-Required:
+Optional:
 
-- `id` (String)
-- `name` (String)
-- `type` (String)
-- `username` (String)
+- `id` (String) ID of the responder.
+- `name` (String) Name of the responder.
+- `type` (String) Type of responder.
+- `username` (String) Username of the responder.
 
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs`
 
-Required:
+Optional:
 
-- `class` (String)
-- `client` (String)
-- `client_url` (String)
-- `component` (String)
-- `description` (String)
-- `details` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--details))
-- `group` (String)
-- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config))
-- `pager_duty_image_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--pager_duty_image_configs))
-- `pager_duty_link_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--pager_duty_link_configs))
-- `routing_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--routing_key))
-- `send_resolved` (Boolean)
-- `service_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--service_key))
-- `severity` (String)
-- `url` (String)
+- `class` (String) The class/type of the event.
+- `client` (String) Client identification.
+- `client_url` (String) Backlink to the sender of notification.
+- `component` (String) The part or component of the affected system that is broken.
+- `description` (String) Description of the incident.
+- `details` (Block List) Arbitrary key/value pairs that provide further detail about the incident. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--details))
+- `group` (String) A cluster or grouping of sources.
+- `http_config` (Block List, Max: 1) HTTP client configuration. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config))
+- `pager_duty_image_configs` (Block List) A list of image details to attach that provide further detail about an incident. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--pager_duty_image_configs))
+- `pager_duty_link_configs` (Block List) A list of link details to attach that provide further detail about an incident. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--pager_duty_link_configs))
+- `routing_key` (Block List, Max: 1) The secret's key that contains the PagerDuty integration key (when using Events API v2). Either this field or `serviceKey` needs to be defined. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--routing_key))
+- `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
+- `service_key` (Block List, Max: 1) The secret's key that contains the PagerDuty service key (when using integration type "Prometheus"). Either this field or `routingKey` needs to be defined. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--service_key))
+- `severity` (String) Severity of the incident.
+- `url` (String) The URL to send requests to.
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--details"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--details"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.details`
 
-Required:
+Optional:
 
-- `key` (String)
-- `value` (String)
+- `key` (String) Key of the tuple.
+- `value` (String) Value of the tuple.
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config`
 
-Required:
+Optional:
 
-- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--authorization))
-- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth))
-- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--bearer_token_secret))
-- `proxy_url` (String)
-- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config))
+- `authorization` (Block List, Max: 1) Authorization header configuration for the client. This is mutually exclusive with BasicAuth and is only available starting from Alertmanager v0.22+. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth for the client. This is mutually exclusive with Authorization. If both are defined, BasicAuth takes precedence. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--basic_auth))
+- `bearer_token_secret` (Block List, Max: 1) The secret's key that contains the bearer token to be used by the client for authentication. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--bearer_token_secret))
+- `proxy_url` (String) Optional proxy URL.
+- `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config))
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--authorization"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--authorization"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.authorization`
 
-Required:
+Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--authorization--credentials))
-- `type` (String)
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--authorization--credentials"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--authorization--credentials"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.authorization.credentials`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--basic_auth"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.basic_auth`
 
-Required:
+Optional:
 
-- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth--password))
-- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth--username))
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--basic_auth--username))
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth--password"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--basic_auth--password"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.basic_auth.password`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--basic_auth--username"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--basic_auth--username"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.basic_auth.username`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--bearer_token_secret"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--bearer_token_secret"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.bearer_token_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config`
 
-Required:
+Optional:
 
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert))
-- `insecure_skip_verify` (Boolean)
-- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--key_secret))
-- `server_name` (String)
+- `ca` (Block List, Max: 1) Struct containing the CA cert to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--ca))
+- `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--key_secret))
+- `server_name` (String) Used to verify the hostname for the targets.
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--ca"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.ca`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--ca--secret))
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca--config_map"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--ca--config_map"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.ca.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--ca--secret"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--ca--secret"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.ca.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--cert"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.cert`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--cert--secret))
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert--config_map"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--cert--config_map"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.cert.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--cert--secret"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--cert--secret"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.cert.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--http_config--tls_config--key_secret"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--http_config--tls_config--key_secret"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.http_config.tls_config.key_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
-
-
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--pager_duty_image_configs"></a>
+
+
+<a id="nestedblock--spec--receivers--pagerduty_configs--pager_duty_image_configs"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.pager_duty_image_configs`
 
-Required:
+Optional:
 
-- `alt` (String)
-- `href` (String)
-- `src` (String)
+- `alt` (String) Alt is the optional alternative text for the image.
+- `href` (String) Optional URL; makes the image a clickable link.
+- `src` (String) Src of the image being attached to the incident
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--pager_duty_link_configs"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--pager_duty_link_configs"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.pager_duty_link_configs`
 
-Required:
+Optional:
 
-- `alt` (String)
-- `href` (String)
+- `alt` (String) Text that describes the purpose of the link, and can be used as the link's text.
+- `href` (String) Href is the URL of the link to be attached
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--routing_key"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--routing_key"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.routing_key`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pagerduty_configs--service_key"></a>
+<a id="nestedblock--spec--receivers--pagerduty_configs--service_key"></a>
 ### Nested Schema for `spec.receivers.pagerduty_configs.service_key`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs"></a>
+<a id="nestedblock--spec--receivers--pushover_configs"></a>
 ### Nested Schema for `spec.receivers.pushover_configs`
 
-Required:
+Optional:
 
-- `expire` (String)
-- `html` (Boolean)
-- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config))
-- `message` (String)
-- `priority` (String)
-- `retry` (String)
-- `send_resolved` (Boolean)
-- `sound` (String)
-- `title` (String)
-- `token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--token))
-- `url` (String)
-- `url_title` (String)
-- `user_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--user_key))
+- `expire` (String) How long your notification will continue to be retried for, unless the user acknowledges the notification.
+- `html` (Boolean) Whether notification message is HTML or plain text.
+- `http_config` (Block List, Max: 1) HTTP client configuration. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config))
+- `message` (String) Notification message.
+- `priority` (String) Priority, see https://pushover.net/api#priority
+- `retry` (String) How often the Pushover servers will send the same notification to the user. Must be at least 30 seconds.
+- `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
+- `sound` (String) The name of one of the sounds supported by device clients to override the user's default sound choice
+- `title` (String) Notification title.
+- `token` (Block List, Max: 1) The secret's key that contains the registered application’s API token, see https://pushover.net/apps. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--token))
+- `url` (String) A supplementary URL shown alongside the message.
+- `url_title` (String) A title for supplementary URL, otherwise just the URL is shown
+- `user_key` (Block List, Max: 1) The secret's key that contains the recipient user’s user key. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--user_key))
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config`
 
-Required:
+Optional:
 
-- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--authorization))
-- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth))
-- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--bearer_token_secret))
-- `proxy_url` (String)
-- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config))
+- `authorization` (Block List, Max: 1) Authorization header configuration for the client. This is mutually exclusive with BasicAuth and is only available starting from Alertmanager v0.22+. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth for the client. This is mutually exclusive with Authorization. If both are defined, BasicAuth takes precedence. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--basic_auth))
+- `bearer_token_secret` (Block List, Max: 1) The secret's key that contains the bearer token to be used by the client for authentication. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--bearer_token_secret))
+- `proxy_url` (String) Optional proxy URL.
+- `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--tls_config))
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--authorization"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--authorization"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.authorization`
 
-Required:
+Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--authorization--credentials))
-- `type` (String)
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--authorization--credentials"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--authorization--credentials"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.authorization.credentials`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--basic_auth"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.basic_auth`
 
-Required:
+Optional:
 
-- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth--password))
-- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth--username))
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--basic_auth--username))
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth--password"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--basic_auth--password"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.basic_auth.password`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--basic_auth--username"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--basic_auth--username"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.basic_auth.username`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--bearer_token_secret"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--bearer_token_secret"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.bearer_token_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--tls_config"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config`
 
-Required:
+Optional:
 
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert))
-- `insecure_skip_verify` (Boolean)
-- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--key_secret))
-- `server_name` (String)
+- `ca` (Block List, Max: 1) Struct containing the CA cert to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--tls_config--ca))
+- `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--tls_config--key_secret))
+- `server_name` (String) Used to verify the hostname for the targets.
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--tls_config--ca"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.ca`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--tls_config--ca--secret))
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca--config_map"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--tls_config--ca--config_map"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.ca.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--ca--secret"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--tls_config--ca--secret"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.ca.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--tls_config--cert"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.cert`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--pushover_configs--http_config--tls_config--cert--secret))
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert--config_map"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--tls_config--cert--config_map"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.cert.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--cert--secret"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--tls_config--cert--secret"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.cert.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--http_config--tls_config--key_secret"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--http_config--tls_config--key_secret"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.http_config.tls_config.key_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
-
-
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--token"></a>
+
+
+<a id="nestedblock--spec--receivers--pushover_configs--token"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.token`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--pushover_configs--user_key"></a>
+<a id="nestedblock--spec--receivers--pushover_configs--user_key"></a>
 ### Nested Schema for `spec.receivers.pushover_configs.user_key`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs"></a>
+<a id="nestedblock--spec--receivers--slack_configs"></a>
 ### Nested Schema for `spec.receivers.slack_configs`
 
-Required:
+Optional:
 
-- `actions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--actions))
-- `api_url` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--api_url))
+- `actions` (Block List) A list of Slack actions that are sent with each notification. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--actions))
+- `api_url` (Block List, Max: 1) The secret's key that contains the Slack webhook URL. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--api_url))
 - `callback_id` (String)
-- `channel` (String)
+- `channel` (String) The channel or user to send notifications to.
 - `color` (String)
 - `fallback` (String)
-- `fields` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--fields))
+- `fields` (Block List) A list of Slack fields that are sent with each notification. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--fields))
 - `footer` (String)
-- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config))
+- `http_config` (Block List, Max: 1) HTTP client configuration. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config))
 - `icon_emoji` (String)
 - `icon_url` (String)
 - `image_url` (String)
 - `link_names` (Boolean)
 - `mrkdwn_in` (List of String)
 - `pretext` (String)
-- `send_resolved` (Boolean)
+- `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
 - `short_fields` (Boolean)
 - `text` (String)
 - `thumb_url` (String)
@@ -895,12 +895,12 @@ Required:
 - `title_link` (String)
 - `username` (String)
 
-<a id="nestedobjatt--spec--receivers--slack_configs--actions"></a>
+<a id="nestedblock--spec--receivers--slack_configs--actions"></a>
 ### Nested Schema for `spec.receivers.slack_configs.actions`
 
-Required:
+Optional:
 
-- `confirm` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--actions--confirm))
+- `confirm` (Block List, Max: 1) SlackConfirmationField protect users from destructive actions or particularly distinguished decisions by asking them to confirm their button click one more time. See https://api.slack.com/docs/interactive-message-field-guide#confirmation_fields for more information. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--actions--confirm))
 - `name` (String)
 - `style` (String)
 - `text` (String)
@@ -908,10 +908,10 @@ Required:
 - `url` (String)
 - `value` (String)
 
-<a id="nestedobjatt--spec--receivers--slack_configs--actions--confirm"></a>
+<a id="nestedblock--spec--receivers--slack_configs--actions--confirm"></a>
 ### Nested Schema for `spec.receivers.slack_configs.actions.confirm`
 
-Required:
+Optional:
 
 - `dismiss_text` (String)
 - `ok_text` (String)
@@ -920,934 +920,934 @@ Required:
 
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--api_url"></a>
+<a id="nestedblock--spec--receivers--slack_configs--api_url"></a>
 ### Nested Schema for `spec.receivers.slack_configs.api_url`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--fields"></a>
+<a id="nestedblock--spec--receivers--slack_configs--fields"></a>
 ### Nested Schema for `spec.receivers.slack_configs.fields`
 
-Required:
+Optional:
 
 - `short` (Boolean)
 - `title` (String)
 - `value` (String)
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config`
 
-Required:
+Optional:
 
-- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--authorization))
-- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth))
-- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--bearer_token_secret))
-- `proxy_url` (String)
-- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config))
+- `authorization` (Block List, Max: 1) Authorization header configuration for the client. This is mutually exclusive with BasicAuth and is only available starting from Alertmanager v0.22+. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth for the client. This is mutually exclusive with Authorization. If both are defined, BasicAuth takes precedence. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--basic_auth))
+- `bearer_token_secret` (Block List, Max: 1) The secret's key that contains the bearer token to be used by the client for authentication. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--bearer_token_secret))
+- `proxy_url` (String) Optional proxy URL.
+- `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--tls_config))
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--authorization"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--authorization"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.authorization`
 
-Required:
+Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--authorization--credentials))
-- `type` (String)
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--authorization--credentials"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--authorization--credentials"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.authorization.credentials`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--basic_auth"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.basic_auth`
 
-Required:
+Optional:
 
-- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth--password))
-- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth--username))
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--basic_auth--username))
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth--password"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--basic_auth--password"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.basic_auth.password`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--basic_auth--username"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--basic_auth--username"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.basic_auth.username`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--bearer_token_secret"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--bearer_token_secret"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.bearer_token_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--tls_config"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config`
 
-Required:
+Optional:
 
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert))
-- `insecure_skip_verify` (Boolean)
-- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--key_secret))
-- `server_name` (String)
+- `ca` (Block List, Max: 1) Struct containing the CA cert to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--tls_config--ca))
+- `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--tls_config--key_secret))
+- `server_name` (String) Used to verify the hostname for the targets.
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--tls_config--ca"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.ca`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--tls_config--ca--secret))
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca--config_map"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--tls_config--ca--config_map"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.ca.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--ca--secret"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--tls_config--ca--secret"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.ca.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--tls_config--cert"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.cert`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--slack_configs--http_config--tls_config--cert--secret))
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert--config_map"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--tls_config--cert--config_map"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.cert.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--cert--secret"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--tls_config--cert--secret"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.cert.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--slack_configs--http_config--tls_config--key_secret"></a>
+<a id="nestedblock--spec--receivers--slack_configs--http_config--tls_config--key_secret"></a>
 ### Nested Schema for `spec.receivers.slack_configs.http_config.tls_config.key_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
-
-
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs"></a>
+
+
+<a id="nestedblock--spec--receivers--sns_configs"></a>
 ### Nested Schema for `spec.receivers.sns_configs`
 
-Required:
+Optional:
 
-- `api_url` (String)
-- `attributes` (Map of String)
-- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config))
-- `message` (String)
-- `phone_number` (String)
-- `send_resolved` (Boolean)
-- `sigv4` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--sigv4))
-- `subject` (String)
-- `target_arn` (String)
-- `topic_arn` (String)
+- `api_url` (String) The SNS API URL i.e. https://sns.us-east-2.amazonaws.com. If not specified, the SNS API URL from the SNS SDK will be used.
+- `attributes` (Map of String) SNS message attributes.
+- `http_config` (Block List, Max: 1) HTTP client configuration. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config))
+- `message` (String) The message content of the SNS notification.
+- `phone_number` (String) Phone number if message is delivered via SMS in E.164 format. If you don't specify this value, you must specify a value for the TopicARN or TargetARN.
+- `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
+- `sigv4` (Block List, Max: 1) Configures AWS's Signature Verification 4 signing process to sign requests. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--sigv4))
+- `subject` (String) Subject line when the message is delivered to email endpoints.
+- `target_arn` (String) The  mobile platform endpoint ARN if message is delivered via mobile notifications. If you don't specify this value, you must specify a value for the topic_arn or PhoneNumber.
+- `topic_arn` (String) SNS topic ARN, i.e. arn:aws:sns:us-east-2:698519295917:My-Topic If you don't specify this value, you must specify a value for the PhoneNumber or TargetARN.
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config`
 
-Required:
+Optional:
 
-- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--authorization))
-- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth))
-- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--bearer_token_secret))
-- `proxy_url` (String)
-- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config))
+- `authorization` (Block List, Max: 1) Authorization header configuration for the client. This is mutually exclusive with BasicAuth and is only available starting from Alertmanager v0.22+. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth for the client. This is mutually exclusive with Authorization. If both are defined, BasicAuth takes precedence. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--basic_auth))
+- `bearer_token_secret` (Block List, Max: 1) The secret's key that contains the bearer token to be used by the client for authentication. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--bearer_token_secret))
+- `proxy_url` (String) Optional proxy URL.
+- `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--tls_config))
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--authorization"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--authorization"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.authorization`
 
-Required:
+Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--authorization--credentials))
-- `type` (String)
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--authorization--credentials"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--authorization--credentials"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.authorization.credentials`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--basic_auth"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.basic_auth`
 
-Required:
+Optional:
 
-- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth--password))
-- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth--username))
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--basic_auth--username))
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth--password"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--basic_auth--password"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.basic_auth.password`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--basic_auth--username"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--basic_auth--username"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.basic_auth.username`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--bearer_token_secret"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--bearer_token_secret"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.bearer_token_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--tls_config"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config`
 
-Required:
+Optional:
 
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert))
-- `insecure_skip_verify` (Boolean)
-- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--key_secret))
-- `server_name` (String)
+- `ca` (Block List, Max: 1) Struct containing the CA cert to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--tls_config--ca))
+- `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--tls_config--key_secret))
+- `server_name` (String) Used to verify the hostname for the targets.
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--tls_config--ca"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.ca`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--tls_config--ca--secret))
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca--config_map"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--tls_config--ca--config_map"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.ca.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--ca--secret"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--tls_config--ca--secret"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.ca.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--tls_config--cert"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.cert`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--http_config--tls_config--cert--secret))
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert--config_map"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--tls_config--cert--config_map"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.cert.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--cert--secret"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--tls_config--cert--secret"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.cert.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs--http_config--tls_config--key_secret"></a>
+<a id="nestedblock--spec--receivers--sns_configs--http_config--tls_config--key_secret"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config.tls_config.key_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
-
-
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs--sigv4"></a>
+
+
+<a id="nestedblock--spec--receivers--sns_configs--sigv4"></a>
 ### Nested Schema for `spec.receivers.sns_configs.sigv4`
 
-Required:
+Optional:
 
-- `access_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--sigv4--access_key))
-- `profile` (String)
-- `region` (String)
-- `role_arn` (String)
-- `secret_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--sns_configs--sigv4--secret_key))
+- `access_key` (Block List, Max: 1) AccessKey is the AWS API key. If blank, the environment variable `AWS_ACCESS_KEY_ID` is used. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--sigv4--access_key))
+- `profile` (String) Profile is the named AWS profile used to authenticate.
+- `region` (String) Region is the AWS region. If blank, the region from the default credentials chain used.
+- `role_arn` (String) RoleArn is the named AWS profile used to authenticate.
+- `secret_key` (Block List, Max: 1) SecretKey is the AWS API secret. If blank, the environment variable `AWS_SECRET_ACCESS_KEY` is used. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--sigv4--secret_key))
 
-<a id="nestedobjatt--spec--receivers--sns_configs--sigv4--access_key"></a>
+<a id="nestedblock--spec--receivers--sns_configs--sigv4--access_key"></a>
 ### Nested Schema for `spec.receivers.sns_configs.sigv4.access_key`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--sns_configs--sigv4--secret_key"></a>
+<a id="nestedblock--spec--receivers--sns_configs--sigv4--secret_key"></a>
 ### Nested Schema for `spec.receivers.sns_configs.sigv4.secret_key`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
-
-
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs"></a>
+
+
+<a id="nestedblock--spec--receivers--victorops_configs"></a>
 ### Nested Schema for `spec.receivers.victorops_configs`
 
-Required:
+Optional:
 
-- `api_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--api_key))
-- `api_url` (String)
-- `custom_fields` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--custom_fields))
-- `entity_display_name` (String)
-- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config))
-- `message_type` (String)
-- `monitoring_tool` (String)
-- `routing_key` (String)
-- `send_resolved` (Boolean)
-- `state_message` (String)
+- `api_key` (Block List, Max: 1) The secret's key that contains the API key to use when talking to the VictorOps API. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--api_key))
+- `api_url` (String) The VictorOps API URL.
+- `custom_fields` (Block List) Additional custom fields for notification. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--custom_fields))
+- `entity_display_name` (String) Contains summary of the alerted problem.
+- `http_config` (Block List, Max: 1) The HTTP client's configuration. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config))
+- `message_type` (String) Describes the behavior of the alert (CRITICAL, WARNING, INFO).
+- `monitoring_tool` (String) The monitoring tool the state message is from.
+- `routing_key` (String) A key used to map the alert to a team.
+- `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
+- `state_message` (String) Contains long explanation of the alerted problem.
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--api_key"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--api_key"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.api_key`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--custom_fields"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--custom_fields"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.custom_fields`
 
-Required:
+Optional:
 
-- `key` (String)
-- `value` (String)
+- `key` (String) Key of the tuple.
+- `value` (String) Value of the tuple.
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config`
 
-Required:
+Optional:
 
-- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--authorization))
-- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth))
-- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--bearer_token_secret))
-- `proxy_url` (String)
-- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config))
+- `authorization` (Block List, Max: 1) Authorization header configuration for the client. This is mutually exclusive with BasicAuth and is only available starting from Alertmanager v0.22+. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth for the client. This is mutually exclusive with Authorization. If both are defined, BasicAuth takes precedence. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--basic_auth))
+- `bearer_token_secret` (Block List, Max: 1) The secret's key that contains the bearer token to be used by the client for authentication. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--bearer_token_secret))
+- `proxy_url` (String) Optional proxy URL.
+- `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--tls_config))
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--authorization"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--authorization"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.authorization`
 
-Required:
+Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--authorization--credentials))
-- `type` (String)
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--authorization--credentials"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--authorization--credentials"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.authorization.credentials`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--basic_auth"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.basic_auth`
 
-Required:
+Optional:
 
-- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth--password))
-- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth--username))
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--basic_auth--username))
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth--password"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--basic_auth--password"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.basic_auth.password`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--basic_auth--username"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--basic_auth--username"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.basic_auth.username`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--bearer_token_secret"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--bearer_token_secret"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.bearer_token_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--tls_config"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config`
 
-Required:
+Optional:
 
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert))
-- `insecure_skip_verify` (Boolean)
-- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--key_secret))
-- `server_name` (String)
+- `ca` (Block List, Max: 1) Struct containing the CA cert to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--tls_config--ca))
+- `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--tls_config--key_secret))
+- `server_name` (String) Used to verify the hostname for the targets.
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--tls_config--ca"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.ca`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--tls_config--ca--secret))
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca--config_map"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--tls_config--ca--config_map"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.ca.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--ca--secret"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--tls_config--ca--secret"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.ca.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--tls_config--cert"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.cert`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--victorops_configs--http_config--tls_config--cert--secret))
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert--config_map"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--tls_config--cert--config_map"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.cert.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--cert--secret"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--tls_config--cert--secret"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.cert.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--victorops_configs--http_config--tls_config--key_secret"></a>
+<a id="nestedblock--spec--receivers--victorops_configs--http_config--tls_config--key_secret"></a>
 ### Nested Schema for `spec.receivers.victorops_configs.http_config.tls_config.key_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
-
-
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--webhook_configs"></a>
+
+
+<a id="nestedblock--spec--receivers--webhook_configs"></a>
 ### Nested Schema for `spec.receivers.webhook_configs`
 
-Required:
+Optional:
 
-- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config))
-- `max_alerts` (Number)
-- `send_resolved` (Boolean)
-- `url` (String)
-- `url_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--url_secret))
+- `http_config` (Block List, Max: 1) HTTP client configuration. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config))
+- `max_alerts` (Number) Maximum number of alerts to be sent per webhook message. When 0, all alerts are included.
+- `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
+- `url` (String) The URL to send HTTP POST requests to. `urlSecret` takes precedence over `url`. One of `urlSecret` and `url` should be defined.
+- `url_secret` (Block List, Max: 1) The secret's key that contains the webhook URL to send HTTP requests to. `urlSecret` takes precedence over `url`. One of `urlSecret` and `url` should be defined. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--url_secret))
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config`
 
-Required:
+Optional:
 
-- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--authorization))
-- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth))
-- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--bearer_token_secret))
-- `proxy_url` (String)
-- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config))
+- `authorization` (Block List, Max: 1) Authorization header configuration for the client. This is mutually exclusive with BasicAuth and is only available starting from Alertmanager v0.22+. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth for the client. This is mutually exclusive with Authorization. If both are defined, BasicAuth takes precedence. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--basic_auth))
+- `bearer_token_secret` (Block List, Max: 1) The secret's key that contains the bearer token to be used by the client for authentication. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--bearer_token_secret))
+- `proxy_url` (String) Optional proxy URL.
+- `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--tls_config))
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--authorization"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--authorization"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.authorization`
 
-Required:
+Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--authorization--credentials))
-- `type` (String)
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--authorization--credentials"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--authorization--credentials"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.authorization.credentials`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--basic_auth"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.basic_auth`
 
-Required:
+Optional:
 
-- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth--password))
-- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth--username))
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--basic_auth--username))
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth--password"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--basic_auth--password"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.basic_auth.password`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--basic_auth--username"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--basic_auth--username"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.basic_auth.username`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--bearer_token_secret"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--bearer_token_secret"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.bearer_token_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--tls_config"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config`
 
-Required:
+Optional:
 
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert))
-- `insecure_skip_verify` (Boolean)
-- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--key_secret))
-- `server_name` (String)
+- `ca` (Block List, Max: 1) Struct containing the CA cert to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--tls_config--ca))
+- `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--tls_config--key_secret))
+- `server_name` (String) Used to verify the hostname for the targets.
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--tls_config--ca"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.ca`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--tls_config--ca--secret))
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca--config_map"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--tls_config--ca--config_map"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.ca.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--ca--secret"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--tls_config--ca--secret"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.ca.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--tls_config--cert"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.cert`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config--tls_config--cert--secret))
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert--config_map"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--tls_config--cert--config_map"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.cert.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--cert--secret"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--tls_config--cert--secret"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.cert.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--http_config--tls_config--key_secret"></a>
+<a id="nestedblock--spec--receivers--webhook_configs--http_config--tls_config--key_secret"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.http_config.tls_config.key_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
-
-
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--webhook_configs--url_secret"></a>
+
+
+<a id="nestedblock--spec--receivers--webhook_configs--url_secret"></a>
 ### Nested Schema for `spec.receivers.webhook_configs.url_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--wechat_configs"></a>
+<a id="nestedblock--spec--receivers--wechat_configs"></a>
 ### Nested Schema for `spec.receivers.wechat_configs`
 
-Required:
+Optional:
 
 - `agent_id` (String)
-- `api_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--api_secret))
-- `api_url` (String)
-- `corp_id` (String)
-- `http_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config))
-- `message` (String)
+- `api_secret` (Block List, Max: 1) The secret's key that contains the WeChat API key. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--api_secret))
+- `api_url` (String) The WeChat API URL.
+- `corp_id` (String) The corp id for authentication.
+- `http_config` (Block List, Max: 1) HTTP client configuration. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config))
+- `message` (String) API request data as defined by the WeChat API.
 - `message_type` (String)
-- `send_resolved` (Boolean)
+- `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
 - `to_party` (String)
 - `to_tag` (String)
 - `to_user` (String)
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--api_secret"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--api_secret"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.api_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config`
 
-Required:
+Optional:
 
-- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--authorization))
-- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth))
-- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--bearer_token_secret))
-- `proxy_url` (String)
-- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config))
+- `authorization` (Block List, Max: 1) Authorization header configuration for the client. This is mutually exclusive with BasicAuth and is only available starting from Alertmanager v0.22+. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth for the client. This is mutually exclusive with Authorization. If both are defined, BasicAuth takes precedence. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--basic_auth))
+- `bearer_token_secret` (Block List, Max: 1) The secret's key that contains the bearer token to be used by the client for authentication. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--bearer_token_secret))
+- `proxy_url` (String) Optional proxy URL.
+- `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--tls_config))
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--authorization"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--authorization"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.authorization`
 
-Required:
+Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--authorization--credentials))
-- `type` (String)
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--authorization--credentials"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--authorization--credentials"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.authorization.credentials`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--basic_auth"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.basic_auth`
 
-Required:
+Optional:
 
-- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth--password))
-- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth--username))
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--basic_auth--username))
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth--password"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--basic_auth--password"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.basic_auth.password`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--basic_auth--username"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--basic_auth--username"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.basic_auth.username`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--bearer_token_secret"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--bearer_token_secret"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.bearer_token_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--tls_config"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config`
 
-Required:
+Optional:
 
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert))
-- `insecure_skip_verify` (Boolean)
-- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--key_secret))
-- `server_name` (String)
+- `ca` (Block List, Max: 1) Struct containing the CA cert to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--tls_config--ca))
+- `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--tls_config--key_secret))
+- `server_name` (String) Used to verify the hostname for the targets.
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--tls_config--ca"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.ca`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--tls_config--ca--secret))
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca--config_map"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--tls_config--ca--config_map"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.ca.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--ca--secret"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--tls_config--ca--secret"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.ca.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--tls_config--cert"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.cert`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--receivers--wechat_configs--http_config--tls_config--cert--secret))
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert--config_map"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--tls_config--cert--config_map"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.cert.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--cert--secret"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--tls_config--cert--secret"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.cert.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--receivers--wechat_configs--http_config--tls_config--key_secret"></a>
+<a id="nestedblock--spec--receivers--wechat_configs--http_config--tls_config--key_secret"></a>
 ### Nested Schema for `spec.receivers.wechat_configs.http_config.tls_config.key_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
-
-
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
 
-<a id="nestedobjatt--spec--route"></a>
+
+
+<a id="nestedblock--spec--route"></a>
 ### Nested Schema for `spec.route`
 
-Required:
+Optional:
 
-- `continue` (Boolean)
-- `group_by` (List of String)
-- `group_interval` (String)
-- `group_wait` (String)
-- `matchers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--route--matchers))
-- `mute_time_intervals` (List of String)
-- `receiver` (String)
-- `repeat_interval` (String)
-- `routes` (List of String)
+- `continue` (Boolean) Boolean indicating whether an alert should continue matching subsequent sibling nodes. It will always be overridden to true for the first-level route by the Prometheus operator.
+- `group_by` (List of String) List of labels to group by. Labels must not be repeated (unique list). Special label "..." (aggregate by all possible labels), if provided, must be the only element in the list.
+- `group_interval` (String) How long to wait before sending an updated notification. Must match the regular expression`^(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?$` Example: "5m"
+- `group_wait` (String) How long to wait before sending the initial notification. Must match the regular expression`^(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?$` Example: "30s"
+- `matchers` (Block List) List of matchers that the alert’s labels should match. For the first level route, the operator removes any existing equality and regexp matcher on the `namespace` label and adds a `namespace: <object namespace>` matcher. (see [below for nested schema](#nestedblock--spec--route--matchers))
+- `mute_time_intervals` (List of String) Note: this comment applies to the field definition above but appears below otherwise it gets included in the generated manifest. CRD schema doesn't support self-referential types for now (see https://github.com/kubernetes/kubernetes/issues/62872). We have to use an alternative type to circumvent the limitation. The downside is that the Kube API can't validate the data beyond the fact that it is a valid JSON representation. MuteTimeIntervals is a list of MuteTimeInterval names that will mute this route when matched,
+- `receiver` (String) Name of the receiver for this route. If not empty, it should be listed in the `receivers` field.
+- `repeat_interval` (String) How long to wait before repeating the last notification. Must match the regular expression`^(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?$` Example: "4h"
+- `routes` (List of Map of String) Child routes.
 
-<a id="nestedobjatt--spec--route--matchers"></a>
+<a id="nestedblock--spec--route--matchers"></a>
 ### Nested Schema for `spec.route.matchers`
 
-Required:
+Optional:
 
-- `match_type` (String)
-- `name` (String)
-- `regex` (Boolean)
-- `value` (String)
+- `match_type` (String) Match operation available with AlertManager >= v0.22.0 and takes precedence over Regex (deprecated) if non-empty.
+- `name` (String) Label to match.
+- `regex` (Boolean) Whether to match on equality (false) or regular-expression (true). Deprecated as of AlertManager >= v0.22.0 where a user should use MatchType instead.
+- `value` (String) Label value to match.

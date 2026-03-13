@@ -4887,7 +4887,7 @@ func dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerConfigV1Alpha1()
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
-								Elem: &schema.Schema{Type: schema.TypeString},
+								Elem: &schema.Schema{Type: schema.TypeMap},
 							},
 						}},
 					},

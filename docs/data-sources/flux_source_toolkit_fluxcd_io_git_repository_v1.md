@@ -18,8 +18,8 @@ GitRepository is the Schema for the gitrepositories API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) GitRepositorySpec specifies the required configuration to produce an Artifact for a Git repository. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) GitRepositoryStatus records the observed state of a Git repository. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) GitRepositorySpec specifies the required configuration to produce an Artifact for a Git repository. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) GitRepositoryStatus records the observed state of a Git repository. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,145 +29,147 @@ GitRepository is the Schema for the gitrepositories API.
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `ignore` (String)
-- `include` (List of Object) (see [below for nested schema](#nestedobjatt--spec--include))
-- `interval` (String)
-- `recurse_submodules` (Boolean)
-- `ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ref))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
-- `suspend` (Boolean)
-- `timeout` (String)
-- `url` (String)
-- `verify` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify))
+- `ignore` (String) Ignore overrides the set of excluded patterns in the .sourceignore format (which is the same as .gitignore). If not provided, a default will be used, consult the documentation for your version to find out what those are.
+- `include` (Block List) Include specifies a list of GitRepository resources which Artifacts should be included in the Artifact produced for this GitRepository. (see [below for nested schema](#nestedblock--spec--include))
+- `interval` (String) Interval at which to check the GitRepository for updates.
+- `recurse_submodules` (Boolean) RecurseSubmodules enables the initialization of all submodules within the GitRepository as cloned from the URL, using their default settings.
+- `ref` (Block List, Max: 1) Reference specifies the Git reference to resolve and monitor for changes, defaults to the 'master' branch. (see [below for nested schema](#nestedblock--spec--ref))
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing authentication credentials for the GitRepository. For HTTPS repositories the Secret must contain 'username' and 'password' fields for basic auth or 'bearerToken' field for token auth. For SSH repositories the Secret must contain 'identity' and 'known_hosts' fields. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `suspend` (Boolean) Suspend tells the controller to suspend the reconciliation of this GitRepository.
+- `timeout` (String) Timeout for Git operations like cloning, defaults to 60s.
+- `url` (String) URL specifies the Git repository URL, it can be an HTTP/S or SSH address.
+- `verify` (Block List, Max: 1) Verification specifies the configuration to verify the Git commit signature(s). (see [below for nested schema](#nestedblock--spec--verify))
 
-<a id="nestedobjatt--spec--include"></a>
+<a id="nestedblock--spec--include"></a>
 ### Nested Schema for `spec.include`
 
 Optional:
 
-- `from_path` (String)
-- `repository` (List of Object) (see [below for nested schema](#nestedobjatt--spec--include--repository))
-- `to_path` (String)
+- `from_path` (String) FromPath specifies the path to copy contents from, defaults to the root of the Artifact.
+- `repository` (Block List, Max: 1) GitRepositoryRef specifies the GitRepository which Artifact contents must be included. (see [below for nested schema](#nestedblock--spec--include--repository))
+- `to_path` (String) ToPath specifies the path to copy contents to, defaults to the name of the GitRepositoryRef.
 
-<a id="nestedobjatt--spec--include--repository"></a>
+<a id="nestedblock--spec--include--repository"></a>
 ### Nested Schema for `spec.include.repository`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
 
-<a id="nestedobjatt--spec--ref"></a>
+<a id="nestedblock--spec--ref"></a>
 ### Nested Schema for `spec.ref`
 
 Optional:
 
-- `branch` (String)
-- `commit` (String)
-- `name` (String)
-- `semver` (String)
-- `tag` (String)
+- `branch` (String) Branch to check out, defaults to 'master' if no other field is defined.
+- `commit` (String) Commit SHA to check out, takes precedence over all reference fields.
+ This can be combined with Branch to shallow clone the branch, in which the commit is expected to exist.
+- `name` (String) Name of the reference to check out; takes precedence over Branch, Tag and SemVer.
+ It must be a valid Git reference: https://git-scm.com/docs/git-check-ref-format#_description Examples: "refs/heads/main", "refs/tags/v0.1.0", "refs/pull/420/head", "refs/merge-requests/1/head"
+- `semver` (String) SemVer tag expression to check out, takes precedence over Tag.
+- `tag` (String) Tag to check out, takes precedence over Branch.
 
 
-<a id="nestedobjatt--spec--secret_ref"></a>
+<a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--verify"></a>
+<a id="nestedblock--spec--verify"></a>
 ### Nested Schema for `spec.verify`
 
 Optional:
 
-- `mode` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify--secret_ref))
+- `mode` (String) Mode specifies what Git object should be verified, currently ('head').
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing the public keys of trusted Git authors. (see [below for nested schema](#nestedblock--spec--verify--secret_ref))
 
-<a id="nestedobjatt--spec--verify--secret_ref"></a>
+<a id="nestedblock--spec--verify--secret_ref"></a>
 ### Nested Schema for `spec.verify.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `included_artifacts` (List of Object) (see [below for nested schema](#nestedobjatt--status--included_artifacts))
-- `last_handled_reconcile_at` (String)
-- `observed_generation` (Number)
-- `observed_ignore` (String)
-- `observed_include` (List of Object) (see [below for nested schema](#nestedobjatt--status--observed_include))
-- `observed_recurse_submodules` (Boolean)
+- `artifact` (Block List, Max: 1) Artifact represents the last successful GitRepository reconciliation. (see [below for nested schema](#nestedblock--status--artifact))
+- `conditions` (Block List) Conditions holds the conditions for the GitRepository. (see [below for nested schema](#nestedblock--status--conditions))
+- `included_artifacts` (Block List) IncludedArtifacts contains a list of the last successfully included Artifacts as instructed by GitRepositorySpec.Include. (see [below for nested schema](#nestedblock--status--included_artifacts))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.
+- `observed_generation` (Number) ObservedGeneration is the last observed generation of the GitRepository object.
+- `observed_ignore` (String) ObservedIgnore is the observed exclusion patterns used for constructing the source artifact.
+- `observed_include` (Block List) ObservedInclude is the observed list of GitRepository resources used to produce the current Artifact. (see [below for nested schema](#nestedblock--status--observed_include))
+- `observed_recurse_submodules` (Boolean) ObservedRecurseSubmodules is the observed resource submodules configuration used to produce the current Artifact.
 
-<a id="nestedobjatt--status--artifact"></a>
+<a id="nestedblock--status--artifact"></a>
 ### Nested Schema for `status.artifact`
 
 Optional:
 
-- `digest` (String)
-- `last_update_time` (String)
-- `metadata` (Map of String)
-- `path` (String)
-- `revision` (String)
-- `size` (Number)
-- `url` (String)
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
+- `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the Artifact.
+- `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
+- `path` (String) Path is the relative file path of the Artifact. It can be used to locate the file in the root of the Artifact storage on the local file system of the controller managing the Source.
+- `revision` (String) Revision is a human-readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
+- `size` (Number) Size is the number of bytes in the file.
+- `url` (String) URL is the HTTP address of the Artifact as exposed by the controller managing the Source. It can be used to retrieve the Artifact for consumption, e.g. by another controller applying the Artifact contents.
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
 
 
-<a id="nestedobjatt--status--included_artifacts"></a>
+<a id="nestedblock--status--included_artifacts"></a>
 ### Nested Schema for `status.included_artifacts`
 
 Optional:
 
-- `digest` (String)
-- `last_update_time` (String)
-- `metadata` (Map of String)
-- `path` (String)
-- `revision` (String)
-- `size` (Number)
-- `url` (String)
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
+- `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the Artifact.
+- `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
+- `path` (String) Path is the relative file path of the Artifact. It can be used to locate the file in the root of the Artifact storage on the local file system of the controller managing the Source.
+- `revision` (String) Revision is a human-readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
+- `size` (Number) Size is the number of bytes in the file.
+- `url` (String) URL is the HTTP address of the Artifact as exposed by the controller managing the Source. It can be used to retrieve the Artifact for consumption, e.g. by another controller applying the Artifact contents.
 
 
-<a id="nestedobjatt--status--observed_include"></a>
+<a id="nestedblock--status--observed_include"></a>
 ### Nested Schema for `status.observed_include`
 
 Optional:
 
-- `from_path` (String)
-- `repository` (List of Object) (see [below for nested schema](#nestedobjatt--status--observed_include--repository))
-- `to_path` (String)
+- `from_path` (String) FromPath specifies the path to copy contents from, defaults to the root of the Artifact.
+- `repository` (Block List, Max: 1) GitRepositoryRef specifies the GitRepository which Artifact contents must be included. (see [below for nested schema](#nestedblock--status--observed_include--repository))
+- `to_path` (String) ToPath specifies the path to copy contents to, defaults to the name of the GitRepositoryRef.
 
-<a id="nestedobjatt--status--observed_include--repository"></a>
+<a id="nestedblock--status--observed_include--repository"></a>
 ### Nested Schema for `status.observed_include.repository`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.

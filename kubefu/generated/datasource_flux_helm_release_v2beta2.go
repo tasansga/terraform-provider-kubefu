@@ -653,7 +653,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2() *schema.Resource {
 														Computed:    true,
 													},
 													"value": {
-														Type:        schema.TypeString,
+														Type:        schema.TypeMap,
 														Description: "Value contains a valid JSON structure. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.",
 														Optional:    true,
 														Required:    false,
@@ -728,7 +728,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2() *schema.Resource {
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
-										Elem: &schema.Schema{Type: schema.TypeString},
+										Elem: &schema.Schema{Type: schema.TypeMap},
 									},
 								}},
 							},
@@ -1046,7 +1046,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2() *schema.Resource {
 						}},
 					},
 					"values": {
-						Type:        schema.TypeString,
+						Type:        schema.TypeMap,
 						Description: "Values holds the values for this Helm release.",
 						Optional:    true,
 						Required:    false,

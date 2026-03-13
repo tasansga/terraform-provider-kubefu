@@ -22,8 +22,8 @@ A CertificateRequest is used to request a signed certificate from one of the con
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) Desired state of the CertificateRequest resource. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) Status of the CertificateRequest. This is set and managed automatically. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) Desired state of the CertificateRequest resource. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) Status of the CertificateRequest. This is set and managed automatically. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -33,45 +33,45 @@ A CertificateRequest is used to request a signed certificate from one of the con
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `csr` (String)
-- `duration` (String)
-- `is_ca` (Boolean)
-- `issuer_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--issuer_ref))
-- `usages` (List of String)
+- `csr` (String) The PEM-encoded x509 certificate signing request to be submitted to the CA for signing.
+- `duration` (String) The requested 'duration' (i.e. lifetime) of the Certificate. This option may be ignored/overridden by some issuer types.
+- `is_ca` (Boolean) IsCA will request to mark the certificate as valid for certificate signing when submitting to the issuer. This will automatically add the `cert sign` usage to the list of `usages`.
+- `issuer_ref` (Block List, Max: 1) IssuerRef is a reference to the issuer for this CertificateRequest.  If the 'kind' field is not set, or set to 'Issuer', an Issuer resource with the given name in the same namespace as the CertificateRequest will be used.  If the 'kind' field is set to 'ClusterIssuer', a ClusterIssuer with the provided name will be used. The 'name' field in this stanza is required at all times. The group field refers to the API group of the issuer which defaults to 'cert-manager.io' if empty. (see [below for nested schema](#nestedblock--spec--issuer_ref))
+- `usages` (List of String) Usages is the set of x509 usages that are requested for the certificate. Defaults to `digital signature` and `key encipherment` if not specified.
 
-<a id="nestedobjatt--spec--issuer_ref"></a>
+<a id="nestedblock--spec--issuer_ref"></a>
 ### Nested Schema for `spec.issuer_ref`
 
 Optional:
 
-- `group` (String)
-- `kind` (String)
-- `name` (String)
+- `group` (String) Group of the resource being referred to.
+- `kind` (String) Kind of the resource being referred to.
+- `name` (String) Name of the resource being referred to.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `ca` (String)
-- `certificate` (String)
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `failure_time` (String)
+- `ca` (String) The PEM encoded x509 certificate of the signer, also known as the CA (Certificate Authority). This is set on a best-effort basis by different issuers. If not set, the CA is assumed to be unknown/not available.
+- `certificate` (String) The PEM encoded x509 certificate resulting from the certificate signing request. If not set, the CertificateRequest has either not been completed or has failed. More information on failure can be found by checking the `conditions` field.
+- `conditions` (Block List) List of status conditions to indicate the status of a CertificateRequest. Known condition types are `Ready` and `InvalidRequest`. (see [below for nested schema](#nestedblock--status--conditions))
+- `failure_time` (String) FailureTime stores the time that this CertificateRequest failed. This is used to influence garbage collection and back-off.
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) LastTransitionTime is the timestamp corresponding to the last status change of this condition.
+- `message` (String) Message is a human readable description of the details of the last transition, complementing reason.
+- `reason` (String) Reason is a brief machine readable explanation for the condition's last transition.
+- `status` (String) Status of the condition, one of ('True', 'False', 'Unknown').
+- `type` (String) Type of the condition, known values are ('Ready', 'InvalidRequest').

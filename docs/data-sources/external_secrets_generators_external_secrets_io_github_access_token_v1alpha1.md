@@ -18,7 +18,7 @@ GithubAccessToken generates ghs_ accessToken
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -35,35 +35,38 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
 - `app_id` (String)
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth))
+- `auth` (Block List, Max: 1) Auth configures how ESO authenticates with a Github instance. (see [below for nested schema](#nestedblock--spec--auth))
 - `install_id` (String)
-- `url` (String)
+- `url` (String) URL configures the Github instance URL. Defaults to https://github.com/.
 
-<a id="nestedobjatt--spec--auth"></a>
+<a id="nestedblock--spec--auth"></a>
 ### Nested Schema for `spec.auth`
 
 Optional:
 
-- `private_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--private_key))
+- `private_key` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--auth--private_key))
 
-<a id="nestedobjatt--spec--auth--private_key"></a>
+<a id="nestedblock--spec--auth--private_key"></a>
 ### Nested Schema for `spec.auth.private_key`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--private_key--secret_ref))
+- `secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource,
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--auth--private_key--secret_ref))
 
-<a id="nestedobjatt--spec--auth--private_key--secret_ref"></a>
+<a id="nestedblock--spec--auth--private_key--secret_ref"></a>
 ### Nested Schema for `spec.auth.private_key.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
+defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
+to the namespace of the referent.

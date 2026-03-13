@@ -17,8 +17,8 @@ NetworkPolicy describes what network traffic is allowed for a set of Pods
 
 ### Optional
 
-- `metadata` (List of Object) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata (see [below for nested schema](#nestedatt--metadata))
-- `spec` (List of Object) Specification of the desired behavior for this NetworkPolicy. (see [below for nested schema](#nestedatt--spec))
+- `metadata` (Block List, Max: 1) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata (see [below for nested schema](#nestedblock--metadata))
+- `spec` (Block List, Max: 1) Specification of the desired behavior for this NetworkPolicy. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -28,280 +28,330 @@ NetworkPolicy describes what network traffic is allowed for a set of Pods
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--metadata"></a>
+<a id="nestedblock--metadata"></a>
 ### Nested Schema for `metadata`
 
 Optional:
 
-- `annotations` (Map of String)
-- `cluster_name` (String)
-- `creation_timestamp` (String)
-- `deletion_grace_period_seconds` (Number)
-- `deletion_timestamp` (String)
-- `finalizers` (List of String)
-- `generate_name` (String)
-- `generation` (Number)
-- `initializers` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers))
-- `labels` (Map of String)
-- `name` (String)
-- `namespace` (String)
-- `owner_references` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--owner_references))
-- `resource_version` (String)
-- `self_link` (String)
-- `uid` (String)
+- `annotations` (Map of String) Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: http://kubernetes.io/docs/user-guide/annotations
+- `cluster_name` (String) The name of the cluster which the object belongs to. This is used to distinguish resources with same name and namespace in different clusters. This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.
+- `creation_timestamp` (String) CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
 
-<a id="nestedobjatt--metadata--initializers"></a>
+Populated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
+- `deletion_grace_period_seconds` (Number) Number of seconds allowed for this object to gracefully terminate before it will be removed from the system. Only set when deletionTimestamp is also set. May only be shortened. Read-only.
+- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
+
+Populated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
+- `finalizers` (List of String) Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.
+- `generate_name` (String) GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided. If this field is used, the name returned to the client will be different than the name passed. This value will also be combined with a unique suffix. The provided value has the same validation rules as the Name field, and may be truncated by the length of the suffix required to make the value unique on the server.
+
+If this field is specified and the generated name exists, the server will NOT return a 409 - instead, it will either return 201 Created or 500 with Reason ServerTimeout indicating a unique name could not be found in the time allotted, and the client should retry (optionally after the time indicated in the Retry-After header).
+
+Applied only if Name is not specified. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#idempotency
+- `generation` (Number) A sequence number representing a specific generation of the desired state. Populated by the system. Read-only.
+- `initializers` (Block List, Max: 1) An initializer is a controller which enforces some system invariant at object creation time. This field is a list of initializers that have not yet acted on this object. If nil or empty, this object has been completely initialized. Otherwise, the object is considered uninitialized and is hidden (in list/watch and get calls) from clients that haven't explicitly asked to observe uninitialized objects.
+
+When an object is created, the system will populate this list with the current set of initializers. Only privileged users may set or modify this list. Once it is empty, it may not be modified further by any user. (see [below for nested schema](#nestedblock--metadata--initializers))
+- `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
+- `namespace` (String) Namespace defines the space within each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
+
+Must be a DNS_LABEL. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/namespaces
+- `owner_references` (Block List) List of objects depended by this object. If ALL objects in the list have been deleted, this object will be garbage collected. If this object is managed by a controller, then an entry in this list will point to this controller, with the controller field set to true. There cannot be more than one managing controller. (see [below for nested schema](#nestedblock--metadata--owner_references))
+- `resource_version` (String) An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed. May be used for optimistic concurrency, change detection, and the watch operation on a resource or set of resources. Clients must treat these values as opaque and passed unmodified back to the server. They may only be valid for a particular resource or set of resources.
+
+Populated by the system. Read-only. Value must be treated as opaque by clients and . More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
+- `self_link` (String) SelfLink is a URL representing this object. Populated by the system. Read-only.
+- `uid` (String) UID is the unique in time and space value for this object. It is typically generated by the server on successful creation of a resource and is not allowed to change on PUT operations.
+
+Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-guide/identifiers#uids
+
+<a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
+Required:
+
+- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
+
 Optional:
 
-- `pending` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--pending))
-- `result` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result))
+- `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
-<a id="nestedobjatt--metadata--initializers--pending"></a>
+<a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Optional:
+Required:
 
-- `name` (String)
+- `name` (String) name of the process that is responsible for initializing this object.
 
 
-<a id="nestedobjatt--metadata--initializers--result"></a>
+<a id="nestedblock--metadata--initializers--result"></a>
 ### Nested Schema for `metadata.initializers.result`
 
 Optional:
 
-- `api_version` (String)
-- `code` (Number)
-- `details` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details))
-- `kind` (String)
-- `message` (String)
-- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--metadata))
-- `reason` (String)
-- `status` (String)
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+- `code` (Number) Suggested HTTP return code for this status, 0 if not set.
+- `details` (Block List, Max: 1) Extended data associated with the reason.  Each reason may define its own extended details. This field is optional and the data returned is not guaranteed to conform to any schema except that defined by the reason type. (see [below for nested schema](#nestedblock--metadata--initializers--result--details))
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `message` (String) A human-readable description of the status of this operation.
+- `metadata` (Block List, Max: 1) Standard list metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds (see [below for nested schema](#nestedblock--metadata--initializers--result--metadata))
+- `reason` (String) A machine-readable description of why this operation is in the "Failure" status. If this value is empty there is no information available. A Reason clarifies an HTTP status code but does not override it.
+- `status` (String) Status of the operation. One of: "Success" or "Failure". More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status
 
-<a id="nestedobjatt--metadata--initializers--result--details"></a>
+<a id="nestedblock--metadata--initializers--result--details"></a>
 ### Nested Schema for `metadata.initializers.result.details`
 
 Optional:
 
-- `causes` (List of Object) (see [below for nested schema](#nestedobjatt--metadata--initializers--result--details--causes))
-- `group` (String)
-- `kind` (String)
-- `name` (String)
-- `retry_after_seconds` (Number)
-- `uid` (String)
+- `causes` (Block List) The Causes array includes more details associated with the StatusReason failure. Not all StatusReasons may provide detailed causes. (see [below for nested schema](#nestedblock--metadata--initializers--result--details--causes))
+- `group` (String) The group attribute of the resource associated with the status StatusReason.
+- `kind` (String) The kind attribute of the resource associated with the status StatusReason. On some operations may differ from the requested resource Kind. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `name` (String) The name attribute of the resource associated with the status StatusReason (when there is a single name which can be described).
+- `retry_after_seconds` (Number) If specified, the time in seconds before the operation should be retried. Some errors may indicate the client must take an alternate action - for those errors this field may indicate how long to wait before taking the alternate action.
+- `uid` (String) UID of the resource. (when there is a single resource which can be described). More info: http://kubernetes.io/docs/user-guide/identifiers#uids
 
-<a id="nestedobjatt--metadata--initializers--result--details--causes"></a>
+<a id="nestedblock--metadata--initializers--result--details--causes"></a>
 ### Nested Schema for `metadata.initializers.result.details.causes`
 
 Optional:
 
-- `field` (String)
-- `message` (String)
-- `reason` (String)
+- `field` (String) The field of the resource that has caused this error, as named by its JSON serialization. May include dot and postfix notation for nested attributes. Arrays are zero-indexed.  Fields may appear more than once in an array of causes due to fields having multiple errors. Optional.
+
+Examples:
+  "name" - the field "name" on the current resource
+  "items[0].name" - the field "name" on the first array entry in "items"
+- `message` (String) A human-readable description of the cause of the error.  This field may be presented as-is to a reader.
+- `reason` (String) A machine-readable description of the cause of the error. If this value is empty there is no information available.
 
 
 
-<a id="nestedobjatt--metadata--initializers--result--metadata"></a>
+<a id="nestedblock--metadata--initializers--result--metadata"></a>
 ### Nested Schema for `metadata.initializers.result.metadata`
 
 Optional:
 
-- `continue` (String)
-- `resource_version` (String)
-- `self_link` (String)
+- `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response.
+- `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
+- `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
 
 
 
 
-<a id="nestedobjatt--metadata--owner_references"></a>
+<a id="nestedblock--metadata--owner_references"></a>
 ### Nested Schema for `metadata.owner_references`
 
+Required:
+
+- `api_version` (String) API version of the referent.
+- `kind` (String) Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+- `name` (String) Name of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#names
+- `uid` (String) UID of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#uids
+
 Optional:
 
-- `api_version` (String)
-- `block_owner_deletion` (Boolean)
-- `controller` (Boolean)
-- `kind` (String)
-- `name` (String)
-- `uid` (String)
+- `block_owner_deletion` (Boolean) If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. Defaults to false. To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned.
+- `controller` (Boolean) If true, this reference points to the managing controller.
 
 
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
-Optional:
+Required:
 
-- `egress` (List of Object) (see [below for nested schema](#nestedobjatt--spec--egress))
-- `ingress` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ingress))
-- `pod_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_selector))
-- `policy_types` (List of String)
-
-<a id="nestedobjatt--spec--egress"></a>
-### Nested Schema for `spec.egress`
+- `pod_selector` (Block List, Min: 1, Max: 1) Selects the pods to which this NetworkPolicy object applies. The array of ingress rules is applied to any pods selected by this field. Multiple network policies can select the same set of pods. In this case, the ingress rules for each are combined additively. This field is NOT optional and follows standard label selector semantics. An empty podSelector matches all pods in this namespace. (see [below for nested schema](#nestedblock--spec--pod_selector))
 
 Optional:
 
-- `ports` (List of Object) (see [below for nested schema](#nestedobjatt--spec--egress--ports))
-- `to` (List of Object) (see [below for nested schema](#nestedobjatt--spec--egress--to))
+- `egress` (Block List) List of egress rules to be applied to the selected pods. Outgoing traffic is allowed if there are no NetworkPolicies selecting the pod (and cluster policy otherwise allows the traffic), OR if the traffic matches at least one egress rule across all of the NetworkPolicy objects whose podSelector matches the pod. If this field is empty then this NetworkPolicy limits all outgoing traffic (and serves solely to ensure that the pods it selects are isolated by default). This field is beta-level in 1.8 (see [below for nested schema](#nestedblock--spec--egress))
+- `ingress` (Block List) List of ingress rules to be applied to the selected pods. Traffic is allowed to a pod if there are no NetworkPolicies selecting the pod (and cluster policy otherwise allows the traffic), OR if the traffic source is the pod's local node, OR if the traffic matches at least one ingress rule across all of the NetworkPolicy objects whose podSelector matches the pod. If this field is empty then this NetworkPolicy does not allow any traffic (and serves solely to ensure that the pods it selects are isolated by default) (see [below for nested schema](#nestedblock--spec--ingress))
+- `policy_types` (List of String) List of rule types that the NetworkPolicy relates to. Valid options are Ingress, Egress, or Ingress,Egress. If this field is not specified, it will default based on the existence of Ingress or Egress rules; policies that contain an Egress section are assumed to affect Egress, and all policies (whether or not they contain an Ingress section) are assumed to affect Ingress. If you want to write an egress-only policy, you must explicitly specify policyTypes [ "Egress" ]. Likewise, if you want to write a policy that specifies that no egress is allowed, you must specify a policyTypes value that include "Egress" (since such a policy would not include an Egress section and would otherwise default to just [ "Ingress" ]). This field is beta-level in 1.8
 
-<a id="nestedobjatt--spec--egress--ports"></a>
-### Nested Schema for `spec.egress.ports`
-
-Optional:
-
-- `port` (String)
-- `protocol` (String)
-
-
-<a id="nestedobjatt--spec--egress--to"></a>
-### Nested Schema for `spec.egress.to`
-
-Optional:
-
-- `ip_block` (List of Object) (see [below for nested schema](#nestedobjatt--spec--egress--to--ip_block))
-- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--egress--to--namespace_selector))
-- `pod_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--egress--to--pod_selector))
-
-<a id="nestedobjatt--spec--egress--to--ip_block"></a>
-### Nested Schema for `spec.egress.to.ip_block`
-
-Optional:
-
-- `cidr` (String)
-- `except` (List of String)
-
-
-<a id="nestedobjatt--spec--egress--to--namespace_selector"></a>
-### Nested Schema for `spec.egress.to.namespace_selector`
-
-Optional:
-
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--egress--to--namespace_selector--match_expressions))
-- `match_labels` (Map of String)
-
-<a id="nestedobjatt--spec--egress--to--namespace_selector--match_expressions"></a>
-### Nested Schema for `spec.egress.to.namespace_selector.match_expressions`
-
-Optional:
-
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
-
-
-
-<a id="nestedobjatt--spec--egress--to--pod_selector"></a>
-### Nested Schema for `spec.egress.to.pod_selector`
-
-Optional:
-
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--egress--to--pod_selector--match_expressions))
-- `match_labels` (Map of String)
-
-<a id="nestedobjatt--spec--egress--to--pod_selector--match_expressions"></a>
-### Nested Schema for `spec.egress.to.pod_selector.match_expressions`
-
-Optional:
-
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
-
-
-
-
-
-<a id="nestedobjatt--spec--ingress"></a>
-### Nested Schema for `spec.ingress`
-
-Optional:
-
-- `from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ingress--from))
-- `ports` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ingress--ports))
-
-<a id="nestedobjatt--spec--ingress--from"></a>
-### Nested Schema for `spec.ingress.from`
-
-Optional:
-
-- `ip_block` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ingress--from--ip_block))
-- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ingress--from--namespace_selector))
-- `pod_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ingress--from--pod_selector))
-
-<a id="nestedobjatt--spec--ingress--from--ip_block"></a>
-### Nested Schema for `spec.ingress.from.ip_block`
-
-Optional:
-
-- `cidr` (String)
-- `except` (List of String)
-
-
-<a id="nestedobjatt--spec--ingress--from--namespace_selector"></a>
-### Nested Schema for `spec.ingress.from.namespace_selector`
-
-Optional:
-
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ingress--from--namespace_selector--match_expressions))
-- `match_labels` (Map of String)
-
-<a id="nestedobjatt--spec--ingress--from--namespace_selector--match_expressions"></a>
-### Nested Schema for `spec.ingress.from.namespace_selector.match_expressions`
-
-Optional:
-
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
-
-
-
-<a id="nestedobjatt--spec--ingress--from--pod_selector"></a>
-### Nested Schema for `spec.ingress.from.pod_selector`
-
-Optional:
-
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ingress--from--pod_selector--match_expressions))
-- `match_labels` (Map of String)
-
-<a id="nestedobjatt--spec--ingress--from--pod_selector--match_expressions"></a>
-### Nested Schema for `spec.ingress.from.pod_selector.match_expressions`
-
-Optional:
-
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
-
-
-
-
-<a id="nestedobjatt--spec--ingress--ports"></a>
-### Nested Schema for `spec.ingress.ports`
-
-Optional:
-
-- `port` (String)
-- `protocol` (String)
-
-
-
-<a id="nestedobjatt--spec--pod_selector"></a>
+<a id="nestedblock--spec--pod_selector"></a>
 ### Nested Schema for `spec.pod_selector`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--pod_selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--pod_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--pod_selector--match_expressions"></a>
+<a id="nestedblock--spec--pod_selector--match_expressions"></a>
 ### Nested Schema for `spec.pod_selector.match_expressions`
+
+Required:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+<a id="nestedblock--spec--egress"></a>
+### Nested Schema for `spec.egress`
+
+Optional:
+
+- `ports` (Block List) List of destination ports for outgoing traffic. Each item in this list is combined using a logical OR. If this field is empty or missing, this rule matches all ports (traffic not restricted by port). If this field is present and contains at least one item, then this rule allows traffic only if the traffic matches at least one port in the list. (see [below for nested schema](#nestedblock--spec--egress--ports))
+- `to` (Block List) List of destinations for outgoing traffic of pods selected for this rule. Items in this list are combined using a logical OR operation. If this field is empty or missing, this rule matches all destinations (traffic not restricted by destination). If this field is present and contains at least one item, this rule allows traffic only if the traffic matches at least one item in the to list. (see [below for nested schema](#nestedblock--spec--egress--to))
+
+<a id="nestedblock--spec--egress--ports"></a>
+### Nested Schema for `spec.egress.ports`
+
+Optional:
+
+- `port` (String) The port on the given protocol. This can either be a numerical or named port on a pod. If this field is not provided, this matches all port names and numbers.
+- `protocol` (String) The protocol (TCP or UDP) which traffic must match. If not specified, this field defaults to TCP.
+
+
+<a id="nestedblock--spec--egress--to"></a>
+### Nested Schema for `spec.egress.to`
+
+Optional:
+
+- `ip_block` (Block List, Max: 1) IPBlock defines policy on a particular IPBlock (see [below for nested schema](#nestedblock--spec--egress--to--ip_block))
+- `namespace_selector` (Block List, Max: 1) Selects Namespaces using cluster scoped-labels. This matches all pods in all namespaces selected by this label selector. This field follows standard label selector semantics. If present but empty, this selector selects all namespaces. (see [below for nested schema](#nestedblock--spec--egress--to--namespace_selector))
+- `pod_selector` (Block List, Max: 1) This is a label selector which selects Pods in this namespace. This field follows standard label selector semantics. If present but empty, this selector selects all pods in this namespace. (see [below for nested schema](#nestedblock--spec--egress--to--pod_selector))
+
+<a id="nestedblock--spec--egress--to--ip_block"></a>
+### Nested Schema for `spec.egress.to.ip_block`
+
+Required:
+
+- `cidr` (String) CIDR is a string representing the IP Block Valid examples are "192.168.1.1/24"
+
+Optional:
+
+- `except` (List of String) Except is a slice of CIDRs that should not be included within an IP Block Valid examples are "192.168.1.1/24" Except values will be rejected if they are outside the CIDR range
+
+
+<a id="nestedblock--spec--egress--to--namespace_selector"></a>
+### Nested Schema for `spec.egress.to.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--egress--to--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--egress--to--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.egress.to.namespace_selector.match_expressions`
+
+Required:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+
+Optional:
+
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+<a id="nestedblock--spec--egress--to--pod_selector"></a>
+### Nested Schema for `spec.egress.to.pod_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--egress--to--pod_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--egress--to--pod_selector--match_expressions"></a>
+### Nested Schema for `spec.egress.to.pod_selector.match_expressions`
+
+Required:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+
+Optional:
+
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+
+
+<a id="nestedblock--spec--ingress"></a>
+### Nested Schema for `spec.ingress`
+
+Optional:
+
+- `from` (Block List) List of sources which should be able to access the pods selected for this rule. Items in this list are combined using a logical OR operation. If this field is empty or missing, this rule matches all sources (traffic not restricted by source). If this field is present and contains at least on item, this rule allows traffic only if the traffic matches at least one item in the from list. (see [below for nested schema](#nestedblock--spec--ingress--from))
+- `ports` (Block List) List of ports which should be made accessible on the pods selected for this rule. Each item in this list is combined using a logical OR. If this field is empty or missing, this rule matches all ports (traffic not restricted by port). If this field is present and contains at least one item, then this rule allows traffic only if the traffic matches at least one port in the list. (see [below for nested schema](#nestedblock--spec--ingress--ports))
+
+<a id="nestedblock--spec--ingress--from"></a>
+### Nested Schema for `spec.ingress.from`
+
+Optional:
+
+- `ip_block` (Block List, Max: 1) IPBlock defines policy on a particular IPBlock (see [below for nested schema](#nestedblock--spec--ingress--from--ip_block))
+- `namespace_selector` (Block List, Max: 1) Selects Namespaces using cluster scoped-labels. This matches all pods in all namespaces selected by this label selector. This field follows standard label selector semantics. If present but empty, this selector selects all namespaces. (see [below for nested schema](#nestedblock--spec--ingress--from--namespace_selector))
+- `pod_selector` (Block List, Max: 1) This is a label selector which selects Pods in this namespace. This field follows standard label selector semantics. If present but empty, this selector selects all pods in this namespace. (see [below for nested schema](#nestedblock--spec--ingress--from--pod_selector))
+
+<a id="nestedblock--spec--ingress--from--ip_block"></a>
+### Nested Schema for `spec.ingress.from.ip_block`
+
+Required:
+
+- `cidr` (String) CIDR is a string representing the IP Block Valid examples are "192.168.1.1/24"
+
+Optional:
+
+- `except` (List of String) Except is a slice of CIDRs that should not be included within an IP Block Valid examples are "192.168.1.1/24" Except values will be rejected if they are outside the CIDR range
+
+
+<a id="nestedblock--spec--ingress--from--namespace_selector"></a>
+### Nested Schema for `spec.ingress.from.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--ingress--from--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--ingress--from--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.ingress.from.namespace_selector.match_expressions`
+
+Required:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+
+Optional:
+
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+<a id="nestedblock--spec--ingress--from--pod_selector"></a>
+### Nested Schema for `spec.ingress.from.pod_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--ingress--from--pod_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--ingress--from--pod_selector--match_expressions"></a>
+### Nested Schema for `spec.ingress.from.pod_selector.match_expressions`
+
+Required:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+
+Optional:
+
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+
+<a id="nestedblock--spec--ingress--ports"></a>
+### Nested Schema for `spec.ingress.ports`
+
+Optional:
+
+- `port` (String) The port on the given protocol. This can either be a numerical or named port on a pod. If this field is not provided, this matches all port names and numbers.
+- `protocol` (String) The protocol (TCP or UDP) which traffic must match. If not specified, this field defaults to TCP.

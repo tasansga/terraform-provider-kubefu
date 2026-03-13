@@ -976,7 +976,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoClusterGeneratorV1Alpha
 										Computed:    true,
 									},
 									"parameters": {
-										Type:        schema.TypeString,
+										Type:        schema.TypeMap,
 										Description: "Parameters to pass to Vault write (for non-GET methods)",
 										Optional:    true,
 										Required:    false,

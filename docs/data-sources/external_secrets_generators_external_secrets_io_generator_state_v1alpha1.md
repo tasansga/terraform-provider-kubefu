@@ -18,8 +18,8 @@ Generated data source for crd.generators.external-secrets.io.v1alpha1.GeneratorS
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -36,24 +36,32 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `garbage_collection_deadline` (String)
-- `resource` (String)
-- `state` (String)
+- `garbage_collection_deadline` (String) GarbageCollectionDeadline is the time after which the generator state
+will be deleted.
+It is set by the controller which creates the generator state and
+can be set configured by the user.
+If the garbage collection deadline is not set the generator state will not be deleted.
+- `resource` (Map of String) Resource is the generator manifest that produced the state.
+It is a snapshot of the generator manifest at the time the state was produced.
+This manifest will be used to delete the resource. Any configuration that is referenced
+in the manifest should be available at the time of garbage collection. If that is not the case deletion will
+be blocked by a finalizer.
+- `state` (Map of String) State is the state that was produced by the generator implementation.
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:

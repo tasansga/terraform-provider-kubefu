@@ -17,7 +17,7 @@ PrometheusRule defines recording and alerting rules for a Prometheus instance
 
 ### Required
 
-- `spec` (List of Object) Specification of desired alerting rule definitions for Prometheus. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Min: 1, Max: 1) Specification of desired alerting rule definitions for Prometheus. (see [below for nested schema](#nestedblock--spec))
 
 ### Optional
 
@@ -31,27 +31,27 @@ PrometheusRule defines recording and alerting rules for a Prometheus instance
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
-Required:
+Optional:
 
-- `groups` (List of Object) (see [below for nested schema](#nestedobjatt--spec--groups))
+- `groups` (Block List) Content of Prometheus rule file (see [below for nested schema](#nestedblock--spec--groups))
 
-<a id="nestedobjatt--spec--groups"></a>
+<a id="nestedblock--spec--groups"></a>
 ### Nested Schema for `spec.groups`
 
-Required:
+Optional:
 
 - `interval` (String)
 - `name` (String)
 - `partial_response_strategy` (String)
-- `rules` (List of Object) (see [below for nested schema](#nestedobjatt--spec--groups--rules))
+- `rules` (Block List) (see [below for nested schema](#nestedblock--spec--groups--rules))
 
-<a id="nestedobjatt--spec--groups--rules"></a>
+<a id="nestedblock--spec--groups--rules"></a>
 ### Nested Schema for `spec.groups.rules`
 
-Required:
+Optional:
 
 - `alert` (String)
 - `annotations` (Map of String)

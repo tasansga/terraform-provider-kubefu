@@ -18,9 +18,9 @@ ImagePolicy is the Schema for the imagepolicies API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) ImagePolicySpec defines the parameters for calculating the
-ImagePolicy. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) ImagePolicyStatus defines the observed state of ImagePolicy (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) ImagePolicySpec defines the parameters for calculating the
+ImagePolicy. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) ImagePolicyStatus defines the observed state of ImagePolicy (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -37,110 +37,150 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `digest_reflection_policy` (String)
-- `filter_tags` (List of Object) (see [below for nested schema](#nestedobjatt--spec--filter_tags))
-- `image_repository_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--image_repository_ref))
-- `interval` (String)
-- `policy` (List of Object) (see [below for nested schema](#nestedobjatt--spec--policy))
-- `suspend` (Boolean)
+- `digest_reflection_policy` (String) DigestReflectionPolicy governs the setting of the `.status.latestRef.digest` field.
 
-<a id="nestedobjatt--spec--filter_tags"></a>
+Never: The digest field will always be set to the empty string.
+
+IfNotPresent: The digest field will be set to the digest of the elected
+latest image if the field is empty and the image did not change.
+
+Always: The digest field will always be set to the digest of the elected
+latest image.
+
+Default: Never.
+- `filter_tags` (Block List, Max: 1) FilterTags enables filtering for only a subset of tags based on a set of
+rules. If no rules are provided, all the tags from the repository will be
+ordered and compared. (see [below for nested schema](#nestedblock--spec--filter_tags))
+- `image_repository_ref` (Block List, Max: 1) ImageRepositoryRef points at the object specifying the image
+being scanned (see [below for nested schema](#nestedblock--spec--image_repository_ref))
+- `interval` (String) Interval is the length of time to wait between
+refreshing the digest of the latest tag when the
+reflection policy is set to "Always".
+
+Defaults to 10m.
+- `policy` (Block List, Max: 1) Policy gives the particulars of the policy to be followed in
+selecting the most recent image (see [below for nested schema](#nestedblock--spec--policy))
+- `suspend` (Boolean) This flag tells the controller to suspend subsequent policy reconciliations.
+It does not apply to already started reconciliations. Defaults to false.
+
+<a id="nestedblock--spec--filter_tags"></a>
 ### Nested Schema for `spec.filter_tags`
 
 Optional:
 
-- `extract` (String)
-- `pattern` (String)
+- `extract` (String) Extract allows a capture group to be extracted from the specified regular
+expression pattern, useful before tag evaluation.
+- `pattern` (String) Pattern specifies a regular expression pattern used to filter for image
+tags.
 
 
-<a id="nestedobjatt--spec--image_repository_ref"></a>
+<a id="nestedblock--spec--image_repository_ref"></a>
 ### Nested Schema for `spec.image_repository_ref`
 
 Optional:
 
-- `name` (String)
-- `namespace` (String)
+- `name` (String) Name of the referent.
+- `namespace` (String) Namespace of the referent, when not specified it acts as LocalObjectReference.
 
 
-<a id="nestedobjatt--spec--policy"></a>
+<a id="nestedblock--spec--policy"></a>
 ### Nested Schema for `spec.policy`
 
 Optional:
 
-- `alphabetical` (List of Object) (see [below for nested schema](#nestedobjatt--spec--policy--alphabetical))
-- `numerical` (List of Object) (see [below for nested schema](#nestedobjatt--spec--policy--numerical))
-- `semver` (List of Object) (see [below for nested schema](#nestedobjatt--spec--policy--semver))
+- `alphabetical` (Block List, Max: 1) Alphabetical set of rules to use for alphabetical ordering of the tags. (see [below for nested schema](#nestedblock--spec--policy--alphabetical))
+- `numerical` (Block List, Max: 1) Numerical set of rules to use for numerical ordering of the tags. (see [below for nested schema](#nestedblock--spec--policy--numerical))
+- `semver` (Block List, Max: 1) SemVer gives a semantic version range to check against the tags
+available. (see [below for nested schema](#nestedblock--spec--policy--semver))
 
-<a id="nestedobjatt--spec--policy--alphabetical"></a>
+<a id="nestedblock--spec--policy--alphabetical"></a>
 ### Nested Schema for `spec.policy.alphabetical`
 
 Optional:
 
-- `order` (String)
+- `order` (String) Order specifies the sorting order of the tags. Given the letters of the
+alphabet as tags, ascending order would select Z, and descending order
+would select A.
 
 
-<a id="nestedobjatt--spec--policy--numerical"></a>
+<a id="nestedblock--spec--policy--numerical"></a>
 ### Nested Schema for `spec.policy.numerical`
 
 Optional:
 
-- `order` (String)
+- `order` (String) Order specifies the sorting order of the tags. Given the integer values
+from 0 to 9 as tags, ascending order would select 9, and descending order
+would select 0.
 
 
-<a id="nestedobjatt--spec--policy--semver"></a>
+<a id="nestedblock--spec--policy--semver"></a>
 ### Nested Schema for `spec.policy.semver`
 
 Optional:
 
-- `range` (String)
+- `range` (String) Range gives a semver range for the image tag; the highest
+version within the range that's a tag yields the latest image.
 
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_handled_reconcile_at` (String)
-- `latest_ref` (List of Object) (see [below for nested schema](#nestedobjatt--status--latest_ref))
+- `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent
+reconcile request value, so a change of the annotation value
+can be detected.
+- `latest_ref` (Block List, Max: 1) LatestRef gives the first in the list of images scanned by
+the image repository, when filtered and ordered according
+to the policy. (see [below for nested schema](#nestedblock--status--latest_ref))
 - `observed_generation` (Number)
-- `observed_previous_ref` (List of Object) (see [below for nested schema](#nestedobjatt--status--observed_previous_ref))
+- `observed_previous_ref` (Block List, Max: 1) ObservedPreviousRef is the observed previous LatestRef. It is used
+to keep track of the previous and current images. (see [below for nested schema](#nestedblock--status--observed_previous_ref))
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another.
+This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition.
+This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon.
+For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition.
+Producers of specific condition types may define expected values and meanings for this field,
+and whether the values are considered a guaranteed API.
+The value should be a CamelCase string.
+This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase.
 
 
-<a id="nestedobjatt--status--latest_ref"></a>
+<a id="nestedblock--status--latest_ref"></a>
 ### Nested Schema for `status.latest_ref`
 
 Optional:
 
-- `digest` (String)
-- `name` (String)
-- `tag` (String)
+- `digest` (String) Digest is the image's digest.
+- `name` (String) Name is the bare image's name.
+- `tag` (String) Tag is the image's tag.
 
 
-<a id="nestedobjatt--status--observed_previous_ref"></a>
+<a id="nestedblock--status--observed_previous_ref"></a>
 ### Nested Schema for `status.observed_previous_ref`
 
 Optional:
 
-- `digest` (String)
-- `name` (String)
-- `tag` (String)
+- `digest` (String) Digest is the image's digest.
+- `name` (String) Name is the bare image's name.
+- `tag` (String) Tag is the image's tag.

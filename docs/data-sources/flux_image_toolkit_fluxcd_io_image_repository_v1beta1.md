@@ -18,8 +18,8 @@ ImageRepository is the Schema for the imagerepositories API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) ImageRepositorySpec defines the parameters for scanning an image repository, e.g., `fluxcd/flux`. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) ImageRepositoryStatus defines the observed state of ImageRepository (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) ImageRepositorySpec defines the parameters for scanning an image repository, e.g., `fluxcd/flux`. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) ImageRepositoryStatus defines the observed state of ImageRepository (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,60 +29,62 @@ ImageRepository is the Schema for the imagerepositories API
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cert_secret_ref))
-- `image` (String)
-- `interval` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
-- `suspend` (Boolean)
-- `timeout` (String)
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef can be given the name of a secret containing either or both of
+  - a PEM-encoded client certificate (`certFile`) and private  key (`keyFile`);  - a PEM-encoded CA certificate (`caFile`)
+  and whichever are supplied, will be used for connecting to the  registry. The client cert and key are useful if you are  authenticating with a certificate; the CA cert is useful if  you are using a self-signed server certificate. (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
+- `image` (String) Image is the name of the image repository
+- `interval` (String) Interval is the length of time to wait between scans of the image repository.
+- `secret_ref` (Block List, Max: 1) SecretRef can be given the name of a secret containing credentials to use for the image registry. The secret should be created with `kubectl create secret docker-registry`, or the equivalent. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `suspend` (Boolean) This flag tells the controller to suspend subsequent image scans. It does not apply to already started scans. Defaults to false.
+- `timeout` (String) Timeout for image scanning. Defaults to 'Interval' duration.
 
-<a id="nestedobjatt--spec--cert_secret_ref"></a>
+<a id="nestedblock--spec--cert_secret_ref"></a>
 ### Nested Schema for `spec.cert_secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent
 
 
-<a id="nestedobjatt--spec--secret_ref"></a>
+<a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `canonical_image_name` (String)
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_handled_reconcile_at` (String)
-- `last_scan_result` (List of Object) (see [below for nested schema](#nestedobjatt--status--last_scan_result))
-- `observed_generation` (Number)
+- `canonical_image_name` (String) CanonicalName is the name of the image repository with all the implied bits made explicit; e.g., `docker.io/library/alpine` rather than `alpine`.
+- `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change can be detected.
+- `last_scan_result` (Block List, Max: 1) LastScanResult contains the number of fetched tags. (see [below for nested schema](#nestedblock--status--last_scan_result))
+- `observed_generation` (Number) ObservedGeneration is the last reconciled generation.
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
 
 
-<a id="nestedobjatt--status--last_scan_result"></a>
+<a id="nestedblock--status--last_scan_result"></a>
 ### Nested Schema for `status.last_scan_result`
 
 Optional:

@@ -339,7 +339,7 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta2() *schema.Resour
 										Computed:    true,
 									},
 									"value": {
-										Type:        schema.TypeString,
+										Type:        schema.TypeMap,
 										Description: "",
 										Optional:    true,
 										Required:    false,
@@ -414,7 +414,7 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta2() *schema.Resour
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
-						Elem: &schema.Schema{Type: schema.TypeString},
+						Elem: &schema.Schema{Type: schema.TypeMap},
 					},
 					"path": {
 						Type:        schema.TypeString,

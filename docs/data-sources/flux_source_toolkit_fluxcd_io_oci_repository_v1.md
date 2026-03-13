@@ -18,8 +18,8 @@ OCIRepository is the Schema for the ocirepositories API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) OCIRepositorySpec defines the desired state of OCIRepository (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) OCIRepositoryStatus defines the observed state of OCIRepository (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) OCIRepositorySpec defines the desired state of OCIRepository (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) OCIRepositoryStatus defines the observed state of OCIRepository (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -36,142 +36,206 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cert_secret_ref))
-- `ignore` (String)
-- `insecure` (Boolean)
-- `interval` (String)
-- `layer_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--layer_selector))
-- `provider_` (String)
-- `proxy_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--proxy_secret_ref))
-- `ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ref))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
-- `service_account_name` (String)
-- `suspend` (Boolean)
-- `timeout` (String)
-- `url` (String)
-- `verify` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify))
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef can be given the name of a Secret containing
+either or both of
 
-<a id="nestedobjatt--spec--cert_secret_ref"></a>
+- a PEM-encoded client certificate (`tls.crt`) and private
+key (`tls.key`);
+- a PEM-encoded CA certificate (`ca.crt`)
+
+and whichever are supplied, will be used for connecting to the
+registry. The client cert and key are useful if you are
+authenticating with a certificate; the CA cert is useful if
+you are using a self-signed server certificate. The Secret must
+be of type `Opaque` or `kubernetes.io/tls`. (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
+- `ignore` (String) Ignore overrides the set of excluded patterns in the .sourceignore format
+(which is the same as .gitignore). If not provided, a default will be used,
+consult the documentation for your version to find out what those are.
+- `insecure` (Boolean) Insecure allows connecting to a non-TLS HTTP container registry.
+- `interval` (String) Interval at which the OCIRepository URL is checked for updates.
+This interval is approximate and may be subject to jitter to ensure
+efficient use of resources.
+- `layer_selector` (Block List, Max: 1) LayerSelector specifies which layer should be extracted from the OCI artifact.
+When not specified, the first layer found in the artifact is selected. (see [below for nested schema](#nestedblock--spec--layer_selector))
+- `provider_` (String) The provider used for authentication, can be 'aws', 'azure', 'gcp' or 'generic'.
+When not specified, defaults to 'generic'.
+- `proxy_secret_ref` (Block List, Max: 1) ProxySecretRef specifies the Secret containing the proxy configuration
+to use while communicating with the container registry. (see [below for nested schema](#nestedblock--spec--proxy_secret_ref))
+- `ref` (Block List, Max: 1) The OCI reference to pull and monitor for changes,
+defaults to the latest tag. (see [below for nested schema](#nestedblock--spec--ref))
+- `secret_ref` (Block List, Max: 1) SecretRef contains the secret name containing the registry login
+credentials to resolve image metadata.
+The secret must be of type kubernetes.io/dockerconfigjson. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `service_account_name` (String) ServiceAccountName is the name of the Kubernetes ServiceAccount used to authenticate
+the image pull if the service account has attached pull secrets. For more information:
+https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account
+- `suspend` (Boolean) This flag tells the controller to suspend the reconciliation of this source.
+- `timeout` (String) The timeout for remote OCI Repository operations like pulling, defaults to 60s.
+- `url` (String) URL is a reference to an OCI artifact repository hosted
+on a remote container registry.
+- `verify` (Block List, Max: 1) Verify contains the secret name containing the trusted public keys
+used to verify the signature and specifies which provider to use to check
+whether OCI image is authentic. (see [below for nested schema](#nestedblock--spec--verify))
+
+<a id="nestedblock--spec--cert_secret_ref"></a>
 ### Nested Schema for `spec.cert_secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--layer_selector"></a>
+<a id="nestedblock--spec--layer_selector"></a>
 ### Nested Schema for `spec.layer_selector`
 
 Optional:
 
-- `media_type` (String)
-- `operation` (String)
+- `media_type` (String) MediaType specifies the OCI media type of the layer
+which should be extracted from the OCI Artifact. The
+first layer matching this type is selected.
+- `operation` (String) Operation specifies how the selected layer should be processed.
+By default, the layer compressed content is extracted to storage.
+When the operation is set to 'copy', the layer compressed content
+is persisted to storage as it is.
 
 
-<a id="nestedobjatt--spec--proxy_secret_ref"></a>
+<a id="nestedblock--spec--proxy_secret_ref"></a>
 ### Nested Schema for `spec.proxy_secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--ref"></a>
+<a id="nestedblock--spec--ref"></a>
 ### Nested Schema for `spec.ref`
 
 Optional:
 
-- `digest` (String)
-- `semver` (String)
-- `semver_filter` (String)
-- `tag` (String)
+- `digest` (String) Digest is the image digest to pull, takes precedence over SemVer.
+The value should be in the format 'sha256:<HASH>'.
+- `semver` (String) SemVer is the range of tags to pull selecting the latest within
+the range, takes precedence over Tag.
+- `semver_filter` (String) SemverFilter is a regex pattern to filter the tags within the SemVer range.
+- `tag` (String) Tag is the image tag to pull, defaults to latest.
 
 
-<a id="nestedobjatt--spec--secret_ref"></a>
+<a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--verify"></a>
+<a id="nestedblock--spec--verify"></a>
 ### Nested Schema for `spec.verify`
 
 Optional:
 
-- `match_oidc_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify--match_oidc_identity))
-- `provider_` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify--secret_ref))
+- `match_oidc_identity` (Block List) MatchOIDCIdentity specifies the identity matching criteria to use
+while verifying an OCI artifact which was signed using Cosign keyless
+signing. The artifact's identity is deemed to be verified if any of the
+specified matchers match against the identity. (see [below for nested schema](#nestedblock--spec--verify--match_oidc_identity))
+- `provider_` (String) Provider specifies the technology used to sign the OCI Artifact.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Kubernetes Secret containing the
+trusted public keys. (see [below for nested schema](#nestedblock--spec--verify--secret_ref))
 
-<a id="nestedobjatt--spec--verify--match_oidc_identity"></a>
+<a id="nestedblock--spec--verify--match_oidc_identity"></a>
 ### Nested Schema for `spec.verify.match_oidc_identity`
 
 Optional:
 
-- `issuer` (String)
-- `subject` (String)
+- `issuer` (String) Issuer specifies the regex pattern to match against to verify
+the OIDC issuer in the Fulcio certificate. The pattern must be a
+valid Go regular expression.
+- `subject` (String) Subject specifies the regex pattern to match against to verify
+the identity subject in the Fulcio certificate. The pattern must
+be a valid Go regular expression.
 
 
-<a id="nestedobjatt--spec--verify--secret_ref"></a>
+<a id="nestedblock--spec--verify--secret_ref"></a>
 ### Nested Schema for `spec.verify.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_handled_reconcile_at` (String)
-- `observed_generation` (Number)
-- `observed_ignore` (String)
-- `observed_layer_selector` (List of Object) (see [below for nested schema](#nestedobjatt--status--observed_layer_selector))
-- `url` (String)
+- `artifact` (Block List, Max: 1) Artifact represents the output of the last successful OCI Repository sync. (see [below for nested schema](#nestedblock--status--artifact))
+- `conditions` (Block List) Conditions holds the conditions for the OCIRepository. (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent
+reconcile request value, so a change of the annotation value
+can be detected.
+- `observed_generation` (Number) ObservedGeneration is the last observed generation.
+- `observed_ignore` (String) ObservedIgnore is the observed exclusion patterns used for constructing
+the source artifact.
+- `observed_layer_selector` (Block List, Max: 1) ObservedLayerSelector is the observed layer selector used for constructing
+the source artifact. (see [below for nested schema](#nestedblock--status--observed_layer_selector))
+- `url` (String) URL is the download link for the artifact output of the last OCI Repository sync.
 
-<a id="nestedobjatt--status--artifact"></a>
+<a id="nestedblock--status--artifact"></a>
 ### Nested Schema for `status.artifact`
 
 Optional:
 
-- `digest` (String)
-- `last_update_time` (String)
-- `metadata` (Map of String)
-- `path` (String)
-- `revision` (String)
-- `size` (Number)
-- `url` (String)
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
+- `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the
+Artifact.
+- `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
+- `path` (String) Path is the relative file path of the Artifact. It can be used to locate
+the file in the root of the Artifact storage on the local file system of
+the controller managing the Source.
+- `revision` (String) Revision is a human-readable identifier traceable in the origin source
+system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
+- `size` (Number) Size is the number of bytes in the file.
+- `url` (String) URL is the HTTP address of the Artifact as exposed by the controller
+managing the Source. It can be used to retrieve the Artifact for
+consumption, e.g. by another controller applying the Artifact contents.
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another.
+This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition.
+This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon.
+For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition.
+Producers of specific condition types may define expected values and meanings for this field,
+and whether the values are considered a guaranteed API.
+The value should be a CamelCase string.
+This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase.
 
 
-<a id="nestedobjatt--status--observed_layer_selector"></a>
+<a id="nestedblock--status--observed_layer_selector"></a>
 ### Nested Schema for `status.observed_layer_selector`
 
 Optional:
 
-- `media_type` (String)
-- `operation` (String)
+- `media_type` (String) MediaType specifies the OCI media type of the layer
+which should be extracted from the OCI Artifact. The
+first layer matching this type is selected.
+- `operation` (String) Operation specifies how the selected layer should be processed.
+By default, the layer compressed content is extracted to storage.
+When the operation is set to 'copy', the layer compressed content
+is persisted to storage as it is.

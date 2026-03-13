@@ -112,7 +112,7 @@ func dataSourceExternalSecretsExternalSecretsIoPushSecretV1Alpha1() *schema.Reso
 								}},
 							},
 							"metadata": {
-								Type:        schema.TypeString,
+								Type:        schema.TypeMap,
 								Description: "Metadata is metadata attached to the secret.\nThe structure of metadata is provider specific, please look it up in the provider documentation.",
 								Optional:    true,
 								Required:    false,

@@ -18,8 +18,8 @@ HelmRelease is the Schema for the helmreleases API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) HelmReleaseSpec defines the desired state of a Helm release. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) HelmReleaseStatus defines the observed state of a HelmRelease. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) HelmReleaseSpec defines the desired state of a Helm release. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) HelmReleaseStatus defines the observed state of a HelmRelease. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -36,384 +36,606 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `chart` (List of Object) (see [below for nested schema](#nestedobjatt--spec--chart))
-- `chart_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--chart_ref))
-- `depends_on_` (List of Object) (see [below for nested schema](#nestedobjatt--spec--depends_on_))
-- `drift_detection` (List of Object) (see [below for nested schema](#nestedobjatt--spec--drift_detection))
-- `install` (List of Object) (see [below for nested schema](#nestedobjatt--spec--install))
-- `interval` (String)
-- `kube_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--kube_config))
-- `max_history` (Number)
-- `persistent_client` (Boolean)
-- `post_renderers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers))
-- `release_name` (String)
-- `rollback` (List of Object) (see [below for nested schema](#nestedobjatt--spec--rollback))
-- `service_account_name` (String)
-- `storage_namespace` (String)
-- `suspend` (Boolean)
-- `target_namespace` (String)
-- `test` (List of Object) (see [below for nested schema](#nestedobjatt--spec--test))
-- `timeout` (String)
-- `uninstall` (List of Object) (see [below for nested schema](#nestedobjatt--spec--uninstall))
-- `upgrade` (List of Object) (see [below for nested schema](#nestedobjatt--spec--upgrade))
-- `values` (String)
-- `values_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--values_from))
+- `chart` (Block List, Max: 1) Chart defines the template of the v1.HelmChart that should be created
+for this HelmRelease. (see [below for nested schema](#nestedblock--spec--chart))
+- `chart_ref` (Block List, Max: 1) ChartRef holds a reference to a source controller resource containing the
+Helm chart artifact. (see [below for nested schema](#nestedblock--spec--chart_ref))
+- `depends_on_` (Block List) DependsOn may contain a meta.NamespacedObjectReference slice with
+references to HelmRelease resources that must be ready before this HelmRelease
+can be reconciled. (see [below for nested schema](#nestedblock--spec--depends_on_))
+- `drift_detection` (Block List, Max: 1) DriftDetection holds the configuration for detecting and handling
+differences between the manifest in the Helm storage and the resources
+currently existing in the cluster. (see [below for nested schema](#nestedblock--spec--drift_detection))
+- `install` (Block List, Max: 1) Install holds the configuration for Helm install actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--install))
+- `interval` (String) Interval at which to reconcile the Helm release.
+- `kube_config` (Block List, Max: 1) KubeConfig for reconciling the HelmRelease on a remote cluster.
+When used in combination with HelmReleaseSpec.ServiceAccountName,
+forces the controller to act on behalf of that Service Account at the
+target cluster.
+If the --default-service-account flag is set, its value will be used as
+a controller level fallback for when HelmReleaseSpec.ServiceAccountName
+is empty. (see [below for nested schema](#nestedblock--spec--kube_config))
+- `max_history` (Number) MaxHistory is the number of revisions saved by Helm for this HelmRelease.
+Use '0' for an unlimited number of revisions; defaults to '5'.
+- `persistent_client` (Boolean) PersistentClient tells the controller to use a persistent Kubernetes
+client for this release. When enabled, the client will be reused for the
+duration of the reconciliation, instead of being created and destroyed
+for each (step of a) Helm action.
 
-<a id="nestedobjatt--spec--chart"></a>
+
+This can improve performance, but may cause issues with some Helm charts
+that for example do create Custom Resource Definitions during installation
+outside Helm's CRD lifecycle hooks, which are then not observed to be
+available by e.g. post-install hooks.
+
+
+If not set, it defaults to true.
+- `post_renderers` (Block List) PostRenderers holds an array of Helm PostRenderers, which will be applied in order
+of their definition. (see [below for nested schema](#nestedblock--spec--post_renderers))
+- `release_name` (String) ReleaseName used for the Helm release. Defaults to a composition of
+'[TargetNamespace-]Name'.
+- `rollback` (Block List, Max: 1) Rollback holds the configuration for Helm rollback actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--rollback))
+- `service_account_name` (String) The name of the Kubernetes service account to impersonate
+when reconciling this HelmRelease.
+- `storage_namespace` (String) StorageNamespace used for the Helm storage.
+Defaults to the namespace of the HelmRelease.
+- `suspend` (Boolean) Suspend tells the controller to suspend reconciliation for this HelmRelease,
+it does not apply to already started reconciliations. Defaults to false.
+- `target_namespace` (String) TargetNamespace to target when performing operations for the HelmRelease.
+Defaults to the namespace of the HelmRelease.
+- `test` (Block List, Max: 1) Test holds the configuration for Helm test actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--test))
+- `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like Jobs
+for hooks) during the performance of a Helm action. Defaults to '5m0s'.
+- `uninstall` (Block List, Max: 1) Uninstall holds the configuration for Helm uninstall actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--uninstall))
+- `upgrade` (Block List, Max: 1) Upgrade holds the configuration for Helm upgrade actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--upgrade))
+- `values` (Map of String) Values holds the values for this Helm release.
+- `values_from` (Block List) ValuesFrom holds references to resources containing Helm values for this HelmRelease,
+and information about how they should be merged. (see [below for nested schema](#nestedblock--spec--values_from))
+
+<a id="nestedblock--spec--chart"></a>
 ### Nested Schema for `spec.chart`
 
 Optional:
 
-- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--chart--metadata))
-- `spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--chart--spec))
+- `metadata` (Block List, Max: 1) ObjectMeta holds the template for metadata like labels and annotations. (see [below for nested schema](#nestedblock--spec--chart--metadata))
+- `spec` (Block List, Max: 1) Spec holds the template for the v1.HelmChartSpec for this HelmRelease. (see [below for nested schema](#nestedblock--spec--chart--spec))
 
-<a id="nestedobjatt--spec--chart--metadata"></a>
+<a id="nestedblock--spec--chart--metadata"></a>
 ### Nested Schema for `spec.chart.metadata`
 
 Optional:
 
-- `annotations` (Map of String)
-- `labels` (Map of String)
+- `annotations` (Map of String) Annotations is an unstructured key value map stored with a resource that may be
+set by external tools to store and retrieve arbitrary metadata. They are not
+queryable and should be preserved when modifying objects.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+- `labels` (Map of String) Map of string keys and values that can be used to organize and categorize
+(scope and select) objects.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 
 
-<a id="nestedobjatt--spec--chart--spec"></a>
+<a id="nestedblock--spec--chart--spec"></a>
 ### Nested Schema for `spec.chart.spec`
 
 Optional:
 
-- `chart` (String)
-- `ignore_missing_values_files` (Boolean)
-- `interval` (String)
-- `reconcile_strategy` (String)
-- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--chart--spec--source_ref))
-- `values_files` (List of String)
-- `verify` (List of Object) (see [below for nested schema](#nestedobjatt--spec--chart--spec--verify))
-- `version` (String)
+- `chart` (String) The name or path the Helm chart is available at in the SourceRef.
+- `ignore_missing_values_files` (Boolean) IgnoreMissingValuesFiles controls whether to silently ignore missing values files rather than failing.
+- `interval` (String) Interval at which to check the v1.Source for updates. Defaults to
+'HelmReleaseSpec.Interval'.
+- `reconcile_strategy` (String) Determines what enables the creation of a new artifact. Valid values are
+('ChartVersion', 'Revision').
+See the documentation of the values for an explanation on their behavior.
+Defaults to ChartVersion when omitted.
+- `source_ref` (Block List, Max: 1) The name and namespace of the v1.Source the chart is available at. (see [below for nested schema](#nestedblock--spec--chart--spec--source_ref))
+- `values_files` (List of String) Alternative list of values files to use as the chart values (values.yaml
+is not included by default), expected to be a relative path in the SourceRef.
+Values files are merged in the order of this list with the last file overriding
+the first. Ignored when omitted.
+- `verify` (Block List, Max: 1) Verify contains the secret name containing the trusted public keys
+used to verify the signature and specifies which provider to use to check
+whether OCI image is authentic.
+This field is only supported for OCI sources.
+Chart dependencies, which are not bundled in the umbrella chart artifact,
+are not verified. (see [below for nested schema](#nestedblock--spec--chart--spec--verify))
+- `version` (String) Version semver expression, ignored for charts from v1.GitRepository and
+v1beta2.Bucket sources. Defaults to latest when omitted.
 
-<a id="nestedobjatt--spec--chart--spec--source_ref"></a>
+<a id="nestedblock--spec--chart--spec--source_ref"></a>
 ### Nested Schema for `spec.chart.spec.source_ref`
 
 Optional:
 
-- `api_version` (String)
-- `kind` (String)
-- `name` (String)
-- `namespace` (String)
+- `api_version` (String) APIVersion of the referent.
+- `kind` (String) Kind of the referent.
+- `name` (String) Name of the referent.
+- `namespace` (String) Namespace of the referent.
 
 
-<a id="nestedobjatt--spec--chart--spec--verify"></a>
+<a id="nestedblock--spec--chart--spec--verify"></a>
 ### Nested Schema for `spec.chart.spec.verify`
 
 Optional:
 
-- `provider_` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--chart--spec--verify--secret_ref))
+- `provider_` (String) Provider specifies the technology used to sign the OCI Helm chart.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Kubernetes Secret containing the
+trusted public keys. (see [below for nested schema](#nestedblock--spec--chart--spec--verify--secret_ref))
 
-<a id="nestedobjatt--spec--chart--spec--verify--secret_ref"></a>
+<a id="nestedblock--spec--chart--spec--verify--secret_ref"></a>
 ### Nested Schema for `spec.chart.spec.verify.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--chart_ref"></a>
+<a id="nestedblock--spec--chart_ref"></a>
 ### Nested Schema for `spec.chart_ref`
 
 Optional:
 
-- `api_version` (String)
-- `kind` (String)
-- `name` (String)
-- `namespace` (String)
+- `api_version` (String) APIVersion of the referent.
+- `kind` (String) Kind of the referent.
+- `name` (String) Name of the referent.
+- `namespace` (String) Namespace of the referent, defaults to the namespace of the Kubernetes
+resource object that contains the reference.
 
 
-<a id="nestedobjatt--spec--depends_on_"></a>
+<a id="nestedblock--spec--depends_on_"></a>
 ### Nested Schema for `spec.depends_on_`
 
 Optional:
 
-- `name` (String)
-- `namespace` (String)
+- `name` (String) Name of the referent.
+- `namespace` (String) Namespace of the referent, when not specified it acts as LocalObjectReference.
 
 
-<a id="nestedobjatt--spec--drift_detection"></a>
+<a id="nestedblock--spec--drift_detection"></a>
 ### Nested Schema for `spec.drift_detection`
 
 Optional:
 
-- `ignore` (List of Object) (see [below for nested schema](#nestedobjatt--spec--drift_detection--ignore))
-- `mode` (String)
+- `ignore` (Block List) Ignore contains a list of rules for specifying which changes to ignore
+during diffing. (see [below for nested schema](#nestedblock--spec--drift_detection--ignore))
+- `mode` (String) Mode defines how differences should be handled between the Helm manifest
+and the manifest currently applied to the cluster.
+If not explicitly set, it defaults to DiffModeDisabled.
 
-<a id="nestedobjatt--spec--drift_detection--ignore"></a>
+<a id="nestedblock--spec--drift_detection--ignore"></a>
 ### Nested Schema for `spec.drift_detection.ignore`
 
 Optional:
 
-- `paths` (List of String)
-- `target` (List of Object) (see [below for nested schema](#nestedobjatt--spec--drift_detection--ignore--target))
+- `paths` (List of String) Paths is a list of JSON Pointer (RFC 6901) paths to be excluded from
+consideration in a Kubernetes object.
+- `target` (Block List, Max: 1) Target is a selector for specifying Kubernetes objects to which this
+rule applies.
+If Target is not set, the Paths will be ignored for all Kubernetes
+objects within the manifest of the Helm release. (see [below for nested schema](#nestedblock--spec--drift_detection--ignore--target))
 
-<a id="nestedobjatt--spec--drift_detection--ignore--target"></a>
+<a id="nestedblock--spec--drift_detection--ignore--target"></a>
 ### Nested Schema for `spec.drift_detection.ignore.target`
 
 Optional:
 
-- `annotation_selector` (String)
-- `group` (String)
-- `kind` (String)
-- `label_selector` (String)
-- `name` (String)
-- `namespace` (String)
-- `version` (String)
+- `annotation_selector` (String) AnnotationSelector is a string that follows the label selection expression
+https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api
+It matches with the resource annotations.
+- `group` (String) Group is the API group to select resources from.
+Together with Version and Kind it is capable of unambiguously identifying and/or selecting resources.
+https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `kind` (String) Kind of the API Group to select resources from.
+Together with Group and Version it is capable of unambiguously
+identifying and/or selecting resources.
+https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `label_selector` (String) LabelSelector is a string that follows the label selection expression
+https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api
+It matches with the resource labels.
+- `name` (String) Name to match resources with.
+- `namespace` (String) Namespace to select resources from.
+- `version` (String) Version of the API Group to select resources from.
+Together with Group and Kind it is capable of unambiguously identifying and/or selecting resources.
+https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
 
 
 
 
-<a id="nestedobjatt--spec--install"></a>
+<a id="nestedblock--spec--install"></a>
 ### Nested Schema for `spec.install`
 
 Optional:
 
-- `crds` (String)
-- `create_namespace` (Boolean)
-- `disable_hooks` (Boolean)
-- `disable_open_api_validation` (Boolean)
-- `disable_wait` (Boolean)
-- `disable_wait_for_jobs` (Boolean)
-- `remediation` (List of Object) (see [below for nested schema](#nestedobjatt--spec--install--remediation))
-- `replace` (Boolean)
-- `skip_cr_ds` (Boolean)
-- `timeout` (String)
+- `crds` (String) CRDs upgrade CRDs from the Helm Chart's crds directory according
+to the CRD upgrade policy provided here. Valid values are `Skip`,
+`Create` or `CreateReplace`. Default is `Create` and if omitted
+CRDs are installed but not updated.
 
-<a id="nestedobjatt--spec--install--remediation"></a>
+
+Skip: do neither install nor replace (update) any CRDs.
+
+
+Create: new CRDs are created, existing CRDs are neither updated nor deleted.
+
+
+CreateReplace: new CRDs are created, existing CRDs are updated (replaced)
+but not deleted.
+
+
+By default, CRDs are applied (installed) during Helm install action.
+With this option users can opt in to CRD replace existing CRDs on Helm
+install actions, which is not (yet) natively supported by Helm.
+https://helm.sh/docs/chart_best_practices/custom_resource_definitions.
+- `create_namespace` (Boolean) CreateNamespace tells the Helm install action to create the
+HelmReleaseSpec.TargetNamespace if it does not exist yet.
+On uninstall, the namespace will not be garbage collected.
+- `disable_hooks` (Boolean) DisableHooks prevents hooks from running during the Helm install action.
+- `disable_open_api_validation` (Boolean) DisableOpenAPIValidation prevents the Helm install action from validating
+rendered templates against the Kubernetes OpenAPI Schema.
+- `disable_wait` (Boolean) DisableWait disables the waiting for resources to be ready after a Helm
+install has been performed.
+- `disable_wait_for_jobs` (Boolean) DisableWaitForJobs disables waiting for jobs to complete after a Helm
+install has been performed.
+- `remediation` (Block List, Max: 1) Remediation holds the remediation configuration for when the Helm install
+action for the HelmRelease fails. The default is to not perform any action. (see [below for nested schema](#nestedblock--spec--install--remediation))
+- `replace` (Boolean) Replace tells the Helm install action to re-use the 'ReleaseName', but only
+if that name is a deleted release which remains in the history.
+- `skip_cr_ds` (Boolean) SkipCRDs tells the Helm install action to not install any CRDs. By default,
+CRDs are installed if not already present.
+
+
+Deprecated use CRD policy (`crds`) attribute with value `Skip` instead.
+- `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like
+Jobs for hooks) during the performance of a Helm install action. Defaults to
+'HelmReleaseSpec.Timeout'.
+
+<a id="nestedblock--spec--install--remediation"></a>
 ### Nested Schema for `spec.install.remediation`
 
 Optional:
 
-- `ignore_test_failures` (Boolean)
-- `remediate_last_failure` (Boolean)
-- `retries` (Number)
+- `ignore_test_failures` (Boolean) IgnoreTestFailures tells the controller to skip remediation when the Helm
+tests are run after an install action but fail. Defaults to
+'Test.IgnoreFailures'.
+- `remediate_last_failure` (Boolean) RemediateLastFailure tells the controller to remediate the last failure, when
+no retries remain. Defaults to 'false'.
+- `retries` (Number) Retries is the number of retries that should be attempted on failures before
+bailing. Remediation, using an uninstall, is performed between each attempt.
+Defaults to '0', a negative integer equals to unlimited retries.
 
 
 
-<a id="nestedobjatt--spec--kube_config"></a>
+<a id="nestedblock--spec--kube_config"></a>
 ### Nested Schema for `spec.kube_config`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--kube_config--secret_ref))
+- `secret_ref` (Block List, Max: 1) SecretRef holds the name of a secret that contains a key with
+the kubeconfig file as the value. If no key is set, the key will default
+to 'value'.
+It is recommended that the kubeconfig is self-contained, and the secret
+is regularly updated if credentials such as a cloud-access-token expire.
+Cloud specific `cmd-path` auth helpers will not function without adding
+binaries and credentials to the Pod that is responsible for reconciling
+Kubernetes resources. (see [below for nested schema](#nestedblock--spec--kube_config--secret_ref))
 
-<a id="nestedobjatt--spec--kube_config--secret_ref"></a>
+<a id="nestedblock--spec--kube_config--secret_ref"></a>
 ### Nested Schema for `spec.kube_config.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) Key in the Secret, when not specified an implementation-specific default key is used.
+- `name` (String) Name of the Secret.
 
 
 
-<a id="nestedobjatt--spec--post_renderers"></a>
+<a id="nestedblock--spec--post_renderers"></a>
 ### Nested Schema for `spec.post_renderers`
 
 Optional:
 
-- `kustomize` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers--kustomize))
+- `kustomize` (Block List, Max: 1) Kustomization to apply as PostRenderer. (see [below for nested schema](#nestedblock--spec--post_renderers--kustomize))
 
-<a id="nestedobjatt--spec--post_renderers--kustomize"></a>
+<a id="nestedblock--spec--post_renderers--kustomize"></a>
 ### Nested Schema for `spec.post_renderers.kustomize`
 
 Optional:
 
-- `images` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers--kustomize--images))
-- `patches` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers--kustomize--patches))
+- `images` (Block List) Images is a list of (image name, new name, new tag or digest)
+for changing image names, tags or digests. This can also be achieved with a
+patch, but this operator is simpler to specify. (see [below for nested schema](#nestedblock--spec--post_renderers--kustomize--images))
+- `patches` (Block List) Strategic merge and JSON patches, defined as inline YAML objects,
+capable of targeting objects based on kind, label and annotation selectors. (see [below for nested schema](#nestedblock--spec--post_renderers--kustomize--patches))
 
-<a id="nestedobjatt--spec--post_renderers--kustomize--images"></a>
+<a id="nestedblock--spec--post_renderers--kustomize--images"></a>
 ### Nested Schema for `spec.post_renderers.kustomize.images`
 
 Optional:
 
-- `digest` (String)
-- `name` (String)
-- `new_name` (String)
-- `new_tag` (String)
+- `digest` (String) Digest is the value used to replace the original image tag.
+If digest is present NewTag value is ignored.
+- `name` (String) Name is a tag-less image name.
+- `new_name` (String) NewName is the value used to replace the original name.
+- `new_tag` (String) NewTag is the value used to replace the original tag.
 
 
-<a id="nestedobjatt--spec--post_renderers--kustomize--patches"></a>
+<a id="nestedblock--spec--post_renderers--kustomize--patches"></a>
 ### Nested Schema for `spec.post_renderers.kustomize.patches`
 
 Optional:
 
-- `patch` (String)
-- `target` (List of Object) (see [below for nested schema](#nestedobjatt--spec--post_renderers--kustomize--patches--target))
+- `patch` (String) Patch contains an inline StrategicMerge patch or an inline JSON6902 patch with
+an array of operation objects.
+- `target` (Block List, Max: 1) Target points to the resources that the patch document should be applied to. (see [below for nested schema](#nestedblock--spec--post_renderers--kustomize--patches--target))
 
-<a id="nestedobjatt--spec--post_renderers--kustomize--patches--target"></a>
+<a id="nestedblock--spec--post_renderers--kustomize--patches--target"></a>
 ### Nested Schema for `spec.post_renderers.kustomize.patches.target`
 
 Optional:
 
-- `annotation_selector` (String)
-- `group` (String)
-- `kind` (String)
-- `label_selector` (String)
-- `name` (String)
-- `namespace` (String)
-- `version` (String)
+- `annotation_selector` (String) AnnotationSelector is a string that follows the label selection expression
+https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api
+It matches with the resource annotations.
+- `group` (String) Group is the API group to select resources from.
+Together with Version and Kind it is capable of unambiguously identifying and/or selecting resources.
+https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `kind` (String) Kind of the API Group to select resources from.
+Together with Group and Version it is capable of unambiguously
+identifying and/or selecting resources.
+https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `label_selector` (String) LabelSelector is a string that follows the label selection expression
+https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api
+It matches with the resource labels.
+- `name` (String) Name to match resources with.
+- `namespace` (String) Namespace to select resources from.
+- `version` (String) Version of the API Group to select resources from.
+Together with Group and Kind it is capable of unambiguously identifying and/or selecting resources.
+https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
 
 
 
 
 
-<a id="nestedobjatt--spec--rollback"></a>
+<a id="nestedblock--spec--rollback"></a>
 ### Nested Schema for `spec.rollback`
 
 Optional:
 
-- `cleanup_on_fail` (Boolean)
-- `disable_hooks` (Boolean)
-- `disable_wait` (Boolean)
-- `disable_wait_for_jobs` (Boolean)
-- `force` (Boolean)
-- `recreate` (Boolean)
-- `timeout` (String)
+- `cleanup_on_fail` (Boolean) CleanupOnFail allows deletion of new resources created during the Helm
+rollback action when it fails.
+- `disable_hooks` (Boolean) DisableHooks prevents hooks from running during the Helm rollback action.
+- `disable_wait` (Boolean) DisableWait disables the waiting for resources to be ready after a Helm
+rollback has been performed.
+- `disable_wait_for_jobs` (Boolean) DisableWaitForJobs disables waiting for jobs to complete after a Helm
+rollback has been performed.
+- `force` (Boolean) Force forces resource updates through a replacement strategy.
+- `recreate` (Boolean) Recreate performs pod restarts for the resource if applicable.
+- `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like
+Jobs for hooks) during the performance of a Helm rollback action. Defaults to
+'HelmReleaseSpec.Timeout'.
 
 
-<a id="nestedobjatt--spec--test"></a>
+<a id="nestedblock--spec--test"></a>
 ### Nested Schema for `spec.test`
 
 Optional:
 
-- `enable` (Boolean)
-- `filters` (List of Object) (see [below for nested schema](#nestedobjatt--spec--test--filters))
-- `ignore_failures` (Boolean)
-- `timeout` (String)
+- `enable` (Boolean) Enable enables Helm test actions for this HelmRelease after an Helm install
+or upgrade action has been performed.
+- `filters` (Block List) Filters is a list of tests to run or exclude from running. (see [below for nested schema](#nestedblock--spec--test--filters))
+- `ignore_failures` (Boolean) IgnoreFailures tells the controller to skip remediation when the Helm tests
+are run but fail. Can be overwritten for tests run after install or upgrade
+actions in 'Install.IgnoreTestFailures' and 'Upgrade.IgnoreTestFailures'.
+- `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation during
+the performance of a Helm test action. Defaults to 'HelmReleaseSpec.Timeout'.
 
-<a id="nestedobjatt--spec--test--filters"></a>
+<a id="nestedblock--spec--test--filters"></a>
 ### Nested Schema for `spec.test.filters`
 
 Optional:
 
-- `exclude` (Boolean)
-- `name` (String)
+- `exclude` (Boolean) Exclude specifies whether the named test should be excluded.
+- `name` (String) Name is the name of the test.
 
 
 
-<a id="nestedobjatt--spec--uninstall"></a>
+<a id="nestedblock--spec--uninstall"></a>
 ### Nested Schema for `spec.uninstall`
 
 Optional:
 
-- `deletion_propagation` (String)
-- `disable_hooks` (Boolean)
-- `disable_wait` (Boolean)
-- `keep_history` (Boolean)
-- `timeout` (String)
+- `deletion_propagation` (String) DeletionPropagation specifies the deletion propagation policy when
+a Helm uninstall is performed.
+- `disable_hooks` (Boolean) DisableHooks prevents hooks from running during the Helm rollback action.
+- `disable_wait` (Boolean) DisableWait disables waiting for all the resources to be deleted after
+a Helm uninstall is performed.
+- `keep_history` (Boolean) KeepHistory tells Helm to remove all associated resources and mark the
+release as deleted, but retain the release history.
+- `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like
+Jobs for hooks) during the performance of a Helm uninstall action. Defaults
+to 'HelmReleaseSpec.Timeout'.
 
 
-<a id="nestedobjatt--spec--upgrade"></a>
+<a id="nestedblock--spec--upgrade"></a>
 ### Nested Schema for `spec.upgrade`
 
 Optional:
 
-- `cleanup_on_fail` (Boolean)
-- `crds` (String)
-- `disable_hooks` (Boolean)
-- `disable_open_api_validation` (Boolean)
-- `disable_wait` (Boolean)
-- `disable_wait_for_jobs` (Boolean)
-- `force` (Boolean)
-- `preserve_values` (Boolean)
-- `remediation` (List of Object) (see [below for nested schema](#nestedobjatt--spec--upgrade--remediation))
-- `timeout` (String)
+- `cleanup_on_fail` (Boolean) CleanupOnFail allows deletion of new resources created during the Helm
+upgrade action when it fails.
+- `crds` (String) CRDs upgrade CRDs from the Helm Chart's crds directory according
+to the CRD upgrade policy provided here. Valid values are `Skip`,
+`Create` or `CreateReplace`. Default is `Skip` and if omitted
+CRDs are neither installed nor upgraded.
 
-<a id="nestedobjatt--spec--upgrade--remediation"></a>
+
+Skip: do neither install nor replace (update) any CRDs.
+
+
+Create: new CRDs are created, existing CRDs are neither updated nor deleted.
+
+
+CreateReplace: new CRDs are created, existing CRDs are updated (replaced)
+but not deleted.
+
+
+By default, CRDs are not applied during Helm upgrade action. With this
+option users can opt-in to CRD upgrade, which is not (yet) natively supported by Helm.
+https://helm.sh/docs/chart_best_practices/custom_resource_definitions.
+- `disable_hooks` (Boolean) DisableHooks prevents hooks from running during the Helm upgrade action.
+- `disable_open_api_validation` (Boolean) DisableOpenAPIValidation prevents the Helm upgrade action from validating
+rendered templates against the Kubernetes OpenAPI Schema.
+- `disable_wait` (Boolean) DisableWait disables the waiting for resources to be ready after a Helm
+upgrade has been performed.
+- `disable_wait_for_jobs` (Boolean) DisableWaitForJobs disables waiting for jobs to complete after a Helm
+upgrade has been performed.
+- `force` (Boolean) Force forces resource updates through a replacement strategy.
+- `preserve_values` (Boolean) PreserveValues will make Helm reuse the last release's values and merge in
+overrides from 'Values'. Setting this flag makes the HelmRelease
+non-declarative.
+- `remediation` (Block List, Max: 1) Remediation holds the remediation configuration for when the Helm upgrade
+action for the HelmRelease fails. The default is to not perform any action. (see [below for nested schema](#nestedblock--spec--upgrade--remediation))
+- `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like
+Jobs for hooks) during the performance of a Helm upgrade action. Defaults to
+'HelmReleaseSpec.Timeout'.
+
+<a id="nestedblock--spec--upgrade--remediation"></a>
 ### Nested Schema for `spec.upgrade.remediation`
 
 Optional:
 
-- `ignore_test_failures` (Boolean)
-- `remediate_last_failure` (Boolean)
-- `retries` (Number)
-- `strategy` (String)
+- `ignore_test_failures` (Boolean) IgnoreTestFailures tells the controller to skip remediation when the Helm
+tests are run after an upgrade action but fail.
+Defaults to 'Test.IgnoreFailures'.
+- `remediate_last_failure` (Boolean) RemediateLastFailure tells the controller to remediate the last failure, when
+no retries remain. Defaults to 'false' unless 'Retries' is greater than 0.
+- `retries` (Number) Retries is the number of retries that should be attempted on failures before
+bailing. Remediation, using 'Strategy', is performed between each attempt.
+Defaults to '0', a negative integer equals to unlimited retries.
+- `strategy` (String) Strategy to use for failure remediation. Defaults to 'rollback'.
 
 
 
-<a id="nestedobjatt--spec--values_from"></a>
+<a id="nestedblock--spec--values_from"></a>
 ### Nested Schema for `spec.values_from`
 
 Optional:
 
-- `kind` (String)
-- `name` (String)
-- `optional` (Boolean)
-- `target_path` (String)
-- `values_key` (String)
+- `kind` (String) Kind of the values referent, valid values are ('Secret', 'ConfigMap').
+- `name` (String) Name of the values referent. Should reside in the same namespace as the
+referring resource.
+- `optional` (Boolean) Optional marks this ValuesReference as optional. When set, a not found error
+for the values reference is ignored, but any ValuesKey, TargetPath or
+transient error will still result in a reconciliation failure.
+- `target_path` (String) TargetPath is the YAML dot notation path the value should be merged at. When
+set, the ValuesKey is expected to be a single flat value. Defaults to 'None',
+which results in the values getting merged at the root.
+- `values_key` (String) ValuesKey is the data key where the values.yaml or a specific value can be
+found at. Defaults to 'values.yaml'.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `failures` (Number)
-- `helm_chart` (String)
-- `history` (List of Object) (see [below for nested schema](#nestedobjatt--status--history))
-- `install_failures` (Number)
-- `last_attempted_config_digest` (String)
-- `last_attempted_generation` (Number)
-- `last_attempted_release_action` (String)
-- `last_attempted_revision` (String)
-- `last_attempted_revision_digest` (String)
-- `last_attempted_values_checksum` (String)
-- `last_handled_force_at` (String)
-- `last_handled_reconcile_at` (String)
-- `last_handled_reset_at` (String)
-- `last_release_revision` (Number)
-- `observed_generation` (Number)
-- `observed_post_renderers_digest` (String)
-- `storage_namespace` (String)
-- `upgrade_failures` (Number)
+- `conditions` (Block List) Conditions holds the conditions for the HelmRelease. (see [below for nested schema](#nestedblock--status--conditions))
+- `failures` (Number) Failures is the reconciliation failure count against the latest desired
+state. It is reset after a successful reconciliation.
+- `helm_chart` (String) HelmChart is the namespaced name of the HelmChart resource created by
+the controller for the HelmRelease.
+- `history` (Block List) History holds the history of Helm releases performed for this HelmRelease
+up to the last successfully completed release. (see [below for nested schema](#nestedblock--status--history))
+- `install_failures` (Number) InstallFailures is the install failure count against the latest desired
+state. It is reset after a successful reconciliation.
+- `last_attempted_config_digest` (String) LastAttemptedConfigDigest is the digest for the config (better known as
+"values") of the last reconciliation attempt.
+- `last_attempted_generation` (Number) LastAttemptedGeneration is the last generation the controller attempted
+to reconcile.
+- `last_attempted_release_action` (String) LastAttemptedReleaseAction is the last release action performed for this
+HelmRelease. It is used to determine the active remediation strategy.
+- `last_attempted_revision` (String) LastAttemptedRevision is the Source revision of the last reconciliation
+attempt. For OCIRepository  sources, the 12 first characters of the digest are
+appended to the chart version e.g. "1.2.3+1234567890ab".
+- `last_attempted_revision_digest` (String) LastAttemptedRevisionDigest is the digest of the last reconciliation attempt.
+This is only set for OCIRepository sources.
+- `last_attempted_values_checksum` (String) LastAttemptedValuesChecksum is the SHA1 checksum for the values of the last
+reconciliation attempt.
+Deprecated: Use LastAttemptedConfigDigest instead.
+- `last_handled_force_at` (String) LastHandledForceAt holds the value of the most recent force request
+value, so a change of the annotation value can be detected.
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent
+reconcile request value, so a change of the annotation value
+can be detected.
+- `last_handled_reset_at` (String) LastHandledResetAt holds the value of the most recent reset request
+value, so a change of the annotation value can be detected.
+- `last_release_revision` (Number) LastReleaseRevision is the revision of the last successful Helm release.
+Deprecated: Use History instead.
+- `observed_generation` (Number) ObservedGeneration is the last observed generation.
+- `observed_post_renderers_digest` (String) ObservedPostRenderersDigest is the digest for the post-renderers of
+the last successful reconciliation attempt.
+- `storage_namespace` (String) StorageNamespace is the namespace of the Helm release storage for the
+current release.
+- `upgrade_failures` (Number) UpgradeFailures is the upgrade failure count against the latest desired
+state. It is reset after a successful reconciliation.
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another.
+This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition.
+This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon.
+For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition.
+Producers of specific condition types may define expected values and meanings for this field,
+and whether the values are considered a guaranteed API.
+The value should be a CamelCase string.
+This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase.
+---
+Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be
+useful (see .node.status.conditions), the ability to deconflict is important.
+The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
 
 
-<a id="nestedobjatt--status--history"></a>
+<a id="nestedblock--status--history"></a>
 ### Nested Schema for `status.history`
 
 Optional:
 
-- `api_version` (String)
-- `app_version` (String)
-- `chart_name` (String)
-- `chart_version` (String)
-- `config_digest` (String)
-- `deleted` (String)
-- `digest` (String)
-- `first_deployed` (String)
-- `last_deployed` (String)
-- `name` (String)
-- `namespace` (String)
-- `oci_digest` (String)
-- `status` (String)
-- `test_hooks` (Map of String)
-- `version` (Number)
+- `api_version` (String) APIVersion is the API version of the Snapshot.
+Provisional: when the calculation method of the Digest field is changed,
+this field will be used to distinguish between the old and new methods.
+- `app_version` (String) AppVersion is the chart app version of the release object in storage.
+- `chart_name` (String) ChartName is the chart name of the release object in storage.
+- `chart_version` (String) ChartVersion is the chart version of the release object in
+storage.
+- `config_digest` (String) ConfigDigest is the checksum of the config (better known as
+"values") of the release object in storage.
+It has the format of `<algo>:<checksum>`.
+- `deleted` (String) Deleted is when the release was deleted.
+- `digest` (String) Digest is the checksum of the release object in storage.
+It has the format of `<algo>:<checksum>`.
+- `first_deployed` (String) FirstDeployed is when the release was first deployed.
+- `last_deployed` (String) LastDeployed is when the release was last deployed.
+- `name` (String) Name is the name of the release.
+- `namespace` (String) Namespace is the namespace the release is deployed to.
+- `oci_digest` (String) OCIDigest is the digest of the OCI artifact associated with the release.
+- `status` (String) Status is the current state of the release.
+- `test_hooks` (Map of String) TestHooks is the list of test hooks for the release as observed to be
+run by the controller.
+- `version` (Number) Version is the version of the release object in storage.

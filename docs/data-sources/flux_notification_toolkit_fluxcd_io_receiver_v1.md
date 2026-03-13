@@ -18,8 +18,8 @@ Receiver is the Schema for the receivers API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) ReceiverSpec defines the desired state of the Receiver. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) ReceiverStatus defines the observed state of the Receiver. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) ReceiverSpec defines the desired state of the Receiver. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) ReceiverStatus defines the observed state of the Receiver. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,57 +29,57 @@ Receiver is the Schema for the receivers API.
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `events` (List of String)
-- `interval` (String)
-- `resources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--resources))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
-- `suspend` (Boolean)
-- `type` (String)
+- `events` (List of String) Events specifies the list of event types to handle, e.g. 'push' for GitHub or 'Push Hook' for GitLab.
+- `interval` (String) Interval at which to reconcile the Receiver with its Secret references.
+- `resources` (Block List) A list of resources to be notified about changes. (see [below for nested schema](#nestedblock--spec--resources))
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing the token used to validate the payload authenticity. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `suspend` (Boolean) Suspend tells the controller to suspend subsequent events handling for this receiver.
+- `type` (String) Type of webhook sender, used to determine the validation procedure and payload deserialization.
 
-<a id="nestedobjatt--spec--resources"></a>
+<a id="nestedblock--spec--resources"></a>
 ### Nested Schema for `spec.resources`
 
 Optional:
 
-- `api_version` (String)
-- `kind` (String)
-- `match_labels` (Map of String)
-- `name` (String)
-- `namespace` (String)
+- `api_version` (String) API version of the referent
+- `kind` (String) Kind of the referent
+- `match_labels` (Map of String) MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed. MatchLabels requires the name to be set to `*`.
+- `name` (String) Name of the referent If multiple resources are targeted `*` may be set.
+- `namespace` (String) Namespace of the referent
 
 
-<a id="nestedobjatt--spec--secret_ref"></a>
+<a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_handled_reconcile_at` (String)
-- `observed_generation` (Number)
-- `webhook_path` (String)
+- `conditions` (Block List) Conditions holds the conditions for the Receiver. (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.
+- `observed_generation` (Number) ObservedGeneration is the last observed generation of the Receiver object.
+- `webhook_path` (String) WebhookPath is the generated incoming webhook address in the format of '/hook/sha256sum(token+name+namespace)'.
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)

@@ -31,19 +31,19 @@ Generated data source for io.k8s.api.apps.v1.Kustomization
 
 Optional:
 
-- `generator_args` (List of Object) (see [below for nested schema](#nestedatt--config_map_generator--generator_args))
+- `generator_args` (Block List, Max: 1) (see [below for nested schema](#nestedblock--config_map_generator--generator_args))
 
-<a id="nestedatt--config_map_generator--generator_args"></a>
+<a id="nestedblock--config_map_generator--generator_args"></a>
 ### Nested Schema for `config_map_generator.generator_args`
 
 Optional:
 
 - `behavior` (String)
-- `kv_pair_sources` (List of Object) (see [below for nested schema](#nestedobjatt--config_map_generator--generator_args--kv_pair_sources))
+- `kv_pair_sources` (Block List, Max: 1) (see [below for nested schema](#nestedblock--config_map_generator--generator_args--kv_pair_sources))
 - `name` (String)
 - `namespace` (String)
 
-<a id="nestedobjatt--config_map_generator--generator_args--kv_pair_sources"></a>
+<a id="nestedblock--config_map_generator--generator_args--kv_pair_sources"></a>
 ### Nested Schema for `config_map_generator.generator_args.kv_pair_sources`
 
 Optional:
@@ -60,20 +60,20 @@ Optional:
 
 Optional:
 
-- `generator_args` (List of Object) (see [below for nested schema](#nestedatt--secret_generator--generator_args))
+- `generator_args` (Block List, Max: 1) (see [below for nested schema](#nestedblock--secret_generator--generator_args))
 - `type` (String)
 
-<a id="nestedatt--secret_generator--generator_args"></a>
+<a id="nestedblock--secret_generator--generator_args"></a>
 ### Nested Schema for `secret_generator.generator_args`
 
 Optional:
 
 - `behavior` (String)
-- `kv_pair_sources` (List of Object) (see [below for nested schema](#nestedobjatt--secret_generator--generator_args--kv_pair_sources))
+- `kv_pair_sources` (Block List, Max: 1) (see [below for nested schema](#nestedblock--secret_generator--generator_args--kv_pair_sources))
 - `name` (String)
 - `namespace` (String)
 
-<a id="nestedobjatt--secret_generator--generator_args--kv_pair_sources"></a>
+<a id="nestedblock--secret_generator--generator_args--kv_pair_sources"></a>
 ### Nested Schema for `secret_generator.generator_args.kv_pair_sources`
 
 Optional:

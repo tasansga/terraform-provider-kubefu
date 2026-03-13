@@ -18,8 +18,8 @@ ExternalSecret is the Schema for the external-secrets API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) ExternalSecretSpec defines the desired state of ExternalSecret. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) ExternalSecretSpec defines the desired state of ExternalSecret. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -36,200 +36,234 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `data` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data))
-- `data_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data_from))
-- `refresh_interval` (String)
-- `refresh_policy` (String)
-- `secret_store_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_store_ref))
-- `target` (List of Object) (see [below for nested schema](#nestedobjatt--spec--target))
+- `data` (Block List) Data defines the connection between the Kubernetes Secret keys and the Provider data (see [below for nested schema](#nestedblock--spec--data))
+- `data_from` (Block List) DataFrom is used to fetch all properties from a specific Provider data
+If multiple entries are specified, the Secret keys are merged in the specified order (see [below for nested schema](#nestedblock--spec--data_from))
+- `refresh_interval` (String) RefreshInterval is the amount of time before the values are read again from the SecretStore provider,
+specified as Golang Duration strings.
+Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h"
+Example values: "1h", "2h30m", "10s"
+May be set to zero to fetch and create it once. Defaults to 1h.
+- `refresh_policy` (String) RefreshPolicy determines how the ExternalSecret should be refreshed:
+- CreatedOnce: Creates the Secret only if it does not exist and does not update it thereafter
+- Periodic: Synchronizes the Secret from the external source at regular intervals specified by refreshInterval.
+  No periodic updates occur if refreshInterval is 0.
+- OnChange: Only synchronizes the Secret when the ExternalSecret's metadata or specification changes
+- `secret_store_ref` (Block List, Max: 1) SecretStoreRef defines which SecretStore to fetch the ExternalSecret data. (see [below for nested schema](#nestedblock--spec--secret_store_ref))
+- `target` (Block List, Max: 1) ExternalSecretTarget defines the Kubernetes Secret to be created
+There can be only one target per ExternalSecret. (see [below for nested schema](#nestedblock--spec--target))
 
-<a id="nestedobjatt--spec--data"></a>
+<a id="nestedblock--spec--data"></a>
 ### Nested Schema for `spec.data`
 
 Optional:
 
-- `remote_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data--remote_ref))
-- `secret_key` (String)
-- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data--source_ref))
+- `remote_ref` (Block List, Max: 1) RemoteRef points to the remote secret and defines
+which secret (version/property/..) to fetch. (see [below for nested schema](#nestedblock--spec--data--remote_ref))
+- `secret_key` (String) The key in the Kubernetes Secret to store the value.
+- `source_ref` (Block List, Max: 1) SourceRef allows you to override the source
+from which the value will be pulled. (see [below for nested schema](#nestedblock--spec--data--source_ref))
 
-<a id="nestedobjatt--spec--data--remote_ref"></a>
+<a id="nestedblock--spec--data--remote_ref"></a>
 ### Nested Schema for `spec.data.remote_ref`
 
 Optional:
 
-- `conversion_strategy` (String)
-- `decoding_strategy` (String)
-- `key` (String)
-- `metadata_policy` (String)
-- `property` (String)
-- `version` (String)
+- `conversion_strategy` (String) Used to define a conversion Strategy
+- `decoding_strategy` (String) Used to define a decoding Strategy
+- `key` (String) Key is the key used in the Provider, mandatory
+- `metadata_policy` (String) Policy for fetching tags/labels from provider secrets, possible options are Fetch, None. Defaults to None
+- `property` (String) Used to select a specific property of the Provider value (if a map), if supported
+- `version` (String) Used to select a specific version of the Provider value, if supported
 
 
-<a id="nestedobjatt--spec--data--source_ref"></a>
+<a id="nestedblock--spec--data--source_ref"></a>
 ### Nested Schema for `spec.data.source_ref`
 
 Optional:
 
-- `generator_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data--source_ref--generator_ref))
-- `store_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data--source_ref--store_ref))
+- `generator_ref` (Block List, Max: 1) GeneratorRef points to a generator custom resource.
 
-<a id="nestedobjatt--spec--data--source_ref--generator_ref"></a>
+Deprecated: The generatorRef is not implemented in .data[].
+this will be removed with v1. (see [below for nested schema](#nestedblock--spec--data--source_ref--generator_ref))
+- `store_ref` (Block List, Max: 1) SecretStoreRef defines which SecretStore to fetch the ExternalSecret data. (see [below for nested schema](#nestedblock--spec--data--source_ref--store_ref))
+
+<a id="nestedblock--spec--data--source_ref--generator_ref"></a>
 ### Nested Schema for `spec.data.source_ref.generator_ref`
 
 Optional:
 
-- `api_version` (String)
-- `kind` (String)
-- `name` (String)
+- `api_version` (String) Specify the apiVersion of the generator resource
+- `kind` (String) Specify the Kind of the generator resource
+- `name` (String) Specify the name of the generator resource
 
 
-<a id="nestedobjatt--spec--data--source_ref--store_ref"></a>
+<a id="nestedblock--spec--data--source_ref--store_ref"></a>
 ### Nested Schema for `spec.data.source_ref.store_ref`
 
 Optional:
 
-- `kind` (String)
-- `name` (String)
+- `kind` (String) Kind of the SecretStore resource (SecretStore or ClusterSecretStore)
+Defaults to `SecretStore`
+- `name` (String) Name of the SecretStore resource
 
 
 
 
-<a id="nestedobjatt--spec--data_from"></a>
+<a id="nestedblock--spec--data_from"></a>
 ### Nested Schema for `spec.data_from`
 
 Optional:
 
-- `extract` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data_from--extract))
-- `find` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data_from--find))
-- `rewrite` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data_from--rewrite))
-- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data_from--source_ref))
+- `extract` (Block List, Max: 1) Used to extract multiple key/value pairs from one secret
+Note: Extract does not support sourceRef.Generator or sourceRef.GeneratorRef. (see [below for nested schema](#nestedblock--spec--data_from--extract))
+- `find` (Block List, Max: 1) Used to find secrets based on tags or regular expressions
+Note: Find does not support sourceRef.Generator or sourceRef.GeneratorRef. (see [below for nested schema](#nestedblock--spec--data_from--find))
+- `rewrite` (Block List) Used to rewrite secret Keys after getting them from the secret Provider
+Multiple Rewrite operations can be provided. They are applied in a layered order (first to last) (see [below for nested schema](#nestedblock--spec--data_from--rewrite))
+- `source_ref` (Block List, Max: 1) SourceRef points to a store or generator
+which contains secret values ready to use.
+Use this in combination with Extract or Find pull values out of
+a specific SecretStore.
+When sourceRef points to a generator Extract or Find is not supported.
+The generator returns a static map of values (see [below for nested schema](#nestedblock--spec--data_from--source_ref))
 
-<a id="nestedobjatt--spec--data_from--extract"></a>
+<a id="nestedblock--spec--data_from--extract"></a>
 ### Nested Schema for `spec.data_from.extract`
 
 Optional:
 
-- `conversion_strategy` (String)
-- `decoding_strategy` (String)
-- `key` (String)
-- `metadata_policy` (String)
-- `property` (String)
-- `version` (String)
+- `conversion_strategy` (String) Used to define a conversion Strategy
+- `decoding_strategy` (String) Used to define a decoding Strategy
+- `key` (String) Key is the key used in the Provider, mandatory
+- `metadata_policy` (String) Policy for fetching tags/labels from provider secrets, possible options are Fetch, None. Defaults to None
+- `property` (String) Used to select a specific property of the Provider value (if a map), if supported
+- `version` (String) Used to select a specific version of the Provider value, if supported
 
 
-<a id="nestedobjatt--spec--data_from--find"></a>
+<a id="nestedblock--spec--data_from--find"></a>
 ### Nested Schema for `spec.data_from.find`
 
 Optional:
 
-- `conversion_strategy` (String)
-- `decoding_strategy` (String)
-- `name` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data_from--find--name))
-- `path` (String)
-- `tags` (Map of String)
+- `conversion_strategy` (String) Used to define a conversion Strategy
+- `decoding_strategy` (String) Used to define a decoding Strategy
+- `name` (Block List, Max: 1) Finds secrets based on the name. (see [below for nested schema](#nestedblock--spec--data_from--find--name))
+- `path` (String) A root path to start the find operations.
+- `tags` (Map of String) Find secrets based on tags.
 
-<a id="nestedobjatt--spec--data_from--find--name"></a>
+<a id="nestedblock--spec--data_from--find--name"></a>
 ### Nested Schema for `spec.data_from.find.name`
 
 Optional:
 
-- `regexp` (String)
+- `regexp` (String) Finds secrets base
 
 
 
-<a id="nestedobjatt--spec--data_from--rewrite"></a>
+<a id="nestedblock--spec--data_from--rewrite"></a>
 ### Nested Schema for `spec.data_from.rewrite`
 
 Optional:
 
-- `regexp` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data_from--rewrite--regexp))
-- `transform` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data_from--rewrite--transform))
+- `regexp` (Block List, Max: 1) Used to rewrite with regular expressions.
+The resulting key will be the output of a regexp.ReplaceAll operation. (see [below for nested schema](#nestedblock--spec--data_from--rewrite--regexp))
+- `transform` (Block List, Max: 1) Used to apply string transformation on the secrets.
+The resulting key will be the output of the template applied by the operation. (see [below for nested schema](#nestedblock--spec--data_from--rewrite--transform))
 
-<a id="nestedobjatt--spec--data_from--rewrite--regexp"></a>
+<a id="nestedblock--spec--data_from--rewrite--regexp"></a>
 ### Nested Schema for `spec.data_from.rewrite.regexp`
 
 Optional:
 
-- `source` (String)
-- `target` (String)
+- `source` (String) Used to define the regular expression of a re.Compiler.
+- `target` (String) Used to define the target pattern of a ReplaceAll operation.
 
 
-<a id="nestedobjatt--spec--data_from--rewrite--transform"></a>
+<a id="nestedblock--spec--data_from--rewrite--transform"></a>
 ### Nested Schema for `spec.data_from.rewrite.transform`
 
 Optional:
 
-- `template` (String)
+- `template` (String) Used to define the template to apply on the secret name.
+`.value ` will specify the secret name in the template.
 
 
 
-<a id="nestedobjatt--spec--data_from--source_ref"></a>
+<a id="nestedblock--spec--data_from--source_ref"></a>
 ### Nested Schema for `spec.data_from.source_ref`
 
 Optional:
 
-- `generator_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data_from--source_ref--generator_ref))
-- `store_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--data_from--source_ref--store_ref))
+- `generator_ref` (Block List, Max: 1) GeneratorRef points to a generator custom resource. (see [below for nested schema](#nestedblock--spec--data_from--source_ref--generator_ref))
+- `store_ref` (Block List, Max: 1) SecretStoreRef defines which SecretStore to fetch the ExternalSecret data. (see [below for nested schema](#nestedblock--spec--data_from--source_ref--store_ref))
 
-<a id="nestedobjatt--spec--data_from--source_ref--generator_ref"></a>
+<a id="nestedblock--spec--data_from--source_ref--generator_ref"></a>
 ### Nested Schema for `spec.data_from.source_ref.generator_ref`
 
 Optional:
 
-- `api_version` (String)
-- `kind` (String)
-- `name` (String)
+- `api_version` (String) Specify the apiVersion of the generator resource
+- `kind` (String) Specify the Kind of the generator resource
+- `name` (String) Specify the name of the generator resource
 
 
-<a id="nestedobjatt--spec--data_from--source_ref--store_ref"></a>
+<a id="nestedblock--spec--data_from--source_ref--store_ref"></a>
 ### Nested Schema for `spec.data_from.source_ref.store_ref`
 
 Optional:
 
-- `kind` (String)
-- `name` (String)
+- `kind` (String) Kind of the SecretStore resource (SecretStore or ClusterSecretStore)
+Defaults to `SecretStore`
+- `name` (String) Name of the SecretStore resource
 
 
 
 
-<a id="nestedobjatt--spec--secret_store_ref"></a>
+<a id="nestedblock--spec--secret_store_ref"></a>
 ### Nested Schema for `spec.secret_store_ref`
 
 Optional:
 
-- `kind` (String)
-- `name` (String)
+- `kind` (String) Kind of the SecretStore resource (SecretStore or ClusterSecretStore)
+Defaults to `SecretStore`
+- `name` (String) Name of the SecretStore resource
 
 
-<a id="nestedobjatt--spec--target"></a>
+<a id="nestedblock--spec--target"></a>
 ### Nested Schema for `spec.target`
 
 Optional:
 
-- `creation_policy` (String)
-- `deletion_policy` (String)
-- `immutable` (Boolean)
-- `name` (String)
-- `template` (List of Object) (see [below for nested schema](#nestedobjatt--spec--target--template))
+- `creation_policy` (String) CreationPolicy defines rules on how to create the resulting Secret.
+Defaults to "Owner"
+- `deletion_policy` (String) DeletionPolicy defines rules on how to delete the resulting Secret.
+Defaults to "Retain"
+- `immutable` (Boolean) Immutable defines if the final secret will be immutable
+- `name` (String) The name of the Secret resource to be managed.
+Defaults to the .metadata.name of the ExternalSecret resource
+- `template` (Block List, Max: 1) Template defines a blueprint for the created Secret resource. (see [below for nested schema](#nestedblock--spec--target--template))
 
-<a id="nestedobjatt--spec--target--template"></a>
+<a id="nestedblock--spec--target--template"></a>
 ### Nested Schema for `spec.target.template`
 
 Optional:
 
 - `data` (Map of String)
-- `engine_version` (String)
+- `engine_version` (String) EngineVersion specifies the template engine version
+that should be used to compile/execute the
+template specified in .data and .templateFrom[].
 - `merge_policy` (String)
-- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--target--template--metadata))
-- `template_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--target--template--template_from))
+- `metadata` (Block List, Max: 1) ExternalSecretTemplateMetadata defines metadata fields for the Secret blueprint. (see [below for nested schema](#nestedblock--spec--target--template--metadata))
+- `template_from` (Block List) (see [below for nested schema](#nestedblock--spec--target--template--template_from))
 - `type` (String)
 
-<a id="nestedobjatt--spec--target--template--metadata"></a>
+<a id="nestedblock--spec--target--template--metadata"></a>
 ### Nested Schema for `spec.target.template.metadata`
 
 Optional:
@@ -238,48 +272,48 @@ Optional:
 - `labels` (Map of String)
 
 
-<a id="nestedobjatt--spec--target--template--template_from"></a>
+<a id="nestedblock--spec--target--template--template_from"></a>
 ### Nested Schema for `spec.target.template.template_from`
 
 Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--target--template--template_from--config_map))
+- `config_map` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--target--template--template_from--config_map))
 - `literal` (String)
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--target--template--template_from--secret))
+- `secret` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--target--template--template_from--secret))
 - `target` (String)
 
-<a id="nestedobjatt--spec--target--template--template_from--config_map"></a>
+<a id="nestedblock--spec--target--template--template_from--config_map"></a>
 ### Nested Schema for `spec.target.template.template_from.config_map`
 
 Optional:
 
-- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--target--template--template_from--config_map--items))
-- `name` (String)
+- `items` (Block List) A list of keys in the ConfigMap/Secret to use as templates for Secret data (see [below for nested schema](#nestedblock--spec--target--template--template_from--config_map--items))
+- `name` (String) The name of the ConfigMap/Secret resource
 
-<a id="nestedobjatt--spec--target--template--template_from--config_map--items"></a>
+<a id="nestedblock--spec--target--template--template_from--config_map--items"></a>
 ### Nested Schema for `spec.target.template.template_from.config_map.items`
 
 Optional:
 
-- `key` (String)
+- `key` (String) A key in the ConfigMap/Secret
 - `template_as` (String)
 
 
 
-<a id="nestedobjatt--spec--target--template--template_from--secret"></a>
+<a id="nestedblock--spec--target--template--template_from--secret"></a>
 ### Nested Schema for `spec.target.template.template_from.secret`
 
 Optional:
 
-- `items` (List of Object) (see [below for nested schema](#nestedobjatt--spec--target--template--template_from--secret--items))
-- `name` (String)
+- `items` (Block List) A list of keys in the ConfigMap/Secret to use as templates for Secret data (see [below for nested schema](#nestedblock--spec--target--template--template_from--secret--items))
+- `name` (String) The name of the ConfigMap/Secret resource
 
-<a id="nestedobjatt--spec--target--template--template_from--secret--items"></a>
+<a id="nestedblock--spec--target--template--template_from--secret--items"></a>
 ### Nested Schema for `spec.target.template.template_from.secret.items`
 
 Optional:
 
-- `key` (String)
+- `key` (String) A key in the ConfigMap/Secret
 - `template_as` (String)
 
 
@@ -288,25 +322,30 @@ Optional:
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `binding` (List of Object) (see [below for nested schema](#nestedobjatt--status--binding))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `refresh_time` (String)
-- `synced_resource_version` (String)
+- `binding` (Block List, Max: 1) Binding represents a servicebinding.io Provisioned Service reference to the secret (see [below for nested schema](#nestedblock--status--binding))
+- `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
+- `refresh_time` (String) refreshTime is the time and date the external secret was fetched and
+the target secret updated
+- `synced_resource_version` (String) SyncedResourceVersion keeps track of the last synced version
 
-<a id="nestedobjatt--status--binding"></a>
+<a id="nestedblock--status--binding"></a>
 ### Nested Schema for `status.binding`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:

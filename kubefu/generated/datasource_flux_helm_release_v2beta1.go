@@ -384,7 +384,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta1() *schema.Resource {
 														Computed:    true,
 													},
 													"value": {
-														Type:        schema.TypeString,
+														Type:        schema.TypeMap,
 														Description: "",
 														Optional:    true,
 														Required:    false,
@@ -459,7 +459,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta1() *schema.Resource {
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
-										Elem: &schema.Schema{Type: schema.TypeString},
+										Elem: &schema.Schema{Type: schema.TypeMap},
 									},
 								}},
 							},
@@ -719,7 +719,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta1() *schema.Resource {
 						}},
 					},
 					"values": {
-						Type:        schema.TypeString,
+						Type:        schema.TypeMap,
 						Description: "Values holds the values for this Helm release.",
 						Optional:    true,
 						Required:    false,

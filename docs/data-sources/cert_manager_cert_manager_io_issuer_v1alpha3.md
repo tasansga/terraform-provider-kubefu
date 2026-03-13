@@ -18,8 +18,8 @@ An Issuer represents a certificate issuing authority which can be referenced as 
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) Desired state of the Issuer resource. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) Status of the Issuer. This is set and managed automatically. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) Desired state of the Issuer resource. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) Status of the Issuer. This is set and managed automatically. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,768 +29,768 @@ An Issuer represents a certificate issuing authority which can be referenced as 
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `acme` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme))
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ca))
-- `self_signed` (List of Object) (see [below for nested schema](#nestedobjatt--spec--self_signed))
-- `vault` (List of Object) (see [below for nested schema](#nestedobjatt--spec--vault))
-- `venafi` (List of Object) (see [below for nested schema](#nestedobjatt--spec--venafi))
+- `acme` (Block List, Max: 1) ACME configures this issuer to communicate with a RFC8555 (ACME) server to obtain signed x509 certificates. (see [below for nested schema](#nestedblock--spec--acme))
+- `ca` (Block List, Max: 1) CA configures this issuer to sign certificates using a signing CA keypair stored in a Secret resource. This is used to build internal PKIs that are managed by cert-manager. (see [below for nested schema](#nestedblock--spec--ca))
+- `self_signed` (Block List, Max: 1) SelfSigned configures this issuer to 'self sign' certificates using the private key used to create the CertificateRequest object. (see [below for nested schema](#nestedblock--spec--self_signed))
+- `vault` (Block List, Max: 1) Vault configures this issuer to sign certificates using a HashiCorp Vault PKI backend. (see [below for nested schema](#nestedblock--spec--vault))
+- `venafi` (Block List, Max: 1) Venafi configures this issuer to sign certificates using a Venafi TPP or Venafi Cloud policy zone. (see [below for nested schema](#nestedblock--spec--venafi))
 
-<a id="nestedobjatt--spec--acme"></a>
+<a id="nestedblock--spec--acme"></a>
 ### Nested Schema for `spec.acme`
 
 Optional:
 
-- `email` (String)
-- `external_account_binding` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--external_account_binding))
-- `private_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--private_key_secret_ref))
-- `server` (String)
-- `skip_tls_verify` (Boolean)
-- `solvers` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers))
+- `email` (String) Email is the email address to be associated with the ACME account. This field is optional, but it is strongly recommended to be set. It will be used to contact you in case of issues with your account or certificates, including expiry notification emails. This field may be updated after the account is initially registered.
+- `external_account_binding` (Block List, Max: 1) ExternalAccountBinding is a reference to a CA external account of the ACME server. If set, upon registration cert-manager will attempt to associate the given external account credentials with the registered ACME account. (see [below for nested schema](#nestedblock--spec--acme--external_account_binding))
+- `private_key_secret_ref` (Block List, Max: 1) PrivateKey is the name of a Kubernetes Secret resource that will be used to store the automatically generated ACME account private key. Optionally, a `key` may be specified to select a specific entry within the named Secret resource. If `key` is not specified, a default of `tls.key` will be used. (see [below for nested schema](#nestedblock--spec--acme--private_key_secret_ref))
+- `server` (String) Server is the URL used to access the ACME server's 'directory' endpoint. For example, for Let's Encrypt's staging endpoint, you would use: "https://acme-staging-v02.api.letsencrypt.org/directory". Only ACME v2 endpoints (i.e. RFC 8555) are supported.
+- `skip_tls_verify` (Boolean) Enables or disables validation of the ACME server TLS certificate. If true, requests to the ACME server will not have their TLS certificate validated (i.e. insecure connections will be allowed). Only enable this option in development environments. The cert-manager system installed roots will be used to verify connections to the ACME server if this is false. Defaults to false.
+- `solvers` (Block List) Solvers is a list of challenge solvers that will be used to solve ACME challenges for the matching domains. Solver configurations must be provided in order to obtain certificates from an ACME server. For more information, see: https://cert-manager.io/docs/configuration/acme/ (see [below for nested schema](#nestedblock--spec--acme--solvers))
 
-<a id="nestedobjatt--spec--acme--external_account_binding"></a>
+<a id="nestedblock--spec--acme--external_account_binding"></a>
 ### Nested Schema for `spec.acme.external_account_binding`
 
 Optional:
 
-- `key_algorithm` (String)
-- `key_id` (String)
-- `key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--external_account_binding--key_secret_ref))
+- `key_algorithm` (String) keyAlgorithm is the MAC key algorithm that the key is used for. Valid values are "HS256", "HS384" and "HS512".
+- `key_id` (String) keyID is the ID of the CA key that the External Account is bound to.
+- `key_secret_ref` (Block List, Max: 1) keySecretRef is a Secret Key Selector referencing a data item in a Kubernetes Secret which holds the symmetric MAC key of the External Account Binding. The `key` is the index string that is paired with the key data in the Secret and should not be confused with the key data itself, or indeed with the External Account Binding keyID above. The secret key stored in the Secret **must** be un-padded, base64 URL encoded data. (see [below for nested schema](#nestedblock--spec--acme--external_account_binding--key_secret_ref))
 
-<a id="nestedobjatt--spec--acme--external_account_binding--key_secret_ref"></a>
+<a id="nestedblock--spec--acme--external_account_binding--key_secret_ref"></a>
 ### Nested Schema for `spec.acme.external_account_binding.key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--acme--private_key_secret_ref"></a>
+<a id="nestedblock--spec--acme--private_key_secret_ref"></a>
 ### Nested Schema for `spec.acme.private_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
-<a id="nestedobjatt--spec--acme--solvers"></a>
+<a id="nestedblock--spec--acme--solvers"></a>
 ### Nested Schema for `spec.acme.solvers`
 
 Optional:
 
-- `dns01` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01))
-- `http01` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01))
-- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--selector))
+- `dns01` (Block List, Max: 1) Configures cert-manager to attempt to complete authorizations by performing the DNS01 challenge flow. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01))
+- `http01` (Block List, Max: 1) Configures cert-manager to attempt to complete authorizations by performing the HTTP01 challenge flow. It is not possible to obtain certificates for wildcard domain names (e.g. `*.example.com`) using the HTTP01 challenge mechanism. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01))
+- `selector` (Block List, Max: 1) Selector selects a set of DNSNames on the Certificate resource that should be solved using this challenge solver. If not specified, the solver will be treated as the 'default' solver with the lowest priority, i.e. if any other solver has a more specific match, it will be used instead. (see [below for nested schema](#nestedblock--spec--acme--solvers--selector))
 
-<a id="nestedobjatt--spec--acme--solvers--dns01"></a>
+<a id="nestedblock--spec--acme--solvers--dns01"></a>
 ### Nested Schema for `spec.acme.solvers.dns01`
 
 Optional:
 
-- `acmedns` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--acmedns))
-- `akamai` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--akamai))
-- `azuredns` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--azuredns))
-- `clouddns` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--clouddns))
-- `cloudflare` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--cloudflare))
-- `cname_strategy` (String)
-- `digitalocean` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--digitalocean))
-- `rfc2136` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--rfc2136))
-- `route53` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--route53))
-- `webhook` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--webhook))
+- `acmedns` (Block List, Max: 1) Use the 'ACME DNS' (https://github.com/joohoi/acme-dns) API to manage DNS01 challenge records. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--acmedns))
+- `akamai` (Block List, Max: 1) Use the Akamai DNS zone management API to manage DNS01 challenge records. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--akamai))
+- `azuredns` (Block List, Max: 1) Use the Microsoft Azure DNS API to manage DNS01 challenge records. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--azuredns))
+- `clouddns` (Block List, Max: 1) Use the Google Cloud DNS API to manage DNS01 challenge records. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--clouddns))
+- `cloudflare` (Block List, Max: 1) Use the Cloudflare API to manage DNS01 challenge records. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--cloudflare))
+- `cname_strategy` (String) CNAMEStrategy configures how the DNS01 provider should handle CNAME records when found in DNS zones.
+- `digitalocean` (Block List, Max: 1) Use the DigitalOcean DNS API to manage DNS01 challenge records. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--digitalocean))
+- `rfc2136` (Block List, Max: 1) Use RFC2136 ("Dynamic Updates in the Domain Name System") (https://datatracker.ietf.org/doc/rfc2136/) to manage DNS01 challenge records. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--rfc2136))
+- `route53` (Block List, Max: 1) Use the AWS Route53 API to manage DNS01 challenge records. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--route53))
+- `webhook` (Block List, Max: 1) Configure an external webhook based DNS01 challenge solver to manage DNS01 challenge records. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--webhook))
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--acmedns"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--acmedns"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.acmedns`
 
 Optional:
 
-- `account_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--acmedns--account_secret_ref))
+- `account_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource. In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--acmedns--account_secret_ref))
 - `host` (String)
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--acmedns--account_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--acmedns--account_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.acmedns.account_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--akamai"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--akamai"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.akamai`
 
 Optional:
 
-- `access_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--akamai--access_token_secret_ref))
-- `client_secret_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--akamai--client_secret_secret_ref))
-- `client_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--akamai--client_token_secret_ref))
+- `access_token_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource. In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--akamai--access_token_secret_ref))
+- `client_secret_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource. In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--akamai--client_secret_secret_ref))
+- `client_token_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource. In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--akamai--client_token_secret_ref))
 - `service_consumer_domain` (String)
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--akamai--access_token_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--akamai--access_token_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.akamai.access_token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--akamai--client_secret_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--akamai--client_secret_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.akamai.client_secret_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--akamai--client_token_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--akamai--client_token_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.akamai.client_token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--azuredns"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--azuredns"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.azuredns`
 
 Optional:
 
-- `client_id` (String)
-- `client_secret_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--azuredns--client_secret_secret_ref))
+- `client_id` (String) if both this and ClientSecret are left unset MSI will be used
+- `client_secret_secret_ref` (Block List, Max: 1) if both this and ClientID are left unset MSI will be used (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--azuredns--client_secret_secret_ref))
 - `environment` (String)
 - `hosted_zone_name` (String)
 - `resource_group_name` (String)
 - `subscription_id` (String)
-- `tenant_id` (String)
+- `tenant_id` (String) when specifying ClientID and ClientSecret then this field is also needed
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--azuredns--client_secret_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--azuredns--client_secret_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.azuredns.client_secret_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--clouddns"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--clouddns"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.clouddns`
 
 Optional:
 
-- `hosted_zone_name` (String)
+- `hosted_zone_name` (String) HostedZoneName is an optional field that tells cert-manager in which Cloud DNS zone the challenge record has to be created. If left empty cert-manager will automatically choose a zone.
 - `project` (String)
-- `service_account_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--clouddns--service_account_secret_ref))
+- `service_account_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource. In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--clouddns--service_account_secret_ref))
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--clouddns--service_account_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--clouddns--service_account_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.clouddns.service_account_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--cloudflare"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--cloudflare"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.cloudflare`
 
 Optional:
 
-- `api_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--cloudflare--api_key_secret_ref))
-- `api_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--cloudflare--api_token_secret_ref))
-- `email` (String)
+- `api_key_secret_ref` (Block List, Max: 1) API key to use to authenticate with Cloudflare. Note: using an API token to authenticate is now the recommended method as it allows greater control of permissions. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--cloudflare--api_key_secret_ref))
+- `api_token_secret_ref` (Block List, Max: 1) API token used to authenticate with Cloudflare. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--cloudflare--api_token_secret_ref))
+- `email` (String) Email of the account, only required when using API key based authentication.
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--cloudflare--api_key_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--cloudflare--api_key_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.cloudflare.api_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--cloudflare--api_token_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--cloudflare--api_token_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.cloudflare.api_token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--digitalocean"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--digitalocean"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.digitalocean`
 
 Optional:
 
-- `token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--digitalocean--token_secret_ref))
+- `token_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource. In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--digitalocean--token_secret_ref))
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--digitalocean--token_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--digitalocean--token_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.digitalocean.token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--rfc2136"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--rfc2136"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.rfc2136`
 
 Optional:
 
-- `nameserver` (String)
-- `tsig_algorithm` (String)
-- `tsig_key_name` (String)
-- `tsig_secret_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--rfc2136--tsig_secret_secret_ref))
+- `nameserver` (String) The IP address or hostname of an authoritative DNS server supporting RFC2136 in the form host:port. If the host is an IPv6 address it must be enclosed in square brackets (e.g [2001:db8::1]) ; port is optional. This field is required.
+- `tsig_algorithm` (String) The TSIG Algorithm configured in the DNS supporting RFC2136. Used only when ``tsigSecretSecretRef`` and ``tsigKeyName`` are defined. Supported values are (case-insensitive): ``HMACMD5`` (default), ``HMACSHA1``, ``HMACSHA256`` or ``HMACSHA512``.
+- `tsig_key_name` (String) The TSIG Key name configured in the DNS. If ``tsigSecretSecretRef`` is defined, this field is required.
+- `tsig_secret_secret_ref` (Block List, Max: 1) The name of the secret containing the TSIG value. If ``tsigKeyName`` is defined, this field is required. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--rfc2136--tsig_secret_secret_ref))
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--rfc2136--tsig_secret_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--rfc2136--tsig_secret_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.rfc2136.tsig_secret_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--route53"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--route53"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.route53`
 
 Optional:
 
-- `access_key_id` (String)
-- `hosted_zone_id` (String)
-- `region` (String)
-- `role` (String)
-- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--dns01--route53--secret_access_key_secret_ref))
+- `access_key_id` (String) The AccessKeyID is used for authentication. If not set we fall-back to using env vars, shared credentials file or AWS Instance metadata see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
+- `hosted_zone_id` (String) If set, the provider will manage only this zone in Route53 and will not do an lookup using the route53:ListHostedZonesByName api call.
+- `region` (String) Always set the region when using AccessKeyID and SecretAccessKey
+- `role` (String) Role is a Role ARN which the Route53 provider will assume using either the explicit credentials AccessKeyID/SecretAccessKey or the inferred credentials from environment variables, shared credentials file or AWS Instance metadata
+- `secret_access_key_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication. If not set we fall-back to using env vars, shared credentials file or AWS Instance metadata https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--route53--secret_access_key_secret_ref))
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--route53--secret_access_key_secret_ref"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--route53--secret_access_key_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.route53.secret_access_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--dns01--webhook"></a>
+<a id="nestedblock--spec--acme--solvers--dns01--webhook"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.webhook`
 
 Optional:
 
-- `config` (String)
-- `group_name` (String)
-- `solver_name` (String)
+- `config` (Map of String) Additional configuration that should be passed to the webhook apiserver when challenges are processed. This can contain arbitrary JSON data. Secret values should not be specified in this stanza. If secret values are needed (e.g. credentials for a DNS service), you should use a SecretKeySelector to reference a Secret resource. For details on the schema of this field, consult the webhook provider implementation's documentation.
+- `group_name` (String) The API group name that should be used when POSTing ChallengePayload resources to the webhook apiserver. This should be the same as the GroupName specified in the webhook provider implementation.
+- `solver_name` (String) The name of the solver to use, as defined in the webhook provider implementation. This will typically be the name of the provider, e.g. 'cloudflare'.
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01"></a>
+<a id="nestedblock--spec--acme--solvers--http01"></a>
 ### Nested Schema for `spec.acme.solvers.http01`
 
 Optional:
 
-- `ingress` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress))
+- `ingress` (Block List, Max: 1) The ingress based HTTP01 challenge solver will solve challenges by creating or modifying Ingress resources in order to route requests for '/.well-known/acme-challenge/XYZ' to 'challenge solver' pods that are provisioned by cert-manager for each Challenge to be completed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress`
 
 Optional:
 
-- `class` (String)
-- `ingress_template` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--ingress_template))
-- `name` (String)
-- `pod_template` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template))
-- `service_type` (String)
+- `class` (String) The ingress class to use when creating Ingress resources to solve ACME challenges that use this challenge solver. Only one of 'class' or 'name' may be specified.
+- `ingress_template` (Block List, Max: 1) Optional ingress template used to configure the ACME challenge solver ingress used for HTTP01 challenges (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--ingress_template))
+- `name` (String) The name of the ingress resource that should have ACME challenge solving routes inserted into it in order to solve HTTP01 challenges. This is typically used in conjunction with ingress controllers like ingress-gce, which maintains a 1:1 mapping between external IPs and ingress resources.
+- `pod_template` (Block List, Max: 1) Optional pod template used to configure the ACME challenge solver pods used for HTTP01 challenges (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template))
+- `service_type` (String) Optional service type for Kubernetes solver service
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--ingress_template"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--ingress_template"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.ingress_template`
 
 Optional:
 
-- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--ingress_template--metadata))
+- `metadata` (Block List, Max: 1) ObjectMeta overrides for the ingress used to solve HTTP01 challenges. Only the 'labels' and 'annotations' fields may be set. If labels or annotations overlap with in-built values, the values here will override the in-built values. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--ingress_template--metadata))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--ingress_template--metadata"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--ingress_template--metadata"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.ingress_template.metadata`
 
 Optional:
 
-- `annotations` (Map of String)
-- `labels` (Map of String)
+- `annotations` (Map of String) Annotations that should be added to the created ACME HTTP01 solver ingress.
+- `labels` (Map of String) Labels that should be added to the created ACME HTTP01 solver ingress.
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template`
 
 Optional:
 
-- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--metadata))
-- `spec` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec))
+- `metadata` (Block List, Max: 1) ObjectMeta overrides for the pod used to solve HTTP01 challenges. Only the 'labels' and 'annotations' fields may be set. If labels or annotations overlap with in-built values, the values here will override the in-built values. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--metadata))
+- `spec` (Block List, Max: 1) PodSpec defines overrides for the HTTP01 challenge solver pod. Only the 'nodeSelector', 'affinity' and 'tolerations' fields are supported currently. All other fields will be ignored. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--metadata"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--metadata"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.metadata`
 
 Optional:
 
-- `annotations` (Map of String)
-- `labels` (Map of String)
+- `annotations` (Map of String) Annotations that should be added to the create ACME HTTP01 solver pods.
+- `labels` (Map of String) Labels that should be added to the created ACME HTTP01 solver pods.
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec`
 
 Optional:
 
-- `affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity))
-- `node_selector` (Map of String)
-- `tolerations` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--tolerations))
+- `affinity` (Block List, Max: 1) If specified, the pod's scheduling constraints (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity))
+- `node_selector` (Map of String) NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+- `tolerations` (Block List) If specified, the pod's tolerations. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--tolerations))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity`
 
 Optional:
 
-- `node_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity))
-- `pod_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity))
-- `pod_anti_affinity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity))
+- `node_affinity` (Block List, Max: 1) Describes node affinity scheduling rules for the pod. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity))
+- `pod_affinity` (Block List, Max: 1) Describes pod affinity scheduling rules (e.g. co-locate this pod in the same node, zone, etc. as some other pod(s)). (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity))
+- `pod_anti_affinity` (Block List, Max: 1) Describes pod anti-affinity scheduling rules (e.g. avoid putting this pod in the same node, zone, etc. as some other pod(s)). (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity`
 
 Optional:
 
-- `preferred_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution))
-- `required_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution))
+- `preferred_during_scheduling_ignored_during_execution` (Block List) The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node matches the corresponding matchExpressions; the node(s) with the highest sum are the most preferred. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (Block List, Max: 1) If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to an update), the system may or may not try to eventually evict the pod from its node. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution`
 
 Optional:
 
-- `preference` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference))
-- `weight` (Number)
+- `preference` (Block List, Max: 1) A node selector term, associated with the corresponding weight. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference))
+- `weight` (Number) Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_expressions))
-- `match_fields` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_fields))
+- `match_expressions` (Block List) A list of node selector requirements by node's labels. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_expressions))
+- `match_fields` (Block List) A list of node selector requirements by node's fields. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_fields))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_expressions"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_expressions"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_expressions`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+- `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_fields"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_fields"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_fields`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+- `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
 
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution`
 
 Optional:
 
-- `node_selector_terms` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms))
+- `node_selector_terms` (Block List) Required. A list of node selector terms. The terms are ORed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_expressions))
-- `match_fields` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_fields))
+- `match_expressions` (Block List) A list of node selector requirements by node's labels. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_expressions))
+- `match_fields` (Block List) A list of node selector requirements by node's fields. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_fields))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_expressions"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_expressions"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_expressions`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+- `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_fields"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_fields"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_fields`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+- `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
 
 
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity`
 
 Optional:
 
-- `preferred_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution))
-- `required_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution))
+- `preferred_during_scheduling_ignored_during_execution` (Block List) The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (Block List) If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution`
 
 Optional:
 
-- `pod_affinity_term` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term))
-- `weight` (Number)
+- `pod_affinity_term` (Block List, Max: 1) Required. A pod affinity term, associated with the corresponding weight. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term))
+- `weight` (Number) weight associated with matching the corresponding podAffinityTerm, in the range 1-100.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term`
 
 Optional:
 
-- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
-- `namespaces` (List of String)
-- `topology_key` (String)
+- `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
+- `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
 
 
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution`
 
 Optional:
 
-- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector))
-- `namespaces` (List of String)
-- `topology_key` (String)
+- `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
+- `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
 
 
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity`
 
 Optional:
 
-- `preferred_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution))
-- `required_during_scheduling_ignored_during_execution` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution))
+- `preferred_during_scheduling_ignored_during_execution` (Block List) The scheduler will prefer to schedule pods to nodes that satisfy the anti-affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling anti-affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (Block List) If the anti-affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the anti-affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution))
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution`
 
 Optional:
 
-- `pod_affinity_term` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term))
-- `weight` (Number)
+- `pod_affinity_term` (Block List, Max: 1) Required. A pod affinity term, associated with the corresponding weight. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term))
+- `weight` (Number) weight associated with matching the corresponding podAffinityTerm, in the range 1-100.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term`
 
 Optional:
 
-- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
-- `namespaces` (List of String)
-- `topology_key` (String)
+- `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
+- `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
 
 
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution`
 
 Optional:
 
-- `label_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector))
-- `namespaces` (List of String)
-- `topology_key` (String)
+- `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
+- `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
 
 
 
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--http01--ingress--pod_template--spec--tolerations"></a>
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--tolerations"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.tolerations`
 
 Optional:
 
-- `effect` (String)
-- `key` (String)
-- `operator` (String)
-- `toleration_seconds` (Number)
-- `value` (String)
+- `effect` (String) Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+- `key` (String) Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+- `operator` (String) Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a pod can tolerate all taints of a particular category.
+- `toleration_seconds` (Number) TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system.
+- `value` (String) Value is the taint value the toleration matches to. If the operator is Exists, the value should be empty, otherwise just a regular string.
 
 
 
 
 
 
-<a id="nestedobjatt--spec--acme--solvers--selector"></a>
+<a id="nestedblock--spec--acme--solvers--selector"></a>
 ### Nested Schema for `spec.acme.solvers.selector`
 
 Optional:
 
-- `dns_names` (List of String)
-- `dns_zones` (List of String)
-- `match_labels` (Map of String)
+- `dns_names` (List of String) List of DNSNames that this solver will be used to solve. If specified and a match is found, a dnsNames selector will take precedence over a dnsZones selector. If multiple solvers match with the same dnsNames value, the solver with the most matching labels in matchLabels will be selected. If neither has more matches, the solver defined earlier in the list will be selected.
+- `dns_zones` (List of String) List of DNSZones that this solver will be used to solve. The most specific DNS zone match specified here will take precedence over other DNS zone matches, so a solver specifying sys.example.com will be selected over one specifying example.com for the domain www.sys.example.com. If multiple solvers match with the same dnsZones value, the solver with the most matching labels in matchLabels will be selected. If neither has more matches, the solver defined earlier in the list will be selected.
+- `match_labels` (Map of String) A label selector that is used to refine the set of certificate's that this challenge solver will apply to.
 
 
 
 
-<a id="nestedobjatt--spec--ca"></a>
+<a id="nestedblock--spec--ca"></a>
 ### Nested Schema for `spec.ca`
 
 Optional:
 
-- `crl_distribution_points` (List of String)
-- `secret_name` (String)
+- `crl_distribution_points` (List of String) The CRL distribution points is an X.509 v3 certificate extension which identifies the location of the CRL from which the revocation of this certificate can be checked. If not set, certificates will be issued without distribution points set.
+- `secret_name` (String) SecretName is the name of the secret used to sign Certificates issued by this Issuer.
 
 
-<a id="nestedobjatt--spec--self_signed"></a>
+<a id="nestedblock--spec--self_signed"></a>
 ### Nested Schema for `spec.self_signed`
 
 Optional:
 
-- `crl_distribution_points` (List of String)
+- `crl_distribution_points` (List of String) The CRL distribution points is an X.509 v3 certificate extension which identifies the location of the CRL from which the revocation of this certificate can be checked. If not set certificate will be issued without CDP. Values are strings.
 
 
-<a id="nestedobjatt--spec--vault"></a>
+<a id="nestedblock--spec--vault"></a>
 ### Nested Schema for `spec.vault`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--vault--auth))
-- `ca_bundle` (String)
-- `path` (String)
-- `server` (String)
+- `auth` (Block List, Max: 1) Auth configures how cert-manager authenticates with the Vault server. (see [below for nested schema](#nestedblock--spec--vault--auth))
+- `ca_bundle` (String) PEM encoded CA bundle used to validate Vault server certificate. Only used if the Server URL is using HTTPS protocol. This parameter is ignored for plain HTTP protocol connection. If not set the system root certificates are used to validate the TLS connection.
+- `path` (String) Path is the mount path of the Vault PKI backend's `sign` endpoint, e.g: "my_pki_mount/sign/my-role-name".
+- `server` (String) Server is the connection address for the Vault server, e.g: "https://vault.example.com:8200".
 
-<a id="nestedobjatt--spec--vault--auth"></a>
+<a id="nestedblock--spec--vault--auth"></a>
 ### Nested Schema for `spec.vault.auth`
 
 Optional:
 
-- `app_role` (List of Object) (see [below for nested schema](#nestedobjatt--spec--vault--auth--app_role))
-- `kubernetes` (List of Object) (see [below for nested schema](#nestedobjatt--spec--vault--auth--kubernetes))
-- `token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--vault--auth--token_secret_ref))
+- `app_role` (Block List, Max: 1) AppRole authenticates with Vault using the App Role auth mechanism, with the role and secret stored in a Kubernetes Secret resource. (see [below for nested schema](#nestedblock--spec--vault--auth--app_role))
+- `kubernetes` (Block List, Max: 1) Kubernetes authenticates with Vault by passing the ServiceAccount token stored in the named Secret resource to the Vault server. (see [below for nested schema](#nestedblock--spec--vault--auth--kubernetes))
+- `token_secret_ref` (Block List, Max: 1) TokenSecretRef authenticates with Vault by presenting a token. (see [below for nested schema](#nestedblock--spec--vault--auth--token_secret_ref))
 
-<a id="nestedobjatt--spec--vault--auth--app_role"></a>
+<a id="nestedblock--spec--vault--auth--app_role"></a>
 ### Nested Schema for `spec.vault.auth.app_role`
 
 Optional:
 
-- `path` (String)
-- `role_id` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--vault--auth--app_role--secret_ref))
+- `path` (String) Path where the App Role authentication backend is mounted in Vault, e.g: "approle"
+- `role_id` (String) RoleID configured in the App Role authentication backend when setting up the authentication backend in Vault.
+- `secret_ref` (Block List, Max: 1) Reference to a key in a Secret that contains the App Role secret used to authenticate with Vault. The `key` field must be specified and denotes which entry within the Secret resource is used as the app role secret. (see [below for nested schema](#nestedblock--spec--vault--auth--app_role--secret_ref))
 
-<a id="nestedobjatt--spec--vault--auth--app_role--secret_ref"></a>
+<a id="nestedblock--spec--vault--auth--app_role--secret_ref"></a>
 ### Nested Schema for `spec.vault.auth.app_role.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--vault--auth--kubernetes"></a>
+<a id="nestedblock--spec--vault--auth--kubernetes"></a>
 ### Nested Schema for `spec.vault.auth.kubernetes`
 
 Optional:
 
-- `mount_path` (String)
-- `role` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--vault--auth--kubernetes--secret_ref))
+- `mount_path` (String) The Vault mountPath here is the mount path to use when authenticating with Vault. For example, setting a value to `/v1/auth/foo`, will use the path `/v1/auth/foo/login` to authenticate with Vault. If unspecified, the default value "/v1/auth/kubernetes" will be used.
+- `role` (String) A required field containing the Vault Role to assume. A Role binds a Kubernetes ServiceAccount with a set of Vault policies.
+- `secret_ref` (Block List, Max: 1) The required Secret field containing a Kubernetes ServiceAccount JWT used for authenticating with Vault. Use of 'ambient credentials' is not supported. (see [below for nested schema](#nestedblock--spec--vault--auth--kubernetes--secret_ref))
 
-<a id="nestedobjatt--spec--vault--auth--kubernetes--secret_ref"></a>
+<a id="nestedblock--spec--vault--auth--kubernetes--secret_ref"></a>
 ### Nested Schema for `spec.vault.auth.kubernetes.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--vault--auth--token_secret_ref"></a>
+<a id="nestedblock--spec--vault--auth--token_secret_ref"></a>
 ### Nested Schema for `spec.vault.auth.token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
 
-<a id="nestedobjatt--spec--venafi"></a>
+<a id="nestedblock--spec--venafi"></a>
 ### Nested Schema for `spec.venafi`
 
 Optional:
 
-- `cloud` (List of Object) (see [below for nested schema](#nestedobjatt--spec--venafi--cloud))
-- `tpp` (List of Object) (see [below for nested schema](#nestedobjatt--spec--venafi--tpp))
-- `zone` (String)
+- `cloud` (Block List, Max: 1) Cloud specifies the Venafi cloud configuration settings. Only one of TPP or Cloud may be specified. (see [below for nested schema](#nestedblock--spec--venafi--cloud))
+- `tpp` (Block List, Max: 1) TPP specifies Trust Protection Platform configuration settings. Only one of TPP or Cloud may be specified. (see [below for nested schema](#nestedblock--spec--venafi--tpp))
+- `zone` (String) Zone is the Venafi Policy Zone to use for this issuer. All requests made to the Venafi platform will be restricted by the named zone policy. This field is required.
 
-<a id="nestedobjatt--spec--venafi--cloud"></a>
+<a id="nestedblock--spec--venafi--cloud"></a>
 ### Nested Schema for `spec.venafi.cloud`
 
 Optional:
 
-- `api_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--venafi--cloud--api_token_secret_ref))
-- `url` (String)
+- `api_token_secret_ref` (Block List, Max: 1) APITokenSecretRef is a secret key selector for the Venafi Cloud API token. (see [below for nested schema](#nestedblock--spec--venafi--cloud--api_token_secret_ref))
+- `url` (String) URL is the base URL for Venafi Cloud. Defaults to "https://api.venafi.cloud/v1".
 
-<a id="nestedobjatt--spec--venafi--cloud--api_token_secret_ref"></a>
+<a id="nestedblock--spec--venafi--cloud--api_token_secret_ref"></a>
 ### Nested Schema for `spec.venafi.cloud.api_token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
-<a id="nestedobjatt--spec--venafi--tpp"></a>
+<a id="nestedblock--spec--venafi--tpp"></a>
 ### Nested Schema for `spec.venafi.tpp`
 
 Optional:
 
-- `ca_bundle` (String)
-- `credentials_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--venafi--tpp--credentials_ref))
-- `url` (String)
+- `ca_bundle` (String) CABundle is a PEM encoded TLS certificate to use to verify connections to the TPP instance. If specified, system roots will not be used and the issuing CA for the TPP instance must be verifiable using the provided root. If not specified, the connection will be verified using the cert-manager system root certificates.
+- `credentials_ref` (Block List, Max: 1) CredentialsRef is a reference to a Secret containing the username and password for the TPP server. The secret must contain two keys, 'username' and 'password'. (see [below for nested schema](#nestedblock--spec--venafi--tpp--credentials_ref))
+- `url` (String) URL is the base URL for the vedsdk endpoint of the Venafi TPP instance, for example: "https://tpp.example.com/vedsdk".
 
-<a id="nestedobjatt--spec--venafi--tpp--credentials_ref"></a>
+<a id="nestedblock--spec--venafi--tpp--credentials_ref"></a>
 ### Nested Schema for `spec.venafi.tpp.credentials_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `acme` (List of Object) (see [below for nested schema](#nestedobjatt--status--acme))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `acme` (Block List, Max: 1) ACME specific status options. This field should only be set if the Issuer is configured to use an ACME server to issue certificates. (see [below for nested schema](#nestedblock--status--acme))
+- `conditions` (Block List) List of status conditions to indicate the status of a CertificateRequest. Known condition types are `Ready`. (see [below for nested schema](#nestedblock--status--conditions))
 
-<a id="nestedobjatt--status--acme"></a>
+<a id="nestedblock--status--acme"></a>
 ### Nested Schema for `status.acme`
 
 Optional:
 
-- `last_registered_email` (String)
-- `uri` (String)
+- `last_registered_email` (String) LastRegisteredEmail is the email associated with the latest registered ACME account, in order to track changes made to registered account associated with the  Issuer
+- `uri` (String) URI is the unique account identifier, which can also be used to retrieve account details from the CA
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) LastTransitionTime is the timestamp corresponding to the last status change of this condition.
+- `message` (String) Message is a human readable description of the details of the last transition, complementing reason.
+- `reason` (String) Reason is a brief machine readable explanation for the condition's last transition.
+- `status` (String) Status of the condition, one of ('True', 'False', 'Unknown').
+- `type` (String) Type of the condition, known values are ('Ready').

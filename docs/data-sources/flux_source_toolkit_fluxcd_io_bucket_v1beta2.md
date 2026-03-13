@@ -18,8 +18,8 @@ Bucket is the Schema for the buckets API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) BucketSpec specifies the required configuration to produce an Artifact for an object storage bucket. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) BucketStatus records the observed state of a Bucket. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) BucketSpec specifies the required configuration to produce an Artifact for an object storage bucket. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) BucketStatus records the observed state of a Bucket. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,80 +29,80 @@ Bucket is the Schema for the buckets API.
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `access_from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--access_from))
-- `bucket_name` (String)
-- `endpoint` (String)
-- `ignore` (String)
-- `insecure` (Boolean)
-- `interval` (String)
-- `provider_` (String)
-- `region` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
-- `suspend` (Boolean)
-- `timeout` (String)
+- `access_from` (Block List, Max: 1) AccessFrom specifies an Access Control List for allowing cross-namespace references to this object. NOTE: Not implemented, provisional as of https://github.com/fluxcd/flux2/pull/2092 (see [below for nested schema](#nestedblock--spec--access_from))
+- `bucket_name` (String) BucketName is the name of the object storage bucket.
+- `endpoint` (String) Endpoint is the object storage address the BucketName is located at.
+- `ignore` (String) Ignore overrides the set of excluded patterns in the .sourceignore format (which is the same as .gitignore). If not provided, a default will be used, consult the documentation for your version to find out what those are.
+- `insecure` (Boolean) Insecure allows connecting to a non-TLS HTTP Endpoint.
+- `interval` (String) Interval at which to check the Endpoint for updates.
+- `provider_` (String) Provider of the object storage bucket. Defaults to 'generic', which expects an S3 (API) compatible object storage.
+- `region` (String) Region of the Endpoint where the BucketName is located in.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing authentication credentials for the Bucket. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `suspend` (Boolean) Suspend tells the controller to suspend the reconciliation of this Bucket.
+- `timeout` (String) Timeout for fetch operations, defaults to 60s.
 
-<a id="nestedobjatt--spec--access_from"></a>
+<a id="nestedblock--spec--access_from"></a>
 ### Nested Schema for `spec.access_from`
 
 Optional:
 
-- `namespace_selectors` (List of Object) (see [below for nested schema](#nestedobjatt--spec--access_from--namespace_selectors))
+- `namespace_selectors` (Block List) NamespaceSelectors is the list of namespace selectors to which this ACL applies. Items in this list are evaluated using a logical OR operation. (see [below for nested schema](#nestedblock--spec--access_from--namespace_selectors))
 
-<a id="nestedobjatt--spec--access_from--namespace_selectors"></a>
+<a id="nestedblock--spec--access_from--namespace_selectors"></a>
 ### Nested Schema for `spec.access_from.namespace_selectors`
 
 Optional:
 
-- `match_labels` (Map of String)
+- `match_labels` (Map of String) MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 
 
 
-<a id="nestedobjatt--spec--secret_ref"></a>
+<a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_handled_reconcile_at` (String)
-- `observed_generation` (Number)
-- `url` (String)
+- `artifact` (Block List, Max: 1) Artifact represents the last successful Bucket reconciliation. (see [below for nested schema](#nestedblock--status--artifact))
+- `conditions` (Block List) Conditions holds the conditions for the Bucket. (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.
+- `observed_generation` (Number) ObservedGeneration is the last observed generation of the Bucket object.
+- `url` (String) URL is the dynamic fetch link for the latest Artifact. It is provided on a "best effort" basis, and using the precise BucketStatus.Artifact data is recommended.
 
-<a id="nestedobjatt--status--artifact"></a>
+<a id="nestedblock--status--artifact"></a>
 ### Nested Schema for `status.artifact`
 
 Optional:
 
-- `checksum` (String)
-- `last_update_time` (String)
-- `path` (String)
-- `revision` (String)
-- `size` (Number)
-- `url` (String)
+- `checksum` (String) Checksum is the SHA256 checksum of the Artifact file.
+- `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the Artifact.
+- `path` (String) Path is the relative file path of the Artifact. It can be used to locate the file in the root of the Artifact storage on the local file system of the controller managing the Source.
+- `revision` (String) Revision is a human-readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
+- `size` (Number) Size is the number of bytes in the file.
+- `url` (String) URL is the HTTP address of the Artifact as exposed by the controller managing the Source. It can be used to retrieve the Artifact for consumption, e.g. by another controller applying the Artifact contents.
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)

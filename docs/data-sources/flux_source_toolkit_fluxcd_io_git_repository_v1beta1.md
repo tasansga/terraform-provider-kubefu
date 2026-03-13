@@ -18,8 +18,8 @@ GitRepository is the Schema for the gitrepositories API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) GitRepositorySpec defines the desired state of a Git repository. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) GitRepositoryStatus defines the observed state of a Git repository. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) GitRepositorySpec defines the desired state of a Git repository. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) GitRepositoryStatus defines the observed state of a Git repository. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,90 +29,90 @@ GitRepository is the Schema for the gitrepositories API
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `git_implementation` (String)
-- `ignore` (String)
-- `interval` (String)
-- `recurse_submodules` (Boolean)
-- `ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--ref))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
-- `suspend` (Boolean)
-- `timeout` (String)
-- `url` (String)
-- `verify` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify))
+- `git_implementation` (String) Determines which git client library to use. Defaults to go-git, valid values are ('go-git', 'libgit2').
+- `ignore` (String) Ignore overrides the set of excluded patterns in the .sourceignore format (which is the same as .gitignore). If not provided, a default will be used, consult the documentation for your version to find out what those are.
+- `interval` (String) The interval at which to check for repository updates.
+- `recurse_submodules` (Boolean) When enabled, after the clone is created, initializes all submodules within, using their default settings. This option is available only when using the 'go-git' GitImplementation.
+- `ref` (Block List, Max: 1) The Git reference to checkout and monitor for changes, defaults to master branch. (see [below for nested schema](#nestedblock--spec--ref))
+- `secret_ref` (Block List, Max: 1) The secret name containing the Git credentials. For HTTPS repositories the secret must contain username and password fields. For SSH repositories the secret must contain identity, identity.pub and known_hosts fields. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `suspend` (Boolean) This flag tells the controller to suspend the reconciliation of this source.
+- `timeout` (String) The timeout for remote Git operations like cloning, defaults to 20s.
+- `url` (String) The repository URL, can be a HTTP/S or SSH address.
+- `verify` (Block List, Max: 1) Verify OpenPGP signature for the Git commit HEAD points to. (see [below for nested schema](#nestedblock--spec--verify))
 
-<a id="nestedobjatt--spec--ref"></a>
+<a id="nestedblock--spec--ref"></a>
 ### Nested Schema for `spec.ref`
 
 Optional:
 
-- `branch` (String)
-- `commit` (String)
-- `semver` (String)
-- `tag` (String)
+- `branch` (String) The Git branch to checkout, defaults to master.
+- `commit` (String) The Git commit SHA to checkout, if specified Tag filters will be ignored.
+- `semver` (String) The Git tag semver expression, takes precedence over Tag.
+- `tag` (String) The Git tag to checkout, takes precedence over Branch.
 
 
-<a id="nestedobjatt--spec--secret_ref"></a>
+<a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent
 
 
-<a id="nestedobjatt--spec--verify"></a>
+<a id="nestedblock--spec--verify"></a>
 ### Nested Schema for `spec.verify`
 
 Optional:
 
-- `mode` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify--secret_ref))
+- `mode` (String) Mode describes what git object should be verified, currently ('head').
+- `secret_ref` (Block List, Max: 1) The secret name containing the public keys of all trusted Git authors. (see [below for nested schema](#nestedblock--spec--verify--secret_ref))
 
-<a id="nestedobjatt--spec--verify--secret_ref"></a>
+<a id="nestedblock--spec--verify--secret_ref"></a>
 ### Nested Schema for `spec.verify.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent
 
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_handled_reconcile_at` (String)
-- `observed_generation` (Number)
-- `url` (String)
+- `artifact` (Block List, Max: 1) Artifact represents the output of the last successful repository sync. (see [below for nested schema](#nestedblock--status--artifact))
+- `conditions` (Block List) Conditions holds the conditions for the GitRepository. (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change can be detected.
+- `observed_generation` (Number) ObservedGeneration is the last observed generation.
+- `url` (String) URL is the download link for the artifact output of the last repository sync.
 
-<a id="nestedobjatt--status--artifact"></a>
+<a id="nestedblock--status--artifact"></a>
 ### Nested Schema for `status.artifact`
 
 Optional:
 
-- `checksum` (String)
-- `last_update_time` (String)
-- `path` (String)
-- `revision` (String)
-- `url` (String)
+- `checksum` (String) Checksum is the SHA1 checksum of the artifact.
+- `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of this artifact.
+- `path` (String) Path is the relative file path of this artifact.
+- `revision` (String) Revision is a human readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm index timestamp, a Helm chart version, etc.
+- `url` (String) URL is the HTTP address of this artifact.
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)

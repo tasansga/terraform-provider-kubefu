@@ -26,7 +26,7 @@ ReferenceGrant identifies kinds of resources in other namespaces that are truste
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) Spec defines the desired state of ReferenceGrant. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Max: 1) Spec defines the desired state of ReferenceGrant. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -36,29 +36,39 @@ ReferenceGrant identifies kinds of resources in other namespaces that are truste
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `from` (List of Object) (see [below for nested schema](#nestedobjatt--spec--from))
-- `to` (List of Object) (see [below for nested schema](#nestedobjatt--spec--to))
+- `from` (Block List) From describes the trusted namespaces and kinds that can reference the resources described in "To". Each entry in this list MUST be considered to be an additional place that references can be valid from, or to put this another way, entries MUST be combined using OR.
+ Support: Core (see [below for nested schema](#nestedblock--spec--from))
+- `to` (Block List) To describes the resources that may be referenced by the resources described in "From". Each entry in this list MUST be considered to be an additional place that references can be valid to, or to put this another way, entries MUST be combined using OR.
+ Support: Core (see [below for nested schema](#nestedblock--spec--to))
 
-<a id="nestedobjatt--spec--from"></a>
+<a id="nestedblock--spec--from"></a>
 ### Nested Schema for `spec.from`
 
 Optional:
 
-- `group` (String)
-- `kind` (String)
-- `namespace` (String)
+- `group` (String) Group is the group of the referent. When empty, the Kubernetes core API group is inferred.
+ Support: Core
+- `kind` (String) Kind is the kind of the referent. Although implementations may support additional resources, the following types are part of the "Core" support level for this field.
+ When used to permit a SecretObjectReference:
+ * Gateway
+ When used to permit a BackendObjectReference:
+ * GRPCRoute * HTTPRoute * TCPRoute * TLSRoute * UDPRoute
+- `namespace` (String) Namespace is the namespace of the referent.
+ Support: Core
 
 
-<a id="nestedobjatt--spec--to"></a>
+<a id="nestedblock--spec--to"></a>
 ### Nested Schema for `spec.to`
 
 Optional:
 
-- `group` (String)
-- `kind` (String)
-- `name` (String)
+- `group` (String) Group is the group of the referent. When empty, the Kubernetes core API group is inferred.
+ Support: Core
+- `kind` (String) Kind is the kind of the referent. Although implementations may support additional resources, the following types are part of the "Core" support level for this field:
+ * Secret when used to permit a SecretObjectReference * Service when used to permit a BackendObjectReference
+- `name` (String) Name is the name of the referent. When unspecified, this policy refers to all resources of the specified Group and Kind in the local namespace.

@@ -18,8 +18,8 @@ SecretStore represents a secure external location for storing secrets, which can
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) SecretStoreSpec defines the desired state of SecretStore. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) SecretStoreStatus defines the observed state of the SecretStore. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) SecretStoreSpec defines the desired state of SecretStore. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) SecretStoreStatus defines the observed state of the SecretStore. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -36,206 +36,239 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conditions))
-- `controller` (String)
-- `provider_` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_))
-- `refresh_interval` (Number)
-- `retry_settings` (List of Object) (see [below for nested schema](#nestedobjatt--spec--retry_settings))
+- `conditions` (Block List) Used to constraint a ClusterSecretStore to specific namespaces. Relevant only to ClusterSecretStore (see [below for nested schema](#nestedblock--spec--conditions))
+- `controller` (String) Used to select the correct ESO controller (think: ingress.ingressClassName)
+The ESO controller is instantiated with a specific controller name and filters ES based on this property
+- `provider_` (Block List, Max: 1) Used to configure the provider. Only one provider may be set (see [below for nested schema](#nestedblock--spec--provider_))
+- `refresh_interval` (Number) Used to configure store refresh interval in seconds. Empty or 0 will default to the controller config.
+- `retry_settings` (Block List, Max: 1) Used to configure http retries if failed (see [below for nested schema](#nestedblock--spec--retry_settings))
 
-<a id="nestedobjatt--spec--conditions"></a>
+<a id="nestedblock--spec--conditions"></a>
 ### Nested Schema for `spec.conditions`
 
 Optional:
 
-- `namespace_regexes` (List of String)
-- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conditions--namespace_selector))
-- `namespaces` (List of String)
+- `namespace_regexes` (List of String) Choose namespaces by using regex matching
+- `namespace_selector` (Block List, Max: 1) Choose namespace using a labelSelector (see [below for nested schema](#nestedblock--spec--conditions--namespace_selector))
+- `namespaces` (List of String) Choose namespaces by name
 
-<a id="nestedobjatt--spec--conditions--namespace_selector"></a>
+<a id="nestedblock--spec--conditions--namespace_selector"></a>
 ### Nested Schema for `spec.conditions.namespace_selector`
 
 Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--conditions--namespace_selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--conditions--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--conditions--namespace_selector--match_expressions"></a>
+<a id="nestedblock--spec--conditions--namespace_selector--match_expressions"></a>
 ### Nested Schema for `spec.conditions.namespace_selector.match_expressions`
 
 Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
 
 
 
 
-<a id="nestedobjatt--spec--provider_"></a>
+<a id="nestedblock--spec--provider_"></a>
 ### Nested Schema for `spec.provider_`
 
 Optional:
 
-- `akeyless` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--akeyless))
-- `alibaba` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--alibaba))
-- `aws` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--aws))
-- `azurekv` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--azurekv))
-- `beyondtrust` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust))
-- `bitwardensecretsmanager` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--bitwardensecretsmanager))
-- `chef` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--chef))
-- `cloudrusm` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--cloudrusm))
-- `conjur` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--conjur))
-- `delinea` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--delinea))
-- `device42` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--device42))
-- `doppler` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--doppler))
-- `fake` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--fake))
-- `fortanix` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--fortanix))
-- `gcpsm` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--gcpsm))
-- `github` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--github))
-- `gitlab` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--gitlab))
-- `ibm` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--ibm))
-- `infisical` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--infisical))
-- `keepersecurity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--keepersecurity))
-- `kubernetes` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes))
-- `onboardbase` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--onboardbase))
-- `onepassword` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--onepassword))
-- `oracle` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--oracle))
-- `passbolt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--passbolt))
-- `passworddepot` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--passworddepot))
-- `previder` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--previder))
-- `pulumi` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--pulumi))
-- `scaleway` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--scaleway))
-- `secretserver` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--secretserver))
-- `senhasegura` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--senhasegura))
-- `vault` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault))
-- `webhook` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--webhook))
-- `yandexcertificatemanager` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--yandexcertificatemanager))
-- `yandexlockbox` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--yandexlockbox))
+- `akeyless` (Block List, Max: 1) Akeyless configures this store to sync secrets using Akeyless Vault provider (see [below for nested schema](#nestedblock--spec--provider_--akeyless))
+- `alibaba` (Block List, Max: 1) Alibaba configures this store to sync secrets using Alibaba Cloud provider (see [below for nested schema](#nestedblock--spec--provider_--alibaba))
+- `aws` (Block List, Max: 1) AWS configures this store to sync secrets using AWS Secret Manager provider (see [below for nested schema](#nestedblock--spec--provider_--aws))
+- `azurekv` (Block List, Max: 1) AzureKV configures this store to sync secrets using Azure Key Vault provider (see [below for nested schema](#nestedblock--spec--provider_--azurekv))
+- `beyondtrust` (Block List, Max: 1) Beyondtrust configures this store to sync secrets using Password Safe provider. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust))
+- `bitwardensecretsmanager` (Block List, Max: 1) BitwardenSecretsManager configures this store to sync secrets using BitwardenSecretsManager provider (see [below for nested schema](#nestedblock--spec--provider_--bitwardensecretsmanager))
+- `chef` (Block List, Max: 1) Chef configures this store to sync secrets with chef server (see [below for nested schema](#nestedblock--spec--provider_--chef))
+- `cloudrusm` (Block List, Max: 1) CloudruSM configures this store to sync secrets using the Cloud.ru Secret Manager provider (see [below for nested schema](#nestedblock--spec--provider_--cloudrusm))
+- `conjur` (Block List, Max: 1) Conjur configures this store to sync secrets using conjur provider (see [below for nested schema](#nestedblock--spec--provider_--conjur))
+- `delinea` (Block List, Max: 1) Delinea DevOps Secrets Vault
+https://docs.delinea.com/online-help/products/devops-secrets-vault/current (see [below for nested schema](#nestedblock--spec--provider_--delinea))
+- `device42` (Block List, Max: 1) Device42 configures this store to sync secrets using the Device42 provider (see [below for nested schema](#nestedblock--spec--provider_--device42))
+- `doppler` (Block List, Max: 1) Doppler configures this store to sync secrets using the Doppler provider (see [below for nested schema](#nestedblock--spec--provider_--doppler))
+- `fake` (Block List, Max: 1) Fake configures a store with static key/value pairs (see [below for nested schema](#nestedblock--spec--provider_--fake))
+- `fortanix` (Block List, Max: 1) Fortanix configures this store to sync secrets using the Fortanix provider (see [below for nested schema](#nestedblock--spec--provider_--fortanix))
+- `gcpsm` (Block List, Max: 1) GCPSM configures this store to sync secrets using Google Cloud Platform Secret Manager provider (see [below for nested schema](#nestedblock--spec--provider_--gcpsm))
+- `github` (Block List, Max: 1) Github configures this store to push Github Action secrets using Github API provider (see [below for nested schema](#nestedblock--spec--provider_--github))
+- `gitlab` (Block List, Max: 1) GitLab configures this store to sync secrets using GitLab Variables provider (see [below for nested schema](#nestedblock--spec--provider_--gitlab))
+- `ibm` (Block List, Max: 1) IBM configures this store to sync secrets using IBM Cloud provider (see [below for nested schema](#nestedblock--spec--provider_--ibm))
+- `infisical` (Block List, Max: 1) Infisical configures this store to sync secrets using the Infisical provider (see [below for nested schema](#nestedblock--spec--provider_--infisical))
+- `keepersecurity` (Block List, Max: 1) KeeperSecurity configures this store to sync secrets using the KeeperSecurity provider (see [below for nested schema](#nestedblock--spec--provider_--keepersecurity))
+- `kubernetes` (Block List, Max: 1) Kubernetes configures this store to sync secrets using a Kubernetes cluster provider (see [below for nested schema](#nestedblock--spec--provider_--kubernetes))
+- `onboardbase` (Block List, Max: 1) Onboardbase configures this store to sync secrets using the Onboardbase provider (see [below for nested schema](#nestedblock--spec--provider_--onboardbase))
+- `onepassword` (Block List, Max: 1) OnePassword configures this store to sync secrets using the 1Password Cloud provider (see [below for nested schema](#nestedblock--spec--provider_--onepassword))
+- `oracle` (Block List, Max: 1) Oracle configures this store to sync secrets using Oracle Vault provider (see [below for nested schema](#nestedblock--spec--provider_--oracle))
+- `passbolt` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--provider_--passbolt))
+- `passworddepot` (Block List, Max: 1) Configures a store to sync secrets with a Password Depot instance. (see [below for nested schema](#nestedblock--spec--provider_--passworddepot))
+- `previder` (Block List, Max: 1) Previder configures this store to sync secrets using the Previder provider (see [below for nested schema](#nestedblock--spec--provider_--previder))
+- `pulumi` (Block List, Max: 1) Pulumi configures this store to sync secrets using the Pulumi provider (see [below for nested schema](#nestedblock--spec--provider_--pulumi))
+- `scaleway` (Block List, Max: 1) Scaleway (see [below for nested schema](#nestedblock--spec--provider_--scaleway))
+- `secretserver` (Block List, Max: 1) SecretServer configures this store to sync secrets using SecretServer provider
+https://docs.delinea.com/online-help/secret-server/start.htm (see [below for nested schema](#nestedblock--spec--provider_--secretserver))
+- `senhasegura` (Block List, Max: 1) Senhasegura configures this store to sync secrets using senhasegura provider (see [below for nested schema](#nestedblock--spec--provider_--senhasegura))
+- `vault` (Block List, Max: 1) Vault configures this store to sync secrets using Hashi provider (see [below for nested schema](#nestedblock--spec--provider_--vault))
+- `webhook` (Block List, Max: 1) Webhook configures this store to sync secrets using a generic templated webhook (see [below for nested schema](#nestedblock--spec--provider_--webhook))
+- `yandexcertificatemanager` (Block List, Max: 1) YandexCertificateManager configures this store to sync secrets using Yandex Certificate Manager provider (see [below for nested schema](#nestedblock--spec--provider_--yandexcertificatemanager))
+- `yandexlockbox` (Block List, Max: 1) YandexLockbox configures this store to sync secrets using Yandex Lockbox provider (see [below for nested schema](#nestedblock--spec--provider_--yandexlockbox))
 
-<a id="nestedobjatt--spec--provider_--akeyless"></a>
+<a id="nestedblock--spec--provider_--akeyless"></a>
 ### Nested Schema for `spec.provider_.akeyless`
 
 Optional:
 
-- `akeyless_gw_api_url` (String)
-- `auth_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--akeyless--auth_secret_ref))
-- `ca_bundle` (String)
-- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--akeyless--ca_provider))
+- `akeyless_gw_api_url` (String) Akeyless GW API Url from which the secrets to be fetched from.
+- `auth_secret_ref` (Block List, Max: 1) Auth configures how the operator authenticates with Akeyless. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref))
+- `ca_bundle` (String) PEM/base64 encoded CA bundle used to validate Akeyless Gateway certificate. Only used
+if the AkeylessGWApiURL URL is using HTTPS protocol. If not set the system root certificates
+are used to validate the TLS connection.
+- `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate Akeyless Gateway certificate. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--ca_provider))
 
-<a id="nestedobjatt--spec--provider_--akeyless--auth_secret_ref"></a>
+<a id="nestedblock--spec--provider_--akeyless--auth_secret_ref"></a>
 ### Nested Schema for `spec.provider_.akeyless.auth_secret_ref`
 
 Optional:
 
-- `kubernetes_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--akeyless--auth_secret_ref--secret_ref))
+- `kubernetes_auth` (Block List, Max: 1) Kubernetes authenticates with Akeyless by passing the ServiceAccount
+token stored in the named Secret resource. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth))
+- `secret_ref` (Block List, Max: 1) Reference to a Secret that contains the details
+to authenticate with Akeyless. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth"></a>
+<a id="nestedblock--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth"></a>
 ### Nested Schema for `spec.provider_.akeyless.auth_secret_ref.kubernetes_auth`
 
 Optional:
 
-- `access_id` (String)
-- `k8s_conf_name` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth--secret_ref))
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth--service_account_ref))
+- `access_id` (String) the Akeyless Kubernetes auth-method access-id
+- `k8s_conf_name` (String) Kubernetes-auth configuration name in Akeyless-Gateway
+- `secret_ref` (Block List, Max: 1) Optional secret field containing a Kubernetes ServiceAccount JWT used
+for authenticating with Akeyless. If a name is specified without a key,
+`token` is the default. If one is not specified, the one bound to
+the controller will be used. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth--secret_ref))
+- `service_account_ref` (Block List, Max: 1) Optional service account field containing the name of a kubernetes ServiceAccount.
+If the service account is specified, the service account secret token JWT will be used
+for authenticating with Akeyless. If the service account selector is not supplied,
+the secretRef will be used instead. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth--service_account_ref))
 
-<a id="nestedobjatt--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.akeyless.auth_secret_ref.kubernetes_auth.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth--service_account_ref"></a>
+<a id="nestedblock--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth--service_account_ref"></a>
 ### Nested Schema for `spec.provider_.akeyless.auth_secret_ref.kubernetes_auth.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--akeyless--auth_secret_ref--secret_ref"></a>
+<a id="nestedblock--spec--provider_--akeyless--auth_secret_ref--secret_ref"></a>
 ### Nested Schema for `spec.provider_.akeyless.auth_secret_ref.secret_ref`
 
 Optional:
 
-- `access_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_id))
-- `access_type` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_type))
-- `access_type_param` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_type_param))
+- `access_id` (Block List, Max: 1) The SecretAccessID is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_id))
+- `access_type` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_type))
+- `access_type_param` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_type_param))
 
-<a id="nestedobjatt--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_id"></a>
+<a id="nestedblock--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_id"></a>
 ### Nested Schema for `spec.provider_.akeyless.auth_secret_ref.secret_ref.access_id`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_type"></a>
+<a id="nestedblock--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_type"></a>
 ### Nested Schema for `spec.provider_.akeyless.auth_secret_ref.secret_ref.access_type`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_type_param"></a>
+<a id="nestedblock--spec--provider_--akeyless--auth_secret_ref--secret_ref--access_type_param"></a>
 ### Nested Schema for `spec.provider_.akeyless.auth_secret_ref.secret_ref.access_type_param`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--akeyless--ca_provider"></a>
+<a id="nestedblock--spec--provider_--akeyless--ca_provider"></a>
 ### Nested Schema for `spec.provider_.akeyless.ca_provider`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
-- `type` (String)
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
 
 
 
-<a id="nestedobjatt--spec--provider_--alibaba"></a>
+<a id="nestedblock--spec--provider_--alibaba"></a>
 ### Nested Schema for `spec.provider_.alibaba`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--alibaba--auth))
-- `region_id` (String)
+- `auth` (Block List, Max: 1) AlibabaAuth contains a secretRef for credentials. (see [below for nested schema](#nestedblock--spec--provider_--alibaba--auth))
+- `region_id` (String) Alibaba Region to be used for the provider
 
-<a id="nestedobjatt--spec--provider_--alibaba--auth"></a>
+<a id="nestedblock--spec--provider_--alibaba--auth"></a>
 ### Nested Schema for `spec.provider_.alibaba.auth`
 
 Optional:
 
-- `rrsa` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--alibaba--auth--rrsa))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--alibaba--auth--secret_ref))
+- `rrsa` (Block List, Max: 1) Authenticate against Alibaba using RRSA. (see [below for nested schema](#nestedblock--spec--provider_--alibaba--auth--rrsa))
+- `secret_ref` (Block List, Max: 1) AlibabaAuthSecretRef holds secret references for Alibaba credentials. (see [below for nested schema](#nestedblock--spec--provider_--alibaba--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--alibaba--auth--rrsa"></a>
+<a id="nestedblock--spec--provider_--alibaba--auth--rrsa"></a>
 ### Nested Schema for `spec.provider_.alibaba.auth.rrsa`
 
 Optional:
@@ -246,130 +279,156 @@ Optional:
 - `session_name` (String)
 
 
-<a id="nestedobjatt--spec--provider_--alibaba--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--alibaba--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.alibaba.auth.secret_ref`
 
 Optional:
 
-- `access_key_id_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--alibaba--auth--secret_ref--access_key_id_secret_ref))
-- `access_key_secret_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--alibaba--auth--secret_ref--access_key_secret_secret_ref))
+- `access_key_id_secret_ref` (Block List, Max: 1) The AccessKeyID is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--alibaba--auth--secret_ref--access_key_id_secret_ref))
+- `access_key_secret_secret_ref` (Block List, Max: 1) The AccessKeySecret is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--alibaba--auth--secret_ref--access_key_secret_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--alibaba--auth--secret_ref--access_key_id_secret_ref"></a>
+<a id="nestedblock--spec--provider_--alibaba--auth--secret_ref--access_key_id_secret_ref"></a>
 ### Nested Schema for `spec.provider_.alibaba.auth.secret_ref.access_key_id_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--alibaba--auth--secret_ref--access_key_secret_secret_ref"></a>
+<a id="nestedblock--spec--provider_--alibaba--auth--secret_ref--access_key_secret_secret_ref"></a>
 ### Nested Schema for `spec.provider_.alibaba.auth.secret_ref.access_key_secret_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--aws"></a>
+<a id="nestedblock--spec--provider_--aws"></a>
 ### Nested Schema for `spec.provider_.aws`
 
 Optional:
 
-- `additional_roles` (List of String)
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--aws--auth))
-- `external_id` (String)
-- `prefix` (String)
-- `region` (String)
-- `role` (String)
-- `secrets_manager` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--aws--secrets_manager))
-- `service` (String)
-- `session_tags` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--aws--session_tags))
-- `transitive_tag_keys` (List of String)
+- `additional_roles` (List of String) AdditionalRoles is a chained list of Role ARNs which the provider will sequentially assume before assuming the Role
+- `auth` (Block List, Max: 1) Auth defines the information necessary to authenticate against AWS
+if not set aws sdk will infer credentials from your environment
+see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials (see [below for nested schema](#nestedblock--spec--provider_--aws--auth))
+- `external_id` (String) AWS External ID set on assumed IAM roles
+- `prefix` (String) Prefix adds a prefix to all retrieved values.
+- `region` (String) AWS Region to be used for the provider
+- `role` (String) Role is a Role ARN which the provider will assume
+- `secrets_manager` (Block List, Max: 1) SecretsManager defines how the provider behaves when interacting with AWS SecretsManager (see [below for nested schema](#nestedblock--spec--provider_--aws--secrets_manager))
+- `service` (String) Service defines which service should be used to fetch the secrets
+- `session_tags` (Block List) AWS STS assume role session tags (see [below for nested schema](#nestedblock--spec--provider_--aws--session_tags))
+- `transitive_tag_keys` (List of String) AWS STS assume role transitive session tags. Required when multiple rules are used with the provider
 
-<a id="nestedobjatt--spec--provider_--aws--auth"></a>
+<a id="nestedblock--spec--provider_--aws--auth"></a>
 ### Nested Schema for `spec.provider_.aws.auth`
 
 Optional:
 
-- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--aws--auth--jwt))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--aws--auth--secret_ref))
+- `jwt` (Block List, Max: 1) Authenticate against AWS using service account tokens. (see [below for nested schema](#nestedblock--spec--provider_--aws--auth--jwt))
+- `secret_ref` (Block List, Max: 1) AWSAuthSecretRef holds secret references for AWS credentials
+both AccessKeyID and SecretAccessKey must be defined in order to properly authenticate. (see [below for nested schema](#nestedblock--spec--provider_--aws--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--aws--auth--jwt"></a>
+<a id="nestedblock--spec--provider_--aws--auth--jwt"></a>
 ### Nested Schema for `spec.provider_.aws.auth.jwt`
 
 Optional:
 
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--aws--auth--jwt--service_account_ref))
+- `service_account_ref` (Block List, Max: 1) A reference to a ServiceAccount resource. (see [below for nested schema](#nestedblock--spec--provider_--aws--auth--jwt--service_account_ref))
 
-<a id="nestedobjatt--spec--provider_--aws--auth--jwt--service_account_ref"></a>
+<a id="nestedblock--spec--provider_--aws--auth--jwt--service_account_ref"></a>
 ### Nested Schema for `spec.provider_.aws.auth.jwt.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--aws--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--aws--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.aws.auth.secret_ref`
 
 Optional:
 
-- `access_key_id_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--aws--auth--secret_ref--access_key_id_secret_ref))
-- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--aws--auth--secret_ref--secret_access_key_secret_ref))
-- `session_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--aws--auth--secret_ref--session_token_secret_ref))
+- `access_key_id_secret_ref` (Block List, Max: 1) The AccessKeyID is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--aws--auth--secret_ref--access_key_id_secret_ref))
+- `secret_access_key_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--aws--auth--secret_ref--secret_access_key_secret_ref))
+- `session_token_secret_ref` (Block List, Max: 1) The SessionToken used for authentication
+This must be defined if AccessKeyID and SecretAccessKey are temporary credentials
+see: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html (see [below for nested schema](#nestedblock--spec--provider_--aws--auth--secret_ref--session_token_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--aws--auth--secret_ref--access_key_id_secret_ref"></a>
+<a id="nestedblock--spec--provider_--aws--auth--secret_ref--access_key_id_secret_ref"></a>
 ### Nested Schema for `spec.provider_.aws.auth.secret_ref.access_key_id_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--aws--auth--secret_ref--secret_access_key_secret_ref"></a>
+<a id="nestedblock--spec--provider_--aws--auth--secret_ref--secret_access_key_secret_ref"></a>
 ### Nested Schema for `spec.provider_.aws.auth.secret_ref.secret_access_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--aws--auth--secret_ref--session_token_secret_ref"></a>
+<a id="nestedblock--spec--provider_--aws--auth--secret_ref--session_token_secret_ref"></a>
 ### Nested Schema for `spec.provider_.aws.auth.secret_ref.session_token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--aws--secrets_manager"></a>
+<a id="nestedblock--spec--provider_--aws--secrets_manager"></a>
 ### Nested Schema for `spec.provider_.aws.secrets_manager`
 
 Optional:
 
-- `force_delete_without_recovery` (Boolean)
-- `recovery_window_in_days` (Number)
+- `force_delete_without_recovery` (Boolean) Specifies whether to delete the secret without any recovery window. You
+can't use both this parameter and RecoveryWindowInDays in the same call.
+If you don't use either, then by default Secrets Manager uses a 30 day
+recovery window.
+see: https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_DeleteSecret.html#SecretsManager-DeleteSecret-request-ForceDeleteWithoutRecovery
+- `recovery_window_in_days` (Number) The number of days from 7 to 30 that Secrets Manager waits before
+permanently deleting the secret. You can't use both this parameter and
+ForceDeleteWithoutRecovery in the same call. If you don't use either,
+then by default Secrets Manager uses a 30 day recovery window.
+see: https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_DeleteSecret.html#SecretsManager-DeleteSecret-request-RecoveryWindowInDays
 
 
-<a id="nestedobjatt--spec--provider_--aws--session_tags"></a>
+<a id="nestedblock--spec--provider_--aws--session_tags"></a>
 ### Nested Schema for `spec.provider_.aws.session_tags`
 
 Optional:
@@ -379,568 +438,636 @@ Optional:
 
 
 
-<a id="nestedobjatt--spec--provider_--azurekv"></a>
+<a id="nestedblock--spec--provider_--azurekv"></a>
 ### Nested Schema for `spec.provider_.azurekv`
 
 Optional:
 
-- `auth_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--azurekv--auth_secret_ref))
-- `auth_type` (String)
-- `environment_type` (String)
-- `identity_id` (String)
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--azurekv--service_account_ref))
-- `tenant_id` (String)
-- `vault_url` (String)
+- `auth_secret_ref` (Block List, Max: 1) Auth configures how the operator authenticates with Azure. Required for ServicePrincipal auth type. Optional for WorkloadIdentity. (see [below for nested schema](#nestedblock--spec--provider_--azurekv--auth_secret_ref))
+- `auth_type` (String) Auth type defines how to authenticate to the keyvault service.
+Valid values are:
+- "ServicePrincipal" (default): Using a service principal (tenantId, clientId, clientSecret)
+- "ManagedIdentity": Using Managed Identity assigned to the pod (see aad-pod-identity)
+- `environment_type` (String) EnvironmentType specifies the Azure cloud environment endpoints to use for
+connecting and authenticating with Azure. By default it points to the public cloud AAD endpoint.
+The following endpoints are available, also see here: https://github.com/Azure/go-autorest/blob/main/autorest/azure/environments.go#L152
+PublicCloud, USGovernmentCloud, ChinaCloud, GermanCloud
+- `identity_id` (String) If multiple Managed Identity is assigned to the pod, you can select the one to be used
+- `service_account_ref` (Block List, Max: 1) ServiceAccountRef specified the service account
+that should be used when authenticating with WorkloadIdentity. (see [below for nested schema](#nestedblock--spec--provider_--azurekv--service_account_ref))
+- `tenant_id` (String) TenantID configures the Azure Tenant to send requests to. Required for ServicePrincipal auth type. Optional for WorkloadIdentity.
+- `vault_url` (String) Vault Url from which the secrets to be fetched from.
 
-<a id="nestedobjatt--spec--provider_--azurekv--auth_secret_ref"></a>
+<a id="nestedblock--spec--provider_--azurekv--auth_secret_ref"></a>
 ### Nested Schema for `spec.provider_.azurekv.auth_secret_ref`
 
 Optional:
 
-- `client_certificate` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--azurekv--auth_secret_ref--client_certificate))
-- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--azurekv--auth_secret_ref--client_id))
-- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--azurekv--auth_secret_ref--client_secret))
-- `tenant_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--azurekv--auth_secret_ref--tenant_id))
+- `client_certificate` (Block List, Max: 1) The Azure ClientCertificate of the service principle used for authentication. (see [below for nested schema](#nestedblock--spec--provider_--azurekv--auth_secret_ref--client_certificate))
+- `client_id` (Block List, Max: 1) The Azure clientId of the service principle or managed identity used for authentication. (see [below for nested schema](#nestedblock--spec--provider_--azurekv--auth_secret_ref--client_id))
+- `client_secret` (Block List, Max: 1) The Azure ClientSecret of the service principle used for authentication. (see [below for nested schema](#nestedblock--spec--provider_--azurekv--auth_secret_ref--client_secret))
+- `tenant_id` (Block List, Max: 1) The Azure tenantId of the managed identity used for authentication. (see [below for nested schema](#nestedblock--spec--provider_--azurekv--auth_secret_ref--tenant_id))
 
-<a id="nestedobjatt--spec--provider_--azurekv--auth_secret_ref--client_certificate"></a>
+<a id="nestedblock--spec--provider_--azurekv--auth_secret_ref--client_certificate"></a>
 ### Nested Schema for `spec.provider_.azurekv.auth_secret_ref.client_certificate`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--azurekv--auth_secret_ref--client_id"></a>
+<a id="nestedblock--spec--provider_--azurekv--auth_secret_ref--client_id"></a>
 ### Nested Schema for `spec.provider_.azurekv.auth_secret_ref.client_id`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--azurekv--auth_secret_ref--client_secret"></a>
+<a id="nestedblock--spec--provider_--azurekv--auth_secret_ref--client_secret"></a>
 ### Nested Schema for `spec.provider_.azurekv.auth_secret_ref.client_secret`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--azurekv--auth_secret_ref--tenant_id"></a>
+<a id="nestedblock--spec--provider_--azurekv--auth_secret_ref--tenant_id"></a>
 ### Nested Schema for `spec.provider_.azurekv.auth_secret_ref.tenant_id`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--azurekv--service_account_ref"></a>
+<a id="nestedblock--spec--provider_--azurekv--service_account_ref"></a>
 ### Nested Schema for `spec.provider_.azurekv.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--beyondtrust"></a>
+<a id="nestedblock--spec--provider_--beyondtrust"></a>
 ### Nested Schema for `spec.provider_.beyondtrust`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth))
-- `server` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--server))
+- `auth` (Block List, Max: 1) Auth configures how the operator authenticates with Beyondtrust. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth))
+- `server` (Block List, Max: 1) Auth configures how API server works. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--server))
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth`
 
 Optional:
 
-- `api_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth--api_key))
-- `certificate` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth--certificate))
-- `certificate_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth--certificate_key))
-- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth--client_id))
-- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth--client_secret))
+- `api_key` (Block List, Max: 1) APIKey If not provided then ClientID/ClientSecret become required. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth--api_key))
+- `certificate` (Block List, Max: 1) Certificate (cert.pem) for use when authenticating with an OAuth client Id using a Client Certificate. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth--certificate))
+- `certificate_key` (Block List, Max: 1) Certificate private key (key.pem). For use when authenticating with an OAuth client Id (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth--certificate_key))
+- `client_id` (Block List, Max: 1) ClientID is the API OAuth Client ID. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth--client_id))
+- `client_secret` (Block List, Max: 1) ClientSecret is the API OAuth Client Secret. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth--client_secret))
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth--api_key"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth--api_key"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth.api_key`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth--api_key--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth--api_key--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth--api_key--secret_ref"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth--api_key--secret_ref"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth.api_key.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth--certificate"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth--certificate"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth.certificate`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth--certificate--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth--certificate--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth--certificate--secret_ref"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth--certificate--secret_ref"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth.certificate.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth--certificate_key"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth--certificate_key"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth.certificate_key`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth--certificate_key--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth--certificate_key--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth--certificate_key--secret_ref"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth--certificate_key--secret_ref"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth.certificate_key.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth--client_id"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth--client_id"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth.client_id`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth--client_id--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth--client_id--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth--client_id--secret_ref"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth--client_id--secret_ref"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth.client_id.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth--client_secret"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth--client_secret"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth.client_secret`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--beyondtrust--auth--client_secret--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust--auth--client_secret--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--auth--client_secret--secret_ref"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--auth--client_secret--secret_ref"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.auth.client_secret.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--beyondtrust--server"></a>
+<a id="nestedblock--spec--provider_--beyondtrust--server"></a>
 ### Nested Schema for `spec.provider_.beyondtrust.server`
 
 Optional:
 
 - `api_url` (String)
 - `api_version` (String)
-- `client_time_out_seconds` (Number)
-- `retrieval_type` (String)
-- `separator` (String)
+- `client_time_out_seconds` (Number) Timeout specifies a time limit for requests made by this Client. The timeout includes connection time, any redirects, and reading the response body. Defaults to 45 seconds.
+- `retrieval_type` (String) The secret retrieval type. SECRET = Secrets Safe (credential, text, file). MANAGED_ACCOUNT = Password Safe account associated with a system.
+- `separator` (String) A character that separates the folder names.
 - `verify_ca` (Boolean)
 
 
 
-<a id="nestedobjatt--spec--provider_--bitwardensecretsmanager"></a>
+<a id="nestedblock--spec--provider_--bitwardensecretsmanager"></a>
 ### Nested Schema for `spec.provider_.bitwardensecretsmanager`
 
 Optional:
 
 - `api_url` (String)
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--bitwardensecretsmanager--auth))
+- `auth` (Block List, Max: 1) Auth configures how secret-manager authenticates with a bitwarden machine account instance.
+Make sure that the token being used has permissions on the given secret. (see [below for nested schema](#nestedblock--spec--provider_--bitwardensecretsmanager--auth))
 - `bitwarden_server_sdkurl` (String)
-- `ca_bundle` (String)
-- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--bitwardensecretsmanager--ca_provider))
+- `ca_bundle` (String) Base64 encoded certificate for the bitwarden server sdk. The sdk MUST run with HTTPS to make sure no MITM attack
+can be performed.
+- `ca_provider` (Block List, Max: 1) see: https://external-secrets.io/latest/spec/#external-secrets.io/v1alpha1.CAProvider (see [below for nested schema](#nestedblock--spec--provider_--bitwardensecretsmanager--ca_provider))
 - `identity_url` (String)
-- `organization_id` (String)
-- `project_id` (String)
+- `organization_id` (String) OrganizationID determines which organization this secret store manages.
+- `project_id` (String) ProjectID determines which project this secret store manages.
 
-<a id="nestedobjatt--spec--provider_--bitwardensecretsmanager--auth"></a>
+<a id="nestedblock--spec--provider_--bitwardensecretsmanager--auth"></a>
 ### Nested Schema for `spec.provider_.bitwardensecretsmanager.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--bitwardensecretsmanager--auth--secret_ref))
+- `secret_ref` (Block List, Max: 1) BitwardenSecretsManagerSecretRef contains the credential ref to the bitwarden instance. (see [below for nested schema](#nestedblock--spec--provider_--bitwardensecretsmanager--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--bitwardensecretsmanager--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--bitwardensecretsmanager--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.bitwardensecretsmanager.auth.secret_ref`
 
 Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--bitwardensecretsmanager--auth--secret_ref--credentials))
+- `credentials` (Block List, Max: 1) AccessToken used for the bitwarden instance. (see [below for nested schema](#nestedblock--spec--provider_--bitwardensecretsmanager--auth--secret_ref--credentials))
 
-<a id="nestedobjatt--spec--provider_--bitwardensecretsmanager--auth--secret_ref--credentials"></a>
+<a id="nestedblock--spec--provider_--bitwardensecretsmanager--auth--secret_ref--credentials"></a>
 ### Nested Schema for `spec.provider_.bitwardensecretsmanager.auth.secret_ref.credentials`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--bitwardensecretsmanager--ca_provider"></a>
+<a id="nestedblock--spec--provider_--bitwardensecretsmanager--ca_provider"></a>
 ### Nested Schema for `spec.provider_.bitwardensecretsmanager.ca_provider`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
-- `type` (String)
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
 
 
 
-<a id="nestedobjatt--spec--provider_--chef"></a>
+<a id="nestedblock--spec--provider_--chef"></a>
 ### Nested Schema for `spec.provider_.chef`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--chef--auth))
-- `server_url` (String)
-- `username` (String)
+- `auth` (Block List, Max: 1) Auth defines the information necessary to authenticate against chef Server (see [below for nested schema](#nestedblock--spec--provider_--chef--auth))
+- `server_url` (String) ServerURL is the chef server URL used to connect to. If using orgs you should include your org in the url and terminate the url with a "/"
+- `username` (String) UserName should be the user ID on the chef server
 
-<a id="nestedobjatt--spec--provider_--chef--auth"></a>
+<a id="nestedblock--spec--provider_--chef--auth"></a>
 ### Nested Schema for `spec.provider_.chef.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--chef--auth--secret_ref))
+- `secret_ref` (Block List, Max: 1) ChefAuthSecretRef holds secret references for chef server login credentials. (see [below for nested schema](#nestedblock--spec--provider_--chef--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--chef--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--chef--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.chef.auth.secret_ref`
 
 Optional:
 
-- `private_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--chef--auth--secret_ref--private_key_secret_ref))
+- `private_key_secret_ref` (Block List, Max: 1) SecretKey is the Signing Key in PEM format, used for authentication. (see [below for nested schema](#nestedblock--spec--provider_--chef--auth--secret_ref--private_key_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--chef--auth--secret_ref--private_key_secret_ref"></a>
+<a id="nestedblock--spec--provider_--chef--auth--secret_ref--private_key_secret_ref"></a>
 ### Nested Schema for `spec.provider_.chef.auth.secret_ref.private_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--cloudrusm"></a>
+<a id="nestedblock--spec--provider_--cloudrusm"></a>
 ### Nested Schema for `spec.provider_.cloudrusm`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--cloudrusm--auth))
-- `project_id` (String)
+- `auth` (Block List, Max: 1) CSMAuth contains a secretRef for credentials. (see [below for nested schema](#nestedblock--spec--provider_--cloudrusm--auth))
+- `project_id` (String) ProjectID is the project, which the secrets are stored in.
 
-<a id="nestedobjatt--spec--provider_--cloudrusm--auth"></a>
+<a id="nestedblock--spec--provider_--cloudrusm--auth"></a>
 ### Nested Schema for `spec.provider_.cloudrusm.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--cloudrusm--auth--secret_ref))
+- `secret_ref` (Block List, Max: 1) CSMAuthSecretRef holds secret references for Cloud.ru credentials. (see [below for nested schema](#nestedblock--spec--provider_--cloudrusm--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--cloudrusm--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--cloudrusm--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.cloudrusm.auth.secret_ref`
 
 Optional:
 
-- `access_key_id_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--cloudrusm--auth--secret_ref--access_key_id_secret_ref))
-- `access_key_secret_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--cloudrusm--auth--secret_ref--access_key_secret_secret_ref))
+- `access_key_id_secret_ref` (Block List, Max: 1) The AccessKeyID is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--cloudrusm--auth--secret_ref--access_key_id_secret_ref))
+- `access_key_secret_secret_ref` (Block List, Max: 1) The AccessKeySecret is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--cloudrusm--auth--secret_ref--access_key_secret_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--cloudrusm--auth--secret_ref--access_key_id_secret_ref"></a>
+<a id="nestedblock--spec--provider_--cloudrusm--auth--secret_ref--access_key_id_secret_ref"></a>
 ### Nested Schema for `spec.provider_.cloudrusm.auth.secret_ref.access_key_id_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--cloudrusm--auth--secret_ref--access_key_secret_secret_ref"></a>
+<a id="nestedblock--spec--provider_--cloudrusm--auth--secret_ref--access_key_secret_secret_ref"></a>
 ### Nested Schema for `spec.provider_.cloudrusm.auth.secret_ref.access_key_secret_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--conjur"></a>
+<a id="nestedblock--spec--provider_--conjur"></a>
 ### Nested Schema for `spec.provider_.conjur`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--conjur--auth))
-- `ca_bundle` (String)
-- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--conjur--ca_provider))
-- `url` (String)
+- `auth` (Block List, Max: 1) Defines authentication settings for connecting to Conjur. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth))
+- `ca_bundle` (String) CABundle is a PEM encoded CA bundle that will be used to validate the Conjur server certificate.
+- `ca_provider` (Block List, Max: 1) Used to provide custom certificate authority (CA) certificates
+for a secret store. The CAProvider points to a Secret or ConfigMap resource
+that contains a PEM-encoded certificate. (see [below for nested schema](#nestedblock--spec--provider_--conjur--ca_provider))
+- `url` (String) URL is the endpoint of the Conjur instance.
 
-<a id="nestedobjatt--spec--provider_--conjur--auth"></a>
+<a id="nestedblock--spec--provider_--conjur--auth"></a>
 ### Nested Schema for `spec.provider_.conjur.auth`
 
 Optional:
 
-- `apikey` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--conjur--auth--apikey))
-- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--conjur--auth--jwt))
+- `apikey` (Block List, Max: 1) Authenticates with Conjur using an API key. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--apikey))
+- `jwt` (Block List, Max: 1) Jwt enables JWT authentication using Kubernetes service account tokens. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--jwt))
 
-<a id="nestedobjatt--spec--provider_--conjur--auth--apikey"></a>
+<a id="nestedblock--spec--provider_--conjur--auth--apikey"></a>
 ### Nested Schema for `spec.provider_.conjur.auth.apikey`
 
 Optional:
 
-- `account` (String)
-- `api_key_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--conjur--auth--apikey--api_key_ref))
-- `user_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--conjur--auth--apikey--user_ref))
+- `account` (String) Account is the Conjur organization account name.
+- `api_key_ref` (Block List, Max: 1) A reference to a specific 'key' containing the Conjur API key
+within a Secret resource. In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--apikey--api_key_ref))
+- `user_ref` (Block List, Max: 1) A reference to a specific 'key' containing the Conjur username
+within a Secret resource. In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--apikey--user_ref))
 
-<a id="nestedobjatt--spec--provider_--conjur--auth--apikey--api_key_ref"></a>
+<a id="nestedblock--spec--provider_--conjur--auth--apikey--api_key_ref"></a>
 ### Nested Schema for `spec.provider_.conjur.auth.apikey.api_key_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--conjur--auth--apikey--user_ref"></a>
+<a id="nestedblock--spec--provider_--conjur--auth--apikey--user_ref"></a>
 ### Nested Schema for `spec.provider_.conjur.auth.apikey.user_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--conjur--auth--jwt"></a>
+<a id="nestedblock--spec--provider_--conjur--auth--jwt"></a>
 ### Nested Schema for `spec.provider_.conjur.auth.jwt`
 
 Optional:
 
-- `account` (String)
-- `host_id` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--conjur--auth--jwt--secret_ref))
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--conjur--auth--jwt--service_account_ref))
-- `service_id` (String)
+- `account` (String) Account is the Conjur organization account name.
+- `host_id` (String) Optional HostID for JWT authentication. This may be used depending
+on how the Conjur JWT authenticator policy is configured.
+- `secret_ref` (Block List, Max: 1) Optional SecretRef that refers to a key in a Secret resource containing JWT token to
+authenticate with Conjur using the JWT authentication method. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--jwt--secret_ref))
+- `service_account_ref` (Block List, Max: 1) Optional ServiceAccountRef specifies the Kubernetes service account for which to request
+a token for with the `TokenRequest` API. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--jwt--service_account_ref))
+- `service_id` (String) The conjur authn jwt webservice id
 
-<a id="nestedobjatt--spec--provider_--conjur--auth--jwt--secret_ref"></a>
+<a id="nestedblock--spec--provider_--conjur--auth--jwt--secret_ref"></a>
 ### Nested Schema for `spec.provider_.conjur.auth.jwt.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--conjur--auth--jwt--service_account_ref"></a>
+<a id="nestedblock--spec--provider_--conjur--auth--jwt--service_account_ref"></a>
 ### Nested Schema for `spec.provider_.conjur.auth.jwt.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--conjur--ca_provider"></a>
+<a id="nestedblock--spec--provider_--conjur--ca_provider"></a>
 ### Nested Schema for `spec.provider_.conjur.ca_provider`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
-- `type` (String)
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
 
 
 
-<a id="nestedobjatt--spec--provider_--delinea"></a>
+<a id="nestedblock--spec--provider_--delinea"></a>
 ### Nested Schema for `spec.provider_.delinea`
 
 Optional:
 
-- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--delinea--client_id))
-- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--delinea--client_secret))
-- `tenant` (String)
-- `tld` (String)
-- `url_template` (String)
+- `client_id` (Block List, Max: 1) ClientID is the non-secret part of the credential. (see [below for nested schema](#nestedblock--spec--provider_--delinea--client_id))
+- `client_secret` (Block List, Max: 1) ClientSecret is the secret part of the credential. (see [below for nested schema](#nestedblock--spec--provider_--delinea--client_secret))
+- `tenant` (String) Tenant is the chosen hostname / site name.
+- `tld` (String) TLD is based on the server location that was chosen during provisioning.
+If unset, defaults to "com".
+- `url_template` (String) URLTemplate
+If unset, defaults to "https://%s.secretsvaultcloud.%s/v1/%s%s".
 
-<a id="nestedobjatt--spec--provider_--delinea--client_id"></a>
+<a id="nestedblock--spec--provider_--delinea--client_id"></a>
 ### Nested Schema for `spec.provider_.delinea.client_id`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--delinea--client_id--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--delinea--client_id--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--delinea--client_id--secret_ref"></a>
+<a id="nestedblock--spec--provider_--delinea--client_id--secret_ref"></a>
 ### Nested Schema for `spec.provider_.delinea.client_id.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--delinea--client_secret"></a>
+<a id="nestedblock--spec--provider_--delinea--client_secret"></a>
 ### Nested Schema for `spec.provider_.delinea.client_secret`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--delinea--client_secret--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--delinea--client_secret--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--delinea--client_secret--secret_ref"></a>
+<a id="nestedblock--spec--provider_--delinea--client_secret--secret_ref"></a>
 ### Nested Schema for `spec.provider_.delinea.client_secret.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--device42"></a>
+<a id="nestedblock--spec--provider_--device42"></a>
 ### Nested Schema for `spec.provider_.device42`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--device42--auth))
-- `host` (String)
+- `auth` (Block List, Max: 1) Auth configures how secret-manager authenticates with a Device42 instance. (see [below for nested schema](#nestedblock--spec--provider_--device42--auth))
+- `host` (String) URL configures the Device42 instance URL.
 
-<a id="nestedobjatt--spec--provider_--device42--auth"></a>
+<a id="nestedblock--spec--provider_--device42--auth"></a>
 ### Nested Schema for `spec.provider_.device42.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--device42--auth--secret_ref))
+- `secret_ref` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--provider_--device42--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--device42--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--device42--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.device42.auth.secret_ref`
 
 Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--device42--auth--secret_ref--credentials))
+- `credentials` (Block List, Max: 1) Username / Password is used for authentication. (see [below for nested schema](#nestedblock--spec--provider_--device42--auth--secret_ref--credentials))
 
-<a id="nestedobjatt--spec--provider_--device42--auth--secret_ref--credentials"></a>
+<a id="nestedblock--spec--provider_--device42--auth--secret_ref--credentials"></a>
 ### Nested Schema for `spec.provider_.device42.auth.secret_ref.credentials`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--doppler"></a>
+<a id="nestedblock--spec--provider_--doppler"></a>
 ### Nested Schema for `spec.provider_.doppler`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--doppler--auth))
-- `config` (String)
-- `format` (String)
-- `name_transformer` (String)
-- `project` (String)
+- `auth` (Block List, Max: 1) Auth configures how the Operator authenticates with the Doppler API (see [below for nested schema](#nestedblock--spec--provider_--doppler--auth))
+- `config` (String) Doppler config (required if not using a Service Token)
+- `format` (String) Format enables the downloading of secrets as a file (string)
+- `name_transformer` (String) Environment variable compatible name transforms that change secret names to a different format
+- `project` (String) Doppler project (required if not using a Service Token)
 
-<a id="nestedobjatt--spec--provider_--doppler--auth"></a>
+<a id="nestedblock--spec--provider_--doppler--auth"></a>
 ### Nested Schema for `spec.provider_.doppler.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--doppler--auth--secret_ref))
+- `secret_ref` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--provider_--doppler--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--doppler--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--doppler--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.doppler.auth.secret_ref`
 
 Optional:
 
-- `doppler_token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--doppler--auth--secret_ref--doppler_token))
+- `doppler_token` (Block List, Max: 1) The DopplerToken is used for authentication.
+See https://docs.doppler.com/reference/api#authentication for auth token types.
+The Key attribute defaults to dopplerToken if not specified. (see [below for nested schema](#nestedblock--spec--provider_--doppler--auth--secret_ref--doppler_token))
 
-<a id="nestedobjatt--spec--provider_--doppler--auth--secret_ref--doppler_token"></a>
+<a id="nestedblock--spec--provider_--doppler--auth--secret_ref--doppler_token"></a>
 ### Nested Schema for `spec.provider_.doppler.auth.secret_ref.doppler_token`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--fake"></a>
+<a id="nestedblock--spec--provider_--fake"></a>
 ### Nested Schema for `spec.provider_.fake`
 
 Optional:
 
-- `data` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--fake--data))
+- `data` (Block List) (see [below for nested schema](#nestedblock--spec--provider_--fake--data))
 
-<a id="nestedobjatt--spec--provider_--fake--data"></a>
+<a id="nestedblock--spec--provider_--fake--data"></a>
 ### Nested Schema for `spec.provider_.fake.data`
 
 Optional:
@@ -951,1279 +1078,1494 @@ Optional:
 
 
 
-<a id="nestedobjatt--spec--provider_--fortanix"></a>
+<a id="nestedblock--spec--provider_--fortanix"></a>
 ### Nested Schema for `spec.provider_.fortanix`
 
 Optional:
 
-- `api_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--fortanix--api_key))
-- `api_url` (String)
+- `api_key` (Block List, Max: 1) APIKey is the API token to access SDKMS Applications. (see [below for nested schema](#nestedblock--spec--provider_--fortanix--api_key))
+- `api_url` (String) APIURL is the URL of SDKMS API. Defaults to `sdkms.fortanix.com`.
 
-<a id="nestedobjatt--spec--provider_--fortanix--api_key"></a>
+<a id="nestedblock--spec--provider_--fortanix--api_key"></a>
 ### Nested Schema for `spec.provider_.fortanix.api_key`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--fortanix--api_key--secret_ref))
+- `secret_ref` (Block List, Max: 1) SecretRef is a reference to a secret containing the SDKMS API Key. (see [below for nested schema](#nestedblock--spec--provider_--fortanix--api_key--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--fortanix--api_key--secret_ref"></a>
+<a id="nestedblock--spec--provider_--fortanix--api_key--secret_ref"></a>
 ### Nested Schema for `spec.provider_.fortanix.api_key.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--gcpsm"></a>
+<a id="nestedblock--spec--provider_--gcpsm"></a>
 ### Nested Schema for `spec.provider_.gcpsm`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--gcpsm--auth))
-- `location` (String)
-- `project_id` (String)
+- `auth` (Block List, Max: 1) Auth defines the information necessary to authenticate against GCP (see [below for nested schema](#nestedblock--spec--provider_--gcpsm--auth))
+- `location` (String) Location optionally defines a location for a secret
+- `project_id` (String) ProjectID project where secret is located
 
-<a id="nestedobjatt--spec--provider_--gcpsm--auth"></a>
+<a id="nestedblock--spec--provider_--gcpsm--auth"></a>
 ### Nested Schema for `spec.provider_.gcpsm.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--gcpsm--auth--secret_ref))
-- `workload_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--gcpsm--auth--workload_identity))
+- `secret_ref` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--provider_--gcpsm--auth--secret_ref))
+- `workload_identity` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--provider_--gcpsm--auth--workload_identity))
 
-<a id="nestedobjatt--spec--provider_--gcpsm--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--gcpsm--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.gcpsm.auth.secret_ref`
 
 Optional:
 
-- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--gcpsm--auth--secret_ref--secret_access_key_secret_ref))
+- `secret_access_key_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--gcpsm--auth--secret_ref--secret_access_key_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--gcpsm--auth--secret_ref--secret_access_key_secret_ref"></a>
+<a id="nestedblock--spec--provider_--gcpsm--auth--secret_ref--secret_access_key_secret_ref"></a>
 ### Nested Schema for `spec.provider_.gcpsm.auth.secret_ref.secret_access_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--gcpsm--auth--workload_identity"></a>
+<a id="nestedblock--spec--provider_--gcpsm--auth--workload_identity"></a>
 ### Nested Schema for `spec.provider_.gcpsm.auth.workload_identity`
 
 Optional:
 
-- `cluster_location` (String)
-- `cluster_name` (String)
-- `cluster_project_id` (String)
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--gcpsm--auth--workload_identity--service_account_ref))
+- `cluster_location` (String) ClusterLocation is the location of the cluster
+If not specified, it fetches information from the metadata server
+- `cluster_name` (String) ClusterName is the name of the cluster
+If not specified, it fetches information from the metadata server
+- `cluster_project_id` (String) ClusterProjectID is the project ID of the cluster
+If not specified, it fetches information from the metadata server
+- `service_account_ref` (Block List, Max: 1) A reference to a ServiceAccount resource. (see [below for nested schema](#nestedblock--spec--provider_--gcpsm--auth--workload_identity--service_account_ref))
 
-<a id="nestedobjatt--spec--provider_--gcpsm--auth--workload_identity--service_account_ref"></a>
+<a id="nestedblock--spec--provider_--gcpsm--auth--workload_identity--service_account_ref"></a>
 ### Nested Schema for `spec.provider_.gcpsm.auth.workload_identity.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--github"></a>
+<a id="nestedblock--spec--provider_--github"></a>
 ### Nested Schema for `spec.provider_.github`
 
 Optional:
 
-- `app_id` (Number)
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--github--auth))
-- `environment` (String)
-- `installation_id` (Number)
-- `organization` (String)
-- `repository` (String)
-- `upload_url` (String)
-- `url` (String)
+- `app_id` (Number) appID specifies the Github APP that will be used to authenticate the client
+- `auth` (Block List, Max: 1) auth configures how secret-manager authenticates with a Github instance. (see [below for nested schema](#nestedblock--spec--provider_--github--auth))
+- `environment` (String) environment will be used to fetch secrets from a particular environment within a github repository
+- `installation_id` (Number) installationID specifies the Github APP installation that will be used to authenticate the client
+- `organization` (String) organization will be used to fetch secrets from the Github organization
+- `repository` (String) repository will be used to fetch secrets from the Github repository within an organization
+- `upload_url` (String) Upload URL for enterprise instances. Default to URL.
+- `url` (String) URL configures the Github instance URL. Defaults to https://github.com/.
 
-<a id="nestedobjatt--spec--provider_--github--auth"></a>
+<a id="nestedblock--spec--provider_--github--auth"></a>
 ### Nested Schema for `spec.provider_.github.auth`
 
 Optional:
 
-- `private_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--github--auth--private_key))
+- `private_key` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--github--auth--private_key))
 
-<a id="nestedobjatt--spec--provider_--github--auth--private_key"></a>
+<a id="nestedblock--spec--provider_--github--auth--private_key"></a>
 ### Nested Schema for `spec.provider_.github.auth.private_key`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--gitlab"></a>
+<a id="nestedblock--spec--provider_--gitlab"></a>
 ### Nested Schema for `spec.provider_.gitlab`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--gitlab--auth))
-- `environment` (String)
-- `group_i_ds` (List of String)
-- `inherit_from_groups` (Boolean)
-- `project_id` (String)
-- `url` (String)
+- `auth` (Block List, Max: 1) Auth configures how secret-manager authenticates with a GitLab instance. (see [below for nested schema](#nestedblock--spec--provider_--gitlab--auth))
+- `environment` (String) Environment environment_scope of gitlab CI/CD variables (Please see https://docs.gitlab.com/ee/ci/environments/#create-a-static-environment on how to create environments)
+- `group_i_ds` (List of String) GroupIDs specify, which gitlab groups to pull secrets from. Group secrets are read from left to right followed by the project variables.
+- `inherit_from_groups` (Boolean) InheritFromGroups specifies whether parent groups should be discovered and checked for secrets.
+- `project_id` (String) ProjectID specifies a project where secrets are located.
+- `url` (String) URL configures the GitLab instance URL. Defaults to https://gitlab.com/.
 
-<a id="nestedobjatt--spec--provider_--gitlab--auth"></a>
+<a id="nestedblock--spec--provider_--gitlab--auth"></a>
 ### Nested Schema for `spec.provider_.gitlab.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--gitlab--auth--secret_ref))
+- `secret_ref` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--provider_--gitlab--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--gitlab--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--gitlab--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.gitlab.auth.secret_ref`
 
 Optional:
 
-- `access_token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--gitlab--auth--secret_ref--access_token))
+- `access_token` (Block List, Max: 1) AccessToken is used for authentication. (see [below for nested schema](#nestedblock--spec--provider_--gitlab--auth--secret_ref--access_token))
 
-<a id="nestedobjatt--spec--provider_--gitlab--auth--secret_ref--access_token"></a>
+<a id="nestedblock--spec--provider_--gitlab--auth--secret_ref--access_token"></a>
 ### Nested Schema for `spec.provider_.gitlab.auth.secret_ref.access_token`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--ibm"></a>
+<a id="nestedblock--spec--provider_--ibm"></a>
 ### Nested Schema for `spec.provider_.ibm`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--ibm--auth))
-- `service_url` (String)
+- `auth` (Block List, Max: 1) Auth configures how secret-manager authenticates with the IBM secrets manager. (see [below for nested schema](#nestedblock--spec--provider_--ibm--auth))
+- `service_url` (String) ServiceURL is the Endpoint URL that is specific to the Secrets Manager service instance
 
-<a id="nestedobjatt--spec--provider_--ibm--auth"></a>
+<a id="nestedblock--spec--provider_--ibm--auth"></a>
 ### Nested Schema for `spec.provider_.ibm.auth`
 
 Optional:
 
-- `container_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--ibm--auth--container_auth))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--ibm--auth--secret_ref))
+- `container_auth` (Block List, Max: 1) IBM Container-based auth with IAM Trusted Profile. (see [below for nested schema](#nestedblock--spec--provider_--ibm--auth--container_auth))
+- `secret_ref` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--provider_--ibm--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--ibm--auth--container_auth"></a>
+<a id="nestedblock--spec--provider_--ibm--auth--container_auth"></a>
 ### Nested Schema for `spec.provider_.ibm.auth.container_auth`
 
 Optional:
 
 - `iam_endpoint` (String)
-- `profile` (String)
-- `token_location` (String)
+- `profile` (String) the IBM Trusted Profile
+- `token_location` (String) Location the token is mounted on the pod
 
 
-<a id="nestedobjatt--spec--provider_--ibm--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--ibm--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.ibm.auth.secret_ref`
 
 Optional:
 
-- `secret_api_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--ibm--auth--secret_ref--secret_api_key_secret_ref))
+- `secret_api_key_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--ibm--auth--secret_ref--secret_api_key_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--ibm--auth--secret_ref--secret_api_key_secret_ref"></a>
+<a id="nestedblock--spec--provider_--ibm--auth--secret_ref--secret_api_key_secret_ref"></a>
 ### Nested Schema for `spec.provider_.ibm.auth.secret_ref.secret_api_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--infisical"></a>
+<a id="nestedblock--spec--provider_--infisical"></a>
 ### Nested Schema for `spec.provider_.infisical`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--infisical--auth))
-- `host_api` (String)
-- `secrets_scope` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--infisical--secrets_scope))
+- `auth` (Block List, Max: 1) Auth configures how the Operator authenticates with the Infisical API (see [below for nested schema](#nestedblock--spec--provider_--infisical--auth))
+- `host_api` (String) HostAPI specifies the base URL of the Infisical API. If not provided, it defaults to "https://app.infisical.com/api".
+- `secrets_scope` (Block List, Max: 1) SecretsScope defines the scope of the secrets within the workspace (see [below for nested schema](#nestedblock--spec--provider_--infisical--secrets_scope))
 
-<a id="nestedobjatt--spec--provider_--infisical--auth"></a>
+<a id="nestedblock--spec--provider_--infisical--auth"></a>
 ### Nested Schema for `spec.provider_.infisical.auth`
 
 Optional:
 
-- `universal_auth_credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--infisical--auth--universal_auth_credentials))
+- `universal_auth_credentials` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--provider_--infisical--auth--universal_auth_credentials))
 
-<a id="nestedobjatt--spec--provider_--infisical--auth--universal_auth_credentials"></a>
+<a id="nestedblock--spec--provider_--infisical--auth--universal_auth_credentials"></a>
 ### Nested Schema for `spec.provider_.infisical.auth.universal_auth_credentials`
 
 Optional:
 
-- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--infisical--auth--universal_auth_credentials--client_id))
-- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--infisical--auth--universal_auth_credentials--client_secret))
+- `client_id` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--infisical--auth--universal_auth_credentials--client_id))
+- `client_secret` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--infisical--auth--universal_auth_credentials--client_secret))
 
-<a id="nestedobjatt--spec--provider_--infisical--auth--universal_auth_credentials--client_id"></a>
+<a id="nestedblock--spec--provider_--infisical--auth--universal_auth_credentials--client_id"></a>
 ### Nested Schema for `spec.provider_.infisical.auth.universal_auth_credentials.client_id`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--infisical--auth--universal_auth_credentials--client_secret"></a>
+<a id="nestedblock--spec--provider_--infisical--auth--universal_auth_credentials--client_secret"></a>
 ### Nested Schema for `spec.provider_.infisical.auth.universal_auth_credentials.client_secret`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--infisical--secrets_scope"></a>
+<a id="nestedblock--spec--provider_--infisical--secrets_scope"></a>
 ### Nested Schema for `spec.provider_.infisical.secrets_scope`
 
 Optional:
 
-- `environment_slug` (String)
-- `expand_secret_references` (Boolean)
-- `project_slug` (String)
-- `recursive` (Boolean)
-- `secrets_path` (String)
+- `environment_slug` (String) EnvironmentSlug is the required slug identifier for the environment.
+- `expand_secret_references` (Boolean) ExpandSecretReferences indicates whether secret references should be expanded. Defaults to true if not provided.
+- `project_slug` (String) ProjectSlug is the required slug identifier for the project.
+- `recursive` (Boolean) Recursive indicates whether the secrets should be fetched recursively. Defaults to false if not provided.
+- `secrets_path` (String) SecretsPath specifies the path to the secrets within the workspace. Defaults to "/" if not provided.
 
 
 
-<a id="nestedobjatt--spec--provider_--keepersecurity"></a>
+<a id="nestedblock--spec--provider_--keepersecurity"></a>
 ### Nested Schema for `spec.provider_.keepersecurity`
 
 Optional:
 
-- `auth_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--keepersecurity--auth_ref))
+- `auth_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--keepersecurity--auth_ref))
 - `folder_id` (String)
 
-<a id="nestedobjatt--spec--provider_--keepersecurity--auth_ref"></a>
+<a id="nestedblock--spec--provider_--keepersecurity--auth_ref"></a>
 ### Nested Schema for `spec.provider_.keepersecurity.auth_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--kubernetes"></a>
+<a id="nestedblock--spec--provider_--kubernetes"></a>
 ### Nested Schema for `spec.provider_.kubernetes`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes--auth))
-- `auth_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes--auth_ref))
-- `remote_namespace` (String)
-- `server` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes--server))
+- `auth` (Block List, Max: 1) Auth configures how secret-manager authenticates with a Kubernetes instance. (see [below for nested schema](#nestedblock--spec--provider_--kubernetes--auth))
+- `auth_ref` (Block List, Max: 1) A reference to a secret that contains the auth information. (see [below for nested schema](#nestedblock--spec--provider_--kubernetes--auth_ref))
+- `remote_namespace` (String) Remote namespace to fetch the secrets from
+- `server` (Block List, Max: 1) configures the Kubernetes server Address. (see [below for nested schema](#nestedblock--spec--provider_--kubernetes--server))
 
-<a id="nestedobjatt--spec--provider_--kubernetes--auth"></a>
+<a id="nestedblock--spec--provider_--kubernetes--auth"></a>
 ### Nested Schema for `spec.provider_.kubernetes.auth`
 
 Optional:
 
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes--auth--cert))
-- `service_account` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes--auth--service_account))
-- `token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes--auth--token))
+- `cert` (Block List, Max: 1) has both clientCert and clientKey as secretKeySelector (see [below for nested schema](#nestedblock--spec--provider_--kubernetes--auth--cert))
+- `service_account` (Block List, Max: 1) points to a service account that should be used for authentication (see [below for nested schema](#nestedblock--spec--provider_--kubernetes--auth--service_account))
+- `token` (Block List, Max: 1) use static token to authenticate with (see [below for nested schema](#nestedblock--spec--provider_--kubernetes--auth--token))
 
-<a id="nestedobjatt--spec--provider_--kubernetes--auth--cert"></a>
+<a id="nestedblock--spec--provider_--kubernetes--auth--cert"></a>
 ### Nested Schema for `spec.provider_.kubernetes.auth.cert`
 
 Optional:
 
-- `client_cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes--auth--cert--client_cert))
-- `client_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes--auth--cert--client_key))
+- `client_cert` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--kubernetes--auth--cert--client_cert))
+- `client_key` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--kubernetes--auth--cert--client_key))
 
-<a id="nestedobjatt--spec--provider_--kubernetes--auth--cert--client_cert"></a>
+<a id="nestedblock--spec--provider_--kubernetes--auth--cert--client_cert"></a>
 ### Nested Schema for `spec.provider_.kubernetes.auth.cert.client_cert`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--kubernetes--auth--cert--client_key"></a>
+<a id="nestedblock--spec--provider_--kubernetes--auth--cert--client_key"></a>
 ### Nested Schema for `spec.provider_.kubernetes.auth.cert.client_key`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--kubernetes--auth--service_account"></a>
+<a id="nestedblock--spec--provider_--kubernetes--auth--service_account"></a>
 ### Nested Schema for `spec.provider_.kubernetes.auth.service_account`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--kubernetes--auth--token"></a>
+<a id="nestedblock--spec--provider_--kubernetes--auth--token"></a>
 ### Nested Schema for `spec.provider_.kubernetes.auth.token`
 
 Optional:
 
-- `bearer_token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes--auth--token--bearer_token))
+- `bearer_token` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--kubernetes--auth--token--bearer_token))
 
-<a id="nestedobjatt--spec--provider_--kubernetes--auth--token--bearer_token"></a>
+<a id="nestedblock--spec--provider_--kubernetes--auth--token--bearer_token"></a>
 ### Nested Schema for `spec.provider_.kubernetes.auth.token.bearer_token`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--kubernetes--auth_ref"></a>
+<a id="nestedblock--spec--provider_--kubernetes--auth_ref"></a>
 ### Nested Schema for `spec.provider_.kubernetes.auth_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--kubernetes--server"></a>
+<a id="nestedblock--spec--provider_--kubernetes--server"></a>
 ### Nested Schema for `spec.provider_.kubernetes.server`
 
 Optional:
 
-- `ca_bundle` (String)
-- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--kubernetes--server--ca_provider))
-- `url` (String)
+- `ca_bundle` (String) CABundle is a base64-encoded CA certificate
+- `ca_provider` (Block List, Max: 1) see: https://external-secrets.io/v0.4.1/spec/#external-secrets.io/v1alpha1.CAProvider (see [below for nested schema](#nestedblock--spec--provider_--kubernetes--server--ca_provider))
+- `url` (String) configures the Kubernetes server Address.
 
-<a id="nestedobjatt--spec--provider_--kubernetes--server--ca_provider"></a>
+<a id="nestedblock--spec--provider_--kubernetes--server--ca_provider"></a>
 ### Nested Schema for `spec.provider_.kubernetes.server.ca_provider`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
-- `type` (String)
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
 
 
 
 
-<a id="nestedobjatt--spec--provider_--onboardbase"></a>
+<a id="nestedblock--spec--provider_--onboardbase"></a>
 ### Nested Schema for `spec.provider_.onboardbase`
 
 Optional:
 
-- `api_host` (String)
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--onboardbase--auth))
-- `environment` (String)
-- `project` (String)
+- `api_host` (String) APIHost use this to configure the host url for the API for selfhosted installation, default is https://public.onboardbase.com/api/v1/
+- `auth` (Block List, Max: 1) Auth configures how the Operator authenticates with the Onboardbase API (see [below for nested schema](#nestedblock--spec--provider_--onboardbase--auth))
+- `environment` (String) Environment is the name of an environmnent within a project to pull the secrets from
+- `project` (String) Project is an onboardbase project that the secrets should be pulled from
 
-<a id="nestedobjatt--spec--provider_--onboardbase--auth"></a>
+<a id="nestedblock--spec--provider_--onboardbase--auth"></a>
 ### Nested Schema for `spec.provider_.onboardbase.auth`
 
 Optional:
 
-- `api_key_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--onboardbase--auth--api_key_ref))
-- `passcode_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--onboardbase--auth--passcode_ref))
+- `api_key_ref` (Block List, Max: 1) OnboardbaseAPIKey is the APIKey generated by an admin account.
+It is used to recognize and authorize access to a project and environment within onboardbase (see [below for nested schema](#nestedblock--spec--provider_--onboardbase--auth--api_key_ref))
+- `passcode_ref` (Block List, Max: 1) OnboardbasePasscode is the passcode attached to the API Key (see [below for nested schema](#nestedblock--spec--provider_--onboardbase--auth--passcode_ref))
 
-<a id="nestedobjatt--spec--provider_--onboardbase--auth--api_key_ref"></a>
+<a id="nestedblock--spec--provider_--onboardbase--auth--api_key_ref"></a>
 ### Nested Schema for `spec.provider_.onboardbase.auth.api_key_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--onboardbase--auth--passcode_ref"></a>
+<a id="nestedblock--spec--provider_--onboardbase--auth--passcode_ref"></a>
 ### Nested Schema for `spec.provider_.onboardbase.auth.passcode_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--onepassword"></a>
+<a id="nestedblock--spec--provider_--onepassword"></a>
 ### Nested Schema for `spec.provider_.onepassword`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--onepassword--auth))
-- `connect_host` (String)
-- `vaults` (Map of String)
+- `auth` (Block List, Max: 1) Auth defines the information necessary to authenticate against OnePassword Connect Server (see [below for nested schema](#nestedblock--spec--provider_--onepassword--auth))
+- `connect_host` (String) ConnectHost defines the OnePassword Connect Server to connect to
+- `vaults` (Map of String) Vaults defines which OnePassword vaults to search in which order
 
-<a id="nestedobjatt--spec--provider_--onepassword--auth"></a>
+<a id="nestedblock--spec--provider_--onepassword--auth"></a>
 ### Nested Schema for `spec.provider_.onepassword.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--onepassword--auth--secret_ref))
+- `secret_ref` (Block List, Max: 1) OnePasswordAuthSecretRef holds secret references for 1Password credentials. (see [below for nested schema](#nestedblock--spec--provider_--onepassword--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--onepassword--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--onepassword--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.onepassword.auth.secret_ref`
 
 Optional:
 
-- `connect_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--onepassword--auth--secret_ref--connect_token_secret_ref))
+- `connect_token_secret_ref` (Block List, Max: 1) The ConnectToken is used for authentication to a 1Password Connect Server. (see [below for nested schema](#nestedblock--spec--provider_--onepassword--auth--secret_ref--connect_token_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--onepassword--auth--secret_ref--connect_token_secret_ref"></a>
+<a id="nestedblock--spec--provider_--onepassword--auth--secret_ref--connect_token_secret_ref"></a>
 ### Nested Schema for `spec.provider_.onepassword.auth.secret_ref.connect_token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--oracle"></a>
+<a id="nestedblock--spec--provider_--oracle"></a>
 ### Nested Schema for `spec.provider_.oracle`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--oracle--auth))
-- `compartment` (String)
-- `encryption_key` (String)
-- `principal_type` (String)
-- `region` (String)
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--oracle--service_account_ref))
-- `vault` (String)
+- `auth` (Block List, Max: 1) Auth configures how secret-manager authenticates with the Oracle Vault.
+If empty, use the instance principal, otherwise the user credentials specified in Auth. (see [below for nested schema](#nestedblock--spec--provider_--oracle--auth))
+- `compartment` (String) Compartment is the vault compartment OCID.
+Required for PushSecret
+- `encryption_key` (String) EncryptionKey is the OCID of the encryption key within the vault.
+Required for PushSecret
+- `principal_type` (String) The type of principal to use for authentication. If left blank, the Auth struct will
+determine the principal type. This optional field must be specified if using
+workload identity.
+- `region` (String) Region is the region where vault is located.
+- `service_account_ref` (Block List, Max: 1) ServiceAccountRef specified the service account
+that should be used when authenticating with WorkloadIdentity. (see [below for nested schema](#nestedblock--spec--provider_--oracle--service_account_ref))
+- `vault` (String) Vault is the vault's OCID of the specific vault where secret is located.
 
-<a id="nestedobjatt--spec--provider_--oracle--auth"></a>
+<a id="nestedblock--spec--provider_--oracle--auth"></a>
 ### Nested Schema for `spec.provider_.oracle.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--oracle--auth--secret_ref))
-- `tenancy` (String)
-- `user` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef to pass through sensitive information. (see [below for nested schema](#nestedblock--spec--provider_--oracle--auth--secret_ref))
+- `tenancy` (String) Tenancy is the tenancy OCID where user is located.
+- `user` (String) User is an access OCID specific to the account.
 
-<a id="nestedobjatt--spec--provider_--oracle--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--oracle--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.oracle.auth.secret_ref`
 
 Optional:
 
-- `fingerprint` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--oracle--auth--secret_ref--fingerprint))
-- `privatekey` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--oracle--auth--secret_ref--privatekey))
+- `fingerprint` (Block List, Max: 1) Fingerprint is the fingerprint of the API private key. (see [below for nested schema](#nestedblock--spec--provider_--oracle--auth--secret_ref--fingerprint))
+- `privatekey` (Block List, Max: 1) PrivateKey is the user's API Signing Key in PEM format, used for authentication. (see [below for nested schema](#nestedblock--spec--provider_--oracle--auth--secret_ref--privatekey))
 
-<a id="nestedobjatt--spec--provider_--oracle--auth--secret_ref--fingerprint"></a>
+<a id="nestedblock--spec--provider_--oracle--auth--secret_ref--fingerprint"></a>
 ### Nested Schema for `spec.provider_.oracle.auth.secret_ref.fingerprint`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--oracle--auth--secret_ref--privatekey"></a>
+<a id="nestedblock--spec--provider_--oracle--auth--secret_ref--privatekey"></a>
 ### Nested Schema for `spec.provider_.oracle.auth.secret_ref.privatekey`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--oracle--service_account_ref"></a>
+<a id="nestedblock--spec--provider_--oracle--service_account_ref"></a>
 ### Nested Schema for `spec.provider_.oracle.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--passbolt"></a>
+<a id="nestedblock--spec--provider_--passbolt"></a>
 ### Nested Schema for `spec.provider_.passbolt`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--passbolt--auth))
-- `host` (String)
+- `auth` (Block List, Max: 1) Auth defines the information necessary to authenticate against Passbolt Server (see [below for nested schema](#nestedblock--spec--provider_--passbolt--auth))
+- `host` (String) Host defines the Passbolt Server to connect to
 
-<a id="nestedobjatt--spec--provider_--passbolt--auth"></a>
+<a id="nestedblock--spec--provider_--passbolt--auth"></a>
 ### Nested Schema for `spec.provider_.passbolt.auth`
 
 Optional:
 
-- `password_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--passbolt--auth--password_secret_ref))
-- `private_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--passbolt--auth--private_key_secret_ref))
+- `password_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--passbolt--auth--password_secret_ref))
+- `private_key_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--passbolt--auth--private_key_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--passbolt--auth--password_secret_ref"></a>
+<a id="nestedblock--spec--provider_--passbolt--auth--password_secret_ref"></a>
 ### Nested Schema for `spec.provider_.passbolt.auth.password_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--passbolt--auth--private_key_secret_ref"></a>
+<a id="nestedblock--spec--provider_--passbolt--auth--private_key_secret_ref"></a>
 ### Nested Schema for `spec.provider_.passbolt.auth.private_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--passworddepot"></a>
+<a id="nestedblock--spec--provider_--passworddepot"></a>
 ### Nested Schema for `spec.provider_.passworddepot`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--passworddepot--auth))
-- `database` (String)
-- `host` (String)
+- `auth` (Block List, Max: 1) Auth configures how secret-manager authenticates with a Password Depot instance. (see [below for nested schema](#nestedblock--spec--provider_--passworddepot--auth))
+- `database` (String) Database to use as source
+- `host` (String) URL configures the Password Depot instance URL.
 
-<a id="nestedobjatt--spec--provider_--passworddepot--auth"></a>
+<a id="nestedblock--spec--provider_--passworddepot--auth"></a>
 ### Nested Schema for `spec.provider_.passworddepot.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--passworddepot--auth--secret_ref))
+- `secret_ref` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--provider_--passworddepot--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--passworddepot--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--passworddepot--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.passworddepot.auth.secret_ref`
 
 Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--passworddepot--auth--secret_ref--credentials))
+- `credentials` (Block List, Max: 1) Username / Password is used for authentication. (see [below for nested schema](#nestedblock--spec--provider_--passworddepot--auth--secret_ref--credentials))
 
-<a id="nestedobjatt--spec--provider_--passworddepot--auth--secret_ref--credentials"></a>
+<a id="nestedblock--spec--provider_--passworddepot--auth--secret_ref--credentials"></a>
 ### Nested Schema for `spec.provider_.passworddepot.auth.secret_ref.credentials`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--previder"></a>
+<a id="nestedblock--spec--provider_--previder"></a>
 ### Nested Schema for `spec.provider_.previder`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--previder--auth))
+- `auth` (Block List, Max: 1) PreviderAuth contains a secretRef for credentials. (see [below for nested schema](#nestedblock--spec--provider_--previder--auth))
 - `base_uri` (String)
 
-<a id="nestedobjatt--spec--provider_--previder--auth"></a>
+<a id="nestedblock--spec--provider_--previder--auth"></a>
 ### Nested Schema for `spec.provider_.previder.auth`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--previder--auth--secret_ref))
+- `secret_ref` (Block List, Max: 1) PreviderAuthSecretRef holds secret references for Previder Vault credentials. (see [below for nested schema](#nestedblock--spec--provider_--previder--auth--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--previder--auth--secret_ref"></a>
+<a id="nestedblock--spec--provider_--previder--auth--secret_ref"></a>
 ### Nested Schema for `spec.provider_.previder.auth.secret_ref`
 
 Optional:
 
-- `access_token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--previder--auth--secret_ref--access_token))
+- `access_token` (Block List, Max: 1) The AccessToken is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--previder--auth--secret_ref--access_token))
 
-<a id="nestedobjatt--spec--provider_--previder--auth--secret_ref--access_token"></a>
+<a id="nestedblock--spec--provider_--previder--auth--secret_ref--access_token"></a>
 ### Nested Schema for `spec.provider_.previder.auth.secret_ref.access_token`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--provider_--pulumi"></a>
+<a id="nestedblock--spec--provider_--pulumi"></a>
 ### Nested Schema for `spec.provider_.pulumi`
 
 Optional:
 
-- `access_token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--pulumi--access_token))
-- `api_url` (String)
-- `environment` (String)
-- `organization` (String)
-- `project` (String)
+- `access_token` (Block List, Max: 1) AccessToken is the access tokens to sign in to the Pulumi Cloud Console. (see [below for nested schema](#nestedblock--spec--provider_--pulumi--access_token))
+- `api_url` (String) APIURL is the URL of the Pulumi API.
+- `environment` (String) Environment are YAML documents composed of static key-value pairs, programmatic expressions,
+dynamically retrieved values from supported providers including all major clouds,
+and other Pulumi ESC environments.
+To create a new environment, visit https://www.pulumi.com/docs/esc/environments/ for more information.
+- `organization` (String) Organization are a space to collaborate on shared projects and stacks.
+To create a new organization, visit https://app.pulumi.com/ and click "New Organization".
+- `project` (String) Project is the name of the Pulumi ESC project the environment belongs to.
 
-<a id="nestedobjatt--spec--provider_--pulumi--access_token"></a>
+<a id="nestedblock--spec--provider_--pulumi--access_token"></a>
 ### Nested Schema for `spec.provider_.pulumi.access_token`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--pulumi--access_token--secret_ref))
+- `secret_ref` (Block List, Max: 1) SecretRef is a reference to a secret containing the Pulumi API token. (see [below for nested schema](#nestedblock--spec--provider_--pulumi--access_token--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--pulumi--access_token--secret_ref"></a>
+<a id="nestedblock--spec--provider_--pulumi--access_token--secret_ref"></a>
 ### Nested Schema for `spec.provider_.pulumi.access_token.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--scaleway"></a>
+<a id="nestedblock--spec--provider_--scaleway"></a>
 ### Nested Schema for `spec.provider_.scaleway`
 
 Optional:
 
-- `access_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--scaleway--access_key))
-- `api_url` (String)
-- `project_id` (String)
-- `region` (String)
-- `secret_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--scaleway--secret_key))
+- `access_key` (Block List, Max: 1) AccessKey is the non-secret part of the api key. (see [below for nested schema](#nestedblock--spec--provider_--scaleway--access_key))
+- `api_url` (String) APIURL is the url of the api to use. Defaults to https://api.scaleway.com
+- `project_id` (String) ProjectID is the id of your project, which you can find in the console: https://console.scaleway.com/project/settings
+- `region` (String) Region where your secrets are located: https://developers.scaleway.com/en/quickstart/#region-and-zone
+- `secret_key` (Block List, Max: 1) SecretKey is the non-secret part of the api key. (see [below for nested schema](#nestedblock--spec--provider_--scaleway--secret_key))
 
-<a id="nestedobjatt--spec--provider_--scaleway--access_key"></a>
+<a id="nestedblock--spec--provider_--scaleway--access_key"></a>
 ### Nested Schema for `spec.provider_.scaleway.access_key`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--scaleway--access_key--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--scaleway--access_key--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--scaleway--access_key--secret_ref"></a>
+<a id="nestedblock--spec--provider_--scaleway--access_key--secret_ref"></a>
 ### Nested Schema for `spec.provider_.scaleway.access_key.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--scaleway--secret_key"></a>
+<a id="nestedblock--spec--provider_--scaleway--secret_key"></a>
 ### Nested Schema for `spec.provider_.scaleway.secret_key`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--scaleway--secret_key--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--scaleway--secret_key--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--scaleway--secret_key--secret_ref"></a>
+<a id="nestedblock--spec--provider_--scaleway--secret_key--secret_ref"></a>
 ### Nested Schema for `spec.provider_.scaleway.secret_key.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--secretserver"></a>
+<a id="nestedblock--spec--provider_--secretserver"></a>
 ### Nested Schema for `spec.provider_.secretserver`
 
 Optional:
 
-- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--secretserver--password))
-- `server_url` (String)
-- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--secretserver--username))
+- `password` (Block List, Max: 1) Password is the secret server account password. (see [below for nested schema](#nestedblock--spec--provider_--secretserver--password))
+- `server_url` (String) ServerURL
+URL to your secret server installation
+- `username` (Block List, Max: 1) Username is the secret server account username. (see [below for nested schema](#nestedblock--spec--provider_--secretserver--username))
 
-<a id="nestedobjatt--spec--provider_--secretserver--password"></a>
+<a id="nestedblock--spec--provider_--secretserver--password"></a>
 ### Nested Schema for `spec.provider_.secretserver.password`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--secretserver--password--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--secretserver--password--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--secretserver--password--secret_ref"></a>
+<a id="nestedblock--spec--provider_--secretserver--password--secret_ref"></a>
 ### Nested Schema for `spec.provider_.secretserver.password.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--secretserver--username"></a>
+<a id="nestedblock--spec--provider_--secretserver--username"></a>
 ### Nested Schema for `spec.provider_.secretserver.username`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--secretserver--username--secret_ref))
-- `value` (String)
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--secretserver--username--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
 
-<a id="nestedobjatt--spec--provider_--secretserver--username--secret_ref"></a>
+<a id="nestedblock--spec--provider_--secretserver--username--secret_ref"></a>
 ### Nested Schema for `spec.provider_.secretserver.username.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--senhasegura"></a>
+<a id="nestedblock--spec--provider_--senhasegura"></a>
 ### Nested Schema for `spec.provider_.senhasegura`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--senhasegura--auth))
-- `ignore_ssl_certificate` (Boolean)
-- `module` (String)
-- `url` (String)
+- `auth` (Block List, Max: 1) Auth defines parameters to authenticate in senhasegura (see [below for nested schema](#nestedblock--spec--provider_--senhasegura--auth))
+- `ignore_ssl_certificate` (Boolean) IgnoreSslCertificate defines if SSL certificate must be ignored
+- `module` (String) Module defines which senhasegura module should be used to get secrets
+- `url` (String) URL of senhasegura
 
-<a id="nestedobjatt--spec--provider_--senhasegura--auth"></a>
+<a id="nestedblock--spec--provider_--senhasegura--auth"></a>
 ### Nested Schema for `spec.provider_.senhasegura.auth`
 
 Optional:
 
 - `client_id` (String)
-- `client_secret_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--senhasegura--auth--client_secret_secret_ref))
+- `client_secret_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--senhasegura--auth--client_secret_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--senhasegura--auth--client_secret_secret_ref"></a>
+<a id="nestedblock--spec--provider_--senhasegura--auth--client_secret_secret_ref"></a>
 ### Nested Schema for `spec.provider_.senhasegura.auth.client_secret_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--vault"></a>
+<a id="nestedblock--spec--provider_--vault"></a>
 ### Nested Schema for `spec.provider_.vault`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth))
-- `ca_bundle` (String)
-- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--ca_provider))
-- `forward_inconsistent` (Boolean)
-- `headers` (Map of String)
-- `namespace` (String)
-- `path` (String)
-- `read_your_writes` (Boolean)
-- `server` (String)
-- `tls` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--tls))
-- `version` (String)
+- `auth` (Block List, Max: 1) Auth configures how secret-manager authenticates with the Vault server. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth))
+- `ca_bundle` (String) PEM encoded CA bundle used to validate Vault server certificate. Only used
+if the Server URL is using HTTPS protocol. This parameter is ignored for
+plain HTTP protocol connection. If not set the system root certificates
+are used to validate the TLS connection.
+- `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate Vault server certificate. (see [below for nested schema](#nestedblock--spec--provider_--vault--ca_provider))
+- `forward_inconsistent` (Boolean) ForwardInconsistent tells Vault to forward read-after-write requests to the Vault
+leader instead of simply retrying within a loop. This can increase performance if
+the option is enabled serverside.
+https://www.vaultproject.io/docs/configuration/replication#allow_forwarding_via_header
+- `headers` (Map of String) Headers to be added in Vault request
+- `namespace` (String) Name of the vault namespace. Namespaces is a set of features within Vault Enterprise that allows
+Vault environments to support Secure Multi-tenancy. e.g: "ns1".
+More about namespaces can be found here https://www.vaultproject.io/docs/enterprise/namespaces
+- `path` (String) Path is the mount path of the Vault KV backend endpoint, e.g:
+"secret". The v2 KV secret engine version specific "/data" path suffix
+for fetching secrets from Vault is optional and will be appended
+if not present in specified path.
+- `read_your_writes` (Boolean) ReadYourWrites ensures isolated read-after-write semantics by
+providing discovered cluster replication states in each request.
+More information about eventual consistency in Vault can be found here
+https://www.vaultproject.io/docs/enterprise/consistency
+- `server` (String) Server is the connection address for the Vault server, e.g: "https://vault.example.com:8200".
+- `tls` (Block List, Max: 1) The configuration used for client side related TLS communication, when the Vault server
+requires mutual authentication. Only used if the Server URL is using HTTPS protocol.
+This parameter is ignored for plain HTTP protocol connection.
+It's worth noting this configuration is different from the "TLS certificates auth method",
+which is available under the `auth.cert` section. (see [below for nested schema](#nestedblock--spec--provider_--vault--tls))
+- `version` (String) Version is the Vault KV secret engine version. This can be either "v1" or
+"v2". Version defaults to "v2".
 
-<a id="nestedobjatt--spec--provider_--vault--auth"></a>
+<a id="nestedblock--spec--provider_--vault--auth"></a>
 ### Nested Schema for `spec.provider_.vault.auth`
 
 Optional:
 
-- `app_role` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--app_role))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--cert))
-- `iam` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--iam))
-- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--jwt))
-- `kubernetes` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--kubernetes))
-- `ldap` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--ldap))
-- `namespace` (String)
-- `token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--token_secret_ref))
-- `user_pass` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--user_pass))
+- `app_role` (Block List, Max: 1) AppRole authenticates with Vault using the App Role auth mechanism,
+with the role and secret stored in a Kubernetes Secret resource. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--app_role))
+- `cert` (Block List, Max: 1) Cert authenticates with TLS Certificates by passing client certificate, private key and ca certificate
+Cert authentication method (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--cert))
+- `iam` (Block List, Max: 1) Iam authenticates with vault by passing a special AWS request signed with AWS IAM credentials
+AWS IAM authentication method (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--iam))
+- `jwt` (Block List, Max: 1) Jwt authenticates with Vault by passing role and JWT token using the
+JWT/OIDC authentication method (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--jwt))
+- `kubernetes` (Block List, Max: 1) Kubernetes authenticates with Vault by passing the ServiceAccount
+token stored in the named Secret resource to the Vault server. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--kubernetes))
+- `ldap` (Block List, Max: 1) Ldap authenticates with Vault by passing username/password pair using
+the LDAP authentication method (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--ldap))
+- `namespace` (String) Name of the vault namespace to authenticate to. This can be different than the namespace your secret is in.
+Namespaces is a set of features within Vault Enterprise that allows
+Vault environments to support Secure Multi-tenancy. e.g: "ns1".
+More about namespaces can be found here https://www.vaultproject.io/docs/enterprise/namespaces
+This will default to Vault.Namespace field if set, or empty otherwise
+- `token_secret_ref` (Block List, Max: 1) TokenSecretRef authenticates with Vault by presenting a token. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--token_secret_ref))
+- `user_pass` (Block List, Max: 1) UserPass authenticates with Vault by passing username/password pair (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--user_pass))
 
-<a id="nestedobjatt--spec--provider_--vault--auth--app_role"></a>
+<a id="nestedblock--spec--provider_--vault--auth--app_role"></a>
 ### Nested Schema for `spec.provider_.vault.auth.app_role`
 
 Optional:
 
-- `path` (String)
-- `role_id` (String)
-- `role_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--app_role--role_ref))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--app_role--secret_ref))
+- `path` (String) Path where the App Role authentication backend is mounted
+in Vault, e.g: "approle"
+- `role_id` (String) RoleID configured in the App Role authentication backend when setting
+up the authentication backend in Vault.
+- `role_ref` (Block List, Max: 1) Reference to a key in a Secret that contains the App Role ID used
+to authenticate with Vault.
+The `key` field must be specified and denotes which entry within the Secret
+resource is used as the app role id. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--app_role--role_ref))
+- `secret_ref` (Block List, Max: 1) Reference to a key in a Secret that contains the App Role secret used
+to authenticate with Vault.
+The `key` field must be specified and denotes which entry within the Secret
+resource is used as the app role secret. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--app_role--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--vault--auth--app_role--role_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--app_role--role_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.app_role.role_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--app_role--secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--app_role--secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.app_role.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--cert"></a>
+<a id="nestedblock--spec--provider_--vault--auth--cert"></a>
 ### Nested Schema for `spec.provider_.vault.auth.cert`
 
 Optional:
 
-- `client_cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--cert--client_cert))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--cert--secret_ref))
+- `client_cert` (Block List, Max: 1) ClientCert is a certificate to authenticate using the Cert Vault
+authentication method (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--cert--client_cert))
+- `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing client private key to
+authenticate with Vault using the Cert authentication method (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--cert--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--vault--auth--cert--client_cert"></a>
+<a id="nestedblock--spec--provider_--vault--auth--cert--client_cert"></a>
 ### Nested Schema for `spec.provider_.vault.auth.cert.client_cert`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--cert--secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--cert--secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.cert.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--iam"></a>
+<a id="nestedblock--spec--provider_--vault--auth--iam"></a>
 ### Nested Schema for `spec.provider_.vault.auth.iam`
 
 Optional:
 
-- `external_id` (String)
-- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--iam--jwt))
-- `path` (String)
-- `region` (String)
-- `role` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--iam--secret_ref))
-- `vault_aws_iam_server_id` (String)
-- `vault_role` (String)
+- `external_id` (String) AWS External ID set on assumed IAM roles
+- `jwt` (Block List, Max: 1) Specify a service account with IRSA enabled (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--iam--jwt))
+- `path` (String) Path where the AWS auth method is enabled in Vault, e.g: "aws"
+- `region` (String) AWS region
+- `role` (String) This is the AWS role to be assumed before talking to vault
+- `secret_ref` (Block List, Max: 1) Specify credentials in a Secret object (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--iam--secret_ref))
+- `vault_aws_iam_server_id` (String) X-Vault-AWS-IAM-Server-ID is an additional header used by Vault IAM auth method to mitigate against different types of replay attacks. More details here: https://developer.hashicorp.com/vault/docs/auth/aws
+- `vault_role` (String) Vault Role. In vault, a role describes an identity with a set of permissions, groups, or policies you want to attach a user of the secrets engine
 
-<a id="nestedobjatt--spec--provider_--vault--auth--iam--jwt"></a>
+<a id="nestedblock--spec--provider_--vault--auth--iam--jwt"></a>
 ### Nested Schema for `spec.provider_.vault.auth.iam.jwt`
 
 Optional:
 
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--iam--jwt--service_account_ref))
+- `service_account_ref` (Block List, Max: 1) A reference to a ServiceAccount resource. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--iam--jwt--service_account_ref))
 
-<a id="nestedobjatt--spec--provider_--vault--auth--iam--jwt--service_account_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--iam--jwt--service_account_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.iam.jwt.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--iam--secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--iam--secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.iam.secret_ref`
 
 Optional:
 
-- `access_key_id_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--iam--secret_ref--access_key_id_secret_ref))
-- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--iam--secret_ref--secret_access_key_secret_ref))
-- `session_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--iam--secret_ref--session_token_secret_ref))
+- `access_key_id_secret_ref` (Block List, Max: 1) The AccessKeyID is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--iam--secret_ref--access_key_id_secret_ref))
+- `secret_access_key_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--iam--secret_ref--secret_access_key_secret_ref))
+- `session_token_secret_ref` (Block List, Max: 1) The SessionToken used for authentication
+This must be defined if AccessKeyID and SecretAccessKey are temporary credentials
+see: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--iam--secret_ref--session_token_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--vault--auth--iam--secret_ref--access_key_id_secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--iam--secret_ref--access_key_id_secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.iam.secret_ref.access_key_id_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--iam--secret_ref--secret_access_key_secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--iam--secret_ref--secret_access_key_secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.iam.secret_ref.secret_access_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--iam--secret_ref--session_token_secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--iam--secret_ref--session_token_secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.iam.secret_ref.session_token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--jwt"></a>
+<a id="nestedblock--spec--provider_--vault--auth--jwt"></a>
 ### Nested Schema for `spec.provider_.vault.auth.jwt`
 
 Optional:
 
-- `kubernetes_service_account_token` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--jwt--kubernetes_service_account_token))
-- `path` (String)
-- `role` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--jwt--secret_ref))
+- `kubernetes_service_account_token` (Block List, Max: 1) Optional ServiceAccountToken specifies the Kubernetes service account for which to request
+a token for with the `TokenRequest` API. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--jwt--kubernetes_service_account_token))
+- `path` (String) Path where the JWT authentication backend is mounted
+in Vault, e.g: "jwt"
+- `role` (String) Role is a JWT role to authenticate using the JWT/OIDC Vault
+authentication method
+- `secret_ref` (Block List, Max: 1) Optional SecretRef that refers to a key in a Secret resource containing JWT token to
+authenticate with Vault using the JWT/OIDC authentication method. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--jwt--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--vault--auth--jwt--kubernetes_service_account_token"></a>
+<a id="nestedblock--spec--provider_--vault--auth--jwt--kubernetes_service_account_token"></a>
 ### Nested Schema for `spec.provider_.vault.auth.jwt.kubernetes_service_account_token`
 
 Optional:
 
-- `audiences` (List of String)
-- `expiration_seconds` (Number)
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--jwt--kubernetes_service_account_token--service_account_ref))
+- `audiences` (List of String) Optional audiences field that will be used to request a temporary Kubernetes service
+account token for the service account referenced by `serviceAccountRef`.
+Defaults to a single audience `vault` it not specified.
+Deprecated: use serviceAccountRef.Audiences instead
+- `expiration_seconds` (Number) Optional expiration time in seconds that will be used to request a temporary
+Kubernetes service account token for the service account referenced by
+`serviceAccountRef`.
+Deprecated: this will be removed in the future.
+Defaults to 10 minutes.
+- `service_account_ref` (Block List, Max: 1) Service account field containing the name of a kubernetes ServiceAccount. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--jwt--kubernetes_service_account_token--service_account_ref))
 
-<a id="nestedobjatt--spec--provider_--vault--auth--jwt--kubernetes_service_account_token--service_account_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--jwt--kubernetes_service_account_token--service_account_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.jwt.kubernetes_service_account_token.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--jwt--secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--jwt--secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.jwt.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--kubernetes"></a>
+<a id="nestedblock--spec--provider_--vault--auth--kubernetes"></a>
 ### Nested Schema for `spec.provider_.vault.auth.kubernetes`
 
 Optional:
 
-- `mount_path` (String)
-- `role` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--kubernetes--secret_ref))
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--kubernetes--service_account_ref))
+- `mount_path` (String) Path where the Kubernetes authentication backend is mounted in Vault, e.g:
+"kubernetes"
+- `role` (String) A required field containing the Vault Role to assume. A Role binds a
+Kubernetes ServiceAccount with a set of Vault policies.
+- `secret_ref` (Block List, Max: 1) Optional secret field containing a Kubernetes ServiceAccount JWT used
+for authenticating with Vault. If a name is specified without a key,
+`token` is the default. If one is not specified, the one bound to
+the controller will be used. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--kubernetes--secret_ref))
+- `service_account_ref` (Block List, Max: 1) Optional service account field containing the name of a kubernetes ServiceAccount.
+If the service account is specified, the service account secret token JWT will be used
+for authenticating with Vault. If the service account selector is not supplied,
+the secretRef will be used instead. (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--kubernetes--service_account_ref))
 
-<a id="nestedobjatt--spec--provider_--vault--auth--kubernetes--secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--kubernetes--secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.kubernetes.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--kubernetes--service_account_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--kubernetes--service_account_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.kubernetes.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--ldap"></a>
+<a id="nestedblock--spec--provider_--vault--auth--ldap"></a>
 ### Nested Schema for `spec.provider_.vault.auth.ldap`
 
 Optional:
 
-- `path` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--ldap--secret_ref))
-- `username` (String)
+- `path` (String) Path where the LDAP authentication backend is mounted
+in Vault, e.g: "ldap"
+- `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing password for the LDAP
+user used to authenticate with Vault using the LDAP authentication
+method (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--ldap--secret_ref))
+- `username` (String) Username is an LDAP username used to authenticate using the LDAP Vault
+authentication method
 
-<a id="nestedobjatt--spec--provider_--vault--auth--ldap--secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--ldap--secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.ldap.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--token_secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--token_secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--vault--auth--user_pass"></a>
+<a id="nestedblock--spec--provider_--vault--auth--user_pass"></a>
 ### Nested Schema for `spec.provider_.vault.auth.user_pass`
 
 Optional:
 
-- `path` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--auth--user_pass--secret_ref))
-- `username` (String)
+- `path` (String) Path where the UserPassword authentication backend is mounted
+in Vault, e.g: "userpass"
+- `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing password for the
+user used to authenticate with Vault using the UserPass authentication
+method (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--user_pass--secret_ref))
+- `username` (String) Username is a username used to authenticate using the UserPass Vault
+authentication method
 
-<a id="nestedobjatt--spec--provider_--vault--auth--user_pass--secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--auth--user_pass--secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.auth.user_pass.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--vault--ca_provider"></a>
+<a id="nestedblock--spec--provider_--vault--ca_provider"></a>
 ### Nested Schema for `spec.provider_.vault.ca_provider`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
-- `type` (String)
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
 
 
-<a id="nestedobjatt--spec--provider_--vault--tls"></a>
+<a id="nestedblock--spec--provider_--vault--tls"></a>
 ### Nested Schema for `spec.provider_.vault.tls`
 
 Optional:
 
-- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--tls--cert_secret_ref))
-- `key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--vault--tls--key_secret_ref))
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef is a certificate added to the transport layer
+when communicating with the Vault server.
+If no key for the Secret is specified, external-secret will default to 'tls.crt'. (see [below for nested schema](#nestedblock--spec--provider_--vault--tls--cert_secret_ref))
+- `key_secret_ref` (Block List, Max: 1) KeySecretRef to a key in a Secret resource containing client private key
+added to the transport layer when communicating with the Vault server.
+If no key for the Secret is specified, external-secret will default to 'tls.key'. (see [below for nested schema](#nestedblock--spec--provider_--vault--tls--key_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--vault--tls--cert_secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--tls--cert_secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.tls.cert_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--provider_--vault--tls--key_secret_ref"></a>
+<a id="nestedblock--spec--provider_--vault--tls--key_secret_ref"></a>
 ### Nested Schema for `spec.provider_.vault.tls.key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--webhook"></a>
+<a id="nestedblock--spec--provider_--webhook"></a>
 ### Nested Schema for `spec.provider_.webhook`
 
 Optional:
 
-- `body` (String)
-- `ca_bundle` (String)
-- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--webhook--ca_provider))
-- `headers` (Map of String)
-- `method` (String)
-- `result` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--webhook--result))
-- `secrets` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--webhook--secrets))
-- `timeout` (String)
-- `url` (String)
+- `body` (String) Body
+- `ca_bundle` (String) PEM encoded CA bundle used to validate webhook server certificate. Only used
+if the Server URL is using HTTPS protocol. This parameter is ignored for
+plain HTTP protocol connection. If not set the system root certificates
+are used to validate the TLS connection.
+- `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate webhook server certificate. (see [below for nested schema](#nestedblock--spec--provider_--webhook--ca_provider))
+- `headers` (Map of String) Headers
+- `method` (String) Webhook Method
+- `result` (Block List, Max: 1) Result formatting (see [below for nested schema](#nestedblock--spec--provider_--webhook--result))
+- `secrets` (Block List) Secrets to fill in templates
+These secrets will be passed to the templating function as key value pairs under the given name (see [below for nested schema](#nestedblock--spec--provider_--webhook--secrets))
+- `timeout` (String) Timeout
+- `url` (String) Webhook url to call
 
-<a id="nestedobjatt--spec--provider_--webhook--ca_provider"></a>
+<a id="nestedblock--spec--provider_--webhook--ca_provider"></a>
 ### Nested Schema for `spec.provider_.webhook.ca_provider`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
-- `type` (String)
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
 
 
-<a id="nestedobjatt--spec--provider_--webhook--result"></a>
+<a id="nestedblock--spec--provider_--webhook--result"></a>
 ### Nested Schema for `spec.provider_.webhook.result`
 
 Optional:
 
-- `json_path` (String)
+- `json_path` (String) Json path of return value
 
 
-<a id="nestedobjatt--spec--provider_--webhook--secrets"></a>
+<a id="nestedblock--spec--provider_--webhook--secrets"></a>
 ### Nested Schema for `spec.provider_.webhook.secrets`
 
 Optional:
 
-- `name` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--webhook--secrets--secret_ref))
+- `name` (String) Name of this secret in templates
+- `secret_ref` (Block List, Max: 1) Secret ref to fill in credentials (see [below for nested schema](#nestedblock--spec--provider_--webhook--secrets--secret_ref))
 
-<a id="nestedobjatt--spec--provider_--webhook--secrets--secret_ref"></a>
+<a id="nestedblock--spec--provider_--webhook--secrets--secret_ref"></a>
 ### Nested Schema for `spec.provider_.webhook.secrets.secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--yandexcertificatemanager"></a>
+<a id="nestedblock--spec--provider_--yandexcertificatemanager"></a>
 ### Nested Schema for `spec.provider_.yandexcertificatemanager`
 
 Optional:
 
-- `api_endpoint` (String)
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--yandexcertificatemanager--auth))
-- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--yandexcertificatemanager--ca_provider))
+- `api_endpoint` (String) Yandex.Cloud API endpoint (e.g. 'api.cloud.yandex.net:443')
+- `auth` (Block List, Max: 1) Auth defines the information necessary to authenticate against Yandex Certificate Manager (see [below for nested schema](#nestedblock--spec--provider_--yandexcertificatemanager--auth))
+- `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate Yandex.Cloud server certificate. (see [below for nested schema](#nestedblock--spec--provider_--yandexcertificatemanager--ca_provider))
 
-<a id="nestedobjatt--spec--provider_--yandexcertificatemanager--auth"></a>
+<a id="nestedblock--spec--provider_--yandexcertificatemanager--auth"></a>
 ### Nested Schema for `spec.provider_.yandexcertificatemanager.auth`
 
 Optional:
 
-- `authorized_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--yandexcertificatemanager--auth--authorized_key_secret_ref))
+- `authorized_key_secret_ref` (Block List, Max: 1) The authorized key used for authentication (see [below for nested schema](#nestedblock--spec--provider_--yandexcertificatemanager--auth--authorized_key_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--yandexcertificatemanager--auth--authorized_key_secret_ref"></a>
+<a id="nestedblock--spec--provider_--yandexcertificatemanager--auth--authorized_key_secret_ref"></a>
 ### Nested Schema for `spec.provider_.yandexcertificatemanager.auth.authorized_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--yandexcertificatemanager--ca_provider"></a>
+<a id="nestedblock--spec--provider_--yandexcertificatemanager--ca_provider"></a>
 ### Nested Schema for `spec.provider_.yandexcertificatemanager.ca_provider`
 
 Optional:
 
-- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--yandexcertificatemanager--ca_provider--cert_secret_ref))
+- `cert_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--yandexcertificatemanager--ca_provider--cert_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--yandexcertificatemanager--ca_provider--cert_secret_ref"></a>
+<a id="nestedblock--spec--provider_--yandexcertificatemanager--ca_provider--cert_secret_ref"></a>
 ### Nested Schema for `spec.provider_.yandexcertificatemanager.ca_provider.cert_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--provider_--yandexlockbox"></a>
+<a id="nestedblock--spec--provider_--yandexlockbox"></a>
 ### Nested Schema for `spec.provider_.yandexlockbox`
 
 Optional:
 
-- `api_endpoint` (String)
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--yandexlockbox--auth))
-- `ca_provider` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--yandexlockbox--ca_provider))
+- `api_endpoint` (String) Yandex.Cloud API endpoint (e.g. 'api.cloud.yandex.net:443')
+- `auth` (Block List, Max: 1) Auth defines the information necessary to authenticate against Yandex Lockbox (see [below for nested schema](#nestedblock--spec--provider_--yandexlockbox--auth))
+- `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate Yandex.Cloud server certificate. (see [below for nested schema](#nestedblock--spec--provider_--yandexlockbox--ca_provider))
 
-<a id="nestedobjatt--spec--provider_--yandexlockbox--auth"></a>
+<a id="nestedblock--spec--provider_--yandexlockbox--auth"></a>
 ### Nested Schema for `spec.provider_.yandexlockbox.auth`
 
 Optional:
 
-- `authorized_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--yandexlockbox--auth--authorized_key_secret_ref))
+- `authorized_key_secret_ref` (Block List, Max: 1) The authorized key used for authentication (see [below for nested schema](#nestedblock--spec--provider_--yandexlockbox--auth--authorized_key_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--yandexlockbox--auth--authorized_key_secret_ref"></a>
+<a id="nestedblock--spec--provider_--yandexlockbox--auth--authorized_key_secret_ref"></a>
 ### Nested Schema for `spec.provider_.yandexlockbox.auth.authorized_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--provider_--yandexlockbox--ca_provider"></a>
+<a id="nestedblock--spec--provider_--yandexlockbox--ca_provider"></a>
 ### Nested Schema for `spec.provider_.yandexlockbox.ca_provider`
 
 Optional:
 
-- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_--yandexlockbox--ca_provider--cert_secret_ref))
+- `cert_secret_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--yandexlockbox--ca_provider--cert_secret_ref))
 
-<a id="nestedobjatt--spec--provider_--yandexlockbox--ca_provider--cert_secret_ref"></a>
+<a id="nestedblock--spec--provider_--yandexlockbox--ca_provider--cert_secret_ref"></a>
 ### Nested Schema for `spec.provider_.yandexlockbox.ca_provider.cert_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 
 
 
-<a id="nestedobjatt--spec--retry_settings"></a>
+<a id="nestedblock--spec--retry_settings"></a>
 ### Nested Schema for `spec.retry_settings`
 
 Optional:
@@ -2233,15 +2575,15 @@ Optional:
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `capabilities` (String)
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `capabilities` (String) SecretStoreCapabilities defines the possible operations a SecretStore can do.
+- `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:

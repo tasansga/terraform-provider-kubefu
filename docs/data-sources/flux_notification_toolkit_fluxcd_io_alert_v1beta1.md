@@ -18,8 +18,8 @@ Alert is the Schema for the alerts API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) AlertSpec defines an alerting rule for events involving a list of objects (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) AlertStatus defines the observed state of Alert (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) AlertSpec defines an alerting rule for events involving a list of objects (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) AlertStatus defines the observed state of Alert (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,54 +29,54 @@ Alert is the Schema for the alerts API
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `event_severity` (String)
-- `event_sources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--event_sources))
-- `exclusion_list` (List of String)
-- `provider_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--provider_ref))
-- `summary` (String)
-- `suspend` (Boolean)
+- `event_severity` (String) Filter events based on severity, defaults to ('info'). If set to 'info' no events will be filtered.
+- `event_sources` (Block List) Filter events based on the involved objects. (see [below for nested schema](#nestedblock--spec--event_sources))
+- `exclusion_list` (List of String) A list of Golang regular expressions to be used for excluding messages.
+- `provider_ref` (Block List, Max: 1) Send events using this provider. (see [below for nested schema](#nestedblock--spec--provider_ref))
+- `summary` (String) Short description of the impact and affected cluster.
+- `suspend` (Boolean) This flag tells the controller to suspend subsequent events dispatching. Defaults to false.
 
-<a id="nestedobjatt--spec--event_sources"></a>
+<a id="nestedblock--spec--event_sources"></a>
 ### Nested Schema for `spec.event_sources`
 
 Optional:
 
-- `api_version` (String)
-- `kind` (String)
-- `name` (String)
-- `namespace` (String)
+- `api_version` (String) API version of the referent
+- `kind` (String) Kind of the referent
+- `name` (String) Name of the referent
+- `namespace` (String) Namespace of the referent
 
 
-<a id="nestedobjatt--spec--provider_ref"></a>
+<a id="nestedblock--spec--provider_ref"></a>
 ### Nested Schema for `spec.provider_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `observed_generation` (Number)
+- `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
+- `observed_generation` (Number) ObservedGeneration is the last observed generation.
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)

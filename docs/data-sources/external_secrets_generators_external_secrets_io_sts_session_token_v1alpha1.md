@@ -24,7 +24,7 @@ For more information, see GetSessionToken (https://docs.aws.amazon.com/STS/lates
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -41,88 +41,106 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth))
-- `region` (String)
-- `request_parameters` (List of Object) (see [below for nested schema](#nestedobjatt--spec--request_parameters))
-- `role` (String)
+- `auth` (Block List, Max: 1) Auth defines how to authenticate with AWS (see [below for nested schema](#nestedblock--spec--auth))
+- `region` (String) Region specifies the region to operate in.
+- `request_parameters` (Block List, Max: 1) RequestParameters contains parameters that can be passed to the STS service. (see [below for nested schema](#nestedblock--spec--request_parameters))
+- `role` (String) You can assume a role before making calls to the
+desired AWS service.
 
-<a id="nestedobjatt--spec--auth"></a>
+<a id="nestedblock--spec--auth"></a>
 ### Nested Schema for `spec.auth`
 
 Optional:
 
-- `jwt` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--jwt))
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--secret_ref))
+- `jwt` (Block List, Max: 1) Authenticate against AWS using service account tokens. (see [below for nested schema](#nestedblock--spec--auth--jwt))
+- `secret_ref` (Block List, Max: 1) AWSAuthSecretRef holds secret references for AWS credentials
+both AccessKeyID and SecretAccessKey must be defined in order to properly authenticate. (see [below for nested schema](#nestedblock--spec--auth--secret_ref))
 
-<a id="nestedobjatt--spec--auth--jwt"></a>
+<a id="nestedblock--spec--auth--jwt"></a>
 ### Nested Schema for `spec.auth.jwt`
 
 Optional:
 
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--jwt--service_account_ref))
+- `service_account_ref` (Block List, Max: 1) A reference to a ServiceAccount resource. (see [below for nested schema](#nestedblock--spec--auth--jwt--service_account_ref))
 
-<a id="nestedobjatt--spec--auth--jwt--service_account_ref"></a>
+<a id="nestedblock--spec--auth--jwt--service_account_ref"></a>
 ### Nested Schema for `spec.auth.jwt.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
+to the namespace of the referent.
 
 
 
-<a id="nestedobjatt--spec--auth--secret_ref"></a>
+<a id="nestedblock--spec--auth--secret_ref"></a>
 ### Nested Schema for `spec.auth.secret_ref`
 
 Optional:
 
-- `access_key_id_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--secret_ref--access_key_id_secret_ref))
-- `secret_access_key_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--secret_ref--secret_access_key_secret_ref))
-- `session_token_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--secret_ref--session_token_secret_ref))
+- `access_key_id_secret_ref` (Block List, Max: 1) The AccessKeyID is used for authentication (see [below for nested schema](#nestedblock--spec--auth--secret_ref--access_key_id_secret_ref))
+- `secret_access_key_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication (see [below for nested schema](#nestedblock--spec--auth--secret_ref--secret_access_key_secret_ref))
+- `session_token_secret_ref` (Block List, Max: 1) The SessionToken used for authentication
+This must be defined if AccessKeyID and SecretAccessKey are temporary credentials
+see: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html (see [below for nested schema](#nestedblock--spec--auth--secret_ref--session_token_secret_ref))
 
-<a id="nestedobjatt--spec--auth--secret_ref--access_key_id_secret_ref"></a>
+<a id="nestedblock--spec--auth--secret_ref--access_key_id_secret_ref"></a>
 ### Nested Schema for `spec.auth.secret_ref.access_key_id_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
+defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
+to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--auth--secret_ref--secret_access_key_secret_ref"></a>
+<a id="nestedblock--spec--auth--secret_ref--secret_access_key_secret_ref"></a>
 ### Nested Schema for `spec.auth.secret_ref.secret_access_key_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
+defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
+to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--auth--secret_ref--session_token_secret_ref"></a>
+<a id="nestedblock--spec--auth--secret_ref--session_token_secret_ref"></a>
 ### Nested Schema for `spec.auth.secret_ref.session_token_secret_ref`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
+defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
+to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--request_parameters"></a>
+<a id="nestedblock--spec--request_parameters"></a>
 ### Nested Schema for `spec.request_parameters`
 
 Optional:
 
-- `serial_number` (String)
-- `session_duration` (Number)
-- `token_code` (String)
+- `serial_number` (String) SerialNumber is the identification number of the MFA device that is associated with the IAM user who is making
+the GetSessionToken call.
+Possible values: hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for a virtual device
+(such as arn:aws:iam::123456789012:mfa/user)
+- `session_duration` (Number) SessionDuration The duration, in seconds, that the credentials should remain valid. Acceptable durations for
+IAM user sessions range from 900 seconds (15 minutes) to 129,600 seconds (36 hours), with 43,200 seconds
+(12 hours) as the default.
+- `token_code` (String) TokenCode is the value provided by the MFA device, if MFA is required.

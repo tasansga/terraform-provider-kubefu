@@ -17,7 +17,7 @@ Probe defines monitoring for a set of static targets or ingresses.
 
 ### Required
 
-- `spec` (List of Object) Specification of desired Ingress selection for target discovery by Prometheus. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Min: 1, Max: 1) Specification of desired Ingress selection for target discovery by Prometheus. (see [below for nested schema](#nestedblock--spec))
 
 ### Optional
 
@@ -31,322 +31,322 @@ Probe defines monitoring for a set of static targets or ingresses.
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
-Required:
+Optional:
 
-- `authorization` (List of Object) (see [below for nested schema](#nestedobjatt--spec--authorization))
-- `basic_auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--basic_auth))
-- `bearer_token_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--bearer_token_secret))
-- `interval` (String)
-- `job_name` (String)
-- `label_limit` (Number)
-- `label_name_length_limit` (Number)
-- `label_value_length_limit` (Number)
-- `metric_relabelings` (List of Object) (see [below for nested schema](#nestedobjatt--spec--metric_relabelings))
-- `module` (String)
-- `oauth2` (List of Object) (see [below for nested schema](#nestedobjatt--spec--oauth2))
-- `prober` (List of Object) (see [below for nested schema](#nestedobjatt--spec--prober))
-- `sample_limit` (Number)
-- `scrape_timeout` (String)
-- `target_limit` (Number)
-- `targets` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets))
-- `tls_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config))
+- `authorization` (Block List, Max: 1) Authorization section for this endpoint (see [below for nested schema](#nestedblock--spec--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth allow an endpoint to authenticate over basic authentication. More info: https://prometheus.io/docs/operating/configuration/#endpoint (see [below for nested schema](#nestedblock--spec--basic_auth))
+- `bearer_token_secret` (Block List, Max: 1) Secret to mount to read bearer token for scraping targets. The secret needs to be in the same namespace as the probe and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--bearer_token_secret))
+- `interval` (String) Interval at which targets are probed using the configured prober. If not specified Prometheus' global scrape interval is used.
+- `job_name` (String) The job name assigned to scraped metrics by default.
+- `label_limit` (Number) Per-scrape limit on number of labels that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
+- `label_name_length_limit` (Number) Per-scrape limit on length of labels name that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
+- `label_value_length_limit` (Number) Per-scrape limit on length of labels value that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
+- `metric_relabelings` (Block List) MetricRelabelConfigs to apply to samples before ingestion. (see [below for nested schema](#nestedblock--spec--metric_relabelings))
+- `module` (String) The module to use for probing specifying how to probe the target. Example module configuring in the blackbox exporter: https://github.com/prometheus/blackbox_exporter/blob/master/example.yml
+- `oauth2` (Block List, Max: 1) OAuth2 for the URL. Only valid in Prometheus versions 2.27.0 and newer. (see [below for nested schema](#nestedblock--spec--oauth2))
+- `prober` (Block List, Max: 1) Specification for the prober to use for probing targets. The prober.URL parameter is required. Targets cannot be probed if left empty. (see [below for nested schema](#nestedblock--spec--prober))
+- `sample_limit` (Number) SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
+- `scrape_timeout` (String) Timeout for scraping metrics from the Prometheus exporter.
+- `target_limit` (Number) TargetLimit defines a limit on the number of scraped targets that will be accepted.
+- `targets` (Block List, Max: 1) Targets defines a set of static and/or dynamically discovered targets to be probed using the prober. (see [below for nested schema](#nestedblock--spec--targets))
+- `tls_config` (Block List, Max: 1) TLS configuration to use when scraping the endpoint. (see [below for nested schema](#nestedblock--spec--tls_config))
 
-<a id="nestedobjatt--spec--authorization"></a>
+<a id="nestedblock--spec--authorization"></a>
 ### Nested Schema for `spec.authorization`
 
-Required:
+Optional:
 
-- `credentials` (List of Object) (see [below for nested schema](#nestedobjatt--spec--authorization--credentials))
-- `type` (String)
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
 
-<a id="nestedobjatt--spec--authorization--credentials"></a>
+<a id="nestedblock--spec--authorization--credentials"></a>
 ### Nested Schema for `spec.authorization.credentials`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--basic_auth"></a>
+<a id="nestedblock--spec--basic_auth"></a>
 ### Nested Schema for `spec.basic_auth`
 
-Required:
+Optional:
 
-- `password` (List of Object) (see [below for nested schema](#nestedobjatt--spec--basic_auth--password))
-- `username` (List of Object) (see [below for nested schema](#nestedobjatt--spec--basic_auth--username))
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--basic_auth--username))
 
-<a id="nestedobjatt--spec--basic_auth--password"></a>
+<a id="nestedblock--spec--basic_auth--password"></a>
 ### Nested Schema for `spec.basic_auth.password`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--basic_auth--username"></a>
+<a id="nestedblock--spec--basic_auth--username"></a>
 ### Nested Schema for `spec.basic_auth.username`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--bearer_token_secret"></a>
+<a id="nestedblock--spec--bearer_token_secret"></a>
 ### Nested Schema for `spec.bearer_token_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
-<a id="nestedobjatt--spec--metric_relabelings"></a>
+<a id="nestedblock--spec--metric_relabelings"></a>
 ### Nested Schema for `spec.metric_relabelings`
 
-Required:
+Optional:
 
-- `action` (String)
-- `modulus` (Number)
-- `regex` (String)
-- `replacement` (String)
-- `separator` (String)
-- `source_labels` (List of String)
-- `target_label` (String)
+- `action` (String) Action to perform based on regex matching. Default is 'replace'
+- `modulus` (Number) Modulus to take of the hash of the source label values.
+- `regex` (String) Regular expression against which the extracted value is matched. Default is '(.*)'
+- `replacement` (String) Replacement value against which a regex replace is performed if the regular expression matches. Regex capture groups are available. Default is '$1'
+- `separator` (String) Separator placed between concatenated source label values. default is ';'.
+- `source_labels` (List of String) The source labels select values from existing labels. Their content is concatenated using the configured separator and matched against the configured regular expression for the replace, keep, and drop actions.
+- `target_label` (String) Label to which the resulting value is written in a replace action. It is mandatory for replace actions. Regex capture groups are available.
 
 
-<a id="nestedobjatt--spec--oauth2"></a>
+<a id="nestedblock--spec--oauth2"></a>
 ### Nested Schema for `spec.oauth2`
 
-Required:
+Optional:
 
-- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--oauth2--client_id))
-- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--oauth2--client_secret))
-- `endpoint_params` (Map of String)
-- `scopes` (List of String)
-- `token_url` (String)
+- `client_id` (Block List, Max: 1) The secret or configmap containing the OAuth2 client id (see [below for nested schema](#nestedblock--spec--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) The secret containing the OAuth2 client secret (see [below for nested schema](#nestedblock--spec--oauth2--client_secret))
+- `endpoint_params` (Map of String) Parameters to append to the token URL
+- `scopes` (List of String) OAuth2 scopes used for the token request
+- `token_url` (String) The URL to fetch the token from
 
-<a id="nestedobjatt--spec--oauth2--client_id"></a>
+<a id="nestedblock--spec--oauth2--client_id"></a>
 ### Nested Schema for `spec.oauth2.client_id`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--oauth2--client_id--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--oauth2--client_id--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--client_id--secret))
 
-<a id="nestedobjatt--spec--oauth2--client_id--config_map"></a>
+<a id="nestedblock--spec--oauth2--client_id--config_map"></a>
 ### Nested Schema for `spec.oauth2.client_id.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--oauth2--client_id--secret"></a>
+<a id="nestedblock--spec--oauth2--client_id--secret"></a>
 ### Nested Schema for `spec.oauth2.client_id.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--oauth2--client_secret"></a>
+<a id="nestedblock--spec--oauth2--client_secret"></a>
 ### Nested Schema for `spec.oauth2.client_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--prober"></a>
+<a id="nestedblock--spec--prober"></a>
 ### Nested Schema for `spec.prober`
 
-Required:
+Optional:
 
-- `path` (String)
-- `proxy_url` (String)
-- `scheme` (String)
-- `url` (String)
+- `path` (String) Path to collect metrics from. Defaults to `/probe`.
+- `proxy_url` (String) Optional ProxyURL.
+- `scheme` (String) HTTP scheme to use for scraping. Defaults to `http`.
+- `url` (String) Mandatory URL of the prober.
 
 
-<a id="nestedobjatt--spec--targets"></a>
+<a id="nestedblock--spec--targets"></a>
 ### Nested Schema for `spec.targets`
 
-Required:
+Optional:
 
-- `ingress` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--ingress))
-- `static_config` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--static_config))
+- `ingress` (Block List, Max: 1) Ingress defines the set of dynamically discovered ingress objects which hosts are considered for probing. (see [below for nested schema](#nestedblock--spec--targets--ingress))
+- `static_config` (Block List, Max: 1) StaticConfig defines static targets which are considers for probing. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#static_config. (see [below for nested schema](#nestedblock--spec--targets--static_config))
 
-<a id="nestedobjatt--spec--targets--ingress"></a>
+<a id="nestedblock--spec--targets--ingress"></a>
 ### Nested Schema for `spec.targets.ingress`
 
-Required:
+Optional:
 
-- `namespace_selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--ingress--namespace_selector))
-- `relabeling_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--ingress--relabeling_configs))
-- `selector` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--ingress--selector))
+- `namespace_selector` (Block List, Max: 1) Select Ingress objects by namespace. (see [below for nested schema](#nestedblock--spec--targets--ingress--namespace_selector))
+- `relabeling_configs` (Block List) RelabelConfigs to apply to samples before ingestion. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config (see [below for nested schema](#nestedblock--spec--targets--ingress--relabeling_configs))
+- `selector` (Block List, Max: 1) Select Ingress objects by labels. (see [below for nested schema](#nestedblock--spec--targets--ingress--selector))
 
-<a id="nestedobjatt--spec--targets--ingress--namespace_selector"></a>
+<a id="nestedblock--spec--targets--ingress--namespace_selector"></a>
 ### Nested Schema for `spec.targets.ingress.namespace_selector`
 
-Required:
+Optional:
 
-- `any` (Boolean)
-- `match_names` (List of String)
+- `any` (Boolean) Boolean describing whether all namespaces are selected in contrast to a list restricting them.
+- `match_names` (List of String) List of namespace names.
 
 
-<a id="nestedobjatt--spec--targets--ingress--relabeling_configs"></a>
+<a id="nestedblock--spec--targets--ingress--relabeling_configs"></a>
 ### Nested Schema for `spec.targets.ingress.relabeling_configs`
 
-Required:
+Optional:
 
-- `action` (String)
-- `modulus` (Number)
-- `regex` (String)
-- `replacement` (String)
-- `separator` (String)
-- `source_labels` (List of String)
-- `target_label` (String)
+- `action` (String) Action to perform based on regex matching. Default is 'replace'
+- `modulus` (Number) Modulus to take of the hash of the source label values.
+- `regex` (String) Regular expression against which the extracted value is matched. Default is '(.*)'
+- `replacement` (String) Replacement value against which a regex replace is performed if the regular expression matches. Regex capture groups are available. Default is '$1'
+- `separator` (String) Separator placed between concatenated source label values. default is ';'.
+- `source_labels` (List of String) The source labels select values from existing labels. Their content is concatenated using the configured separator and matched against the configured regular expression for the replace, keep, and drop actions.
+- `target_label` (String) Label to which the resulting value is written in a replace action. It is mandatory for replace actions. Regex capture groups are available.
 
 
-<a id="nestedobjatt--spec--targets--ingress--selector"></a>
+<a id="nestedblock--spec--targets--ingress--selector"></a>
 ### Nested Schema for `spec.targets.ingress.selector`
 
-Required:
+Optional:
 
-- `match_expressions` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--ingress--selector--match_expressions))
-- `match_labels` (Map of String)
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--targets--ingress--selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedobjatt--spec--targets--ingress--selector--match_expressions"></a>
+<a id="nestedblock--spec--targets--ingress--selector--match_expressions"></a>
 ### Nested Schema for `spec.targets.ingress.selector.match_expressions`
 
-Required:
+Optional:
 
-- `key` (String)
-- `operator` (String)
-- `values` (List of String)
-
-
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
 
 
-<a id="nestedobjatt--spec--targets--static_config"></a>
+
+
+<a id="nestedblock--spec--targets--static_config"></a>
 ### Nested Schema for `spec.targets.static_config`
 
-Required:
+Optional:
 
-- `labels` (Map of String)
-- `relabeling_configs` (List of Object) (see [below for nested schema](#nestedobjatt--spec--targets--static_config--relabeling_configs))
-- `static` (List of String)
+- `labels` (Map of String) Labels assigned to all metrics scraped from the targets.
+- `relabeling_configs` (Block List) RelabelConfigs to apply to samples before ingestion. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config (see [below for nested schema](#nestedblock--spec--targets--static_config--relabeling_configs))
+- `static` (List of String) Targets is a list of URLs to probe using the configured prober.
 
-<a id="nestedobjatt--spec--targets--static_config--relabeling_configs"></a>
+<a id="nestedblock--spec--targets--static_config--relabeling_configs"></a>
 ### Nested Schema for `spec.targets.static_config.relabeling_configs`
 
-Required:
+Optional:
 
-- `action` (String)
-- `modulus` (Number)
-- `regex` (String)
-- `replacement` (String)
-- `separator` (String)
-- `source_labels` (List of String)
-- `target_label` (String)
-
-
+- `action` (String) Action to perform based on regex matching. Default is 'replace'
+- `modulus` (Number) Modulus to take of the hash of the source label values.
+- `regex` (String) Regular expression against which the extracted value is matched. Default is '(.*)'
+- `replacement` (String) Replacement value against which a regex replace is performed if the regular expression matches. Regex capture groups are available. Default is '$1'
+- `separator` (String) Separator placed between concatenated source label values. default is ';'.
+- `source_labels` (List of String) The source labels select values from existing labels. Their content is concatenated using the configured separator and matched against the configured regular expression for the replace, keep, and drop actions.
+- `target_label` (String) Label to which the resulting value is written in a replace action. It is mandatory for replace actions. Regex capture groups are available.
 
 
-<a id="nestedobjatt--spec--tls_config"></a>
+
+
+<a id="nestedblock--spec--tls_config"></a>
 ### Nested Schema for `spec.tls_config`
 
-Required:
+Optional:
 
-- `ca` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--ca))
-- `cert` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--cert))
-- `insecure_skip_verify` (Boolean)
-- `key_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--key_secret))
-- `server_name` (String)
+- `ca` (Block List, Max: 1) Struct containing the CA cert to use for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--ca))
+- `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--key_secret))
+- `server_name` (String) Used to verify the hostname for the targets.
 
-<a id="nestedobjatt--spec--tls_config--ca"></a>
+<a id="nestedblock--spec--tls_config--ca"></a>
 ### Nested Schema for `spec.tls_config.ca`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--ca--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--ca--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--ca--secret))
 
-<a id="nestedobjatt--spec--tls_config--ca--config_map"></a>
+<a id="nestedblock--spec--tls_config--ca--config_map"></a>
 ### Nested Schema for `spec.tls_config.ca.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--tls_config--ca--secret"></a>
+<a id="nestedblock--spec--tls_config--ca--secret"></a>
 ### Nested Schema for `spec.tls_config.ca.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--tls_config--cert"></a>
+<a id="nestedblock--spec--tls_config--cert"></a>
 ### Nested Schema for `spec.tls_config.cert`
 
-Required:
+Optional:
 
-- `config_map` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--cert--config_map))
-- `secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--tls_config--cert--secret))
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--cert--secret))
 
-<a id="nestedobjatt--spec--tls_config--cert--config_map"></a>
+<a id="nestedblock--spec--tls_config--cert--config_map"></a>
 ### Nested Schema for `spec.tls_config.cert.config_map`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
 
 
-<a id="nestedobjatt--spec--tls_config--cert--secret"></a>
+<a id="nestedblock--spec--tls_config--cert--secret"></a>
 ### Nested Schema for `spec.tls_config.cert.secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
 
-<a id="nestedobjatt--spec--tls_config--key_secret"></a>
+<a id="nestedblock--spec--tls_config--key_secret"></a>
 ### Nested Schema for `spec.tls_config.key_secret`
 
-Required:
+Optional:
 
-- `key` (String)
-- `name` (String)
-- `optional` (Boolean)
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined

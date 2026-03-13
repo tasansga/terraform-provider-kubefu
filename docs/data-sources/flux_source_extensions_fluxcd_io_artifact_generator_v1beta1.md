@@ -18,8 +18,8 @@ ArtifactGenerator is the Schema for the artifactgenerators API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) ArtifactGeneratorSpec defines the desired state of ArtifactGenerator. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) ArtifactGeneratorStatus defines the observed state of ArtifactGenerator. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) ArtifactGeneratorSpec defines the desired state of ArtifactGenerator. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) ArtifactGeneratorStatus defines the observed state of ArtifactGenerator. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -36,77 +36,109 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `artifacts` (List of Object) (see [below for nested schema](#nestedobjatt--spec--artifacts))
-- `sources` (List of Object) (see [below for nested schema](#nestedobjatt--spec--sources))
+- `artifacts` (Block List) OutputArtifacts is a list of output artifacts to be generated. (see [below for nested schema](#nestedblock--spec--artifacts))
+- `sources` (Block List) Sources is a list of references to the Flux source-controller
+resources that will be used to generate the artifact. (see [below for nested schema](#nestedblock--spec--sources))
 
-<a id="nestedobjatt--spec--artifacts"></a>
+<a id="nestedblock--spec--artifacts"></a>
 ### Nested Schema for `spec.artifacts`
 
 Optional:
 
-- `copy` (List of Object) (see [below for nested schema](#nestedobjatt--spec--artifacts--copy))
-- `name` (String)
-- `origin_revision` (String)
-- `revision` (String)
+- `copy` (Block List) Copy defines a list of copy operations to perform from the sources to the generated artifact.
+The copy operations are performed in the order they are listed with existing files
+being overwritten by later copy operations. (see [below for nested schema](#nestedblock--spec--artifacts--copy))
+- `name` (String) Name is the name of the generated artifact.
+- `origin_revision` (String) OriginRevision is used to set the 'org.opencontainers.image.revision'
+annotation on the generated artifact metadata.
+If specified, it must point to an existing source alias in the format "@<alias>".
+If the referenced source has an origin revision (e.g. a Git commit SHA),
+it will be used to set the annotation on the generated artifact.
+If the referenced source does not have an origin revision, the field is ignored.
+- `revision` (String) Revision is the revision of the generated artifact.
+If specified, it must point to an existing source alias in the format "@<alias>".
+If not specified, the revision is automatically set to the digest of the artifact content.
 
-<a id="nestedobjatt--spec--artifacts--copy"></a>
+<a id="nestedblock--spec--artifacts--copy"></a>
 ### Nested Schema for `spec.artifacts.copy`
 
 Optional:
 
-- `exclude` (List of String)
-- `from` (String)
-- `strategy` (String)
-- `to` (String)
+- `exclude` (List of String) Exclude specifies a list of glob patterns to exclude
+files and dirs matched by the 'From' field.
+- `from` (String) From specifies the source (by alias) and the glob pattern to match files.
+The format is "@<alias>/<glob-pattern>".
+- `strategy` (String) Strategy specifies the copy strategy to use.
+'Overwrite' will overwrite existing files in the destination.
+'Merge' is for merging YAML files using Helm values merge strategy.
+If not specified, defaults to 'Overwrite'.
+- `to` (String) To specifies the destination path within the artifact.
+The format is "@artifact/path", the alias "artifact"
+refers to the root path of the generated artifact.
 
 
 
-<a id="nestedobjatt--spec--sources"></a>
+<a id="nestedblock--spec--sources"></a>
 ### Nested Schema for `spec.sources`
 
 Optional:
 
-- `alias` (String)
-- `kind` (String)
-- `name` (String)
-- `namespace` (String)
+- `alias` (String) Alias of the source within the ArtifactGenerator context.
+The alias must be unique per ArtifactGenerator, and must consist
+of lower case alphanumeric characters, underscores, and hyphens.
+It must start and end with an alphanumeric character.
+- `kind` (String) Kind of the source.
+- `name` (String) Name of the source.
+- `namespace` (String) Namespace of the source.
+If not provided, defaults to the same namespace as the ArtifactGenerator.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `inventory` (List of Object) (see [below for nested schema](#nestedobjatt--status--inventory))
-- `last_handled_reconcile_at` (String)
-- `observed_sources_digest` (String)
+- `conditions` (Block List) Conditions holds the conditions for the ArtifactGenerator. (see [below for nested schema](#nestedblock--status--conditions))
+- `inventory` (Block List) Inventory contains the list of generated ExternalArtifact references. (see [below for nested schema](#nestedblock--status--inventory))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent
+reconcile request value, so a change of the annotation value
+can be detected.
+- `observed_sources_digest` (String) ObservedSourcesDigest is a hash representing the current state of
+all the sources referenced by the ArtifactGenerator.
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another.
+This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition.
+This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon.
+For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition.
+Producers of specific condition types may define expected values and meanings for this field,
+and whether the values are considered a guaranteed API.
+The value should be a CamelCase string.
+This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase.
 
 
-<a id="nestedobjatt--status--inventory"></a>
+<a id="nestedblock--status--inventory"></a>
 ### Nested Schema for `status.inventory`
 
 Optional:
 
-- `digest` (String)
-- `filename` (String)
-- `name` (String)
-- `namespace` (String)
+- `digest` (String) Digest of the referent artifact.
+- `filename` (String) Filename is the name of the artifact file.
+- `name` (String) Name of the referent artifact.
+- `namespace` (String) Namespace of the referent artifact.

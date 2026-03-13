@@ -18,8 +18,8 @@ Provider is the Schema for the providers API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) ProviderSpec defines the desired state of the Provider. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) ProviderStatus defines the observed state of the Provider. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) ProviderSpec defines the desired state of the Provider. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) ProviderStatus defines the observed state of the Provider. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,56 +29,56 @@ Provider is the Schema for the providers API.
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `address` (String)
-- `cert_secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--cert_secret_ref))
-- `channel` (String)
-- `interval` (String)
-- `proxy` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--secret_ref))
-- `suspend` (Boolean)
-- `timeout` (String)
-- `type` (String)
-- `username` (String)
+- `address` (String) Address specifies the HTTP/S incoming webhook address of this Provider.
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef specifies the Secret containing a PEM-encoded CA certificate (`caFile`). (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
+- `channel` (String) Channel specifies the destination channel where events should be posted.
+- `interval` (String) Interval at which to reconcile the Provider with its Secret references.
+- `proxy` (String) Proxy the HTTP/S address of the proxy server.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing the authentication credentials for this Provider. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `suspend` (Boolean) Suspend tells the controller to suspend subsequent events handling for this Provider.
+- `timeout` (String) Timeout for sending alerts to the Provider.
+- `type` (String) Type specifies which Provider implementation to use.
+- `username` (String) Username specifies the name under which events are posted.
 
-<a id="nestedobjatt--spec--cert_secret_ref"></a>
+<a id="nestedblock--spec--cert_secret_ref"></a>
 ### Nested Schema for `spec.cert_secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--secret_ref"></a>
+<a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_handled_reconcile_at` (String)
-- `observed_generation` (Number)
+- `conditions` (Block List) Conditions holds the conditions for the Provider. (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.
+- `observed_generation` (Number) ObservedGeneration is the last reconciled generation.
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)

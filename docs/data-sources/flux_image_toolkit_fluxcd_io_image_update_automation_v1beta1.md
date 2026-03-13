@@ -18,8 +18,8 @@ ImageUpdateAutomation is the Schema for the imageupdateautomations API
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) ImageUpdateAutomationSpec defines the desired state of ImageUpdateAutomation (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) ImageUpdateAutomationStatus defines the observed state of ImageUpdateAutomation (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) ImageUpdateAutomationSpec defines the desired state of ImageUpdateAutomation (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) ImageUpdateAutomationStatus defines the observed state of ImageUpdateAutomation (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -29,129 +29,129 @@ ImageUpdateAutomation is the Schema for the imageupdateautomations API
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `git` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git))
-- `interval` (String)
-- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--source_ref))
-- `suspend` (Boolean)
-- `update` (List of Object) (see [below for nested schema](#nestedobjatt--spec--update))
+- `git` (Block List, Max: 1) GitSpec contains all the git-specific definitions. This is technically optional, but in practice mandatory until there are other kinds of source allowed. (see [below for nested schema](#nestedblock--spec--git))
+- `interval` (String) Interval gives an lower bound for how often the automation run should be attempted.
+- `source_ref` (Block List, Max: 1) SourceRef refers to the resource giving access details to a git repository. (see [below for nested schema](#nestedblock--spec--source_ref))
+- `suspend` (Boolean) Suspend tells the controller to not run this automation, until it is unset (or set to false). Defaults to false.
+- `update` (Block List, Max: 1) Update gives the specification for how to update the files in the repository. This can be left empty, to use the default value. (see [below for nested schema](#nestedblock--spec--update))
 
-<a id="nestedobjatt--spec--git"></a>
+<a id="nestedblock--spec--git"></a>
 ### Nested Schema for `spec.git`
 
 Optional:
 
-- `checkout` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--checkout))
-- `commit` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--commit))
-- `push` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--push))
+- `checkout` (Block List, Max: 1) Checkout gives the parameters for cloning the git repository, ready to make changes. If not present, the `spec.ref` field from the referenced `GitRepository` or its default will be used. (see [below for nested schema](#nestedblock--spec--git--checkout))
+- `commit` (Block List, Max: 1) Commit specifies how to commit to the git repository. (see [below for nested schema](#nestedblock--spec--git--commit))
+- `push` (Block List, Max: 1) Push specifies how and where to push commits made by the automation. If missing, commits are pushed (back) to `.spec.checkout.branch` or its default. (see [below for nested schema](#nestedblock--spec--git--push))
 
-<a id="nestedobjatt--spec--git--checkout"></a>
+<a id="nestedblock--spec--git--checkout"></a>
 ### Nested Schema for `spec.git.checkout`
 
 Optional:
 
-- `ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--checkout--ref))
+- `ref` (Block List, Max: 1) Reference gives a branch, tag or commit to clone from the Git repository. (see [below for nested schema](#nestedblock--spec--git--checkout--ref))
 
-<a id="nestedobjatt--spec--git--checkout--ref"></a>
+<a id="nestedblock--spec--git--checkout--ref"></a>
 ### Nested Schema for `spec.git.checkout.ref`
 
 Optional:
 
-- `branch` (String)
-- `commit` (String)
-- `semver` (String)
-- `tag` (String)
+- `branch` (String) The Git branch to checkout, defaults to master.
+- `commit` (String) The Git commit SHA to checkout, if specified Tag filters will be ignored.
+- `semver` (String) The Git tag semver expression, takes precedence over Tag.
+- `tag` (String) The Git tag to checkout, takes precedence over Branch.
 
 
 
-<a id="nestedobjatt--spec--git--commit"></a>
+<a id="nestedblock--spec--git--commit"></a>
 ### Nested Schema for `spec.git.commit`
 
 Optional:
 
-- `author` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--commit--author))
-- `message_template` (String)
-- `signing_key` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--commit--signing_key))
+- `author` (Block List, Max: 1) Author gives the email and optionally the name to use as the author of commits. (see [below for nested schema](#nestedblock--spec--git--commit--author))
+- `message_template` (String) MessageTemplate provides a template for the commit message, into which will be interpolated the details of the change made.
+- `signing_key` (Block List, Max: 1) SigningKey provides the option to sign commits with a GPG key (see [below for nested schema](#nestedblock--spec--git--commit--signing_key))
 
-<a id="nestedobjatt--spec--git--commit--author"></a>
+<a id="nestedblock--spec--git--commit--author"></a>
 ### Nested Schema for `spec.git.commit.author`
 
 Optional:
 
-- `email` (String)
-- `name` (String)
+- `email` (String) Email gives the email to provide when making a commit.
+- `name` (String) Name gives the name to provide when making a commit.
 
 
-<a id="nestedobjatt--spec--git--commit--signing_key"></a>
+<a id="nestedblock--spec--git--commit--signing_key"></a>
 ### Nested Schema for `spec.git.commit.signing_key`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--git--commit--signing_key--secret_ref))
+- `secret_ref` (Block List, Max: 1) SecretRef holds the name to a secret that contains a 'git.asc' key corresponding to the ASCII Armored file containing the GPG signing keypair as the value. It must be in the same namespace as the ImageUpdateAutomation. (see [below for nested schema](#nestedblock--spec--git--commit--signing_key--secret_ref))
 
-<a id="nestedobjatt--spec--git--commit--signing_key--secret_ref"></a>
+<a id="nestedblock--spec--git--commit--signing_key--secret_ref"></a>
 ### Nested Schema for `spec.git.commit.signing_key.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent
 
 
 
 
-<a id="nestedobjatt--spec--git--push"></a>
+<a id="nestedblock--spec--git--push"></a>
 ### Nested Schema for `spec.git.push`
 
 Optional:
 
-- `branch` (String)
+- `branch` (String) Branch specifies that commits should be pushed to the branch named. The branch is created using `.spec.checkout.branch` as the starting point, if it doesn't already exist.
 
 
 
-<a id="nestedobjatt--spec--source_ref"></a>
+<a id="nestedblock--spec--source_ref"></a>
 ### Nested Schema for `spec.source_ref`
 
 Optional:
 
-- `api_version` (String)
-- `kind` (String)
-- `name` (String)
+- `api_version` (String) API version of the referent
+- `kind` (String) Kind of the referent
+- `name` (String) Name of the referent
 
 
-<a id="nestedobjatt--spec--update"></a>
+<a id="nestedblock--spec--update"></a>
 ### Nested Schema for `spec.update`
 
 Optional:
 
-- `path` (String)
-- `strategy` (String)
+- `path` (String) Path to the directory containing the manifests to be updated. Defaults to 'None', which translates to the root path of the GitRepositoryRef.
+- `strategy` (String) Strategy names the strategy to be used.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_automation_run_time` (String)
-- `last_handled_reconcile_at` (String)
-- `last_push_commit` (String)
-- `last_push_time` (String)
+- `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
+- `last_automation_run_time` (String) LastAutomationRunTime records the last time the controller ran this automation through to completion (even if no updates were made).
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change can be detected.
+- `last_push_commit` (String) LastPushCommit records the SHA1 of the last commit made by the controller, for this automation object
+- `last_push_time` (String) LastPushTime records the time of the last pushed change.
 - `observed_generation` (Number)
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)

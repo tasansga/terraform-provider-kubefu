@@ -18,7 +18,7 @@ SSHKey generates SSH key pairs.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) SSHKeySpec controls the behavior of the ssh key generator. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Max: 1) SSHKeySpec controls the behavior of the ssh key generator. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -35,11 +35,13 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `comment` (String)
-- `key_size` (Number)
-- `key_type` (String)
+- `comment` (String) Comment specifies an optional comment for the SSH key
+- `key_size` (Number) KeySize specifies the key size for RSA keys (default: 2048)
+For RSA keys: 2048, 3072, 4096
+Ignored for ed25519 keys
+- `key_type` (String) KeyType specifies the SSH key type (rsa, ed25519)

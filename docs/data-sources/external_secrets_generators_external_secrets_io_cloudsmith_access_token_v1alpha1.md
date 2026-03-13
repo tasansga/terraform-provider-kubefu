@@ -18,7 +18,7 @@ CloudsmithAccessToken generates Cloudsmith access token using OIDC authenticatio
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -35,21 +35,24 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `api_url` (String)
-- `org_slug` (String)
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--service_account_ref))
-- `service_slug` (String)
+- `api_url` (String) APIURL configures the Cloudsmith API URL. Defaults to https://api.cloudsmith.io.
+- `org_slug` (String) OrgSlug is the organization slug in Cloudsmith
+- `service_account_ref` (Block List, Max: 1) Name of the service account you are federating with (see [below for nested schema](#nestedblock--spec--service_account_ref))
+- `service_slug` (String) ServiceSlug is the service slug in Cloudsmith for OIDC authentication
 
-<a id="nestedobjatt--spec--service_account_ref"></a>
+<a id="nestedblock--spec--service_account_ref"></a>
 ### Nested Schema for `spec.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.

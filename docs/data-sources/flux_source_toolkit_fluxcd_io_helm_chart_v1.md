@@ -18,8 +18,8 @@ HelmChart is the Schema for the helmcharts API.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) HelmChartSpec specifies the desired state of a Helm chart. (see [below for nested schema](#nestedatt--spec))
-- `status` (List of Object) HelmChartStatus records the observed state of the HelmChart. (see [below for nested schema](#nestedatt--status))
+- `spec` (Block List, Max: 1) HelmChartSpec specifies the desired state of a Helm chart. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) HelmChartStatus records the observed state of the HelmChart. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -36,95 +36,148 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `chart` (String)
-- `ignore_missing_values_files` (Boolean)
-- `interval` (String)
-- `reconcile_strategy` (String)
-- `source_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--source_ref))
-- `suspend` (Boolean)
-- `values_files` (List of String)
-- `verify` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify))
-- `version` (String)
+- `chart` (String) Chart is the name or path the Helm chart is available at in the
+SourceRef.
+- `ignore_missing_values_files` (Boolean) IgnoreMissingValuesFiles controls whether to silently ignore missing values
+files rather than failing.
+- `interval` (String) Interval at which the HelmChart SourceRef is checked for updates.
+This interval is approximate and may be subject to jitter to ensure
+efficient use of resources.
+- `reconcile_strategy` (String) ReconcileStrategy determines what enables the creation of a new artifact.
+Valid values are ('ChartVersion', 'Revision').
+See the documentation of the values for an explanation on their behavior.
+Defaults to ChartVersion when omitted.
+- `source_ref` (Block List, Max: 1) SourceRef is the reference to the Source the chart is available at. (see [below for nested schema](#nestedblock--spec--source_ref))
+- `suspend` (Boolean) Suspend tells the controller to suspend the reconciliation of this
+source.
+- `values_files` (List of String) ValuesFiles is an alternative list of values files to use as the chart
+values (values.yaml is not included by default), expected to be a
+relative path in the SourceRef.
+Values files are merged in the order of this list with the last file
+overriding the first. Ignored when omitted.
+- `verify` (Block List, Max: 1) Verify contains the secret name containing the trusted public keys
+used to verify the signature and specifies which provider to use to check
+whether OCI image is authentic.
+This field is only supported when using HelmRepository source with spec.type 'oci'.
+Chart dependencies, which are not bundled in the umbrella chart artifact, are not verified. (see [below for nested schema](#nestedblock--spec--verify))
+- `version` (String) Version is the chart version semver expression, ignored for charts from
+GitRepository and Bucket sources. Defaults to latest when omitted.
 
-<a id="nestedobjatt--spec--source_ref"></a>
+<a id="nestedblock--spec--source_ref"></a>
 ### Nested Schema for `spec.source_ref`
 
 Optional:
 
-- `api_version` (String)
-- `kind` (String)
-- `name` (String)
+- `api_version` (String) APIVersion of the referent.
+- `kind` (String) Kind of the referent, valid values are ('HelmRepository', 'GitRepository',
+'Bucket').
+- `name` (String) Name of the referent.
 
 
-<a id="nestedobjatt--spec--verify"></a>
+<a id="nestedblock--spec--verify"></a>
 ### Nested Schema for `spec.verify`
 
 Optional:
 
-- `match_oidc_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify--match_oidc_identity))
-- `provider_` (String)
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--verify--secret_ref))
+- `match_oidc_identity` (Block List) MatchOIDCIdentity specifies the identity matching criteria to use
+while verifying an OCI artifact which was signed using Cosign keyless
+signing. The artifact's identity is deemed to be verified if any of the
+specified matchers match against the identity. (see [below for nested schema](#nestedblock--spec--verify--match_oidc_identity))
+- `provider_` (String) Provider specifies the technology used to sign the OCI Artifact.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Kubernetes Secret containing the
+trusted public keys. (see [below for nested schema](#nestedblock--spec--verify--secret_ref))
 
-<a id="nestedobjatt--spec--verify--match_oidc_identity"></a>
+<a id="nestedblock--spec--verify--match_oidc_identity"></a>
 ### Nested Schema for `spec.verify.match_oidc_identity`
 
 Optional:
 
-- `issuer` (String)
-- `subject` (String)
+- `issuer` (String) Issuer specifies the regex pattern to match against to verify
+the OIDC issuer in the Fulcio certificate. The pattern must be a
+valid Go regular expression.
+- `subject` (String) Subject specifies the regex pattern to match against to verify
+the identity subject in the Fulcio certificate. The pattern must
+be a valid Go regular expression.
 
 
-<a id="nestedobjatt--spec--verify--secret_ref"></a>
+<a id="nestedblock--spec--verify--secret_ref"></a>
 ### Nested Schema for `spec.verify.secret_ref`
 
 Optional:
 
-- `name` (String)
+- `name` (String) Name of the referent.
 
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `artifact` (List of Object) (see [below for nested schema](#nestedobjatt--status--artifact))
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
-- `last_handled_reconcile_at` (String)
-- `observed_chart_name` (String)
-- `observed_generation` (Number)
-- `observed_source_artifact_revision` (String)
-- `observed_values_files` (List of String)
-- `url` (String)
+- `artifact` (Block List, Max: 1) Artifact represents the output of the last successful reconciliation. (see [below for nested schema](#nestedblock--status--artifact))
+- `conditions` (Block List) Conditions holds the conditions for the HelmChart. (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent
+reconcile request value, so a change of the annotation value
+can be detected.
+- `observed_chart_name` (String) ObservedChartName is the last observed chart name as specified by the
+resolved chart reference.
+- `observed_generation` (Number) ObservedGeneration is the last observed generation of the HelmChart
+object.
+- `observed_source_artifact_revision` (String) ObservedSourceArtifactRevision is the last observed Artifact.Revision
+of the HelmChartSpec.SourceRef.
+- `observed_values_files` (List of String) ObservedValuesFiles are the observed value files of the last successful
+reconciliation.
+It matches the chart in the last successfully reconciled artifact.
+- `url` (String) URL is the dynamic fetch link for the latest Artifact.
+It is provided on a "best effort" basis, and using the precise
+BucketStatus.Artifact data is recommended.
 
-<a id="nestedobjatt--status--artifact"></a>
+<a id="nestedblock--status--artifact"></a>
 ### Nested Schema for `status.artifact`
 
 Optional:
 
-- `digest` (String)
-- `last_update_time` (String)
-- `metadata` (Map of String)
-- `path` (String)
-- `revision` (String)
-- `size` (Number)
-- `url` (String)
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
+- `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the
+Artifact.
+- `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
+- `path` (String) Path is the relative file path of the Artifact. It can be used to locate
+the file in the root of the Artifact storage on the local file system of
+the controller managing the Source.
+- `revision` (String) Revision is a human-readable identifier traceable in the origin source
+system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
+- `size` (Number) Size is the number of bytes in the file.
+- `url` (String) URL is the HTTP address of the Artifact as exposed by the controller
+managing the Source. It can be used to retrieve the Artifact for
+consumption, e.g. by another controller applying the Artifact contents.
 
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another.
+This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition.
+This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon.
+For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition.
+Producers of specific condition types may define expected values and meanings for this field,
+and whether the values are considered a guaranteed API.
+The value should be a CamelCase string.
+This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase.
+---
+Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be
+useful (see .node.status.conditions), the ability to deconflict is important.
+The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)

@@ -32,9 +32,9 @@ See docs: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) ACRAccessTokenSpec defines how to generate the access token
+- `spec` (Block List, Max: 1) ACRAccessTokenSpec defines how to generate the access token
 e.g. how to authenticate and which registry to use.
-see: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md#overview (see [below for nested schema](#nestedatt--spec))
+see: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md#overview (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -51,83 +51,106 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `auth` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth))
-- `environment_type` (String)
-- `registry` (String)
-- `scope` (String)
-- `tenant_id` (String)
+- `auth` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--auth))
+- `environment_type` (String) EnvironmentType specifies the Azure cloud environment endpoints to use for
+connecting and authenticating with Azure. By default it points to the public cloud AAD endpoint.
+The following endpoints are available, also see here: https://github.com/Azure/go-autorest/blob/main/autorest/azure/environments.go#L152
+PublicCloud, USGovernmentCloud, ChinaCloud, GermanCloud
+- `registry` (String) the domain name of the ACR registry
+e.g. foobarexample.azurecr.io
+- `scope` (String) Define the scope for the access token, e.g. pull/push access for a repository.
+if not provided it will return a refresh token that has full scope.
+Note: you need to pin it down to the repository level, there is no wildcard available.
 
-<a id="nestedobjatt--spec--auth"></a>
+
+examples:
+repository:my-repository:pull,push
+repository:my-repository:pull
+
+
+see docs for details: https://docs.docker.com/registry/spec/auth/scope/
+- `tenant_id` (String) TenantID configures the Azure Tenant to send requests to. Required for ServicePrincipal auth type.
+
+<a id="nestedblock--spec--auth"></a>
 ### Nested Schema for `spec.auth`
 
 Optional:
 
-- `managed_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--managed_identity))
-- `service_principal` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--service_principal))
-- `workload_identity` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--workload_identity))
+- `managed_identity` (Block List, Max: 1) ManagedIdentity uses Azure Managed Identity to authenticate with Azure. (see [below for nested schema](#nestedblock--spec--auth--managed_identity))
+- `service_principal` (Block List, Max: 1) ServicePrincipal uses Azure Service Principal credentials to authenticate with Azure. (see [below for nested schema](#nestedblock--spec--auth--service_principal))
+- `workload_identity` (Block List, Max: 1) WorkloadIdentity uses Azure Workload Identity to authenticate with Azure. (see [below for nested schema](#nestedblock--spec--auth--workload_identity))
 
-<a id="nestedobjatt--spec--auth--managed_identity"></a>
+<a id="nestedblock--spec--auth--managed_identity"></a>
 ### Nested Schema for `spec.auth.managed_identity`
 
 Optional:
 
-- `identity_id` (String)
+- `identity_id` (String) If multiple Managed Identity is assigned to the pod, you can select the one to be used
 
 
-<a id="nestedobjatt--spec--auth--service_principal"></a>
+<a id="nestedblock--spec--auth--service_principal"></a>
 ### Nested Schema for `spec.auth.service_principal`
 
 Optional:
 
-- `secret_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--service_principal--secret_ref))
+- `secret_ref` (Block List, Max: 1) Configuration used to authenticate with Azure using static
+credentials stored in a Kind=Secret. (see [below for nested schema](#nestedblock--spec--auth--service_principal--secret_ref))
 
-<a id="nestedobjatt--spec--auth--service_principal--secret_ref"></a>
+<a id="nestedblock--spec--auth--service_principal--secret_ref"></a>
 ### Nested Schema for `spec.auth.service_principal.secret_ref`
 
 Optional:
 
-- `client_id` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--service_principal--secret_ref--client_id))
-- `client_secret` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--service_principal--secret_ref--client_secret))
+- `client_id` (Block List, Max: 1) The Azure clientId of the service principle used for authentication. (see [below for nested schema](#nestedblock--spec--auth--service_principal--secret_ref--client_id))
+- `client_secret` (Block List, Max: 1) The Azure ClientSecret of the service principle used for authentication. (see [below for nested schema](#nestedblock--spec--auth--service_principal--secret_ref--client_secret))
 
-<a id="nestedobjatt--spec--auth--service_principal--secret_ref--client_id"></a>
+<a id="nestedblock--spec--auth--service_principal--secret_ref--client_id"></a>
 ### Nested Schema for `spec.auth.service_principal.secret_ref.client_id`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
+defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
+to the namespace of the referent.
 
 
-<a id="nestedobjatt--spec--auth--service_principal--secret_ref--client_secret"></a>
+<a id="nestedblock--spec--auth--service_principal--secret_ref--client_secret"></a>
 ### Nested Schema for `spec.auth.service_principal.secret_ref.client_secret`
 
 Optional:
 
-- `key` (String)
-- `name` (String)
-- `namespace` (String)
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
+defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
+to the namespace of the referent.
 
 
 
 
-<a id="nestedobjatt--spec--auth--workload_identity"></a>
+<a id="nestedblock--spec--auth--workload_identity"></a>
 ### Nested Schema for `spec.auth.workload_identity`
 
 Optional:
 
-- `service_account_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--auth--workload_identity--service_account_ref))
+- `service_account_ref` (Block List, Max: 1) ServiceAccountRef specified the service account
+that should be used when authenticating with WorkloadIdentity. (see [below for nested schema](#nestedblock--spec--auth--workload_identity--service_account_ref))
 
-<a id="nestedobjatt--spec--auth--workload_identity--service_account_ref"></a>
+<a id="nestedblock--spec--auth--workload_identity--service_account_ref"></a>
 ### Nested Schema for `spec.auth.workload_identity.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String)
-- `name` (String)
-- `namespace` (String)
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
+to the namespace of the referent.

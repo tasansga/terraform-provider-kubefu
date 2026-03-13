@@ -64,14 +64,14 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGeneratorStateV1Alpha1(
 						Computed:    true,
 					},
 					"resource": {
-						Type:        schema.TypeString,
+						Type:        schema.TypeMap,
 						Description: "Resource is the generator manifest that produced the state.\nIt is a snapshot of the generator manifest at the time the state was produced.\nThis manifest will be used to delete the resource. Any configuration that is referenced\nin the manifest should be available at the time of garbage collection. If that is not the case deletion will\nbe blocked by a finalizer.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
 					},
 					"state": {
-						Type:        schema.TypeString,
+						Type:        schema.TypeMap,
 						Description: "State is the state that was produced by the generator implementation.",
 						Optional:    true,
 						Required:    false,

@@ -300,3 +300,25 @@ func TestNormalizedPropertyNameSanitizesSpecialChars(t *testing.T) {
 		t.Fatalf("expected schema, got %q", got)
 	}
 }
+
+func TestSchemaBuilderPreserveUnknownFieldsUsesMap(t *testing.T) {
+	defs := map[string]definition{
+		"example.Parent": {
+			Type: "object",
+			Properties: map[string]property{
+				"values": {
+					XKubernetesPreserveUnknownFields: true,
+				},
+			},
+		},
+	}
+	builder := &schemaBuilder{definitions: defs, cache: make(map[string]map[string]*schema.Schema)}
+	schemaMap := builder.buildDefinition("example.Parent", defs["example.Parent"])
+	field := schemaMap["values"]
+	if field == nil {
+		t.Fatalf("expected values schema to exist")
+	}
+	if field.Type != schema.TypeMap {
+		t.Fatalf("expected values to be map, got %d", field.Type)
+	}
+}

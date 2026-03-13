@@ -20,7 +20,7 @@ a static set of credentials that is always returned.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (List of Object) FakeSpec contains the static data. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Max: 1) FakeSpec contains the static data. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
@@ -37,10 +37,12 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
 Optional:
 
-- `controller` (String)
-- `data` (Map of String)
+- `controller` (String) Used to select the correct ESO controller (think: ingress.ingressClassName)
+The ESO controller is instantiated with a specific controller name and filters VDS based on this property
+- `data` (Map of String) Data defines the static data returned
+by this generator.

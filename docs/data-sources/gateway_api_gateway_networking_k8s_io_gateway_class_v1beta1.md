@@ -23,12 +23,12 @@ GatewayClass describes a class of Gateways available to the user for creating Ga
 
 ### Required
 
-- `spec` (List of Object) Spec defines the desired state of GatewayClass. (see [below for nested schema](#nestedatt--spec))
+- `spec` (Block List, Min: 1, Max: 1) Spec defines the desired state of GatewayClass. (see [below for nested schema](#nestedblock--spec))
 
 ### Optional
 
 - `metadata` (Map of String)
-- `status` (List of Object) Status defines the current state of GatewayClass. (see [below for nested schema](#nestedatt--status))
+- `status` (Block List, Max: 1) Status defines the current state of GatewayClass. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -38,42 +38,49 @@ GatewayClass describes a class of Gateways available to the user for creating Ga
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
-<a id="nestedatt--spec"></a>
+<a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
-Required:
+Optional:
 
-- `controller_name` (String)
-- `description` (String)
-- `parameters_ref` (List of Object) (see [below for nested schema](#nestedobjatt--spec--parameters_ref))
+- `controller_name` (String) ControllerName is the name of the controller that is managing Gateways of this class. The value of this field MUST be a domain prefixed path.
+ Example: "example.net/gateway-controller".
+ This field is not mutable and cannot be empty.
+ Support: Core
+- `description` (String) Description helps describe a GatewayClass with more details.
+- `parameters_ref` (Block List, Max: 1) ParametersRef is a reference to a resource that contains the configuration parameters corresponding to the GatewayClass. This is optional if the controller does not require any additional configuration.
+ ParametersRef can reference a standard Kubernetes resource, i.e. ConfigMap, or an implementation-specific custom resource. The resource can be cluster-scoped or namespace-scoped.
+ If the referent cannot be found, the GatewayClass's "InvalidParameters" status condition will be true.
+ Support: Custom (see [below for nested schema](#nestedblock--spec--parameters_ref))
 
-<a id="nestedobjatt--spec--parameters_ref"></a>
+<a id="nestedblock--spec--parameters_ref"></a>
 ### Nested Schema for `spec.parameters_ref`
 
-Required:
+Optional:
 
-- `group` (String)
-- `kind` (String)
-- `name` (String)
-- `namespace` (String)
+- `group` (String) Group is the group of the referent.
+- `kind` (String) Kind is kind of the referent.
+- `name` (String) Name is the name of the referent.
+- `namespace` (String) Namespace is the namespace of the referent. This field is required when referring to a Namespace-scoped resource and MUST be unset when referring to a Cluster-scoped resource.
 
 
 
-<a id="nestedatt--status"></a>
+<a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
 Optional:
 
-- `conditions` (List of Object) (see [below for nested schema](#nestedobjatt--status--conditions))
+- `conditions` (Block List) Conditions is the current status from the controller for this GatewayClass.
+ Controllers should prefer to publish conditions using values of GatewayClassConditionType for the type of each Condition. (see [below for nested schema](#nestedblock--status--conditions))
 
-<a id="nestedobjatt--status--conditions"></a>
+<a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
 
 Optional:
 
-- `last_transition_time` (String)
-- `message` (String)
-- `observed_generation` (Number)
-- `reason` (String)
-- `status` (String)
-- `type` (String)
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
