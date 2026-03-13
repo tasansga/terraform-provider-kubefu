@@ -135,6 +135,7 @@ type Versions struct {
 	GatewayAPIVersions         []string
 	ExternalSecretsVersions    []string
 	KustomizeVersions          []string
+	KarpenterAWSVersions       []string
 }
 
 func DataSources(versions Versions) map[string]*schema.Resource {
@@ -179,6 +180,8 @@ func (v Versions) versionFor(provider string) []string {
 		return v.ExternalSecretsVersions
 	case "kustomize":
 		return v.KustomizeVersions
+	case "karpenter_aws", "karpenter-aws":
+		return v.KarpenterAWSVersions
 	default:
 		return nil
 	}

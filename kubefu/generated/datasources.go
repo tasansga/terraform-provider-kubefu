@@ -16,10 +16,11 @@ type Versions struct {
 	GatewayAPIVersions         []string
 	ExternalSecretsVersions    []string
 	KustomizeVersions          []string
+	KarpenterAWSVersions       []string
 }
 
 func DataSources(versions Versions) map[string]*schema.Resource {
-	result := make(map[string]*schema.Resource, 286)
+	result := make(map[string]*schema.Resource, 293)
 	{
 		ds := dataSourceCertManagerAcmeCertManagerIoChallengeV1()
 		configured := versions.versionFor("cert_manager")
@@ -4628,6 +4629,125 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_storagemigration_k8s_io_storage_version_migration_v1beta1"] = ds
 	}
 	{
+		ds := dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1()
+		configured := versions.versionFor("karpenter_aws")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_karpenter_aws_karpenter_k8s_aws_ec2_node_class_v1",
+				"karpenter_aws",
+				strings.Join(dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_karpenter_aws_karpenter_k8s_aws_ec2_node_class_v1"] = ds
+	}
+	{
+		ds := dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1Beta1()
+		configured := versions.versionFor("karpenter_aws")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_karpenter_aws_karpenter_k8s_aws_ec2_node_class_v1beta1",
+				"karpenter_aws",
+				strings.Join(dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_karpenter_aws_karpenter_k8s_aws_ec2_node_class_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceKarpenterAwsKarpenterShNodeClaimV1()
+		configured := versions.versionFor("karpenter_aws")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKarpenterAwsKarpenterShNodeClaimV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_karpenter_aws_karpenter_sh_node_claim_v1",
+				"karpenter_aws",
+				strings.Join(dataSourceKarpenterAwsKarpenterShNodeClaimV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_karpenter_aws_karpenter_sh_node_claim_v1"] = ds
+	}
+	{
+		ds := dataSourceKarpenterAwsKarpenterShNodeClaimV1Beta1()
+		configured := versions.versionFor("karpenter_aws")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKarpenterAwsKarpenterShNodeClaimV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_karpenter_aws_karpenter_sh_node_claim_v1beta1",
+				"karpenter_aws",
+				strings.Join(dataSourceKarpenterAwsKarpenterShNodeClaimV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_karpenter_aws_karpenter_sh_node_claim_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceKarpenterAwsKarpenterShNodeOverlayV1Alpha1()
+		configured := versions.versionFor("karpenter_aws")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKarpenterAwsKarpenterShNodeOverlayV1Alpha1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_karpenter_aws_karpenter_sh_node_overlay_v1alpha1",
+				"karpenter_aws",
+				strings.Join(dataSourceKarpenterAwsKarpenterShNodeOverlayV1Alpha1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_karpenter_aws_karpenter_sh_node_overlay_v1alpha1"] = ds
+	}
+	{
+		ds := dataSourceKarpenterAwsKarpenterShNodePoolV1()
+		configured := versions.versionFor("karpenter_aws")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKarpenterAwsKarpenterShNodePoolV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_karpenter_aws_karpenter_sh_node_pool_v1",
+				"karpenter_aws",
+				strings.Join(dataSourceKarpenterAwsKarpenterShNodePoolV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_karpenter_aws_karpenter_sh_node_pool_v1"] = ds
+	}
+	{
+		ds := dataSourceKarpenterAwsKarpenterShNodePoolV1Beta1()
+		configured := versions.versionFor("karpenter_aws")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKarpenterAwsKarpenterShNodePoolV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_karpenter_aws_karpenter_sh_node_pool_v1beta1",
+				"karpenter_aws",
+				strings.Join(dataSourceKarpenterAwsKarpenterShNodePoolV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_karpenter_aws_karpenter_sh_node_pool_v1beta1"] = ds
+	}
+	{
 		ds := dataSourceKustomizeKustomizeConfigK8sIoConfigMapArgsV1Beta1()
 		configured := versions.versionFor("kustomize")
 		if len(configured) > 0 {
@@ -4901,6 +5021,8 @@ func (v Versions) versionFor(provider string) []string {
 		return v.ExternalSecretsVersions
 	case "kustomize":
 		return v.KustomizeVersions
+	case "karpenter_aws", "karpenter-aws":
+		return v.KarpenterAWSVersions
 	default:
 		return nil
 	}

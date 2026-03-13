@@ -1,9 +1,12 @@
 package downloader
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -174,4 +177,44 @@ func canonicalSemver(version string) string {
 		return semver.Canonical(candidate)
 	}
 	return "v0.0.0"
+}
+
+func writeCRDBundle(targetPath string, contents map[string][]byte) error {
+	if len(contents) == 0 {
+		return fmt.Errorf("no CRD content to write")
+	}
+
+	keys := make([]string, 0, len(contents))
+	for name := range contents {
+		keys = append(keys, name)
+	}
+	sort.Strings(keys)
+
+	tmpFile, err := os.CreateTemp(filepath.Dir(targetPath), "schema-*.tmp")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tmpFile.Name())
+
+	var buf bytes.Buffer
+	for i, name := range keys {
+		if i > 0 {
+			buf.WriteString("\n---\n")
+		}
+		buf.WriteString("# Source: ")
+		buf.WriteString(name)
+		buf.WriteString("\n")
+		data := bytes.TrimRight(contents[name], "\n")
+		buf.Write(data)
+		buf.WriteByte('\n')
+	}
+
+	if _, err := tmpFile.Write(buf.Bytes()); err != nil {
+		tmpFile.Close()
+		return err
+	}
+	if err := tmpFile.Close(); err != nil {
+		return err
+	}
+	return os.Rename(tmpFile.Name(), targetPath)
 }
