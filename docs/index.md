@@ -27,5 +27,6 @@ description: |-
 - `kubeconfig_context` (String) Optional kubeconfig context to use
 - `kubeconfig_path` (String) Path to the kubeconfig file; defaults to the KUBECONFIG environment variable
 - `kustomize_version` (List of String) Optional list of Kustomize schema versions to target
+- `manifest_render_mode` (String) Manifest rendering mode for kubefu_manifest_json/kubefu_manifest_yaml. Use "compact" to omit empty/zero values, or "canonical" to preserve all values.
 - `prometheus_operator_version` (List of String) Optional list of Prometheus Operator schema versions to target
 - `schema_paths` (List of String) Optional list of local schema files or directories to load (CRD YAML or OpenAPI JSON)

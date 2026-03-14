@@ -409,7 +409,7 @@ func dataSourceK8sCoreConfigMapV1Read(_ context.Context, d *schema.ResourceData,
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "ConfigMap", "core/v1/ConfigMap"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"binary_data", "data", "metadata"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"binary_data", "data", "metadata"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

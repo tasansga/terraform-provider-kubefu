@@ -523,7 +523,7 @@ func dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1Beta1Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "karpenter.k8s.aws/v1beta1", "EC2NodeClass", "karpenter.k8s.aws/v1beta1/EC2NodeClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.block_device_mappings.ebs", "spec.metadata_options", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.block_device_mappings.ebs", "spec.metadata_options", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

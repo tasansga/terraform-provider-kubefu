@@ -8,6 +8,7 @@ Notes:
 - Schema version fields are lists used only to emit compatibility warnings; they do not change which schemas are available.
 - For Kustomize, versions correspond to the `kyaml/vX.Y.Z` schema tags.
 - User-supplied schemas can be loaded via `schema_paths` (local CRD YAML or OpenAPI JSON). Terraform needs them at schema load time, so `KUBEFU_SCHEMA_PATHS` must be set and must match `schema_paths`.
+- Rendered manifests default to `compact` mode (omit empty/zero values). Set `manifest_render_mode = "canonical"` to preserve all values.
 
 ## Example Usage
 
@@ -15,6 +16,7 @@ Notes:
 provider "kubefu" {
   kubeconfig_path    = "~/.kube/config"
   kubeconfig_context = "dev"
+  manifest_render_mode = "compact"
 }
 
 data "kubefu_k8s_apps_deployment_v1" "example" {

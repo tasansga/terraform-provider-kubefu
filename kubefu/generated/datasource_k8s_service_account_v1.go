@@ -476,7 +476,7 @@ func dataSourceK8sCoreServiceAccountV1Read(_ context.Context, d *schema.Resource
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "ServiceAccount", "core/v1/ServiceAccount"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"automount_service_account_token", "image_pull_secrets", "metadata", "secrets"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"automount_service_account_token", "image_pull_secrets", "metadata", "secrets"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

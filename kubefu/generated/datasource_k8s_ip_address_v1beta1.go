@@ -311,7 +311,7 @@ func dataSourceK8sNetworkingK8sIoIPAddressV1Beta1Read(_ context.Context, d *sche
 	if err := manifestpkg.SetDataSourceDefaults(d, "networking.k8s.io/v1beta1", "IPAddress", "networking.k8s.io/v1beta1/IPAddress"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.parent_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.parent_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

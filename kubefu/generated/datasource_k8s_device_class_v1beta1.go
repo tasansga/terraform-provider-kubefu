@@ -332,7 +332,7 @@ func dataSourceK8sResourceK8sIoDeviceClassV1Beta1Read(_ context.Context, d *sche
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1beta1", "DeviceClass", "resource.k8s.io/v1beta1/DeviceClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.config.opaque", "spec.selectors.cel"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.config.opaque", "spec.selectors.cel"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

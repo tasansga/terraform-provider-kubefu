@@ -1327,7 +1327,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Read(_ context.Context, d *sc
 	if err := manifestpkg.SetDataSourceDefaults(d, "helm.toolkit.fluxcd.io/v2", "HelmRelease", "helm.toolkit.fluxcd.io/v2/HelmRelease"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.chart", "spec.chart.metadata", "spec.chart.spec", "spec.chart.spec.source_ref", "spec.chart.spec.verify", "spec.chart.spec.verify.secret_ref", "spec.chart_ref", "spec.drift_detection", "spec.drift_detection.ignore.target", "spec.install", "spec.install.remediation", "spec.kube_config", "spec.kube_config.secret_ref", "spec.post_renderers.kustomize", "spec.post_renderers.kustomize.patches.target", "spec.rollback", "spec.test", "spec.uninstall", "spec.upgrade", "spec.upgrade.remediation", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.chart", "spec.chart.metadata", "spec.chart.spec", "spec.chart.spec.source_ref", "spec.chart.spec.verify", "spec.chart.spec.verify.secret_ref", "spec.chart_ref", "spec.drift_detection", "spec.drift_detection.ignore.target", "spec.install", "spec.install.remediation", "spec.kube_config", "spec.kube_config.secret_ref", "spec.post_renderers.kustomize", "spec.post_renderers.kustomize.patches.target", "spec.rollback", "spec.test", "spec.uninstall", "spec.upgrade", "spec.upgrade.remediation", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -473,7 +473,7 @@ func dataSourceFluxImageToolkitFluxcdIoImageUpdateAutomationV1Read(_ context.Con
 	if err := manifestpkg.SetDataSourceDefaults(d, "image.toolkit.fluxcd.io/v1", "ImageUpdateAutomation", "image.toolkit.fluxcd.io/v1/ImageUpdateAutomation"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.git", "spec.git.checkout", "spec.git.checkout.ref", "spec.git.commit", "spec.git.commit.author", "spec.git.commit.signing_key", "spec.git.commit.signing_key.secret_ref", "spec.git.push", "spec.policy_selector", "spec.source_ref", "spec.update", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.git", "spec.git.checkout", "spec.git.checkout.ref", "spec.git.commit", "spec.git.commit.author", "spec.git.commit.signing_key", "spec.git.commit.signing_key.secret_ref", "spec.git.push", "spec.policy_selector", "spec.source_ref", "spec.update", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

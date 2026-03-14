@@ -3,12 +3,22 @@ package manifest
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"sigs.k8s.io/yaml"
 )
+
+const (
+	RenderModeCompact   = "compact"
+	RenderModeCanonical = "canonical"
+)
+
+type renderModeProvider interface {
+	ManifestRenderMode() string
+}
 
 // SetDataSourceDefaults applies default apiVersion/kind/id to the datasource.
 func SetDataSourceDefaults(d *schema.ResourceData, apiVersion, kind, id string) error {
@@ -45,6 +55,20 @@ func SetDataSourceManifestWithObjectKeys(d *schema.ResourceData, keys []string, 
 // SetDataSourceManifestWithObjectPaths renders kubefu_manifest_json/yaml from known schema keys,
 // treating paths in objectPaths as single-object attributes.
 func SetDataSourceManifestWithObjectPaths(d *schema.ResourceData, keys []string, objectPaths []string) error {
+	return setDataSourceManifestWithObjectPathsAndMode(d, keys, objectPaths, RenderModeCompact)
+}
+
+// SetDataSourceManifestWithObjectPathsForMeta renders kubefu_manifest_json/yaml from known schema keys,
+// selecting render mode from provider metadata when available.
+func SetDataSourceManifestWithObjectPathsForMeta(d *schema.ResourceData, meta any, keys []string, objectPaths []string) error {
+	mode := RenderModeCompact
+	if cfg, ok := meta.(renderModeProvider); ok {
+		mode = normalizeRenderMode(cfg.ManifestRenderMode())
+	}
+	return setDataSourceManifestWithObjectPathsAndMode(d, keys, objectPaths, mode)
+}
+
+func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []string, objectPaths []string, mode string) error {
 	manifest := make(map[string]interface{})
 	objectPathSet := make(map[string]struct{}, len(objectPaths))
 	for _, path := range objectPaths {
@@ -71,7 +95,11 @@ func SetDataSourceManifestWithObjectPaths(d *schema.ResourceData, keys []string,
 		if !ok {
 			continue
 		}
-		manifest[toLowerCamel(key)] = normalizeManifestValue(v, key, objectPathSet)
+		normalized := normalizeManifestValue(v, key, objectPathSet)
+		pruned, keep := pruneManifestValue(normalized, mode)
+		if keep {
+			manifest[toLowerCamel(key)] = pruned
+		}
 	}
 	if len(manifest) == 0 {
 		return nil
@@ -92,6 +120,64 @@ func SetDataSourceManifestWithObjectPaths(d *schema.ResourceData, keys []string,
 		return fmt.Errorf("set kubefu_manifest_yaml: %w", err)
 	}
 	return nil
+}
+
+func normalizeRenderMode(mode string) string {
+	switch strings.ToLower(strings.TrimSpace(mode)) {
+	case RenderModeCanonical:
+		return RenderModeCanonical
+	default:
+		return RenderModeCompact
+	}
+}
+
+func pruneManifestValue(value interface{}, mode string) (interface{}, bool) {
+	if normalizeRenderMode(mode) == RenderModeCanonical {
+		return value, value != nil
+	}
+	switch v := value.(type) {
+	case nil:
+		return nil, false
+	case string:
+		return v, strings.TrimSpace(v) != ""
+	case bool:
+		return v, v
+	case []interface{}:
+		pruned := make([]interface{}, 0, len(v))
+		for _, item := range v {
+			next, keep := pruneManifestValue(item, mode)
+			if keep {
+				pruned = append(pruned, next)
+			}
+		}
+		if len(pruned) == 0 {
+			return nil, false
+		}
+		return pruned, true
+	case map[string]interface{}:
+		pruned := make(map[string]interface{}, len(v))
+		for key, item := range v {
+			next, keep := pruneManifestValue(item, mode)
+			if keep {
+				pruned[key] = next
+			}
+		}
+		if len(pruned) == 0 {
+			return nil, false
+		}
+		return pruned, true
+	default:
+		rv := reflect.ValueOf(value)
+		switch rv.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			return value, rv.Int() != 0
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+			return value, rv.Uint() != 0
+		case reflect.Float32, reflect.Float64:
+			return value, rv.Float() != 0
+		}
+		return value, true
+	}
 }
 
 func normalizeManifestValue(value interface{}, path string, objectPaths map[string]struct{}) interface{} {

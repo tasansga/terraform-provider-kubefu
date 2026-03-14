@@ -563,7 +563,7 @@ func dataSourceK8sAdmissionregistrationK8sIoValidatingWebhookConfigurationV1Beta
 	if err := manifestpkg.SetDataSourceDefaults(d, "admissionregistration.k8s.io/v1beta1", "ValidatingWebhookConfiguration", "admissionregistration.k8s.io/v1beta1/ValidatingWebhookConfiguration"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "webhooks"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "webhooks.client_config", "webhooks.client_config.service", "webhooks.namespace_selector"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "webhooks"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "webhooks.client_config", "webhooks.client_config.service", "webhooks.namespace_selector"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

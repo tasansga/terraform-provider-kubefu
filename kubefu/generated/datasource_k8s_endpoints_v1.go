@@ -612,7 +612,7 @@ func dataSourceK8sCoreEndpointsV1Read(_ context.Context, d *schema.ResourceData,
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "Endpoints", "core/v1/Endpoints"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "subsets"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "subsets.addresses.target_ref", "subsets.not_ready_addresses.target_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "subsets"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "subsets.addresses.target_ref", "subsets.not_ready_addresses.target_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

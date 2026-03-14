@@ -414,7 +414,7 @@ func dataSourceKarpenterAwsKarpenterShNodePoolV1Read(_ context.Context, d *schem
 	if err := manifestpkg.SetDataSourceDefaults(d, "karpenter.sh/v1", "NodePool", "karpenter.sh/v1/NodePool"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.disruption", "spec.template", "spec.template.metadata", "spec.template.spec", "spec.template.spec.node_class_ref", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.disruption", "spec.template", "spec.template.metadata", "spec.template.spec", "spec.template.spec.node_class_ref", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

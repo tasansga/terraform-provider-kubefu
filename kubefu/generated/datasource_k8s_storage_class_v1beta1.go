@@ -438,7 +438,7 @@ func dataSourceK8sStorageK8sIoStorageClassV1Beta1Read(_ context.Context, d *sche
 	if err := manifestpkg.SetDataSourceDefaults(d, "storage.k8s.io/v1beta1", "StorageClass", "storage.k8s.io/v1beta1/StorageClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"allow_volume_expansion", "metadata", "mount_options", "parameters", "provisioner_", "reclaim_policy", "volume_binding_mode"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"allow_volume_expansion", "metadata", "mount_options", "parameters", "provisioner_", "reclaim_policy", "volume_binding_mode"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

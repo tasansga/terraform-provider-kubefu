@@ -682,7 +682,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1Read(_ c
 	if err := manifestpkg.SetDataSourceDefaults(d, "external-secrets.io/v1alpha1", "ClusterPushSecret", "external-secrets.io/v1alpha1/ClusterPushSecret"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.push_secret_metadata", "spec.push_secret_spec", "spec.push_secret_spec.data.match", "spec.push_secret_spec.data.match.remote_ref", "spec.push_secret_spec.secret_store_refs.label_selector", "spec.push_secret_spec.selector", "spec.push_secret_spec.selector.generator_ref", "spec.push_secret_spec.selector.secret", "spec.push_secret_spec.selector.secret.selector", "spec.push_secret_spec.template", "spec.push_secret_spec.template.metadata", "spec.push_secret_spec.template.template_from.config_map", "spec.push_secret_spec.template.template_from.secret", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.push_secret_metadata", "spec.push_secret_spec", "spec.push_secret_spec.data.match", "spec.push_secret_spec.data.match.remote_ref", "spec.push_secret_spec.secret_store_refs.label_selector", "spec.push_secret_spec.selector", "spec.push_secret_spec.selector.generator_ref", "spec.push_secret_spec.selector.secret", "spec.push_secret_spec.selector.secret.selector", "spec.push_secret_spec.template", "spec.push_secret_spec.template.metadata", "spec.push_secret_spec.template.template_from.config_map", "spec.push_secret_spec.template.template_from.secret", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

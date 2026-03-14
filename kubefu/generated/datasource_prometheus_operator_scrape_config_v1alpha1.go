@@ -220,7 +220,7 @@ func dataSourcePrometheusOperatorMonitoringCoreosComScrapeConfigV1Alpha1Read(_ c
 	if err := manifestpkg.SetDataSourceDefaults(d, "monitoring.coreos.com/v1alpha1", "ScrapeConfig", "monitoring.coreos.com/v1alpha1/ScrapeConfig"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

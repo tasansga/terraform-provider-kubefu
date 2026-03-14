@@ -374,7 +374,7 @@ func dataSourceK8sNetworkingK8sIoClusterCIDRV1Alpha1Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "networking.k8s.io/v1alpha1", "ClusterCIDR", "networking.k8s.io/v1alpha1/ClusterCIDR"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.node_selector"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.node_selector"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

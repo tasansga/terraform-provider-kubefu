@@ -276,7 +276,7 @@ func dataSourceK8sStorageK8sIoVolumeAttributesClassV1Read(_ context.Context, d *
 	if err := manifestpkg.SetDataSourceDefaults(d, "storage.k8s.io/v1", "VolumeAttributesClass", "storage.k8s.io/v1/VolumeAttributesClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"driver_name", "metadata", "parameters"}, []string{"metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"driver_name", "metadata", "parameters"}, []string{"metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

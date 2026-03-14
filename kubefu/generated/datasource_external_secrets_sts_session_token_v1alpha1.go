@@ -268,7 +268,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoSTSSessionTokenV1Alpha1
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "STSSessionToken", "generators.external-secrets.io/v1alpha1/STSSessionToken"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.jwt", "spec.auth.jwt.service_account_ref", "spec.auth.secret_ref", "spec.auth.secret_ref.access_key_id_secret_ref", "spec.auth.secret_ref.secret_access_key_secret_ref", "spec.auth.secret_ref.session_token_secret_ref", "spec.request_parameters"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.jwt", "spec.auth.jwt.service_account_ref", "spec.auth.secret_ref", "spec.auth.secret_ref.access_key_id_secret_ref", "spec.auth.secret_ref.secret_access_key_secret_ref", "spec.auth.secret_ref.session_token_secret_ref", "spec.request_parameters"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

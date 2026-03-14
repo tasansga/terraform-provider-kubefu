@@ -598,7 +598,7 @@ func dataSourceK8sCoreServiceV1Read(_ context.Context, d *schema.ResourceData, m
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "Service", "core/v1/Service"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.session_affinity_config", "spec.session_affinity_config.client_ip", "status", "status.load_balancer"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.session_affinity_config", "spec.session_affinity_config.client_ip", "status", "status.load_balancer"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

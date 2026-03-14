@@ -640,7 +640,7 @@ func dataSourceK8sCoreEventV1Read(_ context.Context, d *schema.ResourceData, m a
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "Event", "core/v1/Event"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"action", "count_", "event_time", "first_timestamp", "involved_object", "last_timestamp", "message", "metadata", "reason", "related", "reporting_component", "reporting_instance", "series", "source", "type"}, []string{"involved_object", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "related", "series", "source"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"action", "count_", "event_time", "first_timestamp", "involved_object", "last_timestamp", "message", "metadata", "reason", "related", "reporting_component", "reporting_instance", "series", "source", "type"}, []string{"involved_object", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "related", "series", "source"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

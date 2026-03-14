@@ -189,7 +189,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1R
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "GCRAccessToken", "generators.external-secrets.io/v1alpha1/GCRAccessToken"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.secret_ref", "spec.auth.secret_ref.secret_access_key_secret_ref", "spec.auth.workload_identity", "spec.auth.workload_identity.service_account_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.secret_ref", "spec.auth.secret_ref.secret_access_key_secret_ref", "spec.auth.workload_identity", "spec.auth.workload_identity.service_account_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

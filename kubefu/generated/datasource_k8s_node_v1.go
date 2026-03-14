@@ -820,7 +820,7 @@ func dataSourceK8sCoreNodeV1Read(_ context.Context, d *schema.ResourceData, m an
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "Node", "core/v1/Node"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.config_source", "spec.config_source.config_map_ref", "status", "status.daemon_endpoints", "status.daemon_endpoints.kubelet_endpoint", "status.node_info"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.config_source", "spec.config_source.config_map_ref", "status", "status.daemon_endpoints", "status.daemon_endpoints.kubelet_endpoint", "status.node_info"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

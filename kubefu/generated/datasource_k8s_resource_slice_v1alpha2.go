@@ -389,7 +389,7 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Alpha2Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha2", "ResourceSlice", "resource.k8s.io/v1alpha2/ResourceSlice"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"driver_name", "metadata", "named_resources", "node_name"}, []string{"metadata", "named_resources", "named_resources.instances.attributes.int_slice", "named_resources.instances.attributes.string_slice"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"driver_name", "metadata", "named_resources", "node_name"}, []string{"metadata", "named_resources", "named_resources.instances.attributes.int_slice", "named_resources.instances.attributes.string_slice"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

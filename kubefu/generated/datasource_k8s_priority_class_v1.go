@@ -460,7 +460,7 @@ func dataSourceK8sSchedulingK8sIoPriorityClassV1Read(_ context.Context, d *schem
 	if err := manifestpkg.SetDataSourceDefaults(d, "scheduling.k8s.io/v1", "PriorityClass", "scheduling.k8s.io/v1/PriorityClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"description", "global_default", "metadata", "value"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"description", "global_default", "metadata", "value"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

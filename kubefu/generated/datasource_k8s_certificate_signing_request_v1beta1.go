@@ -503,7 +503,7 @@ func dataSourceK8sCertificatesK8sIoCertificateSigningRequestV1Beta1Read(_ contex
 	if err := manifestpkg.SetDataSourceDefaults(d, "certificates.k8s.io/v1beta1", "CertificateSigningRequest", "certificates.k8s.io/v1beta1/CertificateSigningRequest"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

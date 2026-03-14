@@ -128,7 +128,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1Alpha2Read(_ cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1alpha2", "ReferenceGrant", "gateway.networking.k8s.io/v1alpha2/ReferenceGrant"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

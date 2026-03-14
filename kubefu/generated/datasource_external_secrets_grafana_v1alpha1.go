@@ -133,7 +133,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGrafanaV1Alpha1Read(_ c
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "Grafana", "generators.external-secrets.io/v1alpha1/Grafana"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.token", "spec.service_account"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.token", "spec.service_account"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

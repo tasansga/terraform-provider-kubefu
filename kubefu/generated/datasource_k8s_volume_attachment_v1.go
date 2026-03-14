@@ -510,7 +510,7 @@ func dataSourceK8sStorageK8sIoVolumeAttachmentV1Read(_ context.Context, d *schem
 	if err := manifestpkg.SetDataSourceDefaults(d, "storage.k8s.io/v1", "VolumeAttachment", "storage.k8s.io/v1/VolumeAttachment"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.source", "status", "status.attach_error", "status.detach_error"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.source", "status", "status.attach_error", "status.detach_error"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -287,7 +287,7 @@ func dataSourceK8sCertificatesK8sIoClusterTrustBundleV1Beta1Read(_ context.Conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "certificates.k8s.io/v1beta1", "ClusterTrustBundle", "certificates.k8s.io/v1beta1/ClusterTrustBundle"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -436,7 +436,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1Read(_ cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "external-secrets.io/v1alpha1", "ExternalSecret", "external-secrets.io/v1alpha1/ExternalSecret"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.data.remote_ref", "spec.secret_store_ref", "spec.target", "spec.target.template", "spec.target.template.metadata", "spec.target.template.template_from.config_map", "spec.target.template.template_from.secret", "status", "status.binding"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.data.remote_ref", "spec.secret_store_ref", "spec.target", "spec.target.template", "spec.target.template.metadata", "spec.target.template.template_from.config_map", "spec.target.template.template_from.secret", "status", "status.binding"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

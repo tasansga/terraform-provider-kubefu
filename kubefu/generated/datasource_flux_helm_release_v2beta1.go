@@ -912,7 +912,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta1Read(_ context.Context, 
 	if err := manifestpkg.SetDataSourceDefaults(d, "helm.toolkit.fluxcd.io/v2beta1", "HelmRelease", "helm.toolkit.fluxcd.io/v2beta1/HelmRelease"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.chart", "spec.chart.spec", "spec.chart.spec.source_ref", "spec.install", "spec.install.remediation", "spec.kube_config", "spec.kube_config.secret_ref", "spec.post_renderers.kustomize", "spec.post_renderers.kustomize.patches_json6902.target", "spec.rollback", "spec.test", "spec.uninstall", "spec.upgrade", "spec.upgrade.remediation", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.chart", "spec.chart.spec", "spec.chart.spec.source_ref", "spec.install", "spec.install.remediation", "spec.kube_config", "spec.kube_config.secret_ref", "spec.post_renderers.kustomize", "spec.post_renderers.kustomize.patches_json6902.target", "spec.rollback", "spec.test", "spec.uninstall", "spec.upgrade", "spec.upgrade.remediation", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

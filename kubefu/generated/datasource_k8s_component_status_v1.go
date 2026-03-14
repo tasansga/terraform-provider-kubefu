@@ -432,7 +432,7 @@ func dataSourceK8sCoreComponentStatusV1Read(_ context.Context, d *schema.Resourc
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "ComponentStatus", "core/v1/ComponentStatus"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"conditions", "metadata"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"conditions", "metadata"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

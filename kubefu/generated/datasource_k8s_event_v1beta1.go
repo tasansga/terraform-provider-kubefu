@@ -638,7 +638,7 @@ func dataSourceK8sEventsK8sIoEventV1Beta1Read(_ context.Context, d *schema.Resou
 	if err := manifestpkg.SetDataSourceDefaults(d, "events.k8s.io/v1beta1", "Event", "events.k8s.io/v1beta1/Event"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"action", "deprecated_count", "deprecated_first_timestamp", "deprecated_last_timestamp", "deprecated_source", "event_time", "metadata", "note", "reason", "regarding", "related", "reporting_controller", "reporting_instance", "series", "type"}, []string{"deprecated_source", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "regarding", "related", "series"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"action", "deprecated_count", "deprecated_first_timestamp", "deprecated_last_timestamp", "deprecated_source", "event_time", "metadata", "note", "reason", "regarding", "related", "reporting_controller", "reporting_instance", "series", "type"}, []string{"deprecated_source", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "regarding", "related", "series"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

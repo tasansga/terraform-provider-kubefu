@@ -388,7 +388,7 @@ func dataSourceK8sResourceK8sIoResourceClassV1Alpha1Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha1", "ResourceClass", "resource.k8s.io/v1alpha1/ResourceClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"driver_name", "metadata", "parameters_ref", "suitable_nodes"}, []string{"metadata", "parameters_ref", "suitable_nodes"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"driver_name", "metadata", "parameters_ref", "suitable_nodes"}, []string{"metadata", "parameters_ref", "suitable_nodes"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

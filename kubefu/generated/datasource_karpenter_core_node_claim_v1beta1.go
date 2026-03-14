@@ -420,7 +420,7 @@ func dataSourceKarpenterCoreKarpenterShNodeClaimV1Beta1Read(_ context.Context, d
 	if err := manifestpkg.SetDataSourceDefaults(d, "karpenter.sh/v1beta1", "NodeClaim", "karpenter.sh/v1beta1/NodeClaim"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.kubelet", "spec.node_class_ref", "spec.resources", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.kubelet", "spec.node_class_ref", "spec.resources", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

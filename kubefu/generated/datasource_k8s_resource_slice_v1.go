@@ -652,7 +652,7 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Read(_ context.Context, d *schema.
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1", "ResourceSlice", "resource.k8s.io/v1/ResourceSlice"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.devices.node_selector", "spec.node_selector", "spec.pool"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.devices.node_selector", "spec.node_selector", "spec.pool"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

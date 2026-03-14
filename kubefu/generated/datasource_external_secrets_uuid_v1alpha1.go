@@ -65,7 +65,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoUUIDV1Alpha1Read(_ cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "UUID", "generators.external-secrets.io/v1alpha1/UUID"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

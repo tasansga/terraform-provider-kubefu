@@ -491,7 +491,7 @@ func dataSourceExternalSecretsExternalSecretsIoPushSecretV1Alpha1Read(_ context.
 	if err := manifestpkg.SetDataSourceDefaults(d, "external-secrets.io/v1alpha1", "PushSecret", "external-secrets.io/v1alpha1/PushSecret"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.data.match", "spec.data.match.remote_ref", "spec.secret_store_refs.label_selector", "spec.selector", "spec.selector.secret", "spec.template", "spec.template.metadata", "spec.template.template_from.config_map", "spec.template.template_from.secret", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.data.match", "spec.data.match.remote_ref", "spec.secret_store_refs.label_selector", "spec.selector", "spec.selector.secret", "spec.template", "spec.template.metadata", "spec.template.template_from.config_map", "spec.template.template_from.secret", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -501,7 +501,7 @@ func dataSourceK8sRbacAuthorizationK8sIoClusterRoleV1Beta1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "rbac.authorization.k8s.io/v1beta1", "ClusterRole", "rbac.authorization.k8s.io/v1beta1/ClusterRole"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"aggregation_rule", "metadata", "rules"}, []string{"aggregation_rule", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"aggregation_rule", "metadata", "rules"}, []string{"aggregation_rule", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -464,7 +464,7 @@ func dataSourceK8sRbacAuthorizationK8sIoRoleBindingV1Beta1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "rbac.authorization.k8s.io/v1beta1", "RoleBinding", "rbac.authorization.k8s.io/v1beta1/RoleBinding"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "role_ref", "subjects"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "role_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "role_ref", "subjects"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "role_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

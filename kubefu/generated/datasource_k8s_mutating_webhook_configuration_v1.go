@@ -528,7 +528,7 @@ func dataSourceK8sAdmissionregistrationK8sIoMutatingWebhookConfigurationV1Read(_
 	if err := manifestpkg.SetDataSourceDefaults(d, "admissionregistration.k8s.io/v1", "MutatingWebhookConfiguration", "admissionregistration.k8s.io/v1/MutatingWebhookConfiguration"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "webhooks"}, []string{"metadata", "webhooks.client_config", "webhooks.client_config.service", "webhooks.namespace_selector", "webhooks.object_selector"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "webhooks"}, []string{"metadata", "webhooks.client_config", "webhooks.client_config.service", "webhooks.namespace_selector", "webhooks.object_selector"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

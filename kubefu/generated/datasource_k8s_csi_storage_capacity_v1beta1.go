@@ -331,7 +331,7 @@ func dataSourceK8sStorageK8sIoCSIStorageCapacityV1Beta1Read(_ context.Context, d
 	if err := manifestpkg.SetDataSourceDefaults(d, "storage.k8s.io/v1beta1", "CSIStorageCapacity", "storage.k8s.io/v1beta1/CSIStorageCapacity"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"capacity", "maximum_volume_size", "metadata", "node_topology", "storage_class_name"}, []string{"metadata", "node_topology"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"capacity", "maximum_volume_size", "metadata", "node_topology", "storage_class_name"}, []string{"metadata", "node_topology"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

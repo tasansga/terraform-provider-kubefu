@@ -500,7 +500,7 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Alpha2Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha2", "ResourceClaim", "resource.k8s.io/v1alpha2/ResourceClaim"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.parameters_ref", "status", "status.allocation", "status.allocation.available_on_nodes"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.parameters_ref", "status", "status.allocation", "status.allocation.available_on_nodes"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

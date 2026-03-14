@@ -12,6 +12,7 @@ Links:
 - **Generated data sources** for Kubernetes, Flux, cert-manager, Prometheus Operator, Gateway API, and External Secrets Operator schemas.
 - **`kubefu_manifest` resource** that applies YAML or JSON to a target cluster using server-side apply.
 - **Rendered manifest outputs** on every data source: `kubefu_manifest_json` and `kubefu_manifest_yaml`.
+- **Compact manifest rendering by default**: rendered manifests omit empty/zero values (set `manifest_render_mode = "canonical"` to keep all values).
 
 The generated data sources do **not** call a Kubernetes API. They exist to validate and structure data locally. Use with `kubefu_manifest` to deploy to a cluster or with a git/github provider to write to git.
 

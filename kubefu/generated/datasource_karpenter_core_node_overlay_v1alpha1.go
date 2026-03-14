@@ -189,7 +189,7 @@ func dataSourceKarpenterCoreKarpenterShNodeOverlayV1Alpha1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "karpenter.sh/v1alpha1", "NodeOverlay", "karpenter.sh/v1alpha1/NodeOverlay"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

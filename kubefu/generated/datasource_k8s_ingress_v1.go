@@ -560,7 +560,7 @@ func dataSourceK8sNetworkingK8sIoIngressV1Read(_ context.Context, d *schema.Reso
 	if err := manifestpkg.SetDataSourceDefaults(d, "networking.k8s.io/v1", "Ingress", "networking.k8s.io/v1/Ingress"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.default_backend", "spec.default_backend.resource", "spec.default_backend.service", "spec.default_backend.service.port", "spec.rules.http", "spec.rules.http.paths.backend", "spec.rules.http.paths.backend.resource", "spec.rules.http.paths.backend.service", "spec.rules.http.paths.backend.service.port", "status", "status.load_balancer"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.default_backend", "spec.default_backend.resource", "spec.default_backend.service", "spec.default_backend.service.port", "spec.rules.http", "spec.rules.http.paths.backend", "spec.rules.http.paths.backend.resource", "spec.rules.http.paths.backend.service", "spec.rules.http.paths.backend.service.port", "status", "status.load_balancer"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

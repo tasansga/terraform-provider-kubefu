@@ -173,11 +173,11 @@ func buildUserSchemaDataSource(entry resourcegen.ResourceEntry, provider string)
 		description = fmt.Sprintf("Generated data source for %s", entry.Kind)
 	}
 	return &schema.Resource{
-		ReadContext: func(_ context.Context, d *schema.ResourceData, _ any) diag.Diagnostics {
+		ReadContext: func(_ context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
 			if err := manifest.SetDataSourceDefaults(d, apiVersion, entry.Kind, id); err != nil {
 				return diag.FromErr(err)
 			}
-			if err := manifest.SetDataSourceManifestWithObjectPaths(d, manifestKeys, manifestObjectPaths); err != nil {
+			if err := manifest.SetDataSourceManifestWithObjectPathsForMeta(d, m, manifestKeys, manifestObjectPaths); err != nil {
 				return diag.FromErr(err)
 			}
 			return nil

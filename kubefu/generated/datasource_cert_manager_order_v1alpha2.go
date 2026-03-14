@@ -240,7 +240,7 @@ func dataSourceCertManagerAcmeCertManagerIoOrderV1Alpha2Read(_ context.Context, 
 	if err := manifestpkg.SetDataSourceDefaults(d, "acme.cert-manager.io/v1alpha2", "Order", "acme.cert-manager.io/v1alpha2/Order"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

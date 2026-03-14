@@ -150,7 +150,7 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusRuleV1Read(_ conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "monitoring.coreos.com/v1", "PrometheusRule", "monitoring.coreos.com/v1/PrometheusRule"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

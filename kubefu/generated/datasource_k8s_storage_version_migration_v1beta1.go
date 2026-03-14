@@ -365,7 +365,7 @@ func dataSourceK8sStoragemigrationK8sIoStorageVersionMigrationV1Beta1Read(_ cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "storagemigration.k8s.io/v1beta1", "StorageVersionMigration", "storagemigration.k8s.io/v1beta1/StorageVersionMigration"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.resource", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.resource", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

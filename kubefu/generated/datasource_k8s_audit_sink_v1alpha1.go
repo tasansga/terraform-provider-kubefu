@@ -522,7 +522,7 @@ func dataSourceK8sAuditregistrationK8sIoAuditSinkV1Alpha1Read(_ context.Context,
 	if err := manifestpkg.SetDataSourceDefaults(d, "auditregistration.k8s.io/v1alpha1", "AuditSink", "auditregistration.k8s.io/v1alpha1/AuditSink"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.policy", "spec.webhook", "spec.webhook.client_config", "spec.webhook.client_config.service", "spec.webhook.throttle"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.policy", "spec.webhook", "spec.webhook.client_config", "spec.webhook.client_config.service", "spec.webhook.throttle"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

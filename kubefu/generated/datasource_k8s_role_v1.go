@@ -444,7 +444,7 @@ func dataSourceK8sRbacAuthorizationK8sIoRoleV1Read(_ context.Context, d *schema.
 	if err := manifestpkg.SetDataSourceDefaults(d, "rbac.authorization.k8s.io/v1", "Role", "rbac.authorization.k8s.io/v1/Role"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "rules"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "rules"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

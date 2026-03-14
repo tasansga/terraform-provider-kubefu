@@ -203,7 +203,7 @@ func dataSourceCertManagerCertManagerIoCertificateRequestV1Alpha3Read(_ context.
 	if err := manifestpkg.SetDataSourceDefaults(d, "cert-manager.io/v1alpha3", "CertificateRequest", "cert-manager.io/v1alpha3/CertificateRequest"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

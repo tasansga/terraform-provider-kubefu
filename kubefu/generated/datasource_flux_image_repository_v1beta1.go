@@ -236,7 +236,7 @@ func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Beta1Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "image.toolkit.fluxcd.io/v1beta1", "ImageRepository", "image.toolkit.fluxcd.io/v1beta1/ImageRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.cert_secret_ref", "spec.secret_ref", "status", "status.last_scan_result"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.cert_secret_ref", "spec.secret_ref", "status", "status.last_scan_result"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

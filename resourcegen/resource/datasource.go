@@ -90,7 +90,7 @@ func %sRead(_ context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
 	if err := manifestpkg.SetDataSourceDefaults(d, %q, %q, %q); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{%s}, []string{%s}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{%s}, []string{%s}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

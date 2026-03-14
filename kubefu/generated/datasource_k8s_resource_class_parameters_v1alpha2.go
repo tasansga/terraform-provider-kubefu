@@ -356,7 +356,7 @@ func dataSourceK8sResourceK8sIoResourceClassParametersV1Alpha2Read(_ context.Con
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha2", "ResourceClassParameters", "resource.k8s.io/v1alpha2/ResourceClassParameters"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"filters", "generated_from", "metadata", "vendor_parameters"}, []string{"filters.named_resources", "generated_from", "metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"filters", "generated_from", "metadata", "vendor_parameters"}, []string{"filters.named_resources", "generated_from", "metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

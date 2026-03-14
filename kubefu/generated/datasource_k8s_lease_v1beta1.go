@@ -440,7 +440,7 @@ func dataSourceK8sCoordinationK8sIoLeaseV1Beta1Read(_ context.Context, d *schema
 	if err := manifestpkg.SetDataSourceDefaults(d, "coordination.k8s.io/v1beta1", "Lease", "coordination.k8s.io/v1beta1/Lease"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

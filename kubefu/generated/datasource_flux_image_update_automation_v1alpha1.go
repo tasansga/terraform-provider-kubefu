@@ -311,7 +311,7 @@ func dataSourceFluxImageToolkitFluxcdIoImageUpdateAutomationV1Alpha1Read(_ conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "image.toolkit.fluxcd.io/v1alpha1", "ImageUpdateAutomation", "image.toolkit.fluxcd.io/v1alpha1/ImageUpdateAutomation"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.checkout", "spec.checkout.git_repository_ref", "spec.commit", "spec.commit.signing_key", "spec.commit.signing_key.secret_ref", "spec.push", "spec.update", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.checkout", "spec.checkout.git_repository_ref", "spec.commit", "spec.commit.signing_key", "spec.commit.signing_key.secret_ref", "spec.push", "spec.update", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

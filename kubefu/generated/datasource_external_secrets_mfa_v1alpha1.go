@@ -127,7 +127,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoMFAV1Alpha1Read(_ conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "MFA", "generators.external-secrets.io/v1alpha1/MFA"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"spec", "spec.secret"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.secret"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

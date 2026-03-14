@@ -455,7 +455,7 @@ func dataSourceK8sCoreBindingV1Read(_ context.Context, d *schema.ResourceData, m
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "Binding", "core/v1/Binding"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "target"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "target"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "target"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "target"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

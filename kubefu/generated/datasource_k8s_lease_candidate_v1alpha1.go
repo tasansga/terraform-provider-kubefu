@@ -315,7 +315,7 @@ func dataSourceK8sCoordinationK8sIoLeaseCandidateV1Alpha1Read(_ context.Context,
 	if err := manifestpkg.SetDataSourceDefaults(d, "coordination.k8s.io/v1alpha1", "LeaseCandidate", "coordination.k8s.io/v1alpha1/LeaseCandidate"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

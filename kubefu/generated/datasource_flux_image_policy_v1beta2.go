@@ -259,7 +259,7 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Beta2Read(_ context.Context,
 	if err := manifestpkg.SetDataSourceDefaults(d, "image.toolkit.fluxcd.io/v1beta2", "ImagePolicy", "image.toolkit.fluxcd.io/v1beta2/ImagePolicy"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.filter_tags", "spec.image_repository_ref", "spec.policy", "spec.policy.alphabetical", "spec.policy.numerical", "spec.policy.semver", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.filter_tags", "spec.image_repository_ref", "spec.policy", "spec.policy.alphabetical", "spec.policy.numerical", "spec.policy.semver", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

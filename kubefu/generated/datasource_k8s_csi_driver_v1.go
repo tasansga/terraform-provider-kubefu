@@ -295,7 +295,7 @@ func dataSourceK8sStorageK8sIoCSIDriverV1Read(_ context.Context, d *schema.Resou
 	if err := manifestpkg.SetDataSourceDefaults(d, "storage.k8s.io/v1", "CSIDriver", "storage.k8s.io/v1/CSIDriver"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -846,7 +846,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGRPCRouteV1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1", "GRPCRoute", "gateway.networking.k8s.io/v1/GRPCRoute"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.rules.backend_refs.filters.extension_ref", "spec.rules.backend_refs.filters.request_header_modifier", "spec.rules.backend_refs.filters.request_mirror", "spec.rules.backend_refs.filters.request_mirror.backend_ref", "spec.rules.backend_refs.filters.response_header_modifier", "spec.rules.filters.extension_ref", "spec.rules.filters.request_header_modifier", "spec.rules.filters.request_mirror", "spec.rules.filters.request_mirror.backend_ref", "spec.rules.filters.response_header_modifier", "spec.rules.matches.method", "status", "status.parents.parent_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.rules.backend_refs.filters.extension_ref", "spec.rules.backend_refs.filters.request_header_modifier", "spec.rules.backend_refs.filters.request_mirror", "spec.rules.backend_refs.filters.request_mirror.backend_ref", "spec.rules.backend_refs.filters.response_header_modifier", "spec.rules.filters.extension_ref", "spec.rules.filters.request_header_modifier", "spec.rules.filters.request_mirror", "spec.rules.filters.request_mirror.backend_ref", "spec.rules.filters.response_header_modifier", "spec.rules.matches.method", "status", "status.parents.parent_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

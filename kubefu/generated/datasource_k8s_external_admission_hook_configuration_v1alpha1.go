@@ -495,7 +495,7 @@ func dataSourceK8sAdmissionregistrationK8sIoExternalAdmissionHookConfigurationV1
 	if err := manifestpkg.SetDataSourceDefaults(d, "admissionregistration.k8s.io/v1alpha1", "ExternalAdmissionHookConfiguration", "admissionregistration.k8s.io/v1alpha1/ExternalAdmissionHookConfiguration"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"external_admission_hooks", "metadata"}, []string{"external_admission_hooks.client_config", "external_admission_hooks.client_config.service", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"external_admission_hooks", "metadata"}, []string{"external_admission_hooks.client_config", "external_admission_hooks.client_config.service", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

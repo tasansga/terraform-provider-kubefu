@@ -310,7 +310,7 @@ func dataSourceK8sNetworkingK8sIoIngressClassV1Read(_ context.Context, d *schema
 	if err := manifestpkg.SetDataSourceDefaults(d, "networking.k8s.io/v1", "IngressClass", "networking.k8s.io/v1/IngressClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.parameters"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.parameters"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

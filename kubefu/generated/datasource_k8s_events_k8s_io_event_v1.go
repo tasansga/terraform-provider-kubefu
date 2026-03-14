@@ -498,7 +498,7 @@ func dataSourceK8sEventsK8sIoEventV1Read(_ context.Context, d *schema.ResourceDa
 	if err := manifestpkg.SetDataSourceDefaults(d, "events.k8s.io/v1", "Event", "events.k8s.io/v1/Event"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"action", "deprecated_count", "deprecated_first_timestamp", "deprecated_last_timestamp", "deprecated_source", "event_time", "metadata", "note", "reason", "regarding", "related", "reporting_controller", "reporting_instance", "series", "type"}, []string{"deprecated_source", "metadata", "regarding", "related", "series"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"action", "deprecated_count", "deprecated_first_timestamp", "deprecated_last_timestamp", "deprecated_source", "event_time", "metadata", "note", "reason", "regarding", "related", "reporting_controller", "reporting_instance", "series", "type"}, []string{"deprecated_source", "metadata", "regarding", "related", "series"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

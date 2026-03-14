@@ -640,7 +640,7 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Beta1Read(_ context.Contex
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1beta1", "ResourceClaimTemplate", "resource.k8s.io/v1beta1/ResourceClaimTemplate"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.metadata", "spec.spec", "spec.spec.devices", "spec.spec.devices.config.opaque", "spec.spec.devices.requests.selectors.cel"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.metadata", "spec.spec", "spec.spec.devices", "spec.spec.devices.config.opaque", "spec.spec.devices.requests.selectors.cel"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

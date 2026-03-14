@@ -476,7 +476,7 @@ func dataSourceK8sAuthenticationK8sIoTokenReviewV1Beta1Read(_ context.Context, d
 	if err := manifestpkg.SetDataSourceDefaults(d, "authentication.k8s.io/v1beta1", "TokenReview", "authentication.k8s.io/v1beta1/TokenReview"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "status", "status.user"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "status", "status.user"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -311,7 +311,7 @@ func dataSourceK8sAuthenticationK8sIoSelfSubjectReviewV1Read(_ context.Context, 
 	if err := manifestpkg.SetDataSourceDefaults(d, "authentication.k8s.io/v1", "SelfSubjectReview", "authentication.k8s.io/v1/SelfSubjectReview"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "status"}, []string{"metadata", "status", "status.user_info"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "status"}, []string{"metadata", "status", "status.user_info"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -492,7 +492,7 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Read(_ context.Context, d
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1", "GitRepository", "source.toolkit.fluxcd.io/v1/GitRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.include.repository", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact", "status.observed_include.repository"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.include.repository", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact", "status.observed_include.repository"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

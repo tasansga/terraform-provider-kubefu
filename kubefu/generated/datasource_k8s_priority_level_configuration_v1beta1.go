@@ -398,7 +398,7 @@ func dataSourceK8sFlowcontrolApiserverK8sIoPriorityLevelConfigurationV1Beta1Read
 	if err := manifestpkg.SetDataSourceDefaults(d, "flowcontrol.apiserver.k8s.io/v1beta1", "PriorityLevelConfiguration", "flowcontrol.apiserver.k8s.io/v1beta1/PriorityLevelConfiguration"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.limited", "spec.limited.limit_response", "spec.limited.limit_response.queuing", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.limited", "spec.limited.limit_response", "spec.limited.limit_response.queuing", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -347,7 +347,7 @@ func dataSourceK8sNodeK8sIoRuntimeClassV1Read(_ context.Context, d *schema.Resou
 	if err := manifestpkg.SetDataSourceDefaults(d, "node.k8s.io/v1", "RuntimeClass", "node.k8s.io/v1/RuntimeClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"handler", "metadata", "overhead", "scheduling"}, []string{"metadata", "overhead", "scheduling"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"handler", "metadata", "overhead", "scheduling"}, []string{"metadata", "overhead", "scheduling"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

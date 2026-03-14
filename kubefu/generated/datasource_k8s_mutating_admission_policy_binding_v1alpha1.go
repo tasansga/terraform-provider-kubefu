@@ -583,7 +583,7 @@ func dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyBindingV1Alph
 	if err := manifestpkg.SetDataSourceDefaults(d, "admissionregistration.k8s.io/v1alpha1", "MutatingAdmissionPolicyBinding", "admissionregistration.k8s.io/v1alpha1/MutatingAdmissionPolicyBinding"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.match_resources", "spec.match_resources.namespace_selector", "spec.match_resources.object_selector", "spec.param_ref", "spec.param_ref.selector"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.match_resources", "spec.match_resources.namespace_selector", "spec.match_resources.object_selector", "spec.param_ref", "spec.param_ref.selector"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

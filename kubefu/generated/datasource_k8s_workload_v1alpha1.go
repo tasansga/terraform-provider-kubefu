@@ -355,7 +355,7 @@ func dataSourceK8sSchedulingK8sIoWorkloadV1Alpha1Read(_ context.Context, d *sche
 	if err := manifestpkg.SetDataSourceDefaults(d, "scheduling.k8s.io/v1alpha1", "Workload", "scheduling.k8s.io/v1alpha1/Workload"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.controller_ref", "spec.pod_groups.policy", "spec.pod_groups.policy.gang"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.controller_ref", "spec.pod_groups.policy", "spec.pod_groups.policy.gang"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

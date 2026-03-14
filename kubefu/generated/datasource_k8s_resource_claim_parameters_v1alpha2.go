@@ -356,7 +356,7 @@ func dataSourceK8sResourceK8sIoResourceClaimParametersV1Alpha2Read(_ context.Con
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha2", "ResourceClaimParameters", "resource.k8s.io/v1alpha2/ResourceClaimParameters"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"driver_requests", "generated_from", "metadata", "shareable"}, []string{"driver_requests.requests.named_resources", "generated_from", "metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"driver_requests", "generated_from", "metadata", "shareable"}, []string{"driver_requests.requests.named_resources", "generated_from", "metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

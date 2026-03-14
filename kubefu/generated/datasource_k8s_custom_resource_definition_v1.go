@@ -1036,7 +1036,7 @@ func dataSourceK8sApiextensionsK8sIoCustomResourceDefinitionV1Read(_ context.Con
 	if err := manifestpkg.SetDataSourceDefaults(d, "apiextensions.k8s.io/v1", "CustomResourceDefinition", "apiextensions.k8s.io/v1/CustomResourceDefinition"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.conversion", "spec.conversion.webhook", "spec.conversion.webhook.client_config", "spec.conversion.webhook.client_config.service", "spec.names", "spec.versions.schema", "spec.versions.schema.open_apiv3_schema", "spec.versions.schema.open_apiv3_schema.external_docs", "spec.versions.schema.open_apiv3_schema.not", "spec.versions.subresources", "spec.versions.subresources.scale", "status", "status.accepted_names"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.conversion", "spec.conversion.webhook", "spec.conversion.webhook.client_config", "spec.conversion.webhook.client_config.service", "spec.names", "spec.versions.schema", "spec.versions.schema.open_apiv3_schema", "spec.versions.schema.open_apiv3_schema.external_docs", "spec.versions.schema.open_apiv3_schema.not", "spec.versions.subresources", "spec.versions.subresources.scale", "status", "status.accepted_names"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

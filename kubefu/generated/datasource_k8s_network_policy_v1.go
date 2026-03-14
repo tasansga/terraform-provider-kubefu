@@ -786,7 +786,7 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1Read(_ context.Context, d *schem
 	if err := manifestpkg.SetDataSourceDefaults(d, "networking.k8s.io/v1", "NetworkPolicy", "networking.k8s.io/v1/NetworkPolicy"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.egress.to.ip_block", "spec.egress.to.namespace_selector", "spec.egress.to.pod_selector", "spec.ingress.from.ip_block", "spec.ingress.from.namespace_selector", "spec.ingress.from.pod_selector", "spec.pod_selector"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.egress.to.ip_block", "spec.egress.to.namespace_selector", "spec.egress.to.pod_selector", "spec.ingress.from.ip_block", "spec.ingress.from.namespace_selector", "spec.ingress.from.pod_selector", "spec.pod_selector"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

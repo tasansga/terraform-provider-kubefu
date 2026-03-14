@@ -9,8 +9,10 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	"github.com/tasansga/terraform-provider-kubefu/kubefu/generated"
+	"github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
 )
 
 type providerConfig struct {
@@ -26,6 +28,14 @@ type providerConfig struct {
 	KubeConfigPath             string
 	KubeContext                string
 	SchemaPaths                []string
+	ManifestRenderModeValue    string
+}
+
+func (c *providerConfig) ManifestRenderMode() string {
+	if c == nil {
+		return manifest.RenderModeCompact
+	}
+	return c.ManifestRenderModeValue
 }
 
 func Provider() *schema.Provider {
@@ -105,6 +115,13 @@ func Provider() *schema.Provider {
 				DefaultFunc: schemaPathsDefaultFunc,
 				Description: "Optional list of local schema files or directories to load (CRD YAML or OpenAPI JSON)",
 			},
+			"manifest_render_mode": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      manifest.RenderModeCompact,
+				ValidateFunc: validation.StringInSlice([]string{manifest.RenderModeCompact, manifest.RenderModeCanonical}, false),
+				Description:  "Manifest rendering mode for kubefu_manifest_json/kubefu_manifest_yaml. Use \"compact\" to omit empty/zero values, or \"canonical\" to preserve all values.",
+			},
 		},
 		ResourcesMap: resources(),
 	}
@@ -150,6 +167,7 @@ func Provider() *schema.Provider {
 			KubeConfigPath:             d.Get("kubeconfig_path").(string),
 			KubeContext:                d.Get("kubeconfig_context").(string),
 			SchemaPaths:                configSchemaPaths,
+			ManifestRenderModeValue:    d.Get("manifest_render_mode").(string),
 		}
 		versioned := generated.DataSources(generated.Versions{
 			K8sVersions:                cfg.K8sVersions,

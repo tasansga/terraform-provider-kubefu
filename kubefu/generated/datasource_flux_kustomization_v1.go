@@ -617,7 +617,7 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.toolkit.fluxcd.io/v1", "Kustomization", "kustomize.toolkit.fluxcd.io/v1/Kustomization"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "spec.decryption", "spec.decryption.secret_ref", "spec.kube_config", "spec.kube_config.secret_ref", "spec.patches.target", "spec.post_build", "spec.source_ref", "status", "status.inventory"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "spec.decryption", "spec.decryption.secret_ref", "spec.kube_config", "spec.kube_config.secret_ref", "spec.patches.target", "spec.post_build", "spec.source_ref", "status", "status.inventory"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
