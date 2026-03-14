@@ -22,7 +22,9 @@ Generated data source for io.k8s.api.apps.v1.SecretArgs
 
 ### Read-Only
 
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object.
 - `id` (String) The ID of this resource.
+- `kind` (String) Kind is a string value representing the REST resource this object represents.
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 

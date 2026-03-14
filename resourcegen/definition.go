@@ -64,8 +64,8 @@ func (d Definition) AsDataSource(pkgName, provider string) (FileData, error) {
 		Description: "Rendered manifest (canonical YAML) for this data source.",
 		Computed:    true,
 	}
-	markComputed(schemaMap, "api_version")
-	markComputed(schemaMap, "kind")
+	ensureComputedString(schemaMap, "api_version", "APIVersion defines the versioned schema of this representation of an object.")
+	ensureComputedString(schemaMap, "kind", "Kind is a string value representing the REST resource this object represents.")
 	manifestKeys := make([]string, 0, len(schemaMap))
 	for key := range schemaMap {
 		if key == "api_version" || key == "kind" || key == manifestJSONField || key == manifestYAMLField {
@@ -226,17 +226,24 @@ func copySchemaMap(src map[string]*schema.Schema) map[string]*schema.Schema {
 	return dst
 }
 
-func markComputed(schemaMap map[string]*schema.Schema, key string) {
+func ensureComputedString(schemaMap map[string]*schema.Schema, key, description string) {
 	if schemaMap == nil {
 		return
 	}
-	s, ok := schemaMap[key]
-	if !ok || s == nil {
+	if existing, ok := schemaMap[key]; ok && existing != nil {
+		clone := *existing
+		clone.Required = false
+		clone.Optional = false
+		clone.Computed = true
+		if clone.Description == "" && description != "" {
+			clone.Description = description
+		}
+		schemaMap[key] = &clone
 		return
 	}
-	clone := *s
-	clone.Required = false
-	clone.Optional = false
-	clone.Computed = true
-	schemaMap[key] = &clone
+	schemaMap[key] = &schema.Schema{
+		Type:        schema.TypeString,
+		Description: description,
+		Computed:    true,
+	}
 }

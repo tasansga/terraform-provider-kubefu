@@ -13,6 +13,13 @@ func dataSourceKustomizeKustomizeConfigK8sIoSecretArgsV1Beta1() *schema.Resource
 		ReadContext: dataSourceKustomizeKustomizeConfigK8sIoSecretArgsV1Beta1Read,
 		Description: "Generated data source for io.k8s.api.apps.v1.SecretArgs",
 		Schema: map[string]*schema.Schema{
+			"api_version": {
+				Type:        schema.TypeString,
+				Description: "APIVersion defines the versioned schema of this representation of an object.",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
+			},
 			"generator_args": {
 				Type:        schema.TypeList,
 				Description: "",
@@ -77,6 +84,13 @@ func dataSourceKustomizeKustomizeConfigK8sIoSecretArgsV1Beta1() *schema.Resource
 						Computed:    true,
 					},
 				}},
+			},
+			"kind": {
+				Type:        schema.TypeString,
+				Description: "Kind is a string value representing the REST resource this object represents.",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
 			},
 			"kubefu_manifest_json": {
 				Type:        schema.TypeString,

@@ -13,10 +13,24 @@ func dataSourceKustomizeKustomizeConfigK8sIoGeneratorArgsV1Beta1() *schema.Resou
 		ReadContext: dataSourceKustomizeKustomizeConfigK8sIoGeneratorArgsV1Beta1Read,
 		Description: "Generated data source for io.k8s.api.apps.v1.GeneratorArgs",
 		Schema: map[string]*schema.Schema{
+			"api_version": {
+				Type:        schema.TypeString,
+				Description: "APIVersion defines the versioned schema of this representation of an object.",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
+			},
 			"behavior": {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+			"kind": {
+				Type:        schema.TypeString,
+				Description: "Kind is a string value representing the REST resource this object represents.",
+				Optional:    false,
 				Required:    false,
 				Computed:    true,
 			},
