@@ -1,12 +1,12 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: ktopics.crd.omnicate.io
+  name: tstqueues.crd.custom.test
 spec:
-  group: crd.omnicate.io
+  group: crd.custom.test
   names:
-    kind: KTopic
-    plural: ktopics
+    kind: TstQueue
+    plural: tstqueues
   scope: Namespaced
   versions:
     - name: v1beta1

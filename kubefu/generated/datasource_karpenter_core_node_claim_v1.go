@@ -1,0 +1,403 @@
+package generated
+
+import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	manifestpkg "github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
+)
+
+func dataSourceKarpenterCoreKarpenterShNodeClaimV1() *schema.Resource {
+	return &schema.Resource{
+		ReadContext: dataSourceKarpenterCoreKarpenterShNodeClaimV1Read,
+		Description: "NodeClaim is the Schema for the NodeClaims API",
+		Schema: map[string]*schema.Schema{
+			"api_version": {
+				Type:        schema.TypeString,
+				Description: "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
+			},
+			"kind": {
+				Type:        schema.TypeString,
+				Description: "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
+			},
+			"kubefu_manifest_json": {
+				Type:        schema.TypeString,
+				Description: "Rendered manifest (canonical JSON) for this data source.",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
+			},
+			"kubefu_manifest_yaml": {
+				Type:        schema.TypeString,
+				Description: "Rendered manifest (canonical YAML) for this data source.",
+				Optional:    false,
+				Required:    false,
+				Computed:    true,
+			},
+			"metadata": {
+				Type:        schema.TypeMap,
+				Description: "",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
+			"spec": {
+				Type:        schema.TypeList,
+				Description: "NodeClaimSpec describes the desired state of the NodeClaim",
+				Optional:    false,
+				Required:    true,
+				Computed:    false,
+				MinItems:    1,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"expire_after": {
+						Type:        schema.TypeString,
+						Description: "ExpireAfter is the duration the controller will wait\nbefore terminating a node, measured from when the node is created. This\nis useful to implement features like eventually consistent node upgrade,\nmemory leak protection, and disruption testing.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"node_class_ref": {
+						Type:        schema.TypeList,
+						Description: "NodeClassRef is a reference to an object that defines provider specific configuration",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"group": {
+								Type:        schema.TypeString,
+								Description: "API version of the referent",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kind": {
+								Type:        schema.TypeString,
+								Description: "Kind of the referent; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds\"",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent; More info: http://kubernetes.io/docs/user-guide/identifiers#names",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"requirements": {
+						Type:        schema.TypeList,
+						Description: "Requirements are layered with GetLabels and applied to every node.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"key": {
+								Type:        schema.TypeString,
+								Description: "The label key that the selector applies to.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"min_values": {
+								Type:        schema.TypeInt,
+								Description: "This field is ALPHA and can be dropped or replaced at any time\nMinValues is the minimum number of unique values required to define the flexibility of the specific requirement.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"operator": {
+								Type:        schema.TypeString,
+								Description: "Represents a key's relationship to a set of values.\nValid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"values": {
+								Type:        schema.TypeList,
+								Description: "An array of string values. If the operator is In or NotIn,\nthe values array must be non-empty. If the operator is Exists or DoesNotExist,\nthe values array must be empty. If the operator is Gt or Lt, the values\narray must have a single element, which will be interpreted as an integer.\nThis array is replaced during a strategic merge patch.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Schema{Type: schema.TypeString},
+							},
+						}},
+					},
+					"resources": {
+						Type:        schema.TypeList,
+						Description: "Resources models the resource requirements for the NodeClaim to launch",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"requests": {
+								Type:        schema.TypeMap,
+								Description: "Requests describes the minimum required resources for the NodeClaim to launch",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"startup_taints": {
+						Type:        schema.TypeList,
+						Description: "StartupTaints are taints that are applied to nodes upon startup which are expected to be removed automatically\nwithin a short period of time, typically by a DaemonSet that tolerates the taint. These are commonly used by\ndaemonsets to allow initialization and enforce startup ordering.  StartupTaints are ignored for provisioning\npurposes in that pods are not required to tolerate a StartupTaint in order to have nodes provisioned for them.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"effect": {
+								Type:        schema.TypeString,
+								Description: "Required. The effect of the taint on pods\nthat do not tolerate the taint.\nValid effects are NoSchedule, PreferNoSchedule and NoExecute.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"key": {
+								Type:        schema.TypeString,
+								Description: "Required. The taint key to be applied to a node.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"time_added": {
+								Type:        schema.TypeString,
+								Description: "TimeAdded represents the time at which the taint was added.\nIt is only written for NoExecute taints.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"value": {
+								Type:        schema.TypeString,
+								Description: "The taint value corresponding to the taint key.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"taints": {
+						Type:        schema.TypeList,
+						Description: "Taints will be applied to the NodeClaim's node.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"effect": {
+								Type:        schema.TypeString,
+								Description: "Required. The effect of the taint on pods\nthat do not tolerate the taint.\nValid effects are NoSchedule, PreferNoSchedule and NoExecute.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"key": {
+								Type:        schema.TypeString,
+								Description: "Required. The taint key to be applied to a node.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"time_added": {
+								Type:        schema.TypeString,
+								Description: "TimeAdded represents the time at which the taint was added.\nIt is only written for NoExecute taints.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"value": {
+								Type:        schema.TypeString,
+								Description: "The taint value corresponding to the taint key.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"termination_grace_period": {
+						Type:        schema.TypeString,
+						Description: "TerminationGracePeriod is the maximum duration the controller will wait before forcefully deleting the pods on a node, measured from when deletion is first initiated.\n\n\nWarning: this feature takes precedence over a Pod's terminationGracePeriodSeconds value, and bypasses any blocked PDBs or the karpenter.sh/do-not-disrupt annotation.\n\n\nThis field is intended to be used by cluster administrators to enforce that nodes can be cycled within a given time period.\nWhen set, drifted nodes will begin draining even if there are pods blocking eviction. Draining will respect PDBs and the do-not-disrupt annotation until the TGP is reached.\n\n\nKarpenter will preemptively delete pods so their terminationGracePeriodSeconds align with the node's terminationGracePeriod.\nIf a pod would be terminated without being granted its full terminationGracePeriodSeconds prior to the node timeout,\nthat pod will be deleted at T = node timeout - pod terminationGracePeriodSeconds.\n\n\nThe feature can also be used to allow maximum time limits for long-running jobs which can delay node termination with preStop hooks.\nIf left undefined, the controller will wait indefinitely for pods to be drained.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
+			},
+			"status": {
+				Type:        schema.TypeList,
+				Description: "NodeClaimStatus defines the observed state of NodeClaim",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"allocatable": {
+						Type:        schema.TypeMap,
+						Description: "Allocatable is the estimated allocatable capacity of the node",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"capacity": {
+						Type:        schema.TypeMap,
+						Description: "Capacity is the estimated full capacity of the node",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"conditions": {
+						Type:        schema.TypeList,
+						Description: "Conditions contains signals for health and readiness",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "lastTransitionTime is the last time the condition transitioned from one status to another.\nThis should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message": {
+								Type:        schema.TypeString,
+								Description: "message is a human readable message indicating details about the transition.\nThis may be an empty string.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "observedGeneration represents the .metadata.generation that the condition was set based upon.\nFor instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date\nwith respect to the current state of the instance.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"reason": {
+								Type:        schema.TypeString,
+								Description: "reason contains a programmatic identifier indicating the reason for the condition's last transition.\nProducers of specific condition types may define expected values and meanings for this field,\nand whether the values are considered a guaranteed API.\nThe value should be a CamelCase string.\nThis field may not be empty.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"status": {
+								Type:        schema.TypeString,
+								Description: "status of the condition, one of True, False, Unknown.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "type of condition in CamelCase or in foo.example.com/CamelCase.\n---\nMany .condition.type values are consistent across resources like Available, but because arbitrary conditions can be\nuseful (see .node.status.conditions), the ability to deconflict is important.\nThe regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"image_id": {
+						Type:        schema.TypeString,
+						Description: "ImageID is an identifier for the image that runs on the node",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"last_pod_event_time": {
+						Type:        schema.TypeString,
+						Description: "LastPodEventTime is updated with the last time a pod was scheduled\nor removed from the node. A pod going terminal or terminating\nis also considered as removed.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"node_name": {
+						Type:        schema.TypeString,
+						Description: "NodeName is the name of the corresponding node object",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"provider_id": {
+						Type:        schema.TypeString,
+						Description: "ProviderID of the corresponding node object",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
+			},
+		},
+	}
+}
+
+
+
+func dataSourceKarpenterCoreKarpenterShNodeClaimV1Read(_ context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
+	if err := manifestpkg.SetDataSourceDefaults(d, "karpenter.sh/v1", "NodeClaim", "karpenter.sh/v1/NodeClaim"); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := manifestpkg.SetDataSourceManifestWithObjectPaths(d, []string{"metadata", "spec", "status"}, []string{"spec", "spec.node_class_ref", "spec.resources", "status"}); err != nil {
+		return diag.FromErr(err)
+	}
+	return diag.Diagnostics{}
+}
+var dataSourceKarpenterCoreKarpenterShNodeClaimV1CompatibleVersions = []string{
+	"v0.37.1",
+	"v0.37.2",
+	"v0.37.3",
+	"v0.37.4",
+	"v0.37.5",
+	"v0.37.6",
+	"v0.37.7",
+	"v1.0.0",
+	"v1.0.1",
+	"v1.0.2",
+	"v1.0.3",
+	"v1.0.4",
+	"v1.0.5",
+	"v1.0.6",
+	"v1.0.7",
+	"v1.0.8",
+	"v1.1.0",
+	"v1.1.1",
+	"v1.1.2",
+	"v1.1.3",
+	"v1.1.4",
+	"v1.2.0",
+	"v1.2.1",
+	"v1.2.2",
+	"v1.2.3",
+	"v1.2.4",
+	"v1.3.0",
+	"v1.3.1",
+	"v1.3.2",
+	"v1.3.3",
+	"v1.3.4",
+	"v1.4.0",
+	"v1.4.1",
+	"v1.5.0",
+	"v1.5.1",
+	"v1.5.2",
+	"v1.5.3",
+	"v1.5.4",
+	"v1.6.0",
+	"v1.6.1",
+	"v1.6.2",
+	"v1.6.3",
+	"v1.7.0",
+	"v1.7.1",
+	"v1.8.0",
+	"v1.8.1",
+	"v1.8.2",
+	"v1.9.0",
+}

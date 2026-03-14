@@ -116,8 +116,8 @@ apply)
   assert_contains "$TF_DIR/out/config_map.yaml" "data:"
   assert_contains "$TF_DIR/out/config_map.yaml" "hello: world"
   assert_contains "$TF_DIR/out/config_map.yaml" "namespace: kubefu-inttest"
-  assert_contains "$TF_DIR/out/user_schema.yaml" "apiVersion: crd.omnicate.io/v1beta1"
-  assert_contains "$TF_DIR/out/user_schema.yaml" "kind: KTopic"
+  assert_contains "$TF_DIR/out/user_schema.yaml" "apiVersion: crd.custom.test/v1beta1"
+  assert_contains "$TF_DIR/out/user_schema.yaml" "kind: TstQueue"
   ;;
 destroy)
   "$TF_BIN" destroy -auto-approve

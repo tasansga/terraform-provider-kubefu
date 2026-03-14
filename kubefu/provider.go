@@ -22,6 +22,7 @@ type providerConfig struct {
 	ExternalSecretsVersions    []string
 	KustomizeVersions          []string
 	KarpenterAWSVersions       []string
+	KarpenterCoreVersions      []string
 	KubeConfigPath             string
 	KubeContext                string
 	SchemaPaths                []string
@@ -79,6 +80,12 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: "Optional list of Karpenter AWS schema versions to target",
+			},
+			"karpenter_core_version": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: "Optional list of Karpenter core schema versions to target",
 			},
 			"kubeconfig_path": {
 				Type:        schema.TypeString,
@@ -139,6 +146,7 @@ func Provider() *schema.Provider {
 			ExternalSecretsVersions:    getStringList(d, "external_secrets_version"),
 			KustomizeVersions:          getStringList(d, "kustomize_version"),
 			KarpenterAWSVersions:       getStringList(d, "karpenter_aws_version"),
+			KarpenterCoreVersions:      getStringList(d, "karpenter_core_version"),
 			KubeConfigPath:             d.Get("kubeconfig_path").(string),
 			KubeContext:                d.Get("kubeconfig_context").(string),
 			SchemaPaths:                configSchemaPaths,
@@ -152,6 +160,7 @@ func Provider() *schema.Provider {
 			ExternalSecretsVersions:    cfg.ExternalSecretsVersions,
 			KustomizeVersions:          cfg.KustomizeVersions,
 			KarpenterAWSVersions:       cfg.KarpenterAWSVersions,
+			KarpenterCoreVersions:      cfg.KarpenterCoreVersions,
 		})
 		for key, resource := range userDataSources {
 			if _, exists := versioned[key]; exists {

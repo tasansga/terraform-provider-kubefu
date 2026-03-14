@@ -83,6 +83,13 @@ var providerConfigs = map[string]providerConfig{
 			return downloader.NewKarpenterDownloader(logger)
 		},
 	},
+	"karpenter-core": {
+		displayName: "karpenter-core",
+		subdir:      "karpenter-core",
+		factory: func(logger logrus.FieldLogger) downloader.SchemaDownloader {
+			return downloader.NewKarpenterCoreDownloader(logger)
+		},
+	},
 }
 
 func init() {

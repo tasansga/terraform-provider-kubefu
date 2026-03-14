@@ -1,9 +1,9 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: widgets.crd.omnicate.io
+  name: widgets.crd.custom.test
 spec:
-  group: crd.omnicate.io
+  group: crd.custom.test
   names:
     kind: KWidget
     plural: widgets

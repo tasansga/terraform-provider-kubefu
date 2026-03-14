@@ -22,6 +22,8 @@ description: |-
 - `flux_version` (List of String) Optional list of Flux schema versions to target
 - `gateway_api_version` (List of String) Optional list of Gateway API schema versions to target
 - `k8s_version` (List of String) Optional list of Kubernetes schema versions to target
+- `karpenter_aws_version` (List of String) Optional list of Karpenter AWS schema versions to target
+- `karpenter_core_version` (List of String) Optional list of Karpenter core schema versions to target
 - `kubeconfig_context` (String) Optional kubeconfig context to use
 - `kubeconfig_path` (String) Path to the kubeconfig file; defaults to the KUBECONFIG environment variable
 - `kustomize_version` (List of String) Optional list of Kustomize schema versions to target

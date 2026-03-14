@@ -11,12 +11,12 @@ const sampleCRD = `
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: ktopics.crd.omnicate.io
+  name: tstqueues.crd.custom.test
 spec:
-  group: crd.omnicate.io
+  group: crd.custom.test
   names:
-    kind: KTopic
-    plural: ktopics
+    kind: TstQueue
+    plural: tstqueues
   scope: Namespaced
   versions:
     - name: v1beta1
@@ -58,7 +58,7 @@ func TestLoadUserSchemasFromCRD(t *testing.T) {
 	for k := range dataSources {
 		key = k
 	}
-	if !strings.Contains(key, "k_topic") {
+	if !strings.Contains(key, "tst_queue") {
 		t.Fatalf("expected data source key to include kind, got %q", key)
 	}
 	ds := dataSources[key]

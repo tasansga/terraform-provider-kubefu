@@ -55,8 +55,8 @@ output "config_map_yaml" {
   value = data.kubefu_k8s_core_config_map_v1.inttest.kubefu_manifest_yaml
 }
 
-data "kubefu_user_crd_omnicate_io_k_topic_v1beta1" "inttest_user" {}
+data "kubefu_user_crd_custom_test_tst_queue_v1beta1" "inttest_user" {}
 
 output "user_schema_yaml" {
-  value = data.kubefu_user_crd_omnicate_io_k_topic_v1beta1.inttest_user.kubefu_manifest_yaml
+  value = data.kubefu_user_crd_custom_test_tst_queue_v1beta1.inttest_user.kubefu_manifest_yaml
 }
