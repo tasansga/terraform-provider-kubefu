@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/hashicorp/go-cty/cty"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"sigs.k8s.io/yaml"
 )
@@ -77,6 +79,7 @@ func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []
 		}
 		objectPathSet[path] = struct{}{}
 	}
+	explicitPaths := explicitManifestPaths(d, keys)
 	if v, ok := d.GetOk("api_version"); ok {
 		if s := strings.TrimSpace(v.(string)); s != "" {
 			manifest["apiVersion"] = s
@@ -91,12 +94,12 @@ func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []
 		if key == "" {
 			continue
 		}
-		v, ok := d.GetOk(key)
+		v, ok := d.GetOkExists(key)
 		if !ok {
 			continue
 		}
 		normalized := normalizeManifestValue(v, key, objectPathSet)
-		pruned, keep := pruneManifestValue(normalized, mode)
+		pruned, keep := pruneManifestValue(normalized, key, explicitPaths, objectPathSet, mode)
 		if keep {
 			manifest[toLowerCamel(key)] = pruned
 		}
@@ -131,38 +134,54 @@ func normalizeRenderMode(mode string) string {
 	}
 }
 
-func pruneManifestValue(value interface{}, mode string) (interface{}, bool) {
+func pruneManifestValue(value interface{}, path string, explicitPaths map[string]struct{}, objectPaths map[string]struct{}, mode string) (interface{}, bool) {
 	if normalizeRenderMode(mode) == RenderModeCanonical {
 		return value, value != nil
 	}
+	_, explicit := explicitPaths[path]
 	switch v := value.(type) {
 	case nil:
-		return nil, false
+		return nil, explicit
 	case string:
-		return v, strings.TrimSpace(v) != ""
+		return v, explicit || strings.TrimSpace(v) != ""
 	case bool:
-		return v, v
+		return v, explicit || v
 	case []interface{}:
 		pruned := make([]interface{}, 0, len(v))
 		for _, item := range v {
-			next, keep := pruneManifestValue(item, mode)
+			next, keep := pruneManifestValue(item, path, explicitPaths, objectPaths, mode)
 			if keep {
 				pruned = append(pruned, next)
 			}
 		}
 		if len(pruned) == 0 {
+			if explicit {
+				return []interface{}{}, true
+			}
 			return nil, false
 		}
 		return pruned, true
 	case map[string]interface{}:
 		pruned := make(map[string]interface{}, len(v))
+		_, isObjectPath := objectPaths[path]
 		for key, item := range v {
-			next, keep := pruneManifestValue(item, mode)
+			childKey := key
+			if isObjectPath {
+				childKey = resolveObjectPathChildKey(path, key, explicitPaths, objectPaths)
+			}
+			childPath := childKey
+			if path != "" {
+				childPath = path + "." + childKey
+			}
+			next, keep := pruneManifestValue(item, childPath, explicitPaths, objectPaths, mode)
 			if keep {
 				pruned[key] = next
 			}
 		}
 		if len(pruned) == 0 {
+			if explicit {
+				return map[string]interface{}{}, true
+			}
 			return nil, false
 		}
 		return pruned, true
@@ -170,14 +189,107 @@ func pruneManifestValue(value interface{}, mode string) (interface{}, bool) {
 		rv := reflect.ValueOf(value)
 		switch rv.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			return value, rv.Int() != 0
+			return value, explicit || rv.Int() != 0
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-			return value, rv.Uint() != 0
+			return value, explicit || rv.Uint() != 0
 		case reflect.Float32, reflect.Float64:
-			return value, rv.Float() != 0
+			return value, explicit || rv.Float() != 0
 		}
 		return value, true
 	}
+}
+
+func explicitManifestPaths(d *schema.ResourceData, keys []string) map[string]struct{} {
+	paths := make(map[string]struct{})
+	for _, key := range keys {
+		if key == "" {
+			continue
+		}
+		rawValue, rawDiags := d.GetRawConfigAt(cty.Path{cty.GetAttrStep{Name: key}})
+		if hasDiagErrors(rawDiags) {
+			continue
+		}
+		collectExplicitManifestPaths(rawValue, key, paths)
+	}
+	return paths
+}
+
+func hasDiagErrors(diags diag.Diagnostics) bool {
+	for _, d := range diags {
+		if d.Severity == diag.Error {
+			return true
+		}
+	}
+	return false
+}
+
+func collectExplicitManifestPaths(value cty.Value, path string, paths map[string]struct{}) {
+	if path == "" || !value.IsKnown() || value.IsNull() {
+		return
+	}
+	paths[path] = struct{}{}
+
+	t := value.Type()
+	switch {
+	case t.IsObjectType() || t.IsMapType():
+		it := value.ElementIterator()
+		for it.Next() {
+			key, next := it.Element()
+			childPath := key.AsString()
+			if path != "" {
+				childPath = path + "." + childPath
+			}
+			collectExplicitManifestPaths(next, childPath, paths)
+		}
+	case t.IsListType() || t.IsSetType() || t.IsTupleType():
+		it := value.ElementIterator()
+		for it.Next() {
+			_, next := it.Element()
+			collectExplicitManifestPaths(next, path, paths)
+		}
+	}
+}
+
+func lowerCamelToSnake(value string) string {
+	if value == "" {
+		return value
+	}
+	var b strings.Builder
+	b.Grow(len(value) + 4)
+	for i, r := range value {
+		if i > 0 && r >= 'A' && r <= 'Z' {
+			b.WriteByte('_')
+		}
+		if r >= 'A' && r <= 'Z' {
+			b.WriteRune(r + ('a' - 'A'))
+			continue
+		}
+		b.WriteRune(r)
+	}
+	return b.String()
+}
+
+func resolveObjectPathChildKey(parentPath, renderedKey string, explicitPaths map[string]struct{}, objectPaths map[string]struct{}) string {
+	base := lowerCamelToSnake(renderedKey)
+	if parentPath == "" {
+		return base
+	}
+	basePath := parentPath + "." + base
+	if _, ok := explicitPaths[basePath]; ok {
+		return base
+	}
+	if _, ok := objectPaths[basePath]; ok {
+		return base
+	}
+	escaped := base + "_"
+	escapedPath := parentPath + "." + escaped
+	if _, ok := explicitPaths[escapedPath]; ok {
+		return escaped
+	}
+	if _, ok := objectPaths[escapedPath]; ok {
+		return escaped
+	}
+	return base
 }
 
 func normalizeManifestValue(value interface{}, path string, objectPaths map[string]struct{}) interface{} {
