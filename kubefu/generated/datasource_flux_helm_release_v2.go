@@ -970,13 +970,6 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 							},
 						}},
 					},
-					"values": {
-						Type:        schema.TypeMap,
-						Description: "Values holds the values for this Helm release.",
-						Optional:    true,
-						Required:    false,
-						Computed:    true,
-					},
 					"values_from": {
 						Type:        schema.TypeList,
 						Description: "ValuesFrom holds references to resources containing Helm values for this HelmRelease,\nand information about how they should be merged.",
@@ -1020,6 +1013,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 								Computed:    true,
 							},
 						}},
+					},
+					"values_yaml": {
+						Type:        schema.TypeString,
+						Description: "Values holds the values for this Helm release as YAML.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 				}},
 			},

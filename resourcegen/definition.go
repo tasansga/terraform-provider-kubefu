@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -54,6 +55,7 @@ func (d Definition) AsDataSource(pkgName, provider string) (FileData, error) {
 	manifestJSONField := "kubefu_manifest_json"
 	manifestYAMLField := "kubefu_manifest_yaml"
 	schemaMap = copySchemaMap(schemaMap)
+	applyDefinitionSchemaOverrides(d, schemaMap)
 	schemaMap[manifestJSONField] = &schema.Schema{
 		Type:        schema.TypeString,
 		Description: "Rendered manifest (canonical JSON) for this data source.",
@@ -96,6 +98,36 @@ func (d Definition) AsDataSource(pkgName, provider string) (FileData, error) {
 		Name:    fmt.Sprintf("datasource_%s_%s_%s.go", providerName, toSnakeCase(d.Kind), versionSegment(d.Version)),
 		Content: []byte(source),
 	}, nil
+}
+
+func applyDefinitionSchemaOverrides(def Definition, schemaMap map[string]*schema.Schema) {
+	if !isHelmReleaseDefinition(def) {
+		return
+	}
+	specField, ok := schemaMap["spec"]
+	if !ok || specField == nil {
+		return
+	}
+	specElem, ok := specField.Elem.(*schema.Resource)
+	if !ok || specElem == nil || specElem.Schema == nil {
+		return
+	}
+	specSchema := specElem.Schema
+	if _, ok := specSchema["values"]; !ok {
+		return
+	}
+	delete(specSchema, "values")
+	specSchema["values_yaml"] = &schema.Schema{
+		Type:        schema.TypeString,
+		Description: "Values holds the values for this Helm release as YAML.",
+		Optional:    true,
+		Required:    false,
+		Computed:    true,
+	}
+}
+
+func isHelmReleaseDefinition(def Definition) bool {
+	return strings.EqualFold(def.Kind, "HelmRelease") && strings.EqualFold(def.Group, "helm.toolkit.fluxcd.io")
 }
 
 // AsSchemaResource turns the definition into a Terraform schema.Resource that can
@@ -221,9 +253,23 @@ func copySchemaMap(src map[string]*schema.Schema) map[string]*schema.Schema {
 	}
 	dst := make(map[string]*schema.Schema, len(src))
 	for k, v := range src {
-		dst[k] = v
+		dst[k] = copySchema(v)
 	}
 	return dst
+}
+
+func copySchema(src *schema.Schema) *schema.Schema {
+	if src == nil {
+		return nil
+	}
+	clone := *src
+	switch elem := src.Elem.(type) {
+	case *schema.Resource:
+		clone.Elem = &schema.Resource{Schema: copySchemaMap(elem.Schema)}
+	case *schema.Schema:
+		clone.Elem = copySchema(elem)
+	}
+	return &clone
 }
 
 func ensureComputedString(schemaMap map[string]*schema.Schema, key, description string) {

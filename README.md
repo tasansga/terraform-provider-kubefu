@@ -110,6 +110,52 @@ resource "kubefu_manifest" "example" {
 }
 ```
 
+## Example: HelmRelease with values from YAML file
+
+```yaml
+cluster:
+  name: demo
+config:
+  logging:
+    level: info
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+```
+
+```hcl
+data "kubefu_flux_helm_toolkit_fluxcd_io_helm_release_v2beta2" "message_core" {
+  metadata = {
+    name      = "message-core"
+    namespace = "default"
+  }
+
+  spec {
+    interval = "5m"
+
+    chart {
+      spec {
+        chart              = "message-core"
+        reconcile_strategy = "ChartVersion"
+        version            = "1.0.0"
+
+        source_ref {
+          kind = "HelmRepository"
+          name = "message-core"
+        }
+      }
+    }
+
+    values_yaml = file("example_helm_values.yaml")
+  }
+}
+
+resource "kubefu_manifest" "message_core" {
+  manifest = data.kubefu_flux_helm_toolkit_fluxcd_io_helm_release_v2beta2.message_core.kubefu_manifest_yaml
+}
+```
+
 
 ## Development
 

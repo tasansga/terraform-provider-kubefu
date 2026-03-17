@@ -2,6 +2,7 @@ package manifest
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -352,5 +353,210 @@ func TestPruneManifestValueCompactKeepsNestedExplicitValuesOnEscapedObjectPaths(
 	v, ok := provider["enabled"]
 	if !ok || v != false {
 		t.Fatalf("expected provider.enabled=false to be preserved, got %v", provider["enabled"])
+	}
+}
+
+func TestSetDataSourceManifestWithObjectPathsValuesYAMLRendersIntoValues(t *testing.T) {
+	testSchema := map[string]*schema.Schema{
+		"spec": {
+			Type:       schema.TypeList,
+			Optional:   true,
+			ConfigMode: schema.SchemaConfigModeAttr,
+			MaxItems:   1,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"values_yaml": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+			}},
+		},
+		"kubefu_manifest_json": {Type: schema.TypeString, Computed: true},
+		"kubefu_manifest_yaml": {Type: schema.TypeString, Computed: true},
+	}
+	raw := map[string]interface{}{
+		"spec": []interface{}{
+			map[string]interface{}{
+				"values_yaml": "cluster:\n  name: demo\nflag: false\ncount: 0\n",
+			},
+		},
+	}
+	d := schema.TestResourceDataRaw(t, testSchema, raw)
+	if err := SetDataSourceManifestWithObjectPaths(d, []string{"spec"}, []string{"spec"}); err != nil {
+		t.Fatalf("set manifest: %v", err)
+	}
+	payload := d.Get("kubefu_manifest_yaml").(string)
+	var manifest map[string]interface{}
+	if err := yaml.Unmarshal([]byte(payload), &manifest); err != nil {
+		t.Fatalf("unmarshal yaml: %v", err)
+	}
+	spec, ok := manifest["spec"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected spec map, got %T", manifest["spec"])
+	}
+	values, ok := spec["values"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected spec.values map, got %T", spec["values"])
+	}
+	cluster, ok := values["cluster"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected spec.values.cluster map, got %T", values["cluster"])
+	}
+	if cluster["name"] != "demo" {
+		t.Fatalf("expected spec.values.cluster.name=demo, got %v", cluster["name"])
+	}
+	if values["flag"] != false {
+		t.Fatalf("expected spec.values.flag=false, got %v", values["flag"])
+	}
+	count, ok := values["count"].(float64)
+	if !ok || count != 0 {
+		t.Fatalf("expected spec.values.count=0, got %T (%v)", values["count"], values["count"])
+	}
+	if _, ok := spec["valuesYaml"]; ok {
+		t.Fatalf("unexpected spec.valuesYaml key in manifest")
+	}
+}
+
+func TestSetDataSourceManifestWithObjectPathsValuesYAMLOmittedDoesNotRenderValues(t *testing.T) {
+	testSchema := map[string]*schema.Schema{
+		"spec": {
+			Type:       schema.TypeList,
+			Optional:   true,
+			ConfigMode: schema.SchemaConfigModeAttr,
+			MaxItems:   1,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"interval": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+				"values_yaml": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+			}},
+		},
+		"kubefu_manifest_json": {Type: schema.TypeString, Computed: true},
+		"kubefu_manifest_yaml": {Type: schema.TypeString, Computed: true},
+	}
+	raw := map[string]interface{}{
+		"spec": []interface{}{
+			map[string]interface{}{
+				"interval": "5m",
+			},
+		},
+	}
+	d := schema.TestResourceDataRaw(t, testSchema, raw)
+	if err := d.Set("spec", []interface{}{map[string]interface{}{"interval": "5m", "values_yaml": ""}}); err != nil {
+		t.Fatalf("set spec: %v", err)
+	}
+	if err := SetDataSourceManifestWithObjectPaths(d, []string{"spec"}, []string{"spec"}); err != nil {
+		t.Fatalf("set manifest: %v", err)
+	}
+	payload := d.Get("kubefu_manifest_yaml").(string)
+	var manifest map[string]interface{}
+	if err := yaml.Unmarshal([]byte(payload), &manifest); err != nil {
+		t.Fatalf("unmarshal yaml: %v", err)
+	}
+	spec, ok := manifest["spec"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected spec map, got %T", manifest["spec"])
+	}
+	if _, ok := spec["values"]; ok {
+		t.Fatalf("expected spec.values to be omitted when values_yaml is unset")
+	}
+	if spec["interval"] != "5m" {
+		t.Fatalf("expected spec.interval=5m, got %v", spec["interval"])
+	}
+}
+
+func TestSetDataSourceManifestWithObjectPathsValuesYAMLCanonicalRendersParsedObject(t *testing.T) {
+	testSchema := map[string]*schema.Schema{
+		"spec": {
+			Type:       schema.TypeList,
+			Optional:   true,
+			ConfigMode: schema.SchemaConfigModeAttr,
+			MaxItems:   1,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"values_yaml": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+			}},
+		},
+		"kubefu_manifest_json": {Type: schema.TypeString, Computed: true},
+		"kubefu_manifest_yaml": {Type: schema.TypeString, Computed: true},
+	}
+	raw := map[string]interface{}{
+		"spec": []interface{}{
+			map[string]interface{}{
+				"values_yaml": "cluster:\n  name: demo\n",
+			},
+		},
+	}
+	d := schema.TestResourceDataRaw(t, testSchema, raw)
+	if err := SetDataSourceManifestWithObjectPathsForMeta(d, testRenderModeConfig{mode: RenderModeCanonical}, []string{"spec"}, []string{"spec"}); err != nil {
+		t.Fatalf("set manifest: %v", err)
+	}
+	payload := d.Get("kubefu_manifest_yaml").(string)
+	var manifest map[string]interface{}
+	if err := yaml.Unmarshal([]byte(payload), &manifest); err != nil {
+		t.Fatalf("unmarshal yaml: %v", err)
+	}
+	spec, ok := manifest["spec"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected spec map, got %T", manifest["spec"])
+	}
+	values, ok := spec["values"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected spec.values map, got %T", spec["values"])
+	}
+	cluster, ok := values["cluster"].(map[string]interface{})
+	if !ok || cluster["name"] != "demo" {
+		t.Fatalf("expected parsed values object, got %v", values)
+	}
+	if _, ok := values["Value"]; ok {
+		t.Fatalf("unexpected struct wrapper key in canonical output")
+	}
+}
+
+func TestSetDataSourceManifestWithObjectPathsValuesYAMLRejectsNonObject(t *testing.T) {
+	testSchema := map[string]*schema.Schema{
+		"spec": {
+			Type:       schema.TypeList,
+			Optional:   true,
+			ConfigMode: schema.SchemaConfigModeAttr,
+			MaxItems:   1,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"values_yaml": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+			}},
+		},
+		"kubefu_manifest_json": {Type: schema.TypeString, Computed: true},
+		"kubefu_manifest_yaml": {Type: schema.TypeString, Computed: true},
+	}
+	cases := []struct {
+		name string
+		yaml string
+	}{
+		{name: "scalar", yaml: "42"},
+		{name: "list", yaml: "- a\n- b\n"},
+	}
+	for _, tc := range cases {
+		d := schema.TestResourceDataRaw(t, testSchema, map[string]interface{}{
+			"spec": []interface{}{
+				map[string]interface{}{
+					"values_yaml": tc.yaml,
+				},
+			},
+		})
+		err := SetDataSourceManifestWithObjectPaths(d, []string{"spec"}, []string{"spec"})
+		if err == nil {
+			t.Fatalf("expected error for %s values_yaml shape", tc.name)
+		}
+		if !strings.Contains(err.Error(), "expected YAML object") {
+			t.Fatalf("expected YAML object error for %s, got: %v", tc.name, err)
+		}
 	}
 }

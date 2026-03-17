@@ -22,6 +22,10 @@ type renderModeProvider interface {
 	ManifestRenderMode() string
 }
 
+type manifestLiteralValue struct {
+	Value interface{}
+}
+
 // SetDataSourceDefaults applies default apiVersion/kind/id to the datasource.
 func SetDataSourceDefaults(d *schema.ResourceData, apiVersion, kind, id string) error {
 	if apiVersion != "" {
@@ -98,7 +102,10 @@ func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []
 		if !ok {
 			continue
 		}
-		normalized := normalizeManifestValue(v, key, objectPathSet)
+		normalized, err := normalizeManifestValue(v, key, objectPathSet, explicitPaths)
+		if err != nil {
+			return fmt.Errorf("normalize manifest value %q: %w", key, err)
+		}
 		pruned, keep := pruneManifestValue(normalized, key, explicitPaths, objectPathSet, mode)
 		if keep {
 			manifest[toLowerCamel(key)] = pruned
@@ -136,9 +143,48 @@ func normalizeRenderMode(mode string) string {
 
 func pruneManifestValue(value interface{}, path string, explicitPaths map[string]struct{}, objectPaths map[string]struct{}, mode string) (interface{}, bool) {
 	if normalizeRenderMode(mode) == RenderModeCanonical {
-		return value, value != nil
+		switch v := value.(type) {
+		case manifestLiteralValue:
+			return v.Value, v.Value != nil
+		case map[string]interface{}:
+			out := make(map[string]interface{}, len(v))
+			_, isObjectPath := objectPaths[path]
+			for key, item := range v {
+				childKey := key
+				if isObjectPath {
+					childKey = resolveObjectPathChildKey(path, key, explicitPaths, objectPaths)
+				}
+				childPath := childKey
+				if path != "" {
+					childPath = path + "." + childKey
+				}
+				next, keep := pruneManifestValue(item, childPath, explicitPaths, objectPaths, mode)
+				if keep {
+					out[key] = next
+				}
+			}
+			return out, true
+		case []interface{}:
+			out := make([]interface{}, 0, len(v))
+			for _, item := range v {
+				next, keep := pruneManifestValue(item, path, explicitPaths, objectPaths, mode)
+				if keep {
+					out = append(out, next)
+				}
+			}
+			return out, true
+		default:
+			return value, value != nil
+		}
 	}
 	_, explicit := explicitPaths[path]
+	switch v := value.(type) {
+	case manifestLiteralValue:
+		if v.Value == nil {
+			return nil, explicit
+		}
+		return v.Value, true
+	}
 	switch v := value.(type) {
 	case nil:
 		return nil, explicit
@@ -292,19 +338,23 @@ func resolveObjectPathChildKey(parentPath, renderedKey string, explicitPaths map
 	return base
 }
 
-func normalizeManifestValue(value interface{}, path string, objectPaths map[string]struct{}) interface{} {
+func normalizeManifestValue(value interface{}, path string, objectPaths map[string]struct{}, explicitPaths map[string]struct{}) (interface{}, error) {
 	switch v := value.(type) {
 	case []interface{}:
 		if _, ok := objectPaths[path]; ok && len(v) == 1 {
 			if m, ok := v[0].(map[string]interface{}); ok {
-				return normalizeManifestValue(m, path, objectPaths)
+				return normalizeManifestValue(m, path, objectPaths, explicitPaths)
 			}
 		}
 		normalized := make([]interface{}, len(v))
 		for i := range v {
-			normalized[i] = normalizeManifestValue(v[i], path, objectPaths)
+			next, err := normalizeManifestValue(v[i], path, objectPaths, explicitPaths)
+			if err != nil {
+				return nil, err
+			}
+			normalized[i] = next
 		}
-		return normalized
+		return normalized, nil
 	case map[string]interface{}:
 		normalized := make(map[string]interface{}, len(v))
 		_, isObjectPath := objectPaths[path]
@@ -316,13 +366,46 @@ func normalizeManifestValue(value interface{}, path string, objectPaths map[stri
 			outKey := k
 			if isObjectPath {
 				outKey = toLowerCamel(k)
+				if k == "values_yaml" {
+					outKey = "values"
+				}
 			}
-			normalized[outKey] = normalizeManifestValue(child, childPath, objectPaths)
+			next, err := normalizeManifestValue(child, childPath, objectPaths, explicitPaths)
+			if err != nil {
+				return nil, err
+			}
+			normalized[outKey] = next
 		}
-		return normalized
+		return normalized, nil
+	case string:
+		if pathHasValuesYAMLSuffix(path) {
+			var parsed interface{}
+			if strings.TrimSpace(v) == "" {
+				if _, explicit := explicitPaths[path]; !explicit {
+					return nil, nil
+				}
+				return manifestLiteralValue{Value: map[string]interface{}{}}, nil
+			}
+			if err := yaml.Unmarshal([]byte(v), &parsed); err != nil {
+				return nil, fmt.Errorf("parse values_yaml as YAML: %w", err)
+			}
+			obj, ok := parsed.(map[string]interface{})
+			if !ok {
+				return nil, fmt.Errorf("parse values_yaml as YAML: expected YAML object at %q, got %T", path, parsed)
+			}
+			return manifestLiteralValue{Value: obj}, nil
+		}
+		return v, nil
 	default:
-		return v
+		return v, nil
 	}
+}
+
+func pathHasValuesYAMLSuffix(path string) bool {
+	if path == "values_yaml" {
+		return true
+	}
+	return strings.HasSuffix(path, ".values_yaml")
 }
 
 func toLowerCamel(value string) string {

@@ -93,9 +93,9 @@ Defaults to the namespace of the HelmRelease.
 for hooks) during the performance of a Helm action. Defaults to '5m0s'.
 - `uninstall` (Block List, Max: 1) Uninstall holds the configuration for Helm uninstall actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--uninstall))
 - `upgrade` (Block List, Max: 1) Upgrade holds the configuration for Helm upgrade actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--upgrade))
-- `values` (Map of String) Values holds the values for this Helm release.
 - `values_from` (Block List) ValuesFrom holds references to resources containing Helm values for this HelmRelease,
 and information about how they should be merged. (see [below for nested schema](#nestedblock--spec--values_from))
+- `values_yaml` (String) Values holds the values for this Helm release as YAML.
 
 <a id="nestedblock--spec--chart"></a>
 ### Nested Schema for `spec.chart`
