@@ -36,6 +36,48 @@ data "kubefu_k8s_core_config_map_v1" "inttest" {
   }
 }
 
+data "kubefu_flux_kustomize_toolkit_fluxcd_io_kustomization_v1" "inttest" {
+  metadata = {
+    name      = "variables"
+    namespace = data.kubefu_k8s_core_namespace_v1.inttest.metadata[0].name
+  }
+
+  spec {
+    interval = "10m"
+    path     = "./workloads/cisco-msp-golden-config/wg2-messaging/variables"
+    prune    = true
+
+    source_ref {
+      kind      = "GitRepository"
+      name      = "cisco-msp-golden-config"
+      namespace = "flux-system"
+    }
+  }
+}
+
+data "kubefu_flux_kustomize_toolkit_fluxcd_io_kustomization_v1" "inttest_explicit_empty" {
+  metadata = {
+    name      = "variables-explicit-empty"
+    namespace = data.kubefu_k8s_core_namespace_v1.inttest.metadata[0].name
+  }
+
+  spec {
+    interval = "10m"
+    path     = "./workloads/cisco-msp-golden-config/wg2-messaging/variables"
+    prune    = true
+
+    common_metadata {
+      annotations = {}
+    }
+
+    source_ref {
+      kind      = "GitRepository"
+      name      = "cisco-msp-golden-config"
+      namespace = "flux-system"
+    }
+  }
+}
+
 resource "kubefu_manifest" "inttest_namespace" {
   count    = var.apply_manifests ? 1 : 0
   manifest = data.kubefu_k8s_core_namespace_v1.inttest.kubefu_manifest_yaml
@@ -53,6 +95,14 @@ output "namespace_yaml" {
 
 output "config_map_yaml" {
   value = data.kubefu_k8s_core_config_map_v1.inttest.kubefu_manifest_yaml
+}
+
+output "flux_kustomization_yaml" {
+  value = data.kubefu_flux_kustomize_toolkit_fluxcd_io_kustomization_v1.inttest.kubefu_manifest_yaml
+}
+
+output "flux_kustomization_explicit_empty_yaml" {
+  value = data.kubefu_flux_kustomize_toolkit_fluxcd_io_kustomization_v1.inttest_explicit_empty.kubefu_manifest_yaml
 }
 
 data "kubefu_user_crd_custom_test_tst_queue_v1beta1" "inttest_user" {}

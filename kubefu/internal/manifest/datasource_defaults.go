@@ -169,6 +169,9 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 			for _, item := range v {
 				next, keep := pruneManifestValue(item, path, explicitPaths, objectPaths, mode)
 				if keep {
+					if next == nil {
+						continue
+					}
 					out = append(out, next)
 				}
 			}
@@ -197,6 +200,9 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 		for _, item := range v {
 			next, keep := pruneManifestValue(item, path, explicitPaths, objectPaths, mode)
 			if keep {
+				if next == nil {
+					continue
+				}
 				pruned = append(pruned, next)
 			}
 		}
@@ -255,7 +261,7 @@ func explicitManifestPaths(d *schema.ResourceData, keys []string) map[string]str
 		if hasDiagErrors(rawDiags) {
 			continue
 		}
-		collectExplicitManifestPaths(rawValue, key, paths)
+		collectExplicitManifestPaths(rawValue, key, paths, false)
 	}
 	return paths
 }
@@ -269,15 +275,15 @@ func hasDiagErrors(diags diag.Diagnostics) bool {
 	return false
 }
 
-func collectExplicitManifestPaths(value cty.Value, path string, paths map[string]struct{}) {
+func collectExplicitManifestPaths(value cty.Value, path string, paths map[string]struct{}, parentExplicit bool) bool {
 	if path == "" || !value.IsKnown() || value.IsNull() {
-		return
+		return false
 	}
-	paths[path] = struct{}{}
 
 	t := value.Type()
 	switch {
 	case t.IsObjectType() || t.IsMapType():
+		anyExplicit := false
 		it := value.ElementIterator()
 		for it.Next() {
 			key, next := it.Element()
@@ -285,15 +291,41 @@ func collectExplicitManifestPaths(value cty.Value, path string, paths map[string
 			if path != "" {
 				childPath = path + "." + childPath
 			}
-			collectExplicitManifestPaths(next, childPath, paths)
+			if collectExplicitManifestPaths(next, childPath, paths, parentExplicit) {
+				anyExplicit = true
+			}
 		}
+		if anyExplicit || parentExplicit || isTopLevelManifestPath(path) {
+			paths[path] = struct{}{}
+			return true
+		}
+		return false
 	case t.IsListType() || t.IsSetType() || t.IsTupleType():
+		anyExplicit := false
+		hasElements := false
 		it := value.ElementIterator()
 		for it.Next() {
+			hasElements = true
 			_, next := it.Element()
-			collectExplicitManifestPaths(next, path, paths)
+			if collectExplicitManifestPaths(next, path, paths, true) {
+				anyExplicit = true
+			}
 		}
+		// Keep non-empty collections explicit. Empty nested collections are treated
+		// as implicit unless they are top-level attributes.
+		if anyExplicit || hasElements || isTopLevelManifestPath(path) {
+			paths[path] = struct{}{}
+			return true
+		}
+		return false
+	default:
+		paths[path] = struct{}{}
+		return true
 	}
+}
+
+func isTopLevelManifestPath(path string) bool {
+	return path != "" && !strings.Contains(path, ".")
 }
 
 func lowerCamelToSnake(value string) string {
@@ -344,6 +376,9 @@ func normalizeManifestValue(value interface{}, path string, objectPaths map[stri
 		if _, ok := objectPaths[path]; ok && len(v) == 1 {
 			if m, ok := v[0].(map[string]interface{}); ok {
 				return normalizeManifestValue(m, path, objectPaths, explicitPaths)
+			}
+			if v[0] == nil {
+				return map[string]interface{}{}, nil
 			}
 		}
 		normalized := make([]interface{}, len(v))

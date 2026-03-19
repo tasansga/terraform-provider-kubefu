@@ -38,6 +38,8 @@ provider_installation {
 }
 EOF
 
+rm -f "$TF_DIR/main.tf"
+rm -rf "$TF_DIR/schemas" "$TF_DIR/out"
 cp "$SCRIPT_DIR/main.tf" "$TF_DIR/main.tf"
 cp -R "$SCRIPT_DIR/schemas" "$TF_DIR/schemas"
 mkdir -p "$TF_DIR/out"
@@ -85,17 +87,27 @@ apply)
   assert_contains() {
     local file="$1"
     local expected="$2"
-    if ! grep -Fq "$expected" "$file"; then
+    if ! grep -Fq -- "$expected" "$file"; then
       echo "expected content missing in $file: $expected" >&2
       exit 1
     fi
   }
+  assert_not_contains() {
+    local file="$1"
+    local unexpected="$2"
+    if grep -Fq -- "$unexpected" "$file"; then
+      echo "unexpected content found in $file: $unexpected" >&2
+      exit 1
+    fi
+  }
   mkdir -p "$TF_DIR/out"
-  for output_name in namespace_yaml config_map_yaml user_schema_yaml; do
+  for output_name in namespace_yaml config_map_yaml flux_kustomization_yaml flux_kustomization_explicit_empty_yaml user_schema_yaml; do
     expected="$("$TF_BIN" output -raw "$output_name")"
     case "$output_name" in
       namespace_yaml) file="$TF_DIR/out/namespace.yaml" ;;
       config_map_yaml) file="$TF_DIR/out/config_map.yaml" ;;
+      flux_kustomization_yaml) file="$TF_DIR/out/flux_kustomization.yaml" ;;
+      flux_kustomization_explicit_empty_yaml) file="$TF_DIR/out/flux_kustomization_explicit_empty.yaml" ;;
       user_schema_yaml) file="$TF_DIR/out/user_schema.yaml" ;;
       *) echo "unknown output $output_name" >&2; exit 1 ;;
     esac
@@ -116,6 +128,22 @@ apply)
   assert_contains "$TF_DIR/out/config_map.yaml" "data:"
   assert_contains "$TF_DIR/out/config_map.yaml" "hello: world"
   assert_contains "$TF_DIR/out/config_map.yaml" "namespace: kubefu-inttest"
+  assert_contains "$TF_DIR/out/flux_kustomization.yaml" "kind: Kustomization"
+  assert_contains "$TF_DIR/out/flux_kustomization.yaml" "interval: 10m"
+  assert_contains "$TF_DIR/out/flux_kustomization.yaml" "prune: true"
+  assert_contains "$TF_DIR/out/flux_kustomization_explicit_empty.yaml" "kind: Kustomization"
+  assert_contains "$TF_DIR/out/flux_kustomization_explicit_empty.yaml" "commonMetadata: {}"
+  assert_not_contains "$TF_DIR/out/flux_kustomization_explicit_empty.yaml" "- null"
+  assert_not_contains "$TF_DIR/out/namespace.yaml" "initializers: []"
+  assert_not_contains "$TF_DIR/out/namespace.yaml" "ownerReferences: []"
+  assert_not_contains "$TF_DIR/out/flux_kustomization.yaml" "commonMetadata: []"
+  assert_not_contains "$TF_DIR/out/flux_kustomization.yaml" "decryption: []"
+  assert_not_contains "$TF_DIR/out/flux_kustomization.yaml" "dependsOn: []"
+  assert_not_contains "$TF_DIR/out/flux_kustomization.yaml" "healthChecks: []"
+  assert_not_contains "$TF_DIR/out/flux_kustomization.yaml" "images: []"
+  assert_not_contains "$TF_DIR/out/flux_kustomization.yaml" "kubeConfig: []"
+  assert_not_contains "$TF_DIR/out/flux_kustomization.yaml" "patches: []"
+  assert_not_contains "$TF_DIR/out/flux_kustomization.yaml" "postBuild: []"
   assert_contains "$TF_DIR/out/user_schema.yaml" "apiVersion: crd.custom.test/v1beta1"
   assert_contains "$TF_DIR/out/user_schema.yaml" "kind: TstQueue"
   ;;
