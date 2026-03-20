@@ -111,6 +111,7 @@ func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []
 			manifest[toLowerCamel(key)] = pruned
 		}
 	}
+	postProcessManifest(manifest)
 	if len(manifest) == 0 {
 		return nil
 	}
@@ -130,6 +131,100 @@ func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []
 		return fmt.Errorf("set kubefu_manifest_yaml: %w", err)
 	}
 	return nil
+}
+
+func postProcessManifest(manifest map[string]interface{}) {
+	apiVersion, _ := manifest["apiVersion"].(string)
+	kind, _ := manifest["kind"].(string)
+	if !strings.HasPrefix(apiVersion, "kustomize.config.k8s.io/") {
+		return
+	}
+	switch kind {
+	case "Kustomization":
+		flattenKustomizeGeneratorList(manifest, "configMapGenerator")
+		flattenKustomizeGeneratorList(manifest, "secretGenerator")
+	case "ConfigMapArgs", "SecretArgs":
+		flattenKustomizeGeneratorArgsWrapper(manifest)
+	case "GeneratorArgs":
+		flattenKustomizeKvPairSourcesWrapper(manifest)
+	}
+}
+
+func flattenKustomizeGeneratorList(manifest map[string]interface{}, field string) {
+	raw, ok := manifest[field]
+	if !ok {
+		return
+	}
+	items, ok := raw.([]interface{})
+	if !ok {
+		return
+	}
+	for i := range items {
+		entry, ok := items[i].(map[string]interface{})
+		if !ok {
+			continue
+		}
+		flattenKustomizeGeneratorArgsWrapper(entry)
+		items[i] = entry
+	}
+	manifest[field] = items
+}
+
+func flattenKustomizeGeneratorArgsWrapper(target map[string]interface{}) {
+	inner, ok := popNestedObject(target, []string{"generatorArgs", "generator_args"})
+	if !ok {
+		return
+	}
+	for k, v := range inner {
+		if _, exists := target[k]; !exists {
+			target[k] = v
+		}
+	}
+	flattenKustomizeKvPairSourcesWrapper(target)
+}
+
+func flattenKustomizeKvPairSourcesWrapper(target map[string]interface{}) {
+	inner, ok := popNestedObject(target, []string{"kvPairSources", "kv_pair_sources"})
+	if !ok {
+		return
+	}
+	for k, v := range inner {
+		if _, exists := target[k]; !exists {
+			target[k] = v
+		}
+	}
+}
+
+func popNestedObject(target map[string]interface{}, keys []string) (map[string]interface{}, bool) {
+	for _, key := range keys {
+		raw, ok := target[key]
+		if !ok {
+			continue
+		}
+		delete(target, key)
+		if nested, ok := asMapObject(raw); ok {
+			return nested, true
+		}
+	}
+	return nil, false
+}
+
+func asMapObject(raw interface{}) (map[string]interface{}, bool) {
+	switch v := raw.(type) {
+	case map[string]interface{}:
+		return v, true
+	case []interface{}:
+		if len(v) != 1 {
+			return nil, false
+		}
+		m, ok := v[0].(map[string]interface{})
+		if !ok {
+			return nil, false
+		}
+		return m, true
+	default:
+		return nil, false
+	}
 }
 
 func normalizeRenderMode(mode string) string {

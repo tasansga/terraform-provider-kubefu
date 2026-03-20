@@ -560,3 +560,192 @@ func TestSetDataSourceManifestWithObjectPathsValuesYAMLRejectsNonObject(t *testi
 		}
 	}
 }
+
+func TestSetDataSourceManifestWithObjectPathsFlattensKustomizationGeneratorWrappers(t *testing.T) {
+	testSchema := map[string]*schema.Schema{
+		"api_version": {Type: schema.TypeString, Computed: true},
+		"kind":        {Type: schema.TypeString, Computed: true},
+		"config_map_generator": {
+			Type:       schema.TypeList,
+			Optional:   true,
+			ConfigMode: schema.SchemaConfigModeAttr,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"generator_args": {
+					Type:       schema.TypeList,
+					Optional:   true,
+					ConfigMode: schema.SchemaConfigModeAttr,
+					MaxItems:   1,
+					Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"namespace": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"kv_pair_sources": {
+							Type:       schema.TypeList,
+							Optional:   true,
+							ConfigMode: schema.SchemaConfigModeAttr,
+							MaxItems:   1,
+							Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+								"files": {
+									Type:     schema.TypeList,
+									Optional: true,
+									Elem:     &schema.Schema{Type: schema.TypeString},
+								},
+							}},
+						},
+					}},
+				},
+			}},
+		},
+		"kubefu_manifest_json": {Type: schema.TypeString, Computed: true},
+		"kubefu_manifest_yaml": {Type: schema.TypeString, Computed: true},
+	}
+	raw := map[string]interface{}{
+		"api_version": "kustomize.config.k8s.io/v1beta1",
+		"kind":        "Kustomization",
+		"config_map_generator": []interface{}{
+			map[string]interface{}{
+				"generator_args": []interface{}{
+					map[string]interface{}{
+						"name":      "network-config",
+						"namespace": "wg2-messaging",
+						"kv_pair_sources": []interface{}{
+							map[string]interface{}{
+								"files": []interface{}{"loltel.prototext"},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	d := schema.TestResourceDataRaw(t, testSchema, raw)
+	if err := SetDataSourceManifestWithObjectPathsForMeta(
+		d,
+		testRenderModeConfig{mode: RenderModeCompact},
+		[]string{"config_map_generator"},
+		[]string{"config_map_generator.generator_args", "config_map_generator.generator_args.kv_pair_sources"},
+	); err != nil {
+		t.Fatalf("set manifest: %v", err)
+	}
+	payload := d.Get("kubefu_manifest_yaml").(string)
+	var manifest map[string]interface{}
+	if err := yaml.Unmarshal([]byte(payload), &manifest); err != nil {
+		t.Fatalf("unmarshal yaml: %v", err)
+	}
+	list, ok := manifest["configMapGenerator"].([]interface{})
+	if !ok || len(list) != 1 {
+		t.Fatalf("expected one configMapGenerator entry, got %T (%v)", manifest["configMapGenerator"], manifest["configMapGenerator"])
+	}
+	entry, ok := list[0].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected configMapGenerator entry map, got %T", list[0])
+	}
+	if entry["name"] != "network-config" {
+		t.Fatalf("expected name=network-config, got %v", entry["name"])
+	}
+	if entry["namespace"] != "wg2-messaging" {
+		t.Fatalf("expected namespace=wg2-messaging, got %v", entry["namespace"])
+	}
+	files, ok := entry["files"].([]interface{})
+	if !ok || len(files) != 1 || files[0] != "loltel.prototext" {
+		t.Fatalf("expected files=[loltel.prototext], got %v", entry["files"])
+	}
+	if _, ok := entry["generator_args"]; ok {
+		t.Fatalf("unexpected generator_args key in rendered output")
+	}
+	if _, ok := entry["generatorArgs"]; ok {
+		t.Fatalf("unexpected generatorArgs key in rendered output")
+	}
+	if _, ok := entry["kv_pair_sources"]; ok {
+		t.Fatalf("unexpected kv_pair_sources key in rendered output")
+	}
+	if _, ok := entry["kvPairSources"]; ok {
+		t.Fatalf("unexpected kvPairSources key in rendered output")
+	}
+}
+
+func TestSetDataSourceManifestWithObjectPathsFlattensConfigMapArgsWrappers(t *testing.T) {
+	testSchema := map[string]*schema.Schema{
+		"api_version": {Type: schema.TypeString, Computed: true},
+		"kind":        {Type: schema.TypeString, Computed: true},
+		"generator_args": {
+			Type:       schema.TypeList,
+			Optional:   true,
+			ConfigMode: schema.SchemaConfigModeAttr,
+			MaxItems:   1,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"name": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+				"kv_pair_sources": {
+					Type:       schema.TypeList,
+					Optional:   true,
+					ConfigMode: schema.SchemaConfigModeAttr,
+					MaxItems:   1,
+					Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+						"files": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+					}},
+				},
+			}},
+		},
+		"kubefu_manifest_json": {Type: schema.TypeString, Computed: true},
+		"kubefu_manifest_yaml": {Type: schema.TypeString, Computed: true},
+	}
+	raw := map[string]interface{}{
+		"api_version": "kustomize.config.k8s.io/v1beta1",
+		"kind":        "ConfigMapArgs",
+		"generator_args": []interface{}{
+			map[string]interface{}{
+				"name": "network-config",
+				"kv_pair_sources": []interface{}{
+					map[string]interface{}{
+						"files": []interface{}{"loltel.prototext"},
+					},
+				},
+			},
+		},
+	}
+	d := schema.TestResourceDataRaw(t, testSchema, raw)
+	if err := SetDataSourceManifestWithObjectPathsForMeta(
+		d,
+		testRenderModeConfig{mode: RenderModeCompact},
+		[]string{"generator_args"},
+		[]string{"generator_args", "generator_args.kv_pair_sources"},
+	); err != nil {
+		t.Fatalf("set manifest: %v", err)
+	}
+	payload := d.Get("kubefu_manifest_yaml").(string)
+	var manifest map[string]interface{}
+	if err := yaml.Unmarshal([]byte(payload), &manifest); err != nil {
+		t.Fatalf("unmarshal yaml: %v", err)
+	}
+	if manifest["name"] != "network-config" {
+		t.Fatalf("expected name=network-config, got %v", manifest["name"])
+	}
+	files, ok := manifest["files"].([]interface{})
+	if !ok || len(files) != 1 || files[0] != "loltel.prototext" {
+		t.Fatalf("expected files=[loltel.prototext], got %v", manifest["files"])
+	}
+	if _, ok := manifest["generator_args"]; ok {
+		t.Fatalf("unexpected generator_args key in rendered output")
+	}
+	if _, ok := manifest["generatorArgs"]; ok {
+		t.Fatalf("unexpected generatorArgs key in rendered output")
+	}
+	if _, ok := manifest["kv_pair_sources"]; ok {
+		t.Fatalf("unexpected kv_pair_sources key in rendered output")
+	}
+	if _, ok := manifest["kvPairSources"]; ok {
+		t.Fatalf("unexpected kvPairSources key in rendered output")
+	}
+}
