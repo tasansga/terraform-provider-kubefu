@@ -48,7 +48,7 @@ func GenerateFromSchemas(schemaRoot, outDir, pkgName string) error {
 			}
 			fileData.Name = dataSourceFinalFileName(providerName, def, baseNameCounts)
 			path := filepath.Join(outDir, fileData.Name)
-			if err := os.WriteFile(path, fileData.Content, 0o644); err != nil {
+			if err := os.WriteFile(path, ensureTrailingNewline(fileData.Content), 0o644); err != nil {
 				return fmt.Errorf("write file %s: %w", path, err)
 			}
 			entries = append(entries, dataSourceEntry{
@@ -109,7 +109,7 @@ func writeDataSourcesFile(dir, pkgName string, entries []dataSourceEntry) error 
 	if err := dataSourcesTemplate.Execute(&buf, data); err != nil {
 		return fmt.Errorf("render data sources template: %w", err)
 	}
-	return os.WriteFile(filepath.Join(dir, "datasources.go"), buf.Bytes(), 0o644)
+	return os.WriteFile(filepath.Join(dir, "datasources.go"), ensureTrailingNewline(buf.Bytes()), 0o644)
 }
 
 type providerTemplateData struct {
@@ -202,4 +202,12 @@ func providerDefinitions(schemaRoot string) (map[string][]Definition, []string, 
 	}
 	sort.Strings(providerNames)
 	return providers, providerNames, nil
+}
+
+func ensureTrailingNewline(content []byte) []byte {
+	trimmed := bytes.TrimRight(content, "\r\n")
+	out := make([]byte, len(trimmed)+1)
+	copy(out, trimmed)
+	out[len(trimmed)] = '\n'
+	return out
 }

@@ -4,7 +4,7 @@ PROVIDER_BIN=$(DIST_DIR)/terraform-provider-kubefu
 
 default: all
 
-all: lint unittest inttest build-provider
+all: lint unittest inttest build-provider docs
 
 $(DIST_DIR):
 	mkdir -p $(DIST_DIR)
@@ -42,6 +42,7 @@ docs: generate
 	tfplugindocs generate --provider-dir ./cmd/terraform-provider-kubefu
 	rm -Rf ./docs
 	mv ./cmd/terraform-provider-kubefu/docs .
+	find ./docs -type f -name '*.md' -exec perl -i -pe 's/[ \t]+$$//' {} +
 
 test: unittest inttest
 
