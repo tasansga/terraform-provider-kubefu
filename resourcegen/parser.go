@@ -16,7 +16,7 @@ var (
 	namePattern        = regexp.MustCompile(`\{name\}`)
 	doubleParamPattern = regexp.MustCompile(`/\{[^}]+\}/\{[^}]+\}`)
 	suffixPattern      = regexp.MustCompile(`/(status|scale|proxy|bind|exec|attach|log|portforward|rename|approval)$`)
-	apisVersionPattern = regexp.MustCompile(`/apis/[^/]+\.[^/]+/(v\d+[\w\.]*)/`)
+	apisVersionPattern = regexp.MustCompile(`/apis/[^/]+/(v\d+[\w\.]*)/`)
 	apiVersionPattern  = regexp.MustCompile(`/api/v\d+/`)
 	errMissingGVK      = errors.New("missing x-kubernetes-group-version-kind")
 )

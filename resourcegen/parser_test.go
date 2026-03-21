@@ -1,6 +1,11 @@
 package resourcegen
 
 import (
+	"os"
+	"path/filepath"
+	"sort"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -321,4 +326,130 @@ func TestSchemaBuilderPreserveUnknownFieldsUsesMap(t *testing.T) {
 	if field.Type != schema.TypeMap {
 		t.Fatalf("expected values to be map, got %d", field.Type)
 	}
+}
+
+func TestParseRootResourcesSupportsAPIsWithoutDottedGroup(t *testing.T) {
+	doc := `{
+  "paths": {
+    "/apis/apps/v1/namespaces/{namespace}/deployments": {
+      "get": {
+        "x-kubernetes-group-version-kind": {
+          "group": "apps",
+          "version": "v1",
+          "kind": "Deployment"
+        }
+      }
+    },
+    "/apis/apps/v1/namespaces/{namespace}/daemonsets": {
+      "get": {
+        "x-kubernetes-group-version-kind": {
+          "group": "apps",
+          "version": "v1",
+          "kind": "DaemonSet"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "io.k8s.api.apps.v1.Deployment": {
+      "description": "Deployment",
+      "type": "object",
+      "properties": {
+        "metadata": { "type": "object" }
+      }
+    },
+    "io.k8s.api.apps.v1.DaemonSet": {
+      "description": "DaemonSet",
+      "type": "object",
+      "properties": {
+        "metadata": { "type": "object" }
+      }
+    }
+  }
+}`
+	entries, err := ParseRootResources([]byte(doc))
+	if err != nil {
+		t.Fatalf("ParseRootResources returned error: %v", err)
+	}
+	if len(entries) != 2 {
+		t.Fatalf("expected 2 entries, got %d", len(entries))
+	}
+	if !hasGVK(entries, "apps", "v1", "Deployment") {
+		t.Fatalf("expected apps/v1 Deployment entry")
+	}
+	if !hasGVK(entries, "apps", "v1", "DaemonSet") {
+		t.Fatalf("expected apps/v1 DaemonSet entry")
+	}
+}
+
+func TestParseRootResourcesK8sBaselineKindsPresent(t *testing.T) {
+	path, err := latestK8sSchemaPath()
+	if err != nil {
+		t.Fatalf("find latest k8s schema: %v", err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read k8s schema %s: %v", path, err)
+	}
+	entries, err := ParseRootResources(data)
+	if err != nil {
+		t.Fatalf("parse k8s schema %s: %v", path, err)
+	}
+	required := []struct {
+		group   string
+		version string
+		kind    string
+	}{
+		{group: "", version: "v1", kind: "ConfigMap"},
+		{group: "", version: "v1", kind: "Service"},
+		{group: "apps", version: "v1", kind: "Deployment"},
+		{group: "apps", version: "v1", kind: "DaemonSet"},
+	}
+	for _, req := range required {
+		if !hasGVK(entries, req.group, req.version, req.kind) {
+			t.Fatalf("missing required kind %q/%q/%q in %s", req.group, req.version, req.kind, path)
+		}
+	}
+}
+
+func hasGVK(entries []ResourceEntry, group, version, kind string) bool {
+	for _, entry := range entries {
+		if entry.Group == group && entry.Version == version && entry.Kind == kind {
+			return true
+		}
+	}
+	return false
+}
+
+func latestK8sSchemaPath() (string, error) {
+	matches, err := filepath.Glob(filepath.Join("..", "schemas", "k8s", "kubernetes-api-*.json"))
+	if err != nil {
+		return "", err
+	}
+	if len(matches) == 0 {
+		return "", os.ErrNotExist
+	}
+	sort.Slice(matches, func(i, j int) bool {
+		ai, aj := parseK8sSchemaMinor(matches[i]), parseK8sSchemaMinor(matches[j])
+		if ai == aj {
+			return matches[i] < matches[j]
+		}
+		return ai < aj
+	})
+	return matches[len(matches)-1], nil
+}
+
+func parseK8sSchemaMinor(path string) int {
+	base := filepath.Base(path)
+	const prefix = "kubernetes-api-1."
+	const suffix = ".json"
+	if !strings.HasPrefix(base, prefix) || !strings.HasSuffix(base, suffix) {
+		return -1
+	}
+	minorPart := strings.TrimSuffix(strings.TrimPrefix(base, prefix), suffix)
+	minor, err := strconv.Atoi(minorPart)
+	if err != nil {
+		return -1
+	}
+	return minor
 }

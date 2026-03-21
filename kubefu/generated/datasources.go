@@ -21,7 +21,7 @@ type Versions struct {
 }
 
 func DataSources(versions Versions) map[string]*schema.Resource {
-	result := make(map[string]*schema.Resource, 298)
+	result := make(map[string]*schema.Resource, 331)
 	{
 		ds := dataSourceCertManagerAcmeCertManagerIoChallengeV1()
 		configured := versions.versionFor("cert_manager")
@@ -2318,6 +2318,227 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_apiregistration_k8s_io_api_service_v1beta1"] = ds
 	}
 	{
+		ds := dataSourceK8sAppsControllerRevisionV1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsControllerRevisionV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_controller_revision_v1",
+				"k8s",
+				strings.Join(dataSourceK8sAppsControllerRevisionV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_controller_revision_v1"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsControllerRevisionV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsControllerRevisionV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_controller_revision_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sAppsControllerRevisionV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_controller_revision_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsControllerRevisionV1Beta2()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsControllerRevisionV1Beta2CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_controller_revision_v1beta2",
+				"k8s",
+				strings.Join(dataSourceK8sAppsControllerRevisionV1Beta2CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_controller_revision_v1beta2"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsDaemonSetV1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsDaemonSetV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_daemon_set_v1",
+				"k8s",
+				strings.Join(dataSourceK8sAppsDaemonSetV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_daemon_set_v1"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsDaemonSetV1Beta2()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsDaemonSetV1Beta2CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_daemon_set_v1beta2",
+				"k8s",
+				strings.Join(dataSourceK8sAppsDaemonSetV1Beta2CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_daemon_set_v1beta2"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsDeploymentV1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsDeploymentV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_deployment_v1",
+				"k8s",
+				strings.Join(dataSourceK8sAppsDeploymentV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_deployment_v1"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsDeploymentV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsDeploymentV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_deployment_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sAppsDeploymentV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_deployment_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsDeploymentV1Beta2()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsDeploymentV1Beta2CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_deployment_v1beta2",
+				"k8s",
+				strings.Join(dataSourceK8sAppsDeploymentV1Beta2CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_deployment_v1beta2"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsReplicaSetV1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsReplicaSetV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_replica_set_v1",
+				"k8s",
+				strings.Join(dataSourceK8sAppsReplicaSetV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_replica_set_v1"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsReplicaSetV1Beta2()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsReplicaSetV1Beta2CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_replica_set_v1beta2",
+				"k8s",
+				strings.Join(dataSourceK8sAppsReplicaSetV1Beta2CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_replica_set_v1beta2"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsStatefulSetV1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsStatefulSetV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_stateful_set_v1",
+				"k8s",
+				strings.Join(dataSourceK8sAppsStatefulSetV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_stateful_set_v1"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsStatefulSetV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsStatefulSetV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_stateful_set_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sAppsStatefulSetV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_stateful_set_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sAppsStatefulSetV1Beta2()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAppsStatefulSetV1Beta2CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_apps_stateful_set_v1beta2",
+				"k8s",
+				strings.Join(dataSourceK8sAppsStatefulSetV1Beta2CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_apps_stateful_set_v1beta2"] = ds
+	}
+	{
 		ds := dataSourceK8sAuditregistrationK8sIoAuditSinkV1Alpha1()
 		configured := versions.versionFor("k8s")
 		if len(configured) > 0 {
@@ -2554,6 +2775,176 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 			}
 		}
 		result["kubefu_k8s_authorization_k8s_io_subject_access_review_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sAutoscalingHorizontalPodAutoscalerV1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAutoscalingHorizontalPodAutoscalerV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_autoscaling_horizontal_pod_autoscaler_v1",
+				"k8s",
+				strings.Join(dataSourceK8sAutoscalingHorizontalPodAutoscalerV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_autoscaling_horizontal_pod_autoscaler_v1"] = ds
+	}
+	{
+		ds := dataSourceK8sAutoscalingHorizontalPodAutoscalerV2()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAutoscalingHorizontalPodAutoscalerV2CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_autoscaling_horizontal_pod_autoscaler_v2",
+				"k8s",
+				strings.Join(dataSourceK8sAutoscalingHorizontalPodAutoscalerV2CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_autoscaling_horizontal_pod_autoscaler_v2"] = ds
+	}
+	{
+		ds := dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Alpha1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Alpha1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_autoscaling_horizontal_pod_autoscaler_v2alpha1",
+				"k8s",
+				strings.Join(dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Alpha1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_autoscaling_horizontal_pod_autoscaler_v2alpha1"] = ds
+	}
+	{
+		ds := dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_autoscaling_horizontal_pod_autoscaler_v2beta1",
+				"k8s",
+				strings.Join(dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_autoscaling_horizontal_pod_autoscaler_v2beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_autoscaling_horizontal_pod_autoscaler_v2beta2",
+				"k8s",
+				strings.Join(dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_autoscaling_horizontal_pod_autoscaler_v2beta2"] = ds
+	}
+	{
+		ds := dataSourceK8sBatchCronJobV1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sBatchCronJobV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_batch_cron_job_v1",
+				"k8s",
+				strings.Join(dataSourceK8sBatchCronJobV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_batch_cron_job_v1"] = ds
+	}
+	{
+		ds := dataSourceK8sBatchCronJobV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sBatchCronJobV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_batch_cron_job_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sBatchCronJobV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_batch_cron_job_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sBatchCronJobV2Alpha1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sBatchCronJobV2Alpha1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_batch_cron_job_v2alpha1",
+				"k8s",
+				strings.Join(dataSourceK8sBatchCronJobV2Alpha1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_batch_cron_job_v2alpha1"] = ds
+	}
+	{
+		ds := dataSourceK8sBatchJobV1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sBatchJobV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_batch_job_v1",
+				"k8s",
+				strings.Join(dataSourceK8sBatchJobV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_batch_job_v1"] = ds
+	}
+	{
+		ds := dataSourceK8sBatchScheduledJobV2Alpha1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sBatchScheduledJobV2Alpha1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_batch_scheduled_job_v2alpha1",
+				"k8s",
+				strings.Join(dataSourceK8sBatchScheduledJobV2Alpha1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_batch_scheduled_job_v2alpha1"] = ds
 	}
 	{
 		ds := dataSourceK8sCertificatesK8sIoCertificateSigningRequestV1()
@@ -3117,6 +3508,125 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_events_k8s_io_event_v1beta1"] = ds
 	}
 	{
+		ds := dataSourceK8sExtensionsDaemonSetV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sExtensionsDaemonSetV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_extensions_daemon_set_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sExtensionsDaemonSetV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_extensions_daemon_set_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sExtensionsDeploymentV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sExtensionsDeploymentV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_extensions_deployment_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sExtensionsDeploymentV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_extensions_deployment_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sExtensionsIngressV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sExtensionsIngressV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_extensions_ingress_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sExtensionsIngressV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_extensions_ingress_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sExtensionsNetworkPolicyV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sExtensionsNetworkPolicyV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_extensions_network_policy_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sExtensionsNetworkPolicyV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_extensions_network_policy_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sExtensionsPodSecurityPolicyV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sExtensionsPodSecurityPolicyV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_extensions_pod_security_policy_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sExtensionsPodSecurityPolicyV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_extensions_pod_security_policy_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sExtensionsReplicaSetV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sExtensionsReplicaSetV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_extensions_replica_set_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sExtensionsReplicaSetV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_extensions_replica_set_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sExtensionsThirdPartyResourceV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sExtensionsThirdPartyResourceV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_extensions_third_party_resource_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sExtensionsThirdPartyResourceV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_extensions_third_party_resource_v1beta1"] = ds
+	}
+	{
 		ds := dataSourceK8sFlowcontrolApiserverK8sIoFlowSchemaV1()
 		configured := versions.versionFor("k8s")
 		if len(configured) > 0 {
@@ -3557,6 +4067,57 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 			}
 		}
 		result["kubefu_k8s_node_k8s_io_runtime_class_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sPolicyPodDisruptionBudgetV1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sPolicyPodDisruptionBudgetV1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_policy_pod_disruption_budget_v1",
+				"k8s",
+				strings.Join(dataSourceK8sPolicyPodDisruptionBudgetV1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_policy_pod_disruption_budget_v1"] = ds
+	}
+	{
+		ds := dataSourceK8sPolicyPodDisruptionBudgetV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sPolicyPodDisruptionBudgetV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_policy_pod_disruption_budget_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sPolicyPodDisruptionBudgetV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_policy_pod_disruption_budget_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sPolicyPodSecurityPolicyV1Beta1()
+		configured := versions.versionFor("k8s")
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sPolicyPodSecurityPolicyV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+			ds.DeprecationMessage = fmt.Sprintf(
+				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+				"kubefu_k8s_policy_pod_security_policy_v1beta1",
+				"k8s",
+				strings.Join(dataSourceK8sPolicyPodSecurityPolicyV1Beta1CompatibleVersions, ", "),
+				strings.Join(incompatible, ", "),
+			)
+			}
+		}
+		result["kubefu_k8s_policy_pod_security_policy_v1beta1"] = ds
 	}
 	{
 		ds := dataSourceK8sRbacAuthorizationK8sIoClusterRoleBindingV1()
