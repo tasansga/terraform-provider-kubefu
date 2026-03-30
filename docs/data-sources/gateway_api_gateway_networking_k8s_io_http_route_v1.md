@@ -77,6 +77,37 @@ Optional:
  Note that there are specific rules for ParentRefs which cross namespace boundaries. Cross-namespace references are only valid if they are explicitly allowed by something in the namespace they are referring to. For example: Gateway has the AllowedRoutes field, and ReferenceGrant provides a generic way to enable any other kind of cross-namespace reference.
 
  Support: Core
+- `port` (Number) Port is the network port this Route targets. It can be interpreted
+differently based on the type of parent resource.
+
+
+When the parent resource is a Gateway, this targets all listeners
+listening on the specified port that also support this kind of Route(and
+select this Route). It's not recommended to set `Port` unless the
+networking behaviors specified in a Route must apply to a specific port
+as opposed to a listener(s) whose port(s) may be changed. When both Port
+and SectionName are specified, the name and port of the selected listener
+must match both specified values.
+
+
+
+
+
+Implementations MAY choose to support other parent resources.
+Implementations supporting other types of parent resources MUST clearly
+document how/if Port is interpreted.
+
+
+For the purpose of status, an attachment is considered successful as
+long as the parent resource accepts it partially. For example, Gateway
+listeners can restrict which Routes can attach to them by Route kind,
+namespace, or hostname. If 1 of 2 Gateway listeners accept attachment
+from the referencing Route, the Route MUST be considered successfully
+attached. If no Gateway listeners accept attachment from this Route,
+the Route MUST be considered detached from the Gateway.
+
+
+Support: Extended
 - `section_name` (String) SectionName is the name of a section within the target resource. In the following resources, SectionName is interpreted as the following:
  * Gateway: Listener Name. When both Port (experimental) and SectionName are specified, the name and port of the selected listener must match both specified values. * Service: Port Name. When both Port (experimental) and SectionName are specified, the name and port of the selected listener must match both specified values. Note that attaching Routes to Services as Parents is part of experimental Mesh support and is not supported for any other purpose.
  Implementations MAY choose to support attaching Routes to other resources. If that is the case, they MUST clearly document how SectionName is interpreted.
@@ -120,6 +151,12 @@ Optional:
  * The oldest Route based on creation timestamp. * The Route appearing first in alphabetical order by "{namespace}/{name}".
  If ties still exist within an HTTPRoute, matching precedence MUST be granted to the FIRST matching rule (in list order) with a match meeting the above criteria.
  When no rules matching a request have been successfully attached to the parent a request is coming from, a HTTP 404 status code MUST be returned. (see [below for nested schema](#nestedblock--spec--rules--matches))
+- `name` (String) Name is the name of the route rule. This name MUST be unique within a Route if it is set.
+
+Support: Extended
+- `timeouts` (Block List, Max: 1) Timeouts defines the timeouts that can be configured for an HTTP request.
+
+Support: Extended (see [below for nested schema](#nestedblock--spec--rules--timeouts))
 
 <a id="nestedblock--spec--rules--backend_refs"></a>
 ### Nested Schema for `spec.rules.backend_refs`
@@ -232,6 +269,17 @@ Optional:
  In either error case, the Message of the `ResolvedRefs` Condition should be used to provide more detail about the problem.
  Support: Extended for Kubernetes Service
  Support: Implementation-specific for any other resource (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--request_mirror--backend_ref))
+- `fraction` (Block List, Max: 1) Fraction represents the fraction of requests that should be
+mirrored to BackendRef.
+
+Only one of Fraction or Percent may be specified. If neither field
+is specified, 100% of requests will be mirrored. (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--request_mirror--fraction))
+- `percent` (Number) Percent represents the percentage of requests that should be
+mirrored to BackendRef. Its minimum value is 0 (indicating 0% of
+requests) and its maximum value is 100 (indicating 100% of requests).
+
+Only one of Fraction or Percent may be specified. If neither field
+is specified, 100% of requests will be mirrored.
 
 <a id="nestedblock--spec--rules--backend_refs--filters--request_mirror--backend_ref"></a>
 ### Nested Schema for `spec.rules.backend_refs.filters.request_mirror.backend_ref`
@@ -249,6 +297,15 @@ Optional:
  Note that when a namespace different than the local namespace is specified, a ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details.
  Support: Core
 - `port` (Number) Port specifies the destination port number to use for this resource. Port is required when the referent is a Kubernetes Service. In this case, the port number is the service port number, not the target port. For other resources, destination port might be derived from the referent resource or this field.
+
+
+<a id="nestedblock--spec--rules--backend_refs--filters--request_mirror--fraction"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.request_mirror.fraction`
+
+Optional:
+
+- `denominator` (Number)
+- `numerator` (Number)
 
 
 
@@ -449,6 +506,17 @@ Optional:
  In either error case, the Message of the `ResolvedRefs` Condition should be used to provide more detail about the problem.
  Support: Extended for Kubernetes Service
  Support: Implementation-specific for any other resource (see [below for nested schema](#nestedblock--spec--rules--filters--request_mirror--backend_ref))
+- `fraction` (Block List, Max: 1) Fraction represents the fraction of requests that should be
+mirrored to BackendRef.
+
+Only one of Fraction or Percent may be specified. If neither field
+is specified, 100% of requests will be mirrored. (see [below for nested schema](#nestedblock--spec--rules--filters--request_mirror--fraction))
+- `percent` (Number) Percent represents the percentage of requests that should be
+mirrored to BackendRef. Its minimum value is 0 (indicating 0% of
+requests) and its maximum value is 100 (indicating 100% of requests).
+
+Only one of Fraction or Percent may be specified. If neither field
+is specified, 100% of requests will be mirrored.
 
 <a id="nestedblock--spec--rules--filters--request_mirror--backend_ref"></a>
 ### Nested Schema for `spec.rules.filters.request_mirror.backend_ref`
@@ -466,6 +534,15 @@ Optional:
  Note that when a namespace different than the local namespace is specified, a ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details.
  Support: Core
 - `port` (Number) Port specifies the destination port number to use for this resource. Port is required when the referent is a Kubernetes Service. In this case, the port number is the service port number, not the target port. For other resources, destination port might be derived from the referent resource or this field.
+
+
+<a id="nestedblock--spec--rules--filters--request_mirror--fraction"></a>
+### Nested Schema for `spec.rules.filters.request_mirror.fraction`
+
+Optional:
+
+- `denominator` (Number)
+- `numerator` (Number)
 
 
 
@@ -631,6 +708,54 @@ Optional:
 
 
 
+<a id="nestedblock--spec--rules--timeouts"></a>
+### Nested Schema for `spec.rules.timeouts`
+
+Optional:
+
+- `backend_request` (String) BackendRequest specifies a timeout for an individual request from the gateway
+to a backend. This covers the time from when the request first starts being
+sent from the gateway to when the full response has been received from the backend.
+
+Setting a timeout to the zero duration (e.g. "0s") SHOULD disable the timeout
+completely. Implementations that cannot completely disable the timeout MUST
+instead interpret the zero duration as the longest possible value to which
+the timeout can be set.
+
+An entire client HTTP transaction with a gateway, covered by the Request timeout,
+may result in more than one call from the gateway to the destination backend,
+for example, if automatic retries are supported.
+
+The value of BackendRequest must be a Gateway API Duration string as defined by
+GEP-2257.  When this field is unspecified, its behavior is implementation-specific;
+when specified, the value of BackendRequest must be no more than the value of the
+Request timeout (since the Request timeout encompasses the BackendRequest timeout).
+
+Support: Extended
+- `request` (String) Request specifies the maximum duration for a gateway to respond to an HTTP request.
+If the gateway has not been able to respond before this deadline is met, the gateway
+MUST return a timeout error.
+
+For example, setting the `rules.timeouts.request` field to the value `10s` in an
+`HTTPRoute` will cause a timeout if a client request is taking longer than 10 seconds
+to complete.
+
+Setting a timeout to the zero duration (e.g. "0s") SHOULD disable the timeout
+completely. Implementations that cannot completely disable the timeout MUST
+instead interpret the zero duration as the longest possible value to which
+the timeout can be set.
+
+This timeout is intended to cover as close to the whole request-response transaction
+as possible although an implementation MAY choose to start the timeout after the entire
+request stream has been received instead of immediately after the transaction is
+initiated by the client.
+
+The value of Request is a Gateway API Duration string as defined by GEP-2257. When this
+field is unspecified, request timeout behavior is implementation-specific.
+
+Support: Extended
+
+
 
 
 <a id="nestedblock--status"></a>
@@ -688,6 +813,37 @@ Optional:
  Note that there are specific rules for ParentRefs which cross namespace boundaries. Cross-namespace references are only valid if they are explicitly allowed by something in the namespace they are referring to. For example: Gateway has the AllowedRoutes field, and ReferenceGrant provides a generic way to enable any other kind of cross-namespace reference.
 
  Support: Core
+- `port` (Number) Port is the network port this Route targets. It can be interpreted
+differently based on the type of parent resource.
+
+
+When the parent resource is a Gateway, this targets all listeners
+listening on the specified port that also support this kind of Route(and
+select this Route). It's not recommended to set `Port` unless the
+networking behaviors specified in a Route must apply to a specific port
+as opposed to a listener(s) whose port(s) may be changed. When both Port
+and SectionName are specified, the name and port of the selected listener
+must match both specified values.
+
+
+
+
+
+Implementations MAY choose to support other parent resources.
+Implementations supporting other types of parent resources MUST clearly
+document how/if Port is interpreted.
+
+
+For the purpose of status, an attachment is considered successful as
+long as the parent resource accepts it partially. For example, Gateway
+listeners can restrict which Routes can attach to them by Route kind,
+namespace, or hostname. If 1 of 2 Gateway listeners accept attachment
+from the referencing Route, the Route MUST be considered successfully
+attached. If no Gateway listeners accept attachment from this Route,
+the Route MUST be considered detached from the Gateway.
+
+
+Support: Extended
 - `section_name` (String) SectionName is the name of a section within the target resource. In the following resources, SectionName is interpreted as the following:
  * Gateway: Listener Name. When both Port (experimental) and SectionName are specified, the name and port of the selected listener must match both specified values. * Service: Port Name. When both Port (experimental) and SectionName are specified, the name and port of the selected listener must match both specified values. Note that attaching Routes to Services as Parents is part of experimental Mesh support and is not supported for any other purpose.
  Implementations MAY choose to support attaching Routes to other resources. If that is the case, they MUST clearly document how SectionName is interpreted.

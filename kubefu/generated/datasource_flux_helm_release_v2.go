@@ -253,6 +253,30 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 							},
 						}},
 					},
+					"common_metadata": {
+						Type:        schema.TypeList,
+						Description: "CommonMetadata specifies the common labels and annotations that are\napplied to all resources. Any existing label or annotation will be\noverridden if its key matches a common one.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"annotations": {
+								Type:        schema.TypeMap,
+								Description: "Annotations to be added to the object's metadata.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"labels": {
+								Type:        schema.TypeMap,
+								Description: "Labels to be added to the object's metadata.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"depends_on_": {
 						Type:        schema.TypeList,
 						Description: "DependsOn may contain a meta.NamespacedObjectReference slice with\nreferences to HelmRelease resources that must be ready before this HelmRelease\ncan be reconciled.",
@@ -270,6 +294,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 							"namespace": {
 								Type:        schema.TypeString,
 								Description: "Namespace of the referent, when not specified it acts as LocalObjectReference.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"ready_expr": {
+								Type:        schema.TypeString,
+								Description: "ReadyExpr is a CEL expression that can be used to assess the readiness\nof a dependency. When specified, the built-in readiness check\nis replaced by the logic defined in the CEL expression.\nTo make the CEL expression additive to the built-in readiness check,\nthe feature gate `AdditiveCELDependencyCheck` must be set to `true`.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -405,6 +436,20 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"disable_schema_validation": {
+								Type:        schema.TypeBool,
+								Description: "DisableSchemaValidation prevents the Helm install action from validating\nthe values against the JSON Schema.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"disable_take_ownership": {
+								Type:        schema.TypeBool,
+								Description: "DisableTakeOwnership disables taking ownership of existing resources\nduring the Helm install action. Defaults to false.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"disable_wait": {
 								Type:        schema.TypeBool,
 								Description: "DisableWait disables the waiting for resources to be ready after a Helm\ninstall has been performed.",
@@ -464,6 +509,30 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"strategy": {
+								Type:        schema.TypeList,
+								Description: "Strategy defines the install strategy to use for this HelmRelease.\nDefaults to 'RemediateOnFailure'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the install strategy.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"retry_interval": {
+										Type:        schema.TypeString,
+										Description: "RetryInterval is the interval at which to retry a failed install.\nCan be used only when Name is set to RetryOnFailure.\nDefaults to '5m'.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"timeout": {
 								Type:        schema.TypeString,
 								Description: "Timeout is the time to wait for any individual Kubernetes operation (like\nJobs for hooks) during the performance of a Helm install action. Defaults to\n'HelmReleaseSpec.Timeout'.",
@@ -488,6 +557,23 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"config_map_ref": {
+								Type:        schema.TypeList,
+								Description: "ConfigMapRef holds an optional name of a ConfigMap that contains\nthe following keys:\n\n- `provider`: the provider to use. One of `aws`, `azure`, `gcp`, or\n   `generic`. Required.\n- `cluster`: the fully qualified resource name of the Kubernetes\n   cluster in the cloud provider API. Not used by the `generic`\n   provider. Required when one of `address` or `ca.crt` is not set.\n- `address`: the address of the Kubernetes API server. Required\n   for `generic`. For the other providers, if not specified, the\n   first address in the cluster resource will be used, and if\n   specified, it must match one of the addresses in the cluster\n   resource.\n   If audiences is not set, will be used as the audience for the\n   `generic` provider.\n- `ca.crt`: the optional PEM-encoded CA certificate for the\n   Kubernetes API server. If not set, the controller will use the\n   CA certificate from the cluster resource.\n- `audiences`: the optional audiences as a list of\n   line-break-separated strings for the Kubernetes ServiceAccount\n   token. Defaults to the `address` for the `generic` provider, or\n   to specific values for the other providers depending on the\n   provider.\n-  `serviceAccountName`: the optional name of the Kubernetes\n   ServiceAccount in the same namespace that should be used\n   for authentication. If not specified, the controller\n   ServiceAccount will be used.\n\nMutually exclusive with SecretRef.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"secret_ref": {
 								Type:        schema.TypeList,
 								Description: "SecretRef holds the name of a secret that contains a key with\nthe kubeconfig file as the value. If no key is set, the key will default\nto 'value'.\nIt is recommended that the kubeconfig is self-contained, and the secret\nis regularly updated if credentials such as a cloud-access-token expire.\nCloud specific `cmd-path` auth helpers will not function without adding\nbinaries and credentials to the Pod that is responsible for reconciling\nKubernetes resources.",
@@ -895,6 +981,20 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"disable_schema_validation": {
+								Type:        schema.TypeBool,
+								Description: "DisableSchemaValidation prevents the Helm upgrade action from validating\nthe values against the JSON Schema.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"disable_take_ownership": {
+								Type:        schema.TypeBool,
+								Description: "DisableTakeOwnership disables taking ownership of existing resources\nduring the Helm upgrade action. Defaults to false.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"disable_wait": {
 								Type:        schema.TypeBool,
 								Description: "DisableWait disables the waiting for resources to be ready after a Helm\nupgrade has been performed.",
@@ -955,6 +1055,30 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 									"strategy": {
 										Type:        schema.TypeString,
 										Description: "Strategy to use for failure remediation. Defaults to 'rollback'.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"strategy": {
+								Type:        schema.TypeList,
+								Description: "Strategy defines the upgrade strategy to use for this HelmRelease.\nDefaults to 'RemediateOnFailure'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the upgrade strategy.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"retry_interval": {
+										Type:        schema.TypeString,
+										Description: "RetryInterval is the interval at which to retry a failed upgrade.\nCan be used only when Name is set to RetryOnFailure.\nDefaults to '5m'.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -1238,6 +1362,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"last_attempted_release_action_duration": {
+						Type:        schema.TypeString,
+						Description: "LastAttemptedReleaseActionDuration is the duration of the last\nrelease action performed for this HelmRelease.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"last_attempted_revision": {
 						Type:        schema.TypeString,
 						Description: "LastAttemptedRevision is the Source revision of the last reconciliation\nattempt. For OCIRepository  sources, the 12 first characters of the digest are\nappended to the chart version e.g. \"1.2.3+1234567890ab\".",
@@ -1287,6 +1418,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"observed_common_metadata_digest": {
+						Type:        schema.TypeString,
+						Description: "ObservedCommonMetadataDigest is the digest for the common metadata of\nthe last successful reconciliation attempt.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"observed_generation": {
 						Type:        schema.TypeInt,
 						Description: "ObservedGeneration is the last observed generation.",
@@ -1327,7 +1465,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Read(_ context.Context, d *sc
 	if err := manifestpkg.SetDataSourceDefaults(d, "helm.toolkit.fluxcd.io/v2", "HelmRelease", "helm.toolkit.fluxcd.io/v2/HelmRelease"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.chart", "spec.chart.metadata", "spec.chart.spec", "spec.chart.spec.source_ref", "spec.chart.spec.verify", "spec.chart.spec.verify.secret_ref", "spec.chart_ref", "spec.drift_detection", "spec.drift_detection.ignore.target", "spec.install", "spec.install.remediation", "spec.kube_config", "spec.kube_config.secret_ref", "spec.post_renderers.kustomize", "spec.post_renderers.kustomize.patches.target", "spec.rollback", "spec.test", "spec.uninstall", "spec.upgrade", "spec.upgrade.remediation", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.chart", "spec.chart.metadata", "spec.chart.spec", "spec.chart.spec.source_ref", "spec.chart.spec.verify", "spec.chart.spec.verify.secret_ref", "spec.chart_ref", "spec.common_metadata", "spec.drift_detection", "spec.drift_detection.ignore.target", "spec.install", "spec.install.remediation", "spec.install.strategy", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.post_renderers.kustomize", "spec.post_renderers.kustomize.patches.target", "spec.rollback", "spec.test", "spec.uninstall", "spec.upgrade", "spec.upgrade.remediation", "spec.upgrade.strategy", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

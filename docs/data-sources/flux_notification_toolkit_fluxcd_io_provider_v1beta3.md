@@ -37,8 +37,22 @@ Optional:
 - `cert_secret_ref` (Block List, Max: 1) CertSecretRef specifies the Secret containing a PEM-encoded CA certificate (in the `ca.crt` key).
  Note: Support for the `caFile` key has been deprecated. (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
 - `channel` (String) Channel specifies the destination channel where events should be posted.
+- `commit_status_expr` (String) CommitStatusExpr is a CEL expression that evaluates to a string value
+that can be used to generate a custom commit status message for use
+with eligible Provider types (github, gitlab, gitea, bitbucketserver,
+bitbucket, azuredevops). Supported variables are: event, provider,
+and alert.
+- `interval` (String) Interval at which to reconcile the Provider with its Secret references. Deprecated and not used in v1beta3.
 - `proxy` (String) Proxy the HTTP/S address of the proxy server.
+- `proxy_secret_ref` (Block List, Max: 1) ProxySecretRef specifies the Secret containing the proxy configuration
+for this Provider. The Secret should contain an 'address' key with the
+HTTP/S address of the proxy server. Optional 'username' and 'password'
+keys can be provided for proxy authentication. (see [below for nested schema](#nestedblock--spec--proxy_secret_ref))
 - `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing the authentication credentials for this Provider. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `service_account_name` (String) ServiceAccountName is the name of the service account used to
+authenticate with services from cloud providers. An error is thrown if a
+static credential is also defined inside the Secret referenced by the
+SecretRef.
 - `suspend` (Boolean) Suspend tells the controller to suspend subsequent events handling for this Provider.
 - `timeout` (String) Timeout for sending alerts to the Provider.
 - `type` (String) Type specifies which Provider implementation to use.
@@ -46,6 +60,14 @@ Optional:
 
 <a id="nestedblock--spec--cert_secret_ref"></a>
 ### Nested Schema for `spec.cert_secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
+
+<a id="nestedblock--spec--proxy_secret_ref"></a>
+### Nested Schema for `spec.proxy_secret_ref`
 
 Optional:
 

@@ -73,7 +73,8 @@ func parseDefinitionsOnly(definitions map[string]definition) ([]ResourceEntry, e
 	}
 	seen := map[string]struct{}{}
 	var result []ResourceEntry
-	for name, def := range definitions {
+	for _, name := range sortedDefinitionNames(definitions) {
+		def := definitions[name]
 		for i := range def.XGroupVersionKind {
 			gvk := def.XGroupVersionKind[i]
 			key := gvkKey(&groupVersionKind{
@@ -206,7 +207,8 @@ func gvkKey(gvk *groupVersionKind) string {
 }
 
 func findDefinitionNameByGVK(definitions map[string]definition, gvk *groupVersionKind) (string, bool) {
-	for name, def := range definitions {
+	for _, name := range sortedDefinitionNames(definitions) {
+		def := definitions[name]
 		for i := range def.XGroupVersionKind {
 			if gvkEqual(gvk, &def.XGroupVersionKind[i]) {
 				return name, true
@@ -226,7 +228,7 @@ func gvkEqual(a, b *groupVersionKind) bool {
 func findDefinitionBySuffix(definitions map[string]definition, gvk *groupVersionKind) (string, bool) {
 	suffix := fmt.Sprintf(".%s.%s", gvk.Version, gvk.Kind)
 	var candidate string
-	for name := range definitions {
+	for _, name := range sortedDefinitionNames(definitions) {
 		if !strings.HasSuffix(name, suffix) {
 			continue
 		}
@@ -517,15 +519,29 @@ func mapPropertyToSchemaType(p property) schema.ValueType {
 
 func buildDefinitionLookup(definitions map[string]definition) map[string]string {
 	lookup := make(map[string]string, len(definitions))
-	for name, def := range definitions {
+	for _, name := range sortedDefinitionNames(definitions) {
+		def := definitions[name]
 		for _, gvk := range def.XGroupVersionKind {
 			key := gvkKey(&gvk)
 			if key != "" {
-				lookup[key] = name
+				// Keep the lexicographically smallest definition name for each GVK
+				// to ensure stable selection across runs.
+				if existing, ok := lookup[key]; !ok || name < existing {
+					lookup[key] = name
+				}
 			}
 		}
 	}
 	return lookup
+}
+
+func sortedDefinitionNames(definitions map[string]definition) []string {
+	names := make([]string, 0, len(definitions))
+	for name := range definitions {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
 }
 
 func isRootPath(path string) bool {

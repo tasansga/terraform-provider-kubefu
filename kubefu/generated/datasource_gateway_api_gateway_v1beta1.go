@@ -87,6 +87,61 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayV1Beta1() *schema.Resource
 						Required:    false,
 						Computed:    true,
 					},
+					"infrastructure": {
+						Type:        schema.TypeList,
+						Description: "Infrastructure defines infrastructure level attributes about this Gateway instance.\n\nSupport: Extended",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"annotations": {
+								Type:        schema.TypeMap,
+								Description: "Annotations that SHOULD be applied to any resources created in response to this Gateway.\n\nFor implementations creating other Kubernetes objects, this should be the `metadata.annotations` field on resources.\nFor other implementations, this refers to any relevant (implementation specific) \"annotations\" concepts.\n\nAn implementation may chose to add additional implementation-specific annotations as they see fit.\n\nSupport: Extended",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"labels": {
+								Type:        schema.TypeMap,
+								Description: "Labels that SHOULD be applied to any resources created in response to this Gateway.\n\nFor implementations creating other Kubernetes objects, this should be the `metadata.labels` field on resources.\nFor other implementations, this refers to any relevant (implementation specific) \"labels\" concepts.\n\nAn implementation may chose to add additional implementation-specific labels as they see fit.\n\nIf an implementation maps these labels to Pods, or any other resource that would need to be recreated when labels\nchange, it SHOULD clearly warn about this behavior in documentation.\n\nSupport: Extended",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"parameters_ref": {
+								Type:        schema.TypeList,
+								Description: "ParametersRef is a reference to a resource that contains the configuration\nparameters corresponding to the Gateway. This is optional if the\ncontroller does not require any additional configuration.\n\nThis follows the same semantics as GatewayClass's `parametersRef`, but on a per-Gateway basis\n\nThe Gateway's GatewayClass may provide its own `parametersRef`. When both are specified,\nthe merging behavior is implementation specific.\nIt is generally recommended that GatewayClass provides defaults that can be overridden by a Gateway.\n\nSupport: Implementation-specific",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"group": {
+										Type:        schema.TypeString,
+										Description: "Group is the group of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"kind": {
+										Type:        schema.TypeString,
+										Description: "Kind is kind of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name is the name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
 					"listeners": {
 						Type:        schema.TypeList,
 						Description: "Listeners associated with this Gateway. Listeners define logical endpoints that are bound on this Gateway's addresses. At least one Listener MUST be specified. \n Each listener in a Gateway must have a unique combination of Hostname, Port, and Protocol. \n An implementation MAY group Listeners by Port and then collapse each group of Listeners into a single Listener if the implementation determines that the Listeners in the group are \"compatible\". An implementation MAY also group together and collapse compatible Listeners belonging to different Gateways. \n For example, an implementation might consider Listeners to be compatible with each other if all of the following conditions are met: \n 1. Either each Listener within the group specifies the \"HTTP\"    Protocol or each Listener within the group specifies either    the \"HTTPS\" or \"TLS\" Protocol. \n 2. Each Listener within the group specifies a Hostname that is unique    within the group. \n 3. As a special case, one Listener within a group may omit Hostname,    in which case this Listener matches when no other Listener    matches. \n If the implementation does collapse compatible Listeners, the hostname provided in the incoming client request MUST be matched to a Listener to find the correct set of Routes. The incoming hostname MUST be matched using the Hostname field for each Listener in order of most to least specific. That is, exact matches must be processed before wildcard matches. \n If this field specifies multiple Listeners that have the same Port value but are not compatible, the implementation must raise a \"Conflicted\" condition in the Listener status. \n Support: Core",
@@ -476,7 +531,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayV1Beta1Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1beta1", "Gateway", "gateway.networking.k8s.io/v1beta1/Gateway"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.listeners.allowed_routes", "spec.listeners.allowed_routes.namespaces", "spec.listeners.allowed_routes.namespaces.selector", "spec.listeners.tls", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.infrastructure", "spec.infrastructure.parameters_ref", "spec.listeners.allowed_routes", "spec.listeners.allowed_routes.namespaces", "spec.listeners.allowed_routes.namespaces.selector", "spec.listeners.tls", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

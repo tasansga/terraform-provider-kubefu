@@ -101,6 +101,9 @@ func %sRead(_ context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
 }
 
 func (d *DataSource) writeCompatibility(buf *bytes.Buffer) error {
+	if len(d.CompatibleVersions) == 0 {
+		return nil
+	}
 	fmt.Fprintf(buf, "var %sCompatibleVersions = []string{\n", d.FuncName)
 	for _, version := range d.CompatibleVersions {
 		fmt.Fprintf(buf, "\t%q,\n", version)

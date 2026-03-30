@@ -79,7 +79,7 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 					},
 					"deletion_timestamp": {
 						Type:        schema.TypeString,
-						Description: "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
+						Description: "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field. Once set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -117,16 +117,16 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 							"pending": {
 								Type:        schema.TypeList,
 								Description: "Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
 										Description: "name of the process that is responsible for initializing this object.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 								}},
 							},
@@ -213,7 +213,7 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 											},
 											"retry_after_seconds": {
 												Type:        schema.TypeInt,
-												Description: "If specified, the time in seconds before the operation should be retried. Some errors may indicate the client must take an alternate action - for those errors this field may indicate how long to wait before taking the alternate action.",
+												Description: "If specified, the time in seconds before the operation should be retried.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -256,6 +256,13 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"remaining_item_count": {
+												Type:        schema.TypeInt,
+												Description: "remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.\n\nThis field is alpha and can be changed or removed without notice.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_version": {
 												Type:        schema.TypeString,
 												Description: "String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency",
@@ -265,7 +272,7 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 											},
 											"self_link": {
 												Type:        schema.TypeString,
-												Description: "selfLink is a URL representing this object. Populated by the system. Read-only.",
+												Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -296,6 +303,71 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"managed_fields": {
+						Type:        schema.TypeList,
+						Description: "ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like \"ci-cd\". The set of fields is always in the version that the workflow used when modifying the object.\n\nThis field is alpha and can be changed or removed without notice.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"api_version": {
+								Type:        schema.TypeString,
+								Description: "APIVersion defines the version of this resource that this field set applies to. The format is \"group/version\" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields": {
+								Type:        schema.TypeMap,
+								Description: "Fields identifies a set of fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_type": {
+								Type:        schema.TypeString,
+								Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_v1": {
+								Type:        schema.TypeMap,
+								Description: "FieldsV1 holds the first JSON version format as described in the \"FieldsV1\" type.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"manager": {
+								Type:        schema.TypeString,
+								Description: "Manager is an identifier of the workflow managing these fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"operation": {
+								Type:        schema.TypeString,
+								Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"time": {
+								Type:        schema.TypeString,
+								Description: "Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"name": {
 						Type:        schema.TypeString,
@@ -407,6 +479,13 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"end_port": {
+										Type:        schema.TypeInt,
+										Description: "If set, indicates that the range of ports from port to endPort, inclusive, should be allowed by the policy. This field cannot be defined if the port field is not defined or if the port field is defined as a named (string) port. The endPort must be equal or greater than port. This feature is in Alpha state and should be enabled using the Feature Gate \"NetworkPolicyEndPort\".",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"port": {
 										Type:        schema.TypeString,
 										Description: "The port on the given protocol. This can either be a numerical or named port on a pod. If this field is not provided, this matches all port names and numbers.",
@@ -441,9 +520,9 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 											"cidr": {
 												Type:        schema.TypeString,
 												Description: "CIDR is a string representing the IP Block Valid examples are \"192.168.1.1/24\"",
-												Optional:    false,
-												Required:    true,
-												Computed:    false,
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"except": {
 												Type:        schema.TypeList,
@@ -473,16 +552,16 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 													"key": {
 														Type:        schema.TypeString,
 														Description: "key is the label key that the selector applies to.",
-														Optional:    false,
-														Required:    true,
-														Computed:    false,
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 													"operator": {
 														Type:        schema.TypeString,
 														Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-														Optional:    false,
-														Required:    true,
-														Computed:    false,
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 													"values": {
 														Type:        schema.TypeList,
@@ -521,16 +600,16 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 													"key": {
 														Type:        schema.TypeString,
 														Description: "key is the label key that the selector applies to.",
-														Optional:    false,
-														Required:    true,
-														Computed:    false,
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 													"operator": {
 														Type:        schema.TypeString,
 														Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-														Optional:    false,
-														Required:    true,
-														Computed:    false,
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 													"values": {
 														Type:        schema.TypeList,
@@ -580,9 +659,9 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 											"cidr": {
 												Type:        schema.TypeString,
 												Description: "CIDR is a string representing the IP Block Valid examples are \"192.168.1.1/24\"",
-												Optional:    false,
-												Required:    true,
-												Computed:    false,
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"except": {
 												Type:        schema.TypeList,
@@ -618,7 +697,7 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 													},
 													"operator": {
 														Type:        schema.TypeString,
-														Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+														Description: "operator represents a key's relationship to a set of values. Valid operators ard In, NotIn, Exists and DoesNotExist.",
 														Optional:    false,
 														Required:    true,
 														Computed:    false,
@@ -666,7 +745,7 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 													},
 													"operator": {
 														Type:        schema.TypeString,
-														Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+														Description: "operator represents a key's relationship to a set of values. Valid operators ard In, NotIn, Exists and DoesNotExist.",
 														Optional:    false,
 														Required:    true,
 														Computed:    false,
@@ -699,6 +778,13 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"end_port": {
+										Type:        schema.TypeInt,
+										Description: "If set, indicates that the range of ports from port to endPort, inclusive, should be allowed by the policy. This field cannot be defined if the port field is not defined or if the port field is defined as a named (string) port. The endPort must be equal or greater than port. This feature is in Alpha state and should be enabled using the Feature Gate \"NetworkPolicyEndPort\".",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"port": {
 										Type:        schema.TypeString,
 										Description: "The port on the given protocol. This can either be a numerical or named port on a pod. If this field is not provided, this matches all port names and numbers.",
@@ -720,10 +806,9 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 					"pod_selector": {
 						Type:        schema.TypeList,
 						Description: "Selects the pods to which this NetworkPolicy object applies. The array of ingress rules is applied to any pods selected by this field. Multiple network policies can select the same set of pods. In this case, the ingress rules for each are combined additively. This field is NOT optional and follows standard label selector semantics. An empty podSelector matches all pods in this namespace.",
-						Optional:    false,
-						Required:    true,
-						Computed:    false,
-						MinItems:    1,
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"match_expressions": {
@@ -742,7 +827,7 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 									},
 									"operator": {
 										Type:        schema.TypeString,
-										Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+										Description: "operator represents a key's relationship to a set of values. Valid operators ard In, NotIn, Exists and DoesNotExist.",
 										Optional:    false,
 										Required:    true,
 										Computed:    false,
@@ -776,6 +861,67 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1() *schema.Resource {
 					},
 				}},
 			},
+			"status": {
+				Type:        schema.TypeList,
+				Description: "Status is the current state of the NetworkPolicy. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"conditions": {
+						Type:        schema.TypeList,
+						Description: "Conditions holds an array of metav1.Condition that describe the state of the NetworkPolicy. Current service state",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"message": {
+								Type:        schema.TypeString,
+								Description: "message is a human readable message indicating details about the transition. This may be an empty string.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"reason": {
+								Type:        schema.TypeString,
+								Description: "reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"status": {
+								Type:        schema.TypeString,
+								Description: "status of the condition, one of True, False, Unknown.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"type": {
+								Type:        schema.TypeString,
+								Description: "type of condition in CamelCase or in foo.example.com/CamelCase.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+				}},
+			},
 		},
 	}
 }
@@ -786,7 +932,7 @@ func dataSourceK8sNetworkingK8sIoNetworkPolicyV1Read(_ context.Context, d *schem
 	if err := manifestpkg.SetDataSourceDefaults(d, "networking.k8s.io/v1", "NetworkPolicy", "networking.k8s.io/v1/NetworkPolicy"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.egress.to.ip_block", "spec.egress.to.namespace_selector", "spec.egress.to.pod_selector", "spec.ingress.from.ip_block", "spec.ingress.from.namespace_selector", "spec.ingress.from.pod_selector", "spec.pod_selector"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.egress.to.ip_block", "spec.egress.to.namespace_selector", "spec.egress.to.pod_selector", "spec.ingress.from.ip_block", "spec.ingress.from.namespace_selector", "spec.ingress.from.pod_selector", "spec.pod_selector", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

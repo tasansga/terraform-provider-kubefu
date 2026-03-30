@@ -3,12 +3,12 @@
 page_title: "kubefu_external_secrets_external_secrets_io_cluster_push_secret_v1alpha1 Data Source - terraform-provider-kubefu"
 subcategory: ""
 description: |-
-  Generated data source for crd.external-secrets.io.v1alpha1.ClusterPushSecret
+  ClusterPushSecret is the Schema for the ClusterPushSecrets API that enables cluster-wide management of pushing Kubernetes secrets to external providers.
 ---
 
 # kubefu_external_secrets_external_secrets_io_cluster_push_secret_v1alpha1 (Data Source)
 
-Generated data source for crd.external-secrets.io.v1alpha1.ClusterPushSecret
+ClusterPushSecret is the Schema for the ClusterPushSecrets API that enables cluster-wide management of pushing Kubernetes secrets to external providers.
 
 
 
@@ -18,8 +18,8 @@ Generated data source for crd.external-secrets.io.v1alpha1.ClusterPushSecret
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
-- `status` (Block List, Max: 1) (see [below for nested schema](#nestedblock--status))
+- `spec` (Block List, Max: 1) ClusterPushSecretSpec defines the configuration for a ClusterPushSecret resource. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) ClusterPushSecretStatus contains the status information for the ClusterPushSecret resource. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -222,7 +222,7 @@ Optional:
 - `engine_version` (String) EngineVersion specifies the template engine version
 that should be used to compile/execute the
 template specified in .data and .templateFrom[].
-- `merge_policy` (String)
+- `merge_policy` (String) TemplateMergePolicy defines how the rendered template should be merged with the existing Secret data.
 - `metadata` (Block List, Max: 1) ExternalSecretTemplateMetadata defines metadata fields for the Secret blueprint. (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--metadata))
 - `template_from` (Block List) (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from))
 - `type` (String)
@@ -233,6 +233,7 @@ template specified in .data and .templateFrom[].
 Optional:
 
 - `annotations` (Map of String)
+- `finalizers` (List of String)
 - `labels` (Map of String)
 
 
@@ -241,10 +242,10 @@ Optional:
 
 Optional:
 
-- `config_map` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from--config_map))
+- `config_map` (Block List, Max: 1) TemplateRef specifies a reference to either a ConfigMap or a Secret resource. (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from--config_map))
 - `literal` (String)
-- `secret` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from--secret))
-- `target` (String)
+- `secret` (Block List, Max: 1) TemplateRef specifies a reference to either a ConfigMap or a Secret resource. (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from--secret))
+- `target` (String) TemplateTarget specifies where the rendered templates should be applied.
 
 <a id="nestedblock--spec--push_secret_spec--template--template_from--config_map"></a>
 ### Nested Schema for `spec.push_secret_spec.template.template_from.config_map`
@@ -260,7 +261,7 @@ Optional:
 Optional:
 
 - `key` (String) A key in the ConfigMap/Secret
-- `template_as` (String)
+- `template_as` (String) TemplateScope specifies how the template keys should be interpreted.
 
 
 
@@ -278,7 +279,7 @@ Optional:
 Optional:
 
 - `key` (String) A key in the ConfigMap/Secret
-- `template_as` (String)
+- `template_as` (String) TemplateScope specifies how the template keys should be interpreted.
 
 
 

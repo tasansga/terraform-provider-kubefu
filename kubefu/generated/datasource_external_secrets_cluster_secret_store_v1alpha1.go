@@ -15,14 +15,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
-				Description: "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
 			},
 			"kind": {
 				Type:        schema.TypeString,
-				Description: "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
@@ -58,7 +58,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 					"controller": {
 						Type:        schema.TypeString,
-						Description: "Used to select the correct ESO controller (think: ingress.ingressClassName)\nThe ESO controller is instantiated with a specific controller name and filters ES based on this property",
+						Description: "Used to select the correct KES controller (think: ingress.ingressClassName) The KES controller is instantiated with a specific controller name and filters ES based on this property",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -96,7 +96,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"kubernetes_auth": {
 												Type:        schema.TypeList,
-												Description: "Kubernetes authenticates with Akeyless by passing the ServiceAccount\ntoken stored in the named Secret resource.",
+												Description: "Kubernetes authenticates with Akeyless by passing the ServiceAccount token stored in the named Secret resource.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -118,7 +118,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"secret_ref": {
 														Type:        schema.TypeList,
-														Description: "Optional secret field containing a Kubernetes ServiceAccount JWT used\nfor authenticating with Akeyless. If a name is specified without a key,\n`token` is the default. If one is not specified, the one bound to\nthe controller will be used.",
+														Description: "Optional secret field containing a Kubernetes ServiceAccount JWT used for authenticating with Akeyless. If a name is specified without a key, `token` is the default. If one is not specified, the one bound to the controller will be used.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -126,7 +126,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -140,7 +140,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -149,7 +149,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"service_account_ref": {
 														Type:        schema.TypeList,
-														Description: "Optional service account field containing the name of a kubernetes ServiceAccount.\nIf the service account is specified, the service account secret token JWT will be used\nfor authenticating with Akeyless. If the service account selector is not supplied,\nthe secretRef will be used instead.",
+														Description: "Optional service account field containing the name of a kubernetes ServiceAccount. If the service account is specified, the service account secret token JWT will be used for authenticating with Akeyless. If the service account selector is not supplied, the secretRef will be used instead.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -157,7 +157,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"audiences": {
 																Type:        schema.TypeList,
-																Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+																Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -172,7 +172,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -183,7 +183,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 											},
 											"secret_ref": {
 												Type:        schema.TypeList,
-												Description: "Reference to a Secret that contains the details\nto authenticate with Akeyless.",
+												Description: "Reference to a Secret that contains the details to authenticate with Akeyless.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -199,7 +199,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -213,7 +213,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -222,7 +222,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"access_type": {
 														Type:        schema.TypeList,
-														Description: "A reference to a specific 'key' within a Secret resource,\nIn some instances, `key` is a required field.",
+														Description: "A reference to a specific 'key' within a Secret resource, In some instances, `key` is a required field.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -230,7 +230,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -244,7 +244,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -253,7 +253,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"access_type_param": {
 														Type:        schema.TypeList,
-														Description: "A reference to a specific 'key' within a Secret resource,\nIn some instances, `key` is a required field.",
+														Description: "A reference to a specific 'key' within a Secret resource, In some instances, `key` is a required field.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -261,7 +261,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -275,7 +275,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -288,7 +288,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 									},
 									"ca_bundle": {
 										Type:        schema.TypeString,
-										Description: "PEM/base64 encoded CA bundle used to validate Akeyless Gateway certificate. Only used\nif the AkeylessGWApiURL URL is using HTTPS protocol. If not set the system root certificates\nare used to validate the TLS connection.",
+										Description: "PEM/base64 encoded CA bundle used to validate Akeyless Gateway certificate. Only used if the AkeylessGWApiURL URL is using HTTPS protocol. If not set the system root certificates are used to validate the TLS connection.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -405,7 +405,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -419,7 +419,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -436,7 +436,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -450,7 +450,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -460,6 +460,13 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												}},
 											},
 										}},
+									},
+									"endpoint": {
+										Type:        schema.TypeString,
+										Description: "",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 									"region_id": {
 										Type:        schema.TypeString,
@@ -480,7 +487,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"auth": {
 										Type:        schema.TypeList,
-										Description: "Auth defines the information necessary to authenticate against AWS\nif not set aws sdk will infer credentials from your environment\nsee: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials",
+										Description: "Auth defines the information necessary to authenticate against AWS if not set aws sdk will infer credentials from your environment see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -504,7 +511,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"audiences": {
 																Type:        schema.TypeList,
-																Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+																Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -519,7 +526,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -530,7 +537,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 											},
 											"secret_ref": {
 												Type:        schema.TypeList,
-												Description: "AWSAuthSecretRef holds secret references for AWS credentials\nboth AccessKeyID and SecretAccessKey must be defined in order to properly authenticate.",
+												Description: "AWSAuthSecretRef holds secret references for AWS credentials both AccessKeyID and SecretAccessKey must be defined in order to properly authenticate.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -546,7 +553,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -560,7 +567,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -577,7 +584,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -591,7 +598,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -651,7 +658,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"key": {
 														Type:        schema.TypeString,
-														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -665,7 +672,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"namespace": {
 														Type:        schema.TypeString,
-														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -682,7 +689,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"key": {
 														Type:        schema.TypeString,
-														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -696,7 +703,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"namespace": {
 														Type:        schema.TypeString,
-														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -707,7 +714,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 									},
 									"auth_type": {
 										Type:        schema.TypeString,
-										Description: "Auth type defines how to authenticate to the keyvault service.\nValid values are:\n- \"ServicePrincipal\" (default): Using a service principal (tenantId, clientId, clientSecret)\n- \"ManagedIdentity\": Using Managed Identity assigned to the pod (see aad-pod-identity)",
+										Description: "Auth type defines how to authenticate to the keyvault service. Valid values are: - \"ServicePrincipal\" (default): Using a service principal (tenantId, clientId, clientSecret) - \"ManagedIdentity\": Using Managed Identity assigned to the pod (see aad-pod-identity)",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -721,7 +728,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 									},
 									"service_account_ref": {
 										Type:        schema.TypeList,
-										Description: "ServiceAccountRef specified the service account\nthat should be used when authenticating with WorkloadIdentity.",
+										Description: "ServiceAccountRef specified the service account that should be used when authenticating with WorkloadIdentity.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -729,7 +736,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"audiences": {
 												Type:        schema.TypeList,
-												Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+												Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -744,7 +751,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 											},
 											"namespace": {
 												Type:        schema.TypeString,
-												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -848,7 +855,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -862,7 +869,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -910,7 +917,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"audiences": {
 																Type:        schema.TypeList,
-																Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+																Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -925,7 +932,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -947,7 +954,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 							},
 							"gitlab": {
 								Type:        schema.TypeList,
-								Description: "GitLab configures this store to sync secrets using GitLab Variables provider",
+								Description: "Gitlab configures this store to sync secrets using Gitlab Variables provider",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -979,7 +986,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -993,7 +1000,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1054,7 +1061,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1068,7 +1075,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1114,7 +1121,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"client_cert": {
 														Type:        schema.TypeList,
-														Description: "A reference to a specific 'key' within a Secret resource,\nIn some instances, `key` is a required field.",
+														Description: "A reference to a specific 'key' within a Secret resource, In some instances, `key` is a required field.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1122,7 +1129,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1136,7 +1143,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1145,7 +1152,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"client_key": {
 														Type:        schema.TypeList,
-														Description: "A reference to a specific 'key' within a Secret resource,\nIn some instances, `key` is a required field.",
+														Description: "A reference to a specific 'key' within a Secret resource, In some instances, `key` is a required field.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1153,7 +1160,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1167,7 +1174,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1194,7 +1201,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"audiences": {
 																Type:        schema.TypeList,
-																Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+																Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1209,7 +1216,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1228,7 +1235,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"bearer_token": {
 														Type:        schema.TypeList,
-														Description: "A reference to a specific 'key' within a Secret resource,\nIn some instances, `key` is a required field.",
+														Description: "A reference to a specific 'key' within a Secret resource, In some instances, `key` is a required field.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1236,7 +1243,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1250,7 +1257,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1342,7 +1349,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"auth": {
 										Type:        schema.TypeList,
-										Description: "Auth configures how secret-manager authenticates with the Oracle Vault.\nIf empty, instance principal is used. Optionally, the authenticating principal type\nand/or user data may be supplied for the use of workload identity and user principal.",
+										Description: "Auth configures how secret-manager authenticates with the Oracle Vault. If empty, use the instance principal, otherwise the user credentials specified in Auth.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -1366,7 +1373,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1380,7 +1387,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1397,7 +1404,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1411,7 +1418,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1438,21 +1445,21 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 									},
 									"compartment": {
 										Type:        schema.TypeString,
-										Description: "Compartment is the vault compartment OCID.\nRequired for PushSecret",
+										Description: "Compartment is the vault compartment OCID. Required for PushSecret",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"encryption_key": {
 										Type:        schema.TypeString,
-										Description: "EncryptionKey is the OCID of the encryption key within the vault.\nRequired for PushSecret",
+										Description: "EncryptionKey is the OCID of the encryption key within the vault. Required for PushSecret",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"principal_type": {
 										Type:        schema.TypeString,
-										Description: "The type of principal to use for authentication. If left blank, the Auth struct will\ndetermine the principal type. This optional field must be specified if using\nworkload identity.",
+										Description: "The type of principal to use for authentication. If left blank, the Auth struct will determine the principal type. This optional field must be specified if using workload identity.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -1466,7 +1473,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 									},
 									"service_account_ref": {
 										Type:        schema.TypeList,
-										Description: "ServiceAccountRef specified the service account\nthat should be used when authenticating with WorkloadIdentity.",
+										Description: "ServiceAccountRef specified the service account that should be used when authenticating with WorkloadIdentity.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -1474,7 +1481,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"audiences": {
 												Type:        schema.TypeList,
-												Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+												Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -1489,7 +1496,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 											},
 											"namespace": {
 												Type:        schema.TypeString,
-												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -1598,7 +1605,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"app_role": {
 												Type:        schema.TypeList,
-												Description: "AppRole authenticates with Vault using the App Role auth mechanism,\nwith the role and secret stored in a Kubernetes Secret resource.",
+												Description: "AppRole authenticates with Vault using the App Role auth mechanism, with the role and secret stored in a Kubernetes Secret resource.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -1606,21 +1613,21 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"path": {
 														Type:        schema.TypeString,
-														Description: "Path where the App Role authentication backend is mounted\nin Vault, e.g: \"approle\"",
+														Description: "Path where the App Role authentication backend is mounted in Vault, e.g: \"approle\"",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
 													},
 													"role_id": {
 														Type:        schema.TypeString,
-														Description: "RoleID configured in the App Role authentication backend when setting\nup the authentication backend in Vault.",
+														Description: "RoleID configured in the App Role authentication backend when setting up the authentication backend in Vault.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
 													},
 													"secret_ref": {
 														Type:        schema.TypeList,
-														Description: "Reference to a key in a Secret that contains the App Role secret used\nto authenticate with Vault.\nThe `key` field must be specified and denotes which entry within the Secret\nresource is used as the app role secret.",
+														Description: "Reference to a key in a Secret that contains the App Role secret used to authenticate with Vault. The `key` field must be specified and denotes which entry within the Secret resource is used as the app role secret.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1628,7 +1635,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1642,7 +1649,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1653,7 +1660,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 											},
 											"cert": {
 												Type:        schema.TypeList,
-												Description: "Cert authenticates with TLS Certificates by passing client certificate, private key and ca certificate\nCert authentication method",
+												Description: "Cert authenticates with TLS Certificates by passing client certificate, private key and ca certificate Cert authentication method",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -1661,7 +1668,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"client_cert": {
 														Type:        schema.TypeList,
-														Description: "ClientCert is a certificate to authenticate using the Cert Vault\nauthentication method",
+														Description: "ClientCert is a certificate to authenticate using the Cert Vault authentication method",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1669,7 +1676,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1683,7 +1690,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1692,7 +1699,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"secret_ref": {
 														Type:        schema.TypeList,
-														Description: "SecretRef to a key in a Secret resource containing client private key to\nauthenticate with Vault using the Cert authentication method",
+														Description: "SecretRef to a key in a Secret resource containing client private key to authenticate with Vault using the Cert authentication method",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1700,7 +1707,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1714,7 +1721,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1725,7 +1732,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 											},
 											"jwt": {
 												Type:        schema.TypeList,
-												Description: "Jwt authenticates with Vault by passing role and JWT token using the\nJWT/OIDC authentication method",
+												Description: "Jwt authenticates with Vault by passing role and JWT token using the JWT/OIDC authentication method",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -1733,7 +1740,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"kubernetes_service_account_token": {
 														Type:        schema.TypeList,
-														Description: "Optional ServiceAccountToken specifies the Kubernetes service account for which to request\na token for with the `TokenRequest` API.",
+														Description: "Optional ServiceAccountToken specifies the Kubernetes service account for which to request a token for with the `TokenRequest` API.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1741,7 +1748,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"audiences": {
 																Type:        schema.TypeList,
-																Description: "Optional audiences field that will be used to request a temporary Kubernetes service\naccount token for the service account referenced by `serviceAccountRef`.\nDefaults to a single audience `vault` it not specified.",
+																Description: "Optional audiences field that will be used to request a temporary Kubernetes service account token for the service account referenced by `serviceAccountRef`. Defaults to a single audience `vault` it not specified.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1749,7 +1756,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"expiration_seconds": {
 																Type:        schema.TypeInt,
-																Description: "Optional expiration time in seconds that will be used to request a temporary\nKubernetes service account token for the service account referenced by\n`serviceAccountRef`.\nDefaults to 10 minutes.",
+																Description: "Optional expiration time in seconds that will be used to request a temporary Kubernetes service account token for the service account referenced by `serviceAccountRef`. Defaults to 10 minutes.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1764,7 +1771,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 																Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 																	"audiences": {
 																		Type:        schema.TypeList,
-																		Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+																		Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
 																		Optional:    true,
 																		Required:    false,
 																		Computed:    true,
@@ -1779,7 +1786,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 																	},
 																	"namespace": {
 																		Type:        schema.TypeString,
-																		Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																		Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																		Optional:    true,
 																		Required:    false,
 																		Computed:    true,
@@ -1790,21 +1797,21 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"path": {
 														Type:        schema.TypeString,
-														Description: "Path where the JWT authentication backend is mounted\nin Vault, e.g: \"jwt\"",
+														Description: "Path where the JWT authentication backend is mounted in Vault, e.g: \"jwt\"",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
 													},
 													"role": {
 														Type:        schema.TypeString,
-														Description: "Role is a JWT role to authenticate using the JWT/OIDC Vault\nauthentication method",
+														Description: "Role is a JWT role to authenticate using the JWT/OIDC Vault authentication method",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
 													},
 													"secret_ref": {
 														Type:        schema.TypeList,
-														Description: "Optional SecretRef that refers to a key in a Secret resource containing JWT token to\nauthenticate with Vault using the JWT/OIDC authentication method.",
+														Description: "Optional SecretRef that refers to a key in a Secret resource containing JWT token to authenticate with Vault using the JWT/OIDC authentication method.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1812,7 +1819,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1826,7 +1833,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1837,7 +1844,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 											},
 											"kubernetes": {
 												Type:        schema.TypeList,
-												Description: "Kubernetes authenticates with Vault by passing the ServiceAccount\ntoken stored in the named Secret resource to the Vault server.",
+												Description: "Kubernetes authenticates with Vault by passing the ServiceAccount token stored in the named Secret resource to the Vault server.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -1845,21 +1852,21 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"mount_path": {
 														Type:        schema.TypeString,
-														Description: "Path where the Kubernetes authentication backend is mounted in Vault, e.g:\n\"kubernetes\"",
+														Description: "Path where the Kubernetes authentication backend is mounted in Vault, e.g: \"kubernetes\"",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
 													},
 													"role": {
 														Type:        schema.TypeString,
-														Description: "A required field containing the Vault Role to assume. A Role binds a\nKubernetes ServiceAccount with a set of Vault policies.",
+														Description: "A required field containing the Vault Role to assume. A Role binds a Kubernetes ServiceAccount with a set of Vault policies.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
 													},
 													"secret_ref": {
 														Type:        schema.TypeList,
-														Description: "Optional secret field containing a Kubernetes ServiceAccount JWT used\nfor authenticating with Vault. If a name is specified without a key,\n`token` is the default. If one is not specified, the one bound to\nthe controller will be used.",
+														Description: "Optional secret field containing a Kubernetes ServiceAccount JWT used for authenticating with Vault. If a name is specified without a key, `token` is the default. If one is not specified, the one bound to the controller will be used.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1867,7 +1874,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1881,7 +1888,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1890,7 +1897,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"service_account_ref": {
 														Type:        schema.TypeList,
-														Description: "Optional service account field containing the name of a kubernetes ServiceAccount.\nIf the service account is specified, the service account secret token JWT will be used\nfor authenticating with Vault. If the service account selector is not supplied,\nthe secretRef will be used instead.",
+														Description: "Optional service account field containing the name of a kubernetes ServiceAccount. If the service account is specified, the service account secret token JWT will be used for authenticating with Vault. If the service account selector is not supplied, the secretRef will be used instead.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1898,7 +1905,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"audiences": {
 																Type:        schema.TypeList,
-																Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+																Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1913,7 +1920,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1924,7 +1931,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 											},
 											"ldap": {
 												Type:        schema.TypeList,
-												Description: "Ldap authenticates with Vault by passing username/password pair using\nthe LDAP authentication method",
+												Description: "Ldap authenticates with Vault by passing username/password pair using the LDAP authentication method",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -1932,14 +1939,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"path": {
 														Type:        schema.TypeString,
-														Description: "Path where the LDAP authentication backend is mounted\nin Vault, e.g: \"ldap\"",
+														Description: "Path where the LDAP authentication backend is mounted in Vault, e.g: \"ldap\"",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
 													},
 													"secret_ref": {
 														Type:        schema.TypeList,
-														Description: "SecretRef to a key in a Secret resource containing password for the LDAP\nuser used to authenticate with Vault using the LDAP authentication\nmethod",
+														Description: "SecretRef to a key in a Secret resource containing password for the LDAP user used to authenticate with Vault using the LDAP authentication method",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1947,7 +1954,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+																Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1961,7 +1968,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 															},
 															"namespace": {
 																Type:        schema.TypeString,
-																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+																Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1970,7 +1977,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"username": {
 														Type:        schema.TypeString,
-														Description: "Username is a LDAP user name used to authenticate using the LDAP Vault\nauthentication method",
+														Description: "Username is a LDAP user name used to authenticate using the LDAP Vault authentication method",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -1987,7 +1994,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"key": {
 														Type:        schema.TypeString,
-														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -2001,7 +2008,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"namespace": {
 														Type:        schema.TypeString,
-														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -2012,7 +2019,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 									},
 									"ca_bundle": {
 										Type:        schema.TypeString,
-										Description: "PEM encoded CA bundle used to validate Vault server certificate. Only used\nif the Server URL is using HTTPS protocol. This parameter is ignored for\nplain HTTP protocol connection. If not set the system root certificates\nare used to validate the TLS connection.",
+										Description: "PEM encoded CA bundle used to validate Vault server certificate. Only used if the Server URL is using HTTPS protocol. This parameter is ignored for plain HTTP protocol connection. If not set the system root certificates are used to validate the TLS connection.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -2057,28 +2064,28 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 									},
 									"forward_inconsistent": {
 										Type:        schema.TypeBool,
-										Description: "ForwardInconsistent tells Vault to forward read-after-write requests to the Vault\nleader instead of simply retrying within a loop. This can increase performance if\nthe option is enabled serverside.\nhttps://www.vaultproject.io/docs/configuration/replication#allow_forwarding_via_header",
+										Description: "ForwardInconsistent tells Vault to forward read-after-write requests to the Vault leader instead of simply retrying within a loop. This can increase performance if the option is enabled serverside. https://www.vaultproject.io/docs/configuration/replication#allow_forwarding_via_header",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"namespace": {
 										Type:        schema.TypeString,
-										Description: "Name of the vault namespace. Namespaces is a set of features within Vault Enterprise that allows\nVault environments to support Secure Multi-tenancy. e.g: \"ns1\".\nMore about namespaces can be found here https://www.vaultproject.io/docs/enterprise/namespaces",
+										Description: "Name of the vault namespace. Namespaces is a set of features within Vault Enterprise that allows Vault environments to support Secure Multi-tenancy. e.g: \"ns1\". More about namespaces can be found here https://www.vaultproject.io/docs/enterprise/namespaces",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"path": {
 										Type:        schema.TypeString,
-										Description: "Path is the mount path of the Vault KV backend endpoint, e.g:\n\"secret\". The v2 KV secret engine version specific \"/data\" path suffix\nfor fetching secrets from Vault is optional and will be appended\nif not present in specified path.",
+										Description: "Path is the mount path of the Vault KV backend endpoint, e.g: \"secret\". The v2 KV secret engine version specific \"/data\" path suffix for fetching secrets from Vault is optional and will be appended if not present in specified path.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"read_your_writes": {
 										Type:        schema.TypeBool,
-										Description: "ReadYourWrites ensures isolated read-after-write semantics by\nproviding discovered cluster replication states in each request.\nMore information about eventual consistency in Vault can be found here\nhttps://www.vaultproject.io/docs/enterprise/consistency",
+										Description: "ReadYourWrites ensures isolated read-after-write semantics by providing discovered cluster replication states in each request. More information about eventual consistency in Vault can be found here https://www.vaultproject.io/docs/enterprise/consistency",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -2092,7 +2099,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 									},
 									"version": {
 										Type:        schema.TypeString,
-										Description: "Version is the Vault KV secret engine version. This can be either \"v1\" or\n\"v2\". Version defaults to \"v2\".",
+										Description: "Version is the Vault KV secret engine version. This can be either \"v1\" or \"v2\". Version defaults to \"v2\".",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -2116,7 +2123,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 									},
 									"ca_bundle": {
 										Type:        schema.TypeString,
-										Description: "PEM encoded CA bundle used to validate webhook server certificate. Only used\nif the Server URL is using HTTPS protocol. This parameter is ignored for\nplain HTTP protocol connection. If not set the system root certificates\nare used to validate the TLS connection.",
+										Description: "PEM encoded CA bundle used to validate webhook server certificate. Only used if the Server URL is using HTTPS protocol. This parameter is ignored for plain HTTP protocol connection. If not set the system root certificates are used to validate the TLS connection.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -2192,7 +2199,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 									},
 									"secrets": {
 										Type:        schema.TypeList,
-										Description: "Secrets to fill in templates\nThese secrets will be passed to the templating function as key value pairs under the given name",
+										Description: "Secrets to fill in templates These secrets will be passed to the templating function as key value pairs under the given name",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -2214,7 +2221,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"key": {
 														Type:        schema.TypeString,
-														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -2228,7 +2235,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"namespace": {
 														Type:        schema.TypeString,
-														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -2286,7 +2293,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"key": {
 														Type:        schema.TypeString,
-														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -2300,7 +2307,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"namespace": {
 														Type:        schema.TypeString,
-														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -2319,7 +2326,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"cert_secret_ref": {
 												Type:        schema.TypeList,
-												Description: "A reference to a specific 'key' within a Secret resource,\nIn some instances, `key` is a required field.",
+												Description: "A reference to a specific 'key' within a Secret resource, In some instances, `key` is a required field.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -2327,7 +2334,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"key": {
 														Type:        schema.TypeString,
-														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -2341,7 +2348,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterSecretStoreV1Alpha1() *sch
 													},
 													"namespace": {
 														Type:        schema.TypeString,
-														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,

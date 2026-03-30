@@ -138,6 +138,8 @@ Optional:
  Support: Extended (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--request_mirror))
 - `request_redirect` (Block List, Max: 1) RequestRedirect defines a schema for a filter that responds to the request with an HTTP redirection.
  Support: Core (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--request_redirect))
+- `response_header_modifier` (Block List, Max: 1) ResponseHeaderModifier defines a schema for a filter that modifies response headers.
+ Support: Extended (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--response_header_modifier))
 - `type` (String) Type identifies the type of filter to apply. As with other API fields, types are classified into three conformance levels:
  - Core: Filter types and their corresponding configuration defined by   "Support: Core" in this package, e.g. "RequestHeaderModifier". All   implementations must support core filters.
  - Extended: Filter types and their corresponding configuration defined by   "Support: Extended" in this package, e.g. "RequestMirror". Implementers   are encouraged to support extended filters.
@@ -146,6 +148,8 @@ Optional:
  If a reference to a custom filter type cannot be resolved, the filter MUST NOT be skipped. Instead, requests that would have been processed by that filter MUST receive a HTTP error response.
  Note that values may be added to this enum, implementations must ensure that unknown values will not cause a crash.
  Unknown values here must result in the implementation setting the Attached Condition for the Route to `status: False`, with a Reason of `UnsupportedValue`.
+- `url_rewrite` (Block List, Max: 1) URLRewrite defines a schema for a filter that modifies a request during forwarding.
+ Support: Extended (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--url_rewrite))
 
 <a id="nestedblock--spec--rules--backend_refs--filters--extension_ref"></a>
 ### Nested Schema for `spec.rules.backend_refs.filters.extension_ref`
@@ -230,6 +234,8 @@ Optional:
 
 - `hostname` (String) Hostname is the hostname to be used in the value of the `Location` header in the response. When empty, the hostname of the request is used.
  Support: Core
+- `path` (Block List, Max: 1) Path defines parameters used to modify the path of the incoming request. The modified path is then used to construct the `Location` header. When empty, the request path is used as-is.
+ Support: Extended (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--request_redirect--path))
 - `port` (Number) Port is the port to be used in the value of the `Location` header in the response. When empty, port (if specified) of the request is used.
  Support: Extended
 - `scheme` (String) Scheme is the scheme to be used in the value of the `Location` header in the response. When empty, the scheme of the request is used.
@@ -240,6 +246,82 @@ Optional:
  Support: Core
  Note that values may be added to this enum, implementations must ensure that unknown values will not cause a crash.
  Unknown values here must result in the implementation setting the Attached Condition for the Route to `status: False`, with a Reason of `UnsupportedValue`.
+
+<a id="nestedblock--spec--rules--backend_refs--filters--request_redirect--path"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.request_redirect.path`
+
+Optional:
+
+- `replace_full_path` (String) ReplaceFullPath specifies the value with which to replace the full path of a request during a rewrite or redirect.
+- `replace_prefix_match` (String) ReplacePrefixMatch specifies the value with which to replace the prefix match of a request during a rewrite or redirect. For example, a request to "/foo/bar" with a prefix match of "/foo" would be modified to "/bar".
+ Note that this matches the behavior of the PathPrefix match type. This matches full path elements. A path element refers to the list of labels in the path split by the `/` separator. When specified, a trailing `/` is ignored. For example, the paths `/abc`, `/abc/`, and `/abc/def` would all match the prefix `/abc`, but the path `/abcd` would not.
+- `type` (String) Type defines the type of path modifier. Additional types may be added in a future release of the API.
+ Note that values may be added to this enum, implementations must ensure that unknown values will not cause a crash.
+ Unknown values here must result in the implementation setting the Accepted Condition for the Route to `status: False`, with a Reason of `UnsupportedValue`.
+
+
+
+<a id="nestedblock--spec--rules--backend_refs--filters--response_header_modifier"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.response_header_modifier`
+
+Optional:
+
+- `add` (Block List) Add adds the given header(s) (name, value) to the request before the action. It appends to any existing values associated with the header name.
+ Input: GET /foo HTTP/1.1 my-header: foo
+ Config: add: - name: "my-header" value: "bar,baz"
+ Output: GET /foo HTTP/1.1 my-header: foo,bar,baz (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--response_header_modifier--add))
+- `remove` (List of String) Remove the given header(s) from the HTTP request before the action. The value of Remove is a list of HTTP header names. Note that the header names are case-insensitive (see https://datatracker.ietf.org/doc/html/rfc2616#section-4.2).
+ Input: GET /foo HTTP/1.1 my-header1: foo my-header2: bar my-header3: baz
+ Config: remove: ["my-header1", "my-header3"]
+ Output: GET /foo HTTP/1.1 my-header2: bar
+- `set` (Block List) Set overwrites the request with the given header (name, value) before the action.
+ Input: GET /foo HTTP/1.1 my-header: foo
+ Config: set: - name: "my-header" value: "bar"
+ Output: GET /foo HTTP/1.1 my-header: bar (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--response_header_modifier--set))
+
+<a id="nestedblock--spec--rules--backend_refs--filters--response_header_modifier--add"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.response_header_modifier.add`
+
+Optional:
+
+- `name` (String) Name is the name of the HTTP Header to be matched. Name matching MUST be case insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+ If multiple entries specify equivalent header names, the first entry with an equivalent name MUST be considered for a match. Subsequent entries with an equivalent header name MUST be ignored. Due to the case-insensitivity of header names, "foo" and "Foo" are considered equivalent.
+- `value` (String) Value is the value of HTTP Header to be matched.
+
+
+<a id="nestedblock--spec--rules--backend_refs--filters--response_header_modifier--set"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.response_header_modifier.set`
+
+Optional:
+
+- `name` (String) Name is the name of the HTTP Header to be matched. Name matching MUST be case insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+ If multiple entries specify equivalent header names, the first entry with an equivalent name MUST be considered for a match. Subsequent entries with an equivalent header name MUST be ignored. Due to the case-insensitivity of header names, "foo" and "Foo" are considered equivalent.
+- `value` (String) Value is the value of HTTP Header to be matched.
+
+
+
+<a id="nestedblock--spec--rules--backend_refs--filters--url_rewrite"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.url_rewrite`
+
+Optional:
+
+- `hostname` (String) Hostname is the value to be used to replace the Host header value during forwarding.
+ Support: Extended
+- `path` (Block List, Max: 1) Path defines a path rewrite.
+ Support: Extended (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--url_rewrite--path))
+
+<a id="nestedblock--spec--rules--backend_refs--filters--url_rewrite--path"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.url_rewrite.path`
+
+Optional:
+
+- `replace_full_path` (String) ReplaceFullPath specifies the value with which to replace the full path of a request during a rewrite or redirect.
+- `replace_prefix_match` (String) ReplacePrefixMatch specifies the value with which to replace the prefix match of a request during a rewrite or redirect. For example, a request to "/foo/bar" with a prefix match of "/foo" would be modified to "/bar".
+ Note that this matches the behavior of the PathPrefix match type. This matches full path elements. A path element refers to the list of labels in the path split by the `/` separator. When specified, a trailing `/` is ignored. For example, the paths `/abc`, `/abc/`, and `/abc/def` would all match the prefix `/abc`, but the path `/abcd` would not.
+- `type` (String) Type defines the type of path modifier. Additional types may be added in a future release of the API.
+ Note that values may be added to this enum, implementations must ensure that unknown values will not cause a crash.
+ Unknown values here must result in the implementation setting the Accepted Condition for the Route to `status: False`, with a Reason of `UnsupportedValue`.
+
 
 
 
@@ -257,6 +339,8 @@ Optional:
  Support: Extended (see [below for nested schema](#nestedblock--spec--rules--filters--request_mirror))
 - `request_redirect` (Block List, Max: 1) RequestRedirect defines a schema for a filter that responds to the request with an HTTP redirection.
  Support: Core (see [below for nested schema](#nestedblock--spec--rules--filters--request_redirect))
+- `response_header_modifier` (Block List, Max: 1) ResponseHeaderModifier defines a schema for a filter that modifies response headers.
+ Support: Extended (see [below for nested schema](#nestedblock--spec--rules--filters--response_header_modifier))
 - `type` (String) Type identifies the type of filter to apply. As with other API fields, types are classified into three conformance levels:
  - Core: Filter types and their corresponding configuration defined by   "Support: Core" in this package, e.g. "RequestHeaderModifier". All   implementations must support core filters.
  - Extended: Filter types and their corresponding configuration defined by   "Support: Extended" in this package, e.g. "RequestMirror". Implementers   are encouraged to support extended filters.
@@ -265,6 +349,8 @@ Optional:
  If a reference to a custom filter type cannot be resolved, the filter MUST NOT be skipped. Instead, requests that would have been processed by that filter MUST receive a HTTP error response.
  Note that values may be added to this enum, implementations must ensure that unknown values will not cause a crash.
  Unknown values here must result in the implementation setting the Attached Condition for the Route to `status: False`, with a Reason of `UnsupportedValue`.
+- `url_rewrite` (Block List, Max: 1) URLRewrite defines a schema for a filter that modifies a request during forwarding.
+ Support: Extended (see [below for nested schema](#nestedblock--spec--rules--filters--url_rewrite))
 
 <a id="nestedblock--spec--rules--filters--extension_ref"></a>
 ### Nested Schema for `spec.rules.filters.extension_ref`
@@ -349,6 +435,8 @@ Optional:
 
 - `hostname` (String) Hostname is the hostname to be used in the value of the `Location` header in the response. When empty, the hostname of the request is used.
  Support: Core
+- `path` (Block List, Max: 1) Path defines parameters used to modify the path of the incoming request. The modified path is then used to construct the `Location` header. When empty, the request path is used as-is.
+ Support: Extended (see [below for nested schema](#nestedblock--spec--rules--filters--request_redirect--path))
 - `port` (Number) Port is the port to be used in the value of the `Location` header in the response. When empty, port (if specified) of the request is used.
  Support: Extended
 - `scheme` (String) Scheme is the scheme to be used in the value of the `Location` header in the response. When empty, the scheme of the request is used.
@@ -359,6 +447,82 @@ Optional:
  Support: Core
  Note that values may be added to this enum, implementations must ensure that unknown values will not cause a crash.
  Unknown values here must result in the implementation setting the Attached Condition for the Route to `status: False`, with a Reason of `UnsupportedValue`.
+
+<a id="nestedblock--spec--rules--filters--request_redirect--path"></a>
+### Nested Schema for `spec.rules.filters.request_redirect.path`
+
+Optional:
+
+- `replace_full_path` (String) ReplaceFullPath specifies the value with which to replace the full path of a request during a rewrite or redirect.
+- `replace_prefix_match` (String) ReplacePrefixMatch specifies the value with which to replace the prefix match of a request during a rewrite or redirect. For example, a request to "/foo/bar" with a prefix match of "/foo" would be modified to "/bar".
+ Note that this matches the behavior of the PathPrefix match type. This matches full path elements. A path element refers to the list of labels in the path split by the `/` separator. When specified, a trailing `/` is ignored. For example, the paths `/abc`, `/abc/`, and `/abc/def` would all match the prefix `/abc`, but the path `/abcd` would not.
+- `type` (String) Type defines the type of path modifier. Additional types may be added in a future release of the API.
+ Note that values may be added to this enum, implementations must ensure that unknown values will not cause a crash.
+ Unknown values here must result in the implementation setting the Accepted Condition for the Route to `status: False`, with a Reason of `UnsupportedValue`.
+
+
+
+<a id="nestedblock--spec--rules--filters--response_header_modifier"></a>
+### Nested Schema for `spec.rules.filters.response_header_modifier`
+
+Optional:
+
+- `add` (Block List) Add adds the given header(s) (name, value) to the request before the action. It appends to any existing values associated with the header name.
+ Input: GET /foo HTTP/1.1 my-header: foo
+ Config: add: - name: "my-header" value: "bar,baz"
+ Output: GET /foo HTTP/1.1 my-header: foo,bar,baz (see [below for nested schema](#nestedblock--spec--rules--filters--response_header_modifier--add))
+- `remove` (List of String) Remove the given header(s) from the HTTP request before the action. The value of Remove is a list of HTTP header names. Note that the header names are case-insensitive (see https://datatracker.ietf.org/doc/html/rfc2616#section-4.2).
+ Input: GET /foo HTTP/1.1 my-header1: foo my-header2: bar my-header3: baz
+ Config: remove: ["my-header1", "my-header3"]
+ Output: GET /foo HTTP/1.1 my-header2: bar
+- `set` (Block List) Set overwrites the request with the given header (name, value) before the action.
+ Input: GET /foo HTTP/1.1 my-header: foo
+ Config: set: - name: "my-header" value: "bar"
+ Output: GET /foo HTTP/1.1 my-header: bar (see [below for nested schema](#nestedblock--spec--rules--filters--response_header_modifier--set))
+
+<a id="nestedblock--spec--rules--filters--response_header_modifier--add"></a>
+### Nested Schema for `spec.rules.filters.response_header_modifier.add`
+
+Optional:
+
+- `name` (String) Name is the name of the HTTP Header to be matched. Name matching MUST be case insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+ If multiple entries specify equivalent header names, the first entry with an equivalent name MUST be considered for a match. Subsequent entries with an equivalent header name MUST be ignored. Due to the case-insensitivity of header names, "foo" and "Foo" are considered equivalent.
+- `value` (String) Value is the value of HTTP Header to be matched.
+
+
+<a id="nestedblock--spec--rules--filters--response_header_modifier--set"></a>
+### Nested Schema for `spec.rules.filters.response_header_modifier.set`
+
+Optional:
+
+- `name` (String) Name is the name of the HTTP Header to be matched. Name matching MUST be case insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+ If multiple entries specify equivalent header names, the first entry with an equivalent name MUST be considered for a match. Subsequent entries with an equivalent header name MUST be ignored. Due to the case-insensitivity of header names, "foo" and "Foo" are considered equivalent.
+- `value` (String) Value is the value of HTTP Header to be matched.
+
+
+
+<a id="nestedblock--spec--rules--filters--url_rewrite"></a>
+### Nested Schema for `spec.rules.filters.url_rewrite`
+
+Optional:
+
+- `hostname` (String) Hostname is the value to be used to replace the Host header value during forwarding.
+ Support: Extended
+- `path` (Block List, Max: 1) Path defines a path rewrite.
+ Support: Extended (see [below for nested schema](#nestedblock--spec--rules--filters--url_rewrite--path))
+
+<a id="nestedblock--spec--rules--filters--url_rewrite--path"></a>
+### Nested Schema for `spec.rules.filters.url_rewrite.path`
+
+Optional:
+
+- `replace_full_path` (String) ReplaceFullPath specifies the value with which to replace the full path of a request during a rewrite or redirect.
+- `replace_prefix_match` (String) ReplacePrefixMatch specifies the value with which to replace the prefix match of a request during a rewrite or redirect. For example, a request to "/foo/bar" with a prefix match of "/foo" would be modified to "/bar".
+ Note that this matches the behavior of the PathPrefix match type. This matches full path elements. A path element refers to the list of labels in the path split by the `/` separator. When specified, a trailing `/` is ignored. For example, the paths `/abc`, `/abc/`, and `/abc/def` would all match the prefix `/abc`, but the path `/abcd` would not.
+- `type` (String) Type defines the type of path modifier. Additional types may be added in a future release of the API.
+ Note that values may be added to this enum, implementations must ensure that unknown values will not cause a crash.
+ Unknown values here must result in the implementation setting the Accepted Condition for the Route to `status: False`, with a Reason of `UnsupportedValue`.
+
 
 
 

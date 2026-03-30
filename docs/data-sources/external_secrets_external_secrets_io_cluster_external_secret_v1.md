@@ -196,10 +196,25 @@ Optional:
 
 Optional:
 
+- `merge` (Block List, Max: 1) Used to merge key/values in one single Secret
+The resulting key will contain all values from the specified secrets (see [below for nested schema](#nestedblock--spec--external_secret_spec--data_from--rewrite--merge))
 - `regexp` (Block List, Max: 1) Used to rewrite with regular expressions.
 The resulting key will be the output of a regexp.ReplaceAll operation. (see [below for nested schema](#nestedblock--spec--external_secret_spec--data_from--rewrite--regexp))
 - `transform` (Block List, Max: 1) Used to apply string transformation on the secrets.
 The resulting key will be the output of the template applied by the operation. (see [below for nested schema](#nestedblock--spec--external_secret_spec--data_from--rewrite--transform))
+
+<a id="nestedblock--spec--external_secret_spec--data_from--rewrite--merge"></a>
+### Nested Schema for `spec.external_secret_spec.data_from.rewrite.merge`
+
+Optional:
+
+- `conflict_policy` (String) Used to define the policy to use in conflict resolution.
+- `into` (String) Used to define the target key of the merge operation.
+Required if strategy is JSON. Ignored otherwise.
+- `priority` (List of String) Used to define key priority in conflict resolution.
+- `priority_policy` (String) Used to define the policy when a key in the priority list does not exist in the input.
+- `strategy` (String) Used to define the strategy to use in the merge operation.
+
 
 <a id="nestedblock--spec--external_secret_spec--data_from--rewrite--regexp"></a>
 ### Nested Schema for `spec.external_secret_spec.data_from.rewrite.regexp`
@@ -270,9 +285,22 @@ Defaults to "Owner"
 - `deletion_policy` (String) DeletionPolicy defines rules on how to delete the resulting Secret.
 Defaults to "Retain"
 - `immutable` (Boolean) Immutable defines if the final secret will be immutable
+- `manifest` (Block List, Max: 1) Manifest defines a custom Kubernetes resource to create instead of a Secret.
+When specified, ExternalSecret will create the resource type defined here
+(e.g., ConfigMap, Custom Resource) instead of a Secret.
+Warning: Using Generic target. Make sure access policies and encryption are properly configured. (see [below for nested schema](#nestedblock--spec--external_secret_spec--target--manifest))
 - `name` (String) The name of the Secret resource to be managed.
 Defaults to the .metadata.name of the ExternalSecret resource
 - `template` (Block List, Max: 1) Template defines a blueprint for the created Secret resource. (see [below for nested schema](#nestedblock--spec--external_secret_spec--target--template))
+
+<a id="nestedblock--spec--external_secret_spec--target--manifest"></a>
+### Nested Schema for `spec.external_secret_spec.target.manifest`
+
+Optional:
+
+- `api_version` (String) APIVersion of the target resource (e.g., "v1" for ConfigMap, "argoproj.io/v1alpha1" for ArgoCD Application)
+- `kind` (String) Kind of the target resource (e.g., "ConfigMap", "Application")
+
 
 <a id="nestedblock--spec--external_secret_spec--target--template"></a>
 ### Nested Schema for `spec.external_secret_spec.target.template`
@@ -283,7 +311,7 @@ Optional:
 - `engine_version` (String) EngineVersion specifies the template engine version
 that should be used to compile/execute the
 template specified in .data and .templateFrom[].
-- `merge_policy` (String)
+- `merge_policy` (String) TemplateMergePolicy defines how the rendered template should be merged with the existing Secret data.
 - `metadata` (Block List, Max: 1) ExternalSecretTemplateMetadata defines metadata fields for the Secret blueprint. (see [below for nested schema](#nestedblock--spec--external_secret_spec--target--template--metadata))
 - `template_from` (Block List) (see [below for nested schema](#nestedblock--spec--external_secret_spec--target--template--template_from))
 - `type` (String)
@@ -294,6 +322,7 @@ template specified in .data and .templateFrom[].
 Optional:
 
 - `annotations` (Map of String)
+- `finalizers` (List of String)
 - `labels` (Map of String)
 
 
@@ -302,10 +331,10 @@ Optional:
 
 Optional:
 
-- `config_map` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--external_secret_spec--target--template--template_from--config_map))
+- `config_map` (Block List, Max: 1) TemplateRef specifies a reference to either a ConfigMap or a Secret resource. (see [below for nested schema](#nestedblock--spec--external_secret_spec--target--template--template_from--config_map))
 - `literal` (String)
-- `secret` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--external_secret_spec--target--template--template_from--secret))
-- `target` (String)
+- `secret` (Block List, Max: 1) TemplateRef specifies a reference to either a ConfigMap or a Secret resource. (see [below for nested schema](#nestedblock--spec--external_secret_spec--target--template--template_from--secret))
+- `target` (String) TemplateTarget specifies where the rendered templates should be applied.
 
 <a id="nestedblock--spec--external_secret_spec--target--template--template_from--config_map"></a>
 ### Nested Schema for `spec.external_secret_spec.target.template.template_from.config_map`
@@ -321,7 +350,7 @@ Optional:
 Optional:
 
 - `key` (String) A key in the ConfigMap/Secret
-- `template_as` (String)
+- `template_as` (String) TemplateScope specifies how the template keys should be interpreted.
 
 
 
@@ -339,7 +368,7 @@ Optional:
 Optional:
 
 - `key` (String) A key in the ConfigMap/Secret
-- `template_as` (String)
+- `template_as` (String) TemplateScope specifies how the template keys should be interpreted.
 
 
 
@@ -415,7 +444,7 @@ Optional:
 
 - `message` (String)
 - `status` (String)
-- `type` (String)
+- `type` (String) ClusterExternalSecretConditionType defines a value type for ClusterExternalSecret conditions.
 
 
 <a id="nestedblock--status--failed_namespaces"></a>

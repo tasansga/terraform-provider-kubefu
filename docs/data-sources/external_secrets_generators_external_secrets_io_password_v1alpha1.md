@@ -3,16 +3,12 @@
 page_title: "kubefu_external_secrets_generators_external_secrets_io_password_v1alpha1 Data Source - terraform-provider-kubefu"
 subcategory: ""
 description: |-
-  Password generates a random password based on the
-  configuration parameters in spec.
-  You can specify the length, characterset and other attributes.
+  Password generates a random password based on the configuration parameters in spec. You can specify the length, characterset and other attributes.
 ---
 
 # kubefu_external_secrets_generators_external_secrets_io_password_v1alpha1 (Data Source)
 
-Password generates a random password based on the
-configuration parameters in spec.
-You can specify the length, characterset and other attributes.
+Password generates a random password based on the configuration parameters in spec. You can specify the length, characterset and other attributes.
 
 
 
@@ -26,16 +22,9 @@ You can specify the length, characterset and other attributes.
 
 ### Read-Only
 
-- `api_version` (String) APIVersion defines the versioned schema of this representation of an object.
-Servers should convert recognized schemas to the latest internal value, and
-may reject unrecognized values.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
 - `id` (String) The ID of this resource.
-- `kind` (String) Kind is a string value representing the REST resource this object represents.
-Servers may infer this from the endpoint the client submits requests to.
-Cannot be updated.
-In CamelCase.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
@@ -45,12 +34,17 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 Optional:
 
 - `allow_repeat` (Boolean) set AllowRepeat to true to allow repeating characters.
-- `digits` (Number) Digits specifies the number of digits in the generated
-password. If omitted it defaults to 25% of the length of the password
-- `length` (Number) Length of the password to be generated.
-Defaults to 24
+- `digits` (Number) Digits specifies the number of digits in the generated password. If omitted it defaults to 25% of the length of the password
+- `encoding` (String) Encoding specifies the encoding of the generated password.
+Valid values are:
+- "raw" (default): no encoding
+- "base64": standard base64 encoding
+- "base64url": base64url encoding
+- "base32": base32 encoding
+- "hex": hexadecimal encoding
+- `length` (Number) Length of the password to be generated. Defaults to 24
 - `no_upper` (Boolean) Set NoUpper to disable uppercase characters
-- `symbol_characters` (String) SymbolCharacters specifies the special characters that should be used
-in the generated password.
-- `symbols` (Number) Symbols specifies the number of symbol characters in the generated
-password. If omitted it defaults to 25% of the length of the password
+- `secret_keys` (List of String) SecretKeys defines the keys that will be populated with generated passwords.
+Defaults to "password" when not set.
+- `symbol_characters` (String) SymbolCharacters specifies the special characters that should be used in the generated password.
+- `symbols` (Number) Symbols specifies the number of symbol characters in the generated password. If omitted it defaults to 25% of the length of the password

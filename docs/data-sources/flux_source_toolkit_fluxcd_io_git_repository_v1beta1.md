@@ -34,8 +34,10 @@ GitRepository is the Schema for the gitrepositories API
 
 Optional:
 
+- `access_from` (Block List, Max: 1) AccessFrom defines an Access Control List for allowing cross-namespace references to this object. (see [below for nested schema](#nestedblock--spec--access_from))
 - `git_implementation` (String) Determines which git client library to use. Defaults to go-git, valid values are ('go-git', 'libgit2').
 - `ignore` (String) Ignore overrides the set of excluded patterns in the .sourceignore format (which is the same as .gitignore). If not provided, a default will be used, consult the documentation for your version to find out what those are.
+- `include` (Block List) Extra git repositories to map into the repository (see [below for nested schema](#nestedblock--spec--include))
 - `interval` (String) The interval at which to check for repository updates.
 - `recurse_submodules` (Boolean) When enabled, after the clone is created, initializes all submodules within, using their default settings. This option is available only when using the 'go-git' GitImplementation.
 - `ref` (Block List, Max: 1) The Git reference to checkout and monitor for changes, defaults to master branch. (see [below for nested schema](#nestedblock--spec--ref))
@@ -44,6 +46,40 @@ Optional:
 - `timeout` (String) The timeout for remote Git operations like cloning, defaults to 20s.
 - `url` (String) The repository URL, can be a HTTP/S or SSH address.
 - `verify` (Block List, Max: 1) Verify OpenPGP signature for the Git commit HEAD points to. (see [below for nested schema](#nestedblock--spec--verify))
+
+<a id="nestedblock--spec--access_from"></a>
+### Nested Schema for `spec.access_from`
+
+Optional:
+
+- `namespace_selectors` (Block List) NamespaceSelectors is the list of namespace selectors to which this ACL applies. Items in this list are evaluated using a logical OR operation. (see [below for nested schema](#nestedblock--spec--access_from--namespace_selectors))
+
+<a id="nestedblock--spec--access_from--namespace_selectors"></a>
+### Nested Schema for `spec.access_from.namespace_selectors`
+
+Optional:
+
+- `match_labels` (Map of String) MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+
+
+<a id="nestedblock--spec--include"></a>
+### Nested Schema for `spec.include`
+
+Optional:
+
+- `from_path` (String) The path to copy contents from, defaults to the root directory.
+- `repository` (Block List, Max: 1) Reference to a GitRepository to include. (see [below for nested schema](#nestedblock--spec--include--repository))
+- `to_path` (String) The path to copy contents to, defaults to the name of the source ref.
+
+<a id="nestedblock--spec--include--repository"></a>
+### Nested Schema for `spec.include.repository`
+
+Optional:
+
+- `name` (String) Name of the referent
+
+
 
 <a id="nestedblock--spec--ref"></a>
 ### Nested Schema for `spec.ref`
@@ -89,6 +125,7 @@ Optional:
 
 - `artifact` (Block List, Max: 1) Artifact represents the output of the last successful repository sync. (see [below for nested schema](#nestedblock--status--artifact))
 - `conditions` (Block List) Conditions holds the conditions for the GitRepository. (see [below for nested schema](#nestedblock--status--conditions))
+- `included_artifacts` (Block List) IncludedArtifacts represents the included artifacts from the last successful repository sync. (see [below for nested schema](#nestedblock--status--included_artifacts))
 - `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change can be detected.
 - `observed_generation` (Number) ObservedGeneration is the last observed generation.
 - `url` (String) URL is the download link for the artifact output of the last repository sync.
@@ -116,3 +153,15 @@ Optional:
 - `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
 - `status` (String) status of the condition, one of True, False, Unknown.
 - `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+
+
+<a id="nestedblock--status--included_artifacts"></a>
+### Nested Schema for `status.included_artifacts`
+
+Optional:
+
+- `checksum` (String) Checksum is the SHA1 checksum of the artifact.
+- `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of this artifact.
+- `path` (String) Path is the relative file path of this artifact.
+- `revision` (String) Revision is a human readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm index timestamp, a Helm chart version, etc.
+- `url` (String) URL is the HTTP address of this artifact.

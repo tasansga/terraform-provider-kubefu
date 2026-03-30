@@ -117,16 +117,16 @@ func dataSourceK8sNodeK8sIoRuntimeClassV1Alpha1() *schema.Resource {
 							"pending": {
 								Type:        schema.TypeList,
 								Description: "Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
 										Description: "name of the process that is responsible for initializing this object.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 								}},
 							},
@@ -256,6 +256,13 @@ func dataSourceK8sNodeK8sIoRuntimeClassV1Alpha1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"remaining_item_count": {
+												Type:        schema.TypeInt,
+												Description: "remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.\n\nThis field is alpha and can be changed or removed without notice.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_version": {
 												Type:        schema.TypeString,
 												Description: "String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency",
@@ -318,6 +325,20 @@ func dataSourceK8sNodeK8sIoRuntimeClassV1Alpha1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"fields_type": {
+								Type:        schema.TypeString,
+								Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_v1": {
+								Type:        schema.TypeMap,
+								Description: "FieldsV1 holds the first JSON version format as described in the \"FieldsV1\" type.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"manager": {
 								Type:        schema.TypeString,
 								Description: "Manager is an identifier of the workflow managing these fields.",
@@ -328,6 +349,13 @@ func dataSourceK8sNodeK8sIoRuntimeClassV1Alpha1() *schema.Resource {
 							"operation": {
 								Type:        schema.TypeString,
 								Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -438,12 +466,90 @@ func dataSourceK8sNodeK8sIoRuntimeClassV1Alpha1() *schema.Resource {
 				MinItems:    1,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"overhead": {
+						Type:        schema.TypeList,
+						Description: "Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. For more details, see https://git.k8s.io/enhancements/keps/sig-node/20190226-pod-overhead.md This field is alpha-level as of Kubernetes v1.15, and is only honored by servers that enable the PodOverhead feature.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"pod_fixed": {
+								Type:        schema.TypeMap,
+								Description: "PodFixed represents the fixed resource overhead associated with running a pod.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"runtime_handler": {
 						Type:        schema.TypeString,
 						Description: "RuntimeHandler specifies the underlying runtime and configuration that the CRI implementation will use to handle pods of this class. The possible values are specific to the node & CRI configuration.  It is assumed that all handlers are available on every node, and handlers of the same name are equivalent on every node. For example, a handler called \"runc\" might specify that the runc OCI runtime (using native Linux containers) will be used to run the containers in a pod. The RuntimeHandler must conform to the DNS Label (RFC 1123) requirements and is immutable.",
 						Optional:    false,
 						Required:    true,
 						Computed:    false,
+					},
+					"scheduling": {
+						Type:        schema.TypeList,
+						Description: "Scheduling holds the scheduling constraints to ensure that pods running with this RuntimeClass are scheduled to nodes that support it. If scheduling is nil, this RuntimeClass is assumed to be supported by all nodes.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"node_selector": {
+								Type:        schema.TypeMap,
+								Description: "nodeSelector lists labels that must be present on nodes that support this RuntimeClass. Pods using this RuntimeClass can only be scheduled to a node matched by this selector. The RuntimeClass nodeSelector is merged with a pod's existing nodeSelector. Any conflicts will cause the pod to be rejected in admission.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"tolerations": {
+								Type:        schema.TypeList,
+								Description: "tolerations are appended (excluding duplicates) to pods running with this RuntimeClass during admission, effectively unioning the set of nodes tolerated by the pod and the RuntimeClass.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"effect": {
+										Type:        schema.TypeString,
+										Description: "Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"key": {
+										Type:        schema.TypeString,
+										Description: "Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"operator": {
+										Type:        schema.TypeString,
+										Description: "Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a pod can tolerate all taints of a particular category.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"toleration_seconds": {
+										Type:        schema.TypeInt,
+										Description: "TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"value": {
+										Type:        schema.TypeString,
+										Description: "Value is the taint value the toleration matches to. If the operator is Exists, the value should be empty, otherwise just a regular string.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
 					},
 				}},
 			},
@@ -457,7 +563,7 @@ func dataSourceK8sNodeK8sIoRuntimeClassV1Alpha1Read(_ context.Context, d *schema
 	if err := manifestpkg.SetDataSourceDefaults(d, "node.k8s.io/v1alpha1", "RuntimeClass", "node.k8s.io/v1alpha1/RuntimeClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.overhead", "spec.scheduling"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

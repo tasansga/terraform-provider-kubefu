@@ -295,28 +295,52 @@ func dataSourceCertManagerAcmeCertManagerIoChallengeV1Alpha3() *schema.Resource 
 											},
 											"environment": {
 												Type:        schema.TypeString,
-												Description: "",
+												Description: "name of the Azure environment (default AzurePublicCloud)",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
 											},
 											"hosted_zone_name": {
 												Type:        schema.TypeString,
-												Description: "",
+												Description: "name of the DNS zone that should be used",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
 											},
+											"managed_identity": {
+												Type:        schema.TypeList,
+												Description: "managed identity configuration, can not be used at the same time as clientID, clientSecretSecretRef or tenantID",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"client_id": {
+														Type:        schema.TypeString,
+														Description: "client ID of the managed identity, can not be used at the same time as resourceID",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"resource_id": {
+														Type:        schema.TypeString,
+														Description: "resource ID of the managed identity, can not be used at the same time as clientID",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
 											"resource_group_name": {
 												Type:        schema.TypeString,
-												Description: "",
+												Description: "resource group the DNS zone is located in",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
 											},
 											"subscription_id": {
 												Type:        schema.TypeString,
-												Description: "",
+												Description: "ID of the Azure subscription",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -642,6 +666,30 @@ func dataSourceCertManagerAcmeCertManagerIoChallengeV1Alpha3() *schema.Resource 
 								Computed:    true,
 								MaxItems:    1,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"gateway_http_route": {
+										Type:        schema.TypeList,
+										Description: "The Gateway API is a sig-network community API that models service networking in Kubernetes (https://gateway-api.sigs.k8s.io/). The Gateway solver will create HTTPRoutes with the specified labels in the same namespace as the challenge. This solver is experimental, and fields / behaviour may change in the future.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"labels": {
+												Type:        schema.TypeMap,
+												Description: "The labels that cert-manager will use when creating the temporary HTTPRoute needed for solving the HTTP-01 challenge. These labels must match the label selector of at least one Gateway.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"service_type": {
+												Type:        schema.TypeString,
+												Description: "Optional service type for Kubernetes solver service. Supported values are NodePort or ClusterIP. If unset, defaults to NodePort.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
 									"ingress": {
 										Type:        schema.TypeList,
 										Description: "The ingress based HTTP01 challenge solver will solve challenges by creating or modifying Ingress resources in order to route requests for '/.well-known/acme-challenge/XYZ' to 'challenge solver' pods that are provisioned by cert-manager for each Challenge to be completed.",
@@ -996,6 +1044,54 @@ func dataSourceCertManagerAcmeCertManagerIoChallengeV1Alpha3() *schema.Resource 
 																									},
 																								}},
 																							},
+																							"namespace_selector": {
+																								Type:        schema.TypeList,
+																								Description: "A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means \"this pod's namespace\". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.",
+																								Optional:    true,
+																								Required:    false,
+																								Computed:    true,
+																								MaxItems:    1,
+																								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+																									"match_expressions": {
+																										Type:        schema.TypeList,
+																										Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+																										Optional:    true,
+																										Required:    false,
+																										Computed:    true,
+																										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+																											"key": {
+																												Type:        schema.TypeString,
+																												Description: "key is the label key that the selector applies to.",
+																												Optional:    true,
+																												Required:    false,
+																												Computed:    true,
+																											},
+																											"operator": {
+																												Type:        schema.TypeString,
+																												Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+																												Optional:    true,
+																												Required:    false,
+																												Computed:    true,
+																											},
+																											"values": {
+																												Type:        schema.TypeList,
+																												Description: "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+																												Optional:    true,
+																												Required:    false,
+																												Computed:    true,
+																												Elem: &schema.Schema{Type: schema.TypeString},
+																											},
+																										}},
+																									},
+																									"match_labels": {
+																										Type:        schema.TypeMap,
+																										Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+																										Optional:    true,
+																										Required:    false,
+																										Computed:    true,
+																									},
+																								}},
+																							},
 																							"namespaces": {
 																								Type:        schema.TypeList,
 																								Description: "namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means \"this pod's namespace\"",
@@ -1032,6 +1128,54 @@ func dataSourceCertManagerAcmeCertManagerIoChallengeV1Alpha3() *schema.Resource 
 																					"label_selector": {
 																						Type:        schema.TypeList,
 																						Description: "A label query over a set of resources, in this case pods.",
+																						Optional:    true,
+																						Required:    false,
+																						Computed:    true,
+																						MaxItems:    1,
+																						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+																							"match_expressions": {
+																								Type:        schema.TypeList,
+																								Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+																								Optional:    true,
+																								Required:    false,
+																								Computed:    true,
+																								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+																									"key": {
+																										Type:        schema.TypeString,
+																										Description: "key is the label key that the selector applies to.",
+																										Optional:    true,
+																										Required:    false,
+																										Computed:    true,
+																									},
+																									"operator": {
+																										Type:        schema.TypeString,
+																										Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+																										Optional:    true,
+																										Required:    false,
+																										Computed:    true,
+																									},
+																									"values": {
+																										Type:        schema.TypeList,
+																										Description: "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+																										Optional:    true,
+																										Required:    false,
+																										Computed:    true,
+																										Elem: &schema.Schema{Type: schema.TypeString},
+																									},
+																								}},
+																							},
+																							"match_labels": {
+																								Type:        schema.TypeMap,
+																								Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+																								Optional:    true,
+																								Required:    false,
+																								Computed:    true,
+																							},
+																						}},
+																					},
+																					"namespace_selector": {
+																						Type:        schema.TypeList,
+																						Description: "A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means \"this pod's namespace\". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.",
 																						Optional:    true,
 																						Required:    false,
 																						Computed:    true,
@@ -1167,6 +1311,54 @@ func dataSourceCertManagerAcmeCertManagerIoChallengeV1Alpha3() *schema.Resource 
 																									},
 																								}},
 																							},
+																							"namespace_selector": {
+																								Type:        schema.TypeList,
+																								Description: "A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means \"this pod's namespace\". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.",
+																								Optional:    true,
+																								Required:    false,
+																								Computed:    true,
+																								MaxItems:    1,
+																								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+																									"match_expressions": {
+																										Type:        schema.TypeList,
+																										Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+																										Optional:    true,
+																										Required:    false,
+																										Computed:    true,
+																										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+																											"key": {
+																												Type:        schema.TypeString,
+																												Description: "key is the label key that the selector applies to.",
+																												Optional:    true,
+																												Required:    false,
+																												Computed:    true,
+																											},
+																											"operator": {
+																												Type:        schema.TypeString,
+																												Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+																												Optional:    true,
+																												Required:    false,
+																												Computed:    true,
+																											},
+																											"values": {
+																												Type:        schema.TypeList,
+																												Description: "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+																												Optional:    true,
+																												Required:    false,
+																												Computed:    true,
+																												Elem: &schema.Schema{Type: schema.TypeString},
+																											},
+																										}},
+																									},
+																									"match_labels": {
+																										Type:        schema.TypeMap,
+																										Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+																										Optional:    true,
+																										Required:    false,
+																										Computed:    true,
+																									},
+																								}},
+																							},
 																							"namespaces": {
 																								Type:        schema.TypeList,
 																								Description: "namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means \"this pod's namespace\"",
@@ -1248,6 +1440,54 @@ func dataSourceCertManagerAcmeCertManagerIoChallengeV1Alpha3() *schema.Resource 
 																							},
 																						}},
 																					},
+																					"namespace_selector": {
+																						Type:        schema.TypeList,
+																						Description: "A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means \"this pod's namespace\". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.",
+																						Optional:    true,
+																						Required:    false,
+																						Computed:    true,
+																						MaxItems:    1,
+																						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+																							"match_expressions": {
+																								Type:        schema.TypeList,
+																								Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+																								Optional:    true,
+																								Required:    false,
+																								Computed:    true,
+																								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+																									"key": {
+																										Type:        schema.TypeString,
+																										Description: "key is the label key that the selector applies to.",
+																										Optional:    true,
+																										Required:    false,
+																										Computed:    true,
+																									},
+																									"operator": {
+																										Type:        schema.TypeString,
+																										Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+																										Optional:    true,
+																										Required:    false,
+																										Computed:    true,
+																									},
+																									"values": {
+																										Type:        schema.TypeList,
+																										Description: "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+																										Optional:    true,
+																										Required:    false,
+																										Computed:    true,
+																										Elem: &schema.Schema{Type: schema.TypeString},
+																									},
+																								}},
+																							},
+																							"match_labels": {
+																								Type:        schema.TypeMap,
+																								Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+																								Optional:    true,
+																								Required:    false,
+																								Computed:    true,
+																							},
+																						}},
+																					},
 																					"namespaces": {
 																						Type:        schema.TypeList,
 																						Description: "namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means \"this pod's namespace\"",
@@ -1272,6 +1512,20 @@ func dataSourceCertManagerAcmeCertManagerIoChallengeV1Alpha3() *schema.Resource 
 															"node_selector": {
 																Type:        schema.TypeMap,
 																Description: "NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"priority_class_name": {
+																Type:        schema.TypeString,
+																Description: "If specified, the pod's priorityClassName.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"service_account_name": {
+																Type:        schema.TypeString,
+																Description: "If specified, the pod's service account",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -1448,7 +1702,7 @@ func dataSourceCertManagerAcmeCertManagerIoChallengeV1Alpha3Read(_ context.Conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "acme.cert-manager.io/v1alpha3", "Challenge", "acme.cert-manager.io/v1alpha3/Challenge"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "spec.solver", "spec.solver.dns01", "spec.solver.dns01.acmedns", "spec.solver.dns01.acmedns.account_secret_ref", "spec.solver.dns01.akamai", "spec.solver.dns01.akamai.access_token_secret_ref", "spec.solver.dns01.akamai.client_secret_secret_ref", "spec.solver.dns01.akamai.client_token_secret_ref", "spec.solver.dns01.azuredns", "spec.solver.dns01.azuredns.client_secret_secret_ref", "spec.solver.dns01.clouddns", "spec.solver.dns01.clouddns.service_account_secret_ref", "spec.solver.dns01.cloudflare", "spec.solver.dns01.cloudflare.api_key_secret_ref", "spec.solver.dns01.cloudflare.api_token_secret_ref", "spec.solver.dns01.digitalocean", "spec.solver.dns01.digitalocean.token_secret_ref", "spec.solver.dns01.rfc2136", "spec.solver.dns01.rfc2136.tsig_secret_secret_ref", "spec.solver.dns01.route53", "spec.solver.dns01.route53.secret_access_key_secret_ref", "spec.solver.dns01.webhook", "spec.solver.http01", "spec.solver.http01.ingress", "spec.solver.http01.ingress.ingress_template", "spec.solver.http01.ingress.ingress_template.metadata", "spec.solver.http01.ingress.pod_template", "spec.solver.http01.ingress.pod_template.metadata", "spec.solver.http01.ingress.pod_template.spec", "spec.solver.http01.ingress.pod_template.spec.affinity", "spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity", "spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.solver.selector", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "spec.solver", "spec.solver.dns01", "spec.solver.dns01.acmedns", "spec.solver.dns01.acmedns.account_secret_ref", "spec.solver.dns01.akamai", "spec.solver.dns01.akamai.access_token_secret_ref", "spec.solver.dns01.akamai.client_secret_secret_ref", "spec.solver.dns01.akamai.client_token_secret_ref", "spec.solver.dns01.azuredns", "spec.solver.dns01.azuredns.client_secret_secret_ref", "spec.solver.dns01.azuredns.managed_identity", "spec.solver.dns01.clouddns", "spec.solver.dns01.clouddns.service_account_secret_ref", "spec.solver.dns01.cloudflare", "spec.solver.dns01.cloudflare.api_key_secret_ref", "spec.solver.dns01.cloudflare.api_token_secret_ref", "spec.solver.dns01.digitalocean", "spec.solver.dns01.digitalocean.token_secret_ref", "spec.solver.dns01.rfc2136", "spec.solver.dns01.rfc2136.tsig_secret_secret_ref", "spec.solver.dns01.route53", "spec.solver.dns01.route53.secret_access_key_secret_ref", "spec.solver.dns01.webhook", "spec.solver.http01", "spec.solver.http01.gateway_http_route", "spec.solver.http01.ingress", "spec.solver.http01.ingress.ingress_template", "spec.solver.http01.ingress.ingress_template.metadata", "spec.solver.http01.ingress.pod_template", "spec.solver.http01.ingress.pod_template.metadata", "spec.solver.http01.ingress.pod_template.spec", "spec.solver.http01.ingress.pod_template.spec.affinity", "spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity", "spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.solver.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.solver.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.solver.selector", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

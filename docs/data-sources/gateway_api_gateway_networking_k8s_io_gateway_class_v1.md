@@ -73,6 +73,8 @@ Optional:
 
 - `conditions` (Block List) Conditions is the current status from the controller for this GatewayClass.
  Controllers should prefer to publish conditions using values of GatewayClassConditionType for the type of each Condition. (see [below for nested schema](#nestedblock--status--conditions))
+- `supported_features` (Block List) SupportedFeatures is the set of features the GatewayClass support.
+It MUST be sorted in ascending alphabetical order by the Name key. (see [below for nested schema](#nestedblock--status--supported_features))
 
 <a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
@@ -85,3 +87,12 @@ Optional:
 - `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
 - `status` (String) status of the condition, one of True, False, Unknown.
 - `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+
+
+<a id="nestedblock--status--supported_features"></a>
+### Nested Schema for `status.supported_features`
+
+Optional:
+
+- `name` (String) FeatureName is used to describe distinct features that are covered by
+conformance tests.

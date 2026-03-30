@@ -3,12 +3,12 @@
 page_title: "kubefu_external_secrets_generators_external_secrets_io_generator_state_v1alpha1 Data Source - terraform-provider-kubefu"
 subcategory: ""
 description: |-
-  Generated data source for crd.generators.external-secrets.io.v1alpha1.GeneratorState
+  GeneratorState represents the state created and managed by a generator resource.
 ---
 
 # kubefu_external_secrets_generators_external_secrets_io_generator_state_v1alpha1 (Data Source)
 
-Generated data source for crd.generators.external-secrets.io.v1alpha1.GeneratorState
+GeneratorState represents the state created and managed by a generator resource.
 
 
 
@@ -18,8 +18,8 @@ Generated data source for crd.generators.external-secrets.io.v1alpha1.GeneratorS
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
-- `status` (Block List, Max: 1) (see [below for nested schema](#nestedblock--status))
+- `spec` (Block List, Max: 1) GeneratorStateSpec defines the desired state of a generator state resource. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) GeneratorStateStatus defines the observed state of a generator state resource. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -70,4 +70,4 @@ Optional:
 - `message` (String)
 - `reason` (String)
 - `status` (String)
-- `type` (String)
+- `type` (String) GeneratorStateConditionType represents the type of condition for a generator state.

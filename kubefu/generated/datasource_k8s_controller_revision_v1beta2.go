@@ -11,7 +11,7 @@ import (
 func dataSourceK8sAppsControllerRevisionV1Beta2() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceK8sAppsControllerRevisionV1Beta2Read,
-		Description: "DEPRECATED - This group version of ControllerRevision is deprecated by apps/v1/ControllerRevision. See the release notes for more information. ControllerRevision implements an immutable snapshot of state data. Clients are responsible for serializing and deserializing the objects that contain their internal state. Once a ControllerRevision has been successfully created, it can not be updated. The API Server will fail validation of all requests that attempt to mutate the Data field. ControllerRevisions may, however, be deleted. Note that, due to its use by both the DaemonSet and StatefulSet controllers for update and rollback, this object is beta. However, it may be subject to name and representation changes in future releases, and clients should not depend on its stability. It is primarily for internal use by controllers.",
+		Description: "ControllerRevision implements an immutable snapshot of state data. Clients are responsible for serializing and deserializing the objects that contain their internal state. Once a ControllerRevision has been successfully created, it can not be updated. The API Server will fail validation of all requests that attempt to mutate the Data field. ControllerRevisions may, however, be deleted. Note that, due to its use by both the DaemonSet and StatefulSet controllers for update and rollback, this object is beta. However, it may be subject to name and representation changes in future releases, and clients should not depend on its stability. It is primarily for internal use by controllers.",
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
@@ -26,7 +26,6 @@ func dataSourceK8sAppsControllerRevisionV1Beta2() *schema.Resource {
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
-				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 					"raw": {
 						Type:        schema.TypeString,
@@ -96,7 +95,7 @@ func dataSourceK8sAppsControllerRevisionV1Beta2() *schema.Resource {
 					},
 					"deletion_timestamp": {
 						Type:        schema.TypeString,
-						Description: "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
+						Description: "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field. Once set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -134,16 +133,16 @@ func dataSourceK8sAppsControllerRevisionV1Beta2() *schema.Resource {
 							"pending": {
 								Type:        schema.TypeList,
 								Description: "Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
 										Description: "name of the process that is responsible for initializing this object.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 								}},
 							},
@@ -273,6 +272,13 @@ func dataSourceK8sAppsControllerRevisionV1Beta2() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"remaining_item_count": {
+												Type:        schema.TypeInt,
+												Description: "remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.\n\nThis field is alpha and can be changed or removed without notice.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_version": {
 												Type:        schema.TypeString,
 												Description: "String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency",
@@ -313,6 +319,64 @@ func dataSourceK8sAppsControllerRevisionV1Beta2() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"managed_fields": {
+						Type:        schema.TypeList,
+						Description: "ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like \"ci-cd\". The set of fields is always in the version that the workflow used when modifying the object.\n\nThis field is alpha and can be changed or removed without notice.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"api_version": {
+								Type:        schema.TypeString,
+								Description: "APIVersion defines the version of this resource that this field set applies to. The format is \"group/version\" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields": {
+								Type:        schema.TypeMap,
+								Description: "Fields identifies a set of fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_type": {
+								Type:        schema.TypeString,
+								Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_v1": {
+								Type:        schema.TypeMap,
+								Description: "FieldsV1 holds the first JSON version format as described in the \"FieldsV1\" type.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"manager": {
+								Type:        schema.TypeString,
+								Description: "Manager is an identifier of the workflow managing these fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"operation": {
+								Type:        schema.TypeString,
+								Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"time": {
+								Type:        schema.TypeString,
+								Description: "Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"name": {
 						Type:        schema.TypeString,
@@ -419,7 +483,7 @@ func dataSourceK8sAppsControllerRevisionV1Beta2Read(_ context.Context, d *schema
 	if err := manifestpkg.SetDataSourceDefaults(d, "apps/v1beta2", "ControllerRevision", "apps/v1beta2/ControllerRevision"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"data", "metadata", "revision"}, []string{"data", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"data", "metadata", "revision"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -317,6 +317,13 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Beta2() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"distinct_attribute": {
+										Type:        schema.TypeString,
+										Description: "DistinctAttribute requires that all devices in question have this attribute and that its type and value are unique across those devices.\n\nThis acts as the inverse of MatchAttribute.\n\nThis constraint is used to avoid allocating multiple requests to the same device by ensuring attribute-level differentiation.\n\nThis is useful for scenarios where resource requests must be fulfilled by separate physical devices. For example, a container requests two network interfaces that must be allocated from two different physical NICs.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"match_attribute": {
 										Type:        schema.TypeString,
 										Description: "MatchAttribute requires that all devices in question have this attribute and that its type and value are the same across those devices.\n\nFor example, if you specified \"dra.example.com/numa\" (a hypothetical example!), then only devices in the same NUMA node will be chosen. A device which does not have that attribute will not be chosen. All devices should use a value of the same type for this attribute because that is part of its specification, but if one device doesn't, then it also will not be chosen.\n\nMust include the domain qualifier.",
@@ -362,6 +369,23 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Beta2() *schema.Resource {
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
+											},
+											"capacity": {
+												Type:        schema.TypeList,
+												Description: "Capacity define resource requirements against each capacity.\n\nIf this field is unset and the device supports multiple allocations, the default value will be applied to each capacity according to requestPolicy. For the capacity that has no requestPolicy, default is the full capacity value.\n\nApplies to each device allocation. If Count > 1, the request fails if there aren't enough devices that meet the requirements. If AllocationMode is set to All, the request fails if there are devices that otherwise match the request, and have this capacity, with a value >= the requested amount, but which cannot be allocated to this request.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"requests": {
+														Type:        schema.TypeMap,
+														Description: "Requests represent individual device resource requests for distinct resources, all of which must be provided by the device.\n\nThis value is used as an additional filtering condition against the available capacity on the device. This is semantically equivalent to a CEL selector with `device.capacity[<domain>].<name>.compareTo(quantity(<request quantity>)) >= 0`. For example, device.capacity['test-driver.cdi.k8s.io'].counters.compareTo(quantity('2')) >= 0.\n\nWhen a requestPolicy is defined, the requested amount is adjusted upward to the nearest valid value based on the policy. If the requested amount cannot be adjusted to a valid value—because it exceeds what the requestPolicy allows— the device is considered ineligible for allocation.\n\nFor any capacity that is not explicitly requested: - If no requestPolicy is set, the default consumed capacity is equal to the full device capacity\n  (i.e., the whole device is claimed).\n- If a requestPolicy is set, the default consumed capacity is determined according to that policy.\n\nIf the device allows multiple allocation, the aggregated amount across all requests must not exceed the capacity value. The consumed capacity, which may be adjusted based on the requestPolicy if defined, is recorded in the resource claim’s status.devices[*].consumedCapacity field.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
 											},
 											"count_": {
 												Type:        schema.TypeInt,
@@ -462,6 +486,23 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Beta2() *schema.Resource {
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
+											},
+											"capacity": {
+												Type:        schema.TypeList,
+												Description: "Capacity define resource requirements against each capacity.\n\nIf this field is unset and the device supports multiple allocations, the default value will be applied to each capacity according to requestPolicy. For the capacity that has no requestPolicy, default is the full capacity value.\n\nApplies to each device allocation. If Count > 1, the request fails if there aren't enough devices that meet the requirements. If AllocationMode is set to All, the request fails if there are devices that otherwise match the request, and have this capacity, with a value >= the requested amount, but which cannot be allocated to this request.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"requests": {
+														Type:        schema.TypeMap,
+														Description: "Requests represent individual device resource requests for distinct resources, all of which must be provided by the device.\n\nThis value is used as an additional filtering condition against the available capacity on the device. This is semantically equivalent to a CEL selector with `device.capacity[<domain>].<name>.compareTo(quantity(<request quantity>)) >= 0`. For example, device.capacity['test-driver.cdi.k8s.io'].counters.compareTo(quantity('2')) >= 0.\n\nWhen a requestPolicy is defined, the requested amount is adjusted upward to the nearest valid value based on the policy. If the requested amount cannot be adjusted to a valid value—because it exceeds what the requestPolicy allows— the device is considered ineligible for allocation.\n\nFor any capacity that is not explicitly requested: - If no requestPolicy is set, the default consumed capacity is equal to the full device capacity\n  (i.e., the whole device is claimed).\n- If a requestPolicy is set, the default consumed capacity is determined according to that policy.\n\nIf the device allows multiple allocation, the aggregated amount across all requests must not exceed the capacity value. The consumed capacity, which may be adjusted based on the requestPolicy if defined, is recorded in the resource claim’s status.devices[*].consumedCapacity field.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
 											},
 											"count_": {
 												Type:        schema.TypeInt,
@@ -585,6 +626,13 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Beta2() *schema.Resource {
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"allocation_timestamp": {
+								Type:        schema.TypeString,
+								Description: "AllocationTimestamp stores the time when the resources were allocated. This field is not guaranteed to be set, in which case that time is unknown.\n\nThis is an alpha field and requires enabling the DRADeviceBindingConditions and DRAResourceClaimDeviceStatus feature gate.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"devices": {
 								Type:        schema.TypeList,
 								Description: "Devices is the result of allocating devices.",
@@ -655,6 +703,29 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Beta2() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"binding_conditions": {
+												Type:        schema.TypeList,
+												Description: "BindingConditions contains a copy of the BindingConditions from the corresponding ResourceSlice at the time of allocation.\n\nThis is an alpha field and requires enabling the DRADeviceBindingConditions and DRAResourceClaimDeviceStatus feature gates.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Schema{Type: schema.TypeString},
+											},
+											"binding_failure_conditions": {
+												Type:        schema.TypeList,
+												Description: "BindingFailureConditions contains a copy of the BindingFailureConditions from the corresponding ResourceSlice at the time of allocation.\n\nThis is an alpha field and requires enabling the DRADeviceBindingConditions and DRAResourceClaimDeviceStatus feature gates.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Schema{Type: schema.TypeString},
+											},
+											"consumed_capacity": {
+												Type:        schema.TypeMap,
+												Description: "ConsumedCapacity tracks the amount of capacity consumed per device as part of the claim request. The consumed amount may differ from the requested amount: it is rounded up to the nearest valid value based on the device’s requestPolicy if applicable (i.e., may not be less than the requested amount).\n\nThe total consumed capacity for each device must not exceed the DeviceCapacity's Value.\n\nThis field is populated only for devices that allow multiple allocations. All capacity entries are included, even if the consumed amount is zero.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"device": {
 												Type:        schema.TypeString,
 												Description: "Device references one device instance via its name in the driver's resource pool. It must be a DNS label.",
@@ -682,6 +753,13 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Beta2() *schema.Resource {
 												Optional:    false,
 												Required:    true,
 												Computed:    false,
+											},
+											"share_id": {
+												Type:        schema.TypeString,
+												Description: "ShareID uniquely identifies an individual allocation share of the device, used when the device supports multiple simultaneous allocations. It serves as an additional map key to differentiate concurrent shares of the same device.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"tolerations": {
 												Type:        schema.TypeList,
@@ -932,6 +1010,13 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Beta2() *schema.Resource {
 								Required:    true,
 								Computed:    false,
 							},
+							"share_id": {
+								Type:        schema.TypeString,
+								Description: "ShareID uniquely identifies an individual allocation share of the device.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 						}},
 					},
 					"reserved_for": {
@@ -983,7 +1068,7 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Beta2Read(_ context.Context, d *sc
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1beta2", "ResourceClaim", "resource.k8s.io/v1beta2/ResourceClaim"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.devices", "spec.devices.config.opaque", "spec.devices.requests.exactly", "spec.devices.requests.exactly.selectors.cel", "spec.devices.requests.first_available.selectors.cel", "status", "status.allocation", "status.allocation.devices", "status.allocation.devices.config.opaque", "status.allocation.node_selector", "status.devices.network_data"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.devices", "spec.devices.config.opaque", "spec.devices.requests.exactly", "spec.devices.requests.exactly.capacity", "spec.devices.requests.exactly.selectors.cel", "spec.devices.requests.first_available.capacity", "spec.devices.requests.first_available.selectors.cel", "status", "status.allocation", "status.allocation.devices", "status.allocation.devices.config.opaque", "status.allocation.node_selector", "status.devices.network_data"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

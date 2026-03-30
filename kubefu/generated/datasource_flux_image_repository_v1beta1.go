@@ -56,6 +56,32 @@ func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Beta1() *schema.Resource
 				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"access_from": {
+						Type:        schema.TypeList,
+						Description: "AccessFrom defines an ACL for allowing cross-namespace references to the ImageRepository object based on the caller's namespace labels.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"namespace_selectors": {
+								Type:        schema.TypeList,
+								Description: "NamespaceSelectors is the list of namespace selectors to which this ACL applies. Items in this list are evaluated using a logical OR operation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"match_labels": {
+										Type:        schema.TypeMap,
+										Description: "MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
 					"cert_secret_ref": {
 						Type:        schema.TypeList,
 						Description: "CertSecretRef can be given the name of a secret containing either or both of \n  - a PEM-encoded client certificate (`certFile`) and private  key (`keyFile`);  - a PEM-encoded CA certificate (`caFile`) \n  and whichever are supplied, will be used for connecting to the  registry. The client cert and key are useful if you are  authenticating with a certificate; the CA cert is useful if  you are using a self-signed server certificate.",
@@ -72,6 +98,14 @@ func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Beta1() *schema.Resource
 								Computed:    true,
 							},
 						}},
+					},
+					"exclusion_list": {
+						Type:        schema.TypeList,
+						Description: "ExclusionList is a list of regex strings used to exclude certain tags from being stored in the database.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
 					},
 					"image": {
 						Type:        schema.TypeString,
@@ -103,6 +137,13 @@ func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Beta1() *schema.Resource
 								Computed:    true,
 							},
 						}},
+					},
+					"service_account_name": {
+						Type:        schema.TypeString,
+						Description: "ServiceAccountName is the name of the Kubernetes ServiceAccount used to authenticate the image pull if the service account has attached pull secrets.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"suspend": {
 						Type:        schema.TypeBool,
@@ -236,7 +277,7 @@ func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Beta1Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "image.toolkit.fluxcd.io/v1beta1", "ImageRepository", "image.toolkit.fluxcd.io/v1beta1/ImageRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.cert_secret_ref", "spec.secret_ref", "status", "status.last_scan_result"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.cert_secret_ref", "spec.secret_ref", "status", "status.last_scan_result"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

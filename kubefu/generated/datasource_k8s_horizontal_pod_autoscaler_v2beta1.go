@@ -79,7 +79,7 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 					},
 					"deletion_timestamp": {
 						Type:        schema.TypeString,
-						Description: "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
+						Description: "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field. Once set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -117,16 +117,16 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 							"pending": {
 								Type:        schema.TypeList,
 								Description: "Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
 										Description: "name of the process that is responsible for initializing this object.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 								}},
 							},
@@ -256,6 +256,13 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"remaining_item_count": {
+												Type:        schema.TypeInt,
+												Description: "remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.\n\nThis field is alpha and can be changed or removed without notice.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_version": {
 												Type:        schema.TypeString,
 												Description: "String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency",
@@ -296,6 +303,71 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"managed_fields": {
+						Type:        schema.TypeList,
+						Description: "ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like \"ci-cd\". The set of fields is always in the version that the workflow used when modifying the object.\n\nThis field is alpha and can be changed or removed without notice.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"api_version": {
+								Type:        schema.TypeString,
+								Description: "APIVersion defines the version of this resource that this field set applies to. The format is \"group/version\" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields": {
+								Type:        schema.TypeMap,
+								Description: "Fields identifies a set of fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_type": {
+								Type:        schema.TypeString,
+								Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_v1": {
+								Type:        schema.TypeMap,
+								Description: "FieldsV1 holds the first JSON version format as described in the \"FieldsV1\" type.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"manager": {
+								Type:        schema.TypeString,
+								Description: "Manager is an identifier of the workflow managing these fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"operation": {
+								Type:        schema.TypeString,
+								Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"time": {
+								Type:        schema.TypeString,
+								Description: "Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"name": {
 						Type:        schema.TypeString,
@@ -407,6 +479,44 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"container_resource": {
+								Type:        schema.TypeList,
+								Description: "container resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing a single container in each pod of the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the \"pods\" source. This is an alpha feature and can be enabled by the HPAContainerMetrics feature flag.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"container": {
+										Type:        schema.TypeString,
+										Description: "container is the name of the container in the pods of the scaling target",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"name": {
+										Type:        schema.TypeString,
+										Description: "name is the name of the resource in question.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"target_average_utilization": {
+										Type:        schema.TypeInt,
+										Description: "targetAverageUtilization is the target value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"target_average_value": {
+										Type:        schema.TypeString,
+										Description: "targetAverageValue is the target value of the average of the resource metric across all relevant pods, as a raw value (instead of as a percentage of the request), similar to the \"pods\" metric source type.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"external": {
 								Type:        schema.TypeList,
 								Description: "external refers to a global metric that is not associated with any Kubernetes object. It allows autoscaling based on information coming from components running outside of cluster (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster).",
@@ -418,9 +528,9 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 									"metric_name": {
 										Type:        schema.TypeString,
 										Description: "metricName is the name of the metric in question.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 									"metric_selector": {
 										Type:        schema.TypeList,
@@ -440,16 +550,16 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 													"key": {
 														Type:        schema.TypeString,
 														Description: "key is the label key that the selector applies to.",
-														Optional:    false,
-														Required:    true,
-														Computed:    false,
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 													"operator": {
 														Type:        schema.TypeString,
 														Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-														Optional:    false,
-														Required:    true,
-														Computed:    false,
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 													"values": {
 														Type:        schema.TypeList,
@@ -494,12 +604,67 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 								Computed:    true,
 								MaxItems:    1,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"average_value": {
+										Type:        schema.TypeString,
+										Description: "averageValue is the target value of the average of the metric across all relevant pods (as a quantity)",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"metric_name": {
 										Type:        schema.TypeString,
 										Description: "metricName is the name of the metric in question.",
 										Optional:    false,
 										Required:    true,
 										Computed:    false,
+									},
+									"selector": {
+										Type:        schema.TypeList,
+										Description: "selector is the string-encoded form of a standard kubernetes label selector for the given metric When set, it is passed as an additional parameter to the metrics server for more specific metrics scoping When unset, just the metricName will be used to gather metrics.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"match_expressions": {
+												Type:        schema.TypeList,
+												Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"key": {
+														Type:        schema.TypeString,
+														Description: "key is the label key that the selector applies to.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"operator": {
+														Type:        schema.TypeString,
+														Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"values": {
+														Type:        schema.TypeList,
+														Description: "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
+												}},
+											},
+											"match_labels": {
+												Type:        schema.TypeMap,
+												Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
 									},
 									"target": {
 										Type:        schema.TypeList,
@@ -557,6 +722,54 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 										Required:    true,
 										Computed:    false,
 									},
+									"selector": {
+										Type:        schema.TypeList,
+										Description: "selector is the string-encoded form of a standard kubernetes label selector for the given metric When set, it is passed as an additional parameter to the metrics server for more specific metrics scoping When unset, just the metricName will be used to gather metrics.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"match_expressions": {
+												Type:        schema.TypeList,
+												Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"key": {
+														Type:        schema.TypeString,
+														Description: "key is the label key that the selector applies to.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"operator": {
+														Type:        schema.TypeString,
+														Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"values": {
+														Type:        schema.TypeList,
+														Description: "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
+												}},
+											},
+											"match_labels": {
+												Type:        schema.TypeMap,
+												Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
 									"target_average_value": {
 										Type:        schema.TypeString,
 										Description: "targetAverageValue is the target value of the average of the metric across all relevant pods (as a quantity)",
@@ -599,7 +812,7 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 							},
 							"type": {
 								Type:        schema.TypeString,
-								Description: "type is the type of metric source.  It should be one of \"Object\", \"Pods\" or \"Resource\", each mapping to a matching field in the object.",
+								Description: "type is the type of metric source.  It should match one of the fields below.",
 								Optional:    false,
 								Required:    true,
 								Computed:    false,
@@ -658,9 +871,9 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 					"conditions": {
 						Type:        schema.TypeList,
 						Description: "conditions is the set of conditions required for this autoscaler to scale its target, and indicates whether or not those conditions are met.",
-						Optional:    false,
-						Required:    true,
-						Computed:    false,
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"last_transition_time": {
 								Type:        schema.TypeString,
@@ -702,10 +915,48 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 					"current_metrics": {
 						Type:        schema.TypeList,
 						Description: "currentMetrics is the last read state of the metrics used by this autoscaler.",
-						Optional:    false,
-						Required:    true,
-						Computed:    false,
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"container_resource": {
+								Type:        schema.TypeList,
+								Description: "container resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing a single container in each pod in the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the \"pods\" source.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"container": {
+										Type:        schema.TypeString,
+										Description: "container is the name of the container in the pods of the scaling target",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"current_average_utilization": {
+										Type:        schema.TypeInt,
+										Description: "currentAverageUtilization is the current value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods.  It will only be present if `targetAverageValue` was set in the corresponding metric specification.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"current_average_value": {
+										Type:        schema.TypeString,
+										Description: "currentAverageValue is the current value of the average of the resource metric across all relevant pods, as a raw value (instead of as a percentage of the request), similar to the \"pods\" metric source type. It will always be set, regardless of the corresponding metric specification.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"name": {
+										Type:        schema.TypeString,
+										Description: "name is the name of the resource in question.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"external": {
 								Type:        schema.TypeList,
 								Description: "external refers to a global metric that is not associated with any Kubernetes object. It allows autoscaling based on information coming from components running outside of cluster (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster).",
@@ -724,16 +975,16 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 									"current_value": {
 										Type:        schema.TypeString,
 										Description: "currentValue is the current value of the metric (as a quantity)",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 									"metric_name": {
 										Type:        schema.TypeString,
 										Description: "metricName is the name of a metric used for autoscaling in metric system.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 									"metric_selector": {
 										Type:        schema.TypeList,
@@ -753,16 +1004,16 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 													"key": {
 														Type:        schema.TypeString,
 														Description: "key is the label key that the selector applies to.",
-														Optional:    false,
-														Required:    true,
-														Computed:    false,
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 													"operator": {
 														Type:        schema.TypeString,
 														Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-														Optional:    false,
-														Required:    true,
-														Computed:    false,
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 													"values": {
 														Type:        schema.TypeList,
@@ -793,6 +1044,13 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 								Computed:    true,
 								MaxItems:    1,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"average_value": {
+										Type:        schema.TypeString,
+										Description: "averageValue is the current value of the average of the metric across all relevant pods (as a quantity)",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"current_value": {
 										Type:        schema.TypeString,
 										Description: "currentValue is the current value of the metric (as a quantity).",
@@ -806,6 +1064,54 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 										Optional:    false,
 										Required:    true,
 										Computed:    false,
+									},
+									"selector": {
+										Type:        schema.TypeList,
+										Description: "selector is the string-encoded form of a standard kubernetes label selector for the given metric When set in the ObjectMetricSource, it is passed as an additional parameter to the metrics server for more specific metrics scoping. When unset, just the metricName will be used to gather metrics.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"match_expressions": {
+												Type:        schema.TypeList,
+												Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"key": {
+														Type:        schema.TypeString,
+														Description: "key is the label key that the selector applies to.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"operator": {
+														Type:        schema.TypeString,
+														Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"values": {
+														Type:        schema.TypeList,
+														Description: "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
+												}},
+											},
+											"match_labels": {
+												Type:        schema.TypeMap,
+												Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
 									},
 									"target": {
 										Type:        schema.TypeList,
@@ -863,6 +1169,54 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 										Required:    true,
 										Computed:    false,
 									},
+									"selector": {
+										Type:        schema.TypeList,
+										Description: "selector is the string-encoded form of a standard kubernetes label selector for the given metric When set in the PodsMetricSource, it is passed as an additional parameter to the metrics server for more specific metrics scoping. When unset, just the metricName will be used to gather metrics.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"match_expressions": {
+												Type:        schema.TypeList,
+												Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"key": {
+														Type:        schema.TypeString,
+														Description: "key is the label key that the selector applies to.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"operator": {
+														Type:        schema.TypeString,
+														Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"values": {
+														Type:        schema.TypeList,
+														Description: "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
+												}},
+											},
+											"match_labels": {
+												Type:        schema.TypeMap,
+												Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
 								}},
 							},
 							"resource": {
@@ -898,7 +1252,7 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1() *schema.Resource {
 							},
 							"type": {
 								Type:        schema.TypeString,
-								Description: "type is the type of metric source.  It will be one of \"Object\", \"Pods\" or \"Resource\", each corresponds to a matching field in the object.",
+								Description: "type is the type of metric source.  It will match one of the fields below.",
 								Optional:    false,
 								Required:    true,
 								Computed:    false,
@@ -945,7 +1299,7 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta1Read(_ context.Contex
 	if err := manifestpkg.SetDataSourceDefaults(d, "autoscaling/v2beta1", "HorizontalPodAutoscaler", "autoscaling/v2beta1/HorizontalPodAutoscaler"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.metrics.external", "spec.metrics.external.metric_selector", "spec.metrics.object", "spec.metrics.object.target", "spec.metrics.pods", "spec.metrics.resource", "spec.scale_target_ref", "status", "status.current_metrics.external", "status.current_metrics.external.metric_selector", "status.current_metrics.object", "status.current_metrics.object.target", "status.current_metrics.pods", "status.current_metrics.resource"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.metrics.container_resource", "spec.metrics.external", "spec.metrics.external.metric_selector", "spec.metrics.object", "spec.metrics.object.selector", "spec.metrics.object.target", "spec.metrics.pods", "spec.metrics.pods.selector", "spec.metrics.resource", "spec.scale_target_ref", "status", "status.current_metrics.container_resource", "status.current_metrics.external", "status.current_metrics.external.metric_selector", "status.current_metrics.object", "status.current_metrics.object.selector", "status.current_metrics.object.target", "status.current_metrics.pods", "status.current_metrics.pods.selector", "status.current_metrics.resource"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

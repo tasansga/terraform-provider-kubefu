@@ -49,6 +49,15 @@ Optional:
 
 - `disruption` (Block List, Max: 1) Disruption contains the parameters that relate to Karpenter's disruption logic (see [below for nested schema](#nestedblock--spec--disruption))
 - `limits` (Map of String) Limits define a set of bounds for provisioning capacity.
+- `replicas` (Number) Replicas is the desired number of nodes for the NodePool. When specified, the NodePool will
+maintain this fixed number of replicas rather than scaling based on pod demand.
+When replicas is set:
+  - The following fields are ignored:
+      * disruption.consolidationPolicy
+      * disruption.consolidateAfter
+  - Only limits.nodes is supported; other resource limits (e.g., CPU, memory) must not be specified.
+  - Weight is not supported.
+Note: This field is alpha.
 - `template` (Block List, Max: 1) Template contains the template of possibilities for the provisioning logic to launch a NodeClaim with.
 NodeClaims launched from this NodePool will often be further constrained than the template specifies. (see [below for nested schema](#nestedblock--spec--template))
 - `weight` (Number) Weight is the priority given to the nodepool during scheduling. A higher
@@ -222,6 +231,9 @@ It is only written for NoExecute taints.
 Optional:
 
 - `conditions` (Block List) Conditions contains signals for health and readiness (see [below for nested schema](#nestedblock--status--conditions))
+- `node_class_observed_generation` (Number) NodeClassObservedGeneration represents the observed nodeClass generation for referenced nodeClass. If this does not match
+the actual NodeClass Generation, NodeRegistrationHealthy status condition on the NodePool will be reset
+- `nodes` (Number) Nodes is the count of nodes associated with this NodePool
 - `resources` (Map of String) Resources is the list of resources that have been provisioned.
 
 <a id="nestedblock--status--conditions"></a>

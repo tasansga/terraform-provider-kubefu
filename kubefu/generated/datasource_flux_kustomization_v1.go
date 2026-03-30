@@ -120,7 +120,21 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 									},
 								}},
 							},
+							"service_account_name": {
+								Type:        schema.TypeString,
+								Description: "ServiceAccountName is the name of the service account used to\nauthenticate with KMS services from cloud providers. If a\nstatic credential for a given cloud provider is defined\ninside the Secret referenced by SecretRef, that static\ncredential takes priority.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 						}},
+					},
+					"deletion_policy": {
+						Type:        schema.TypeString,
+						Description: "DeletionPolicy can be used to control garbage collection when this\nKustomization is deleted. Valid values are ('MirrorPrune', 'Delete',\n'Orphan'). 'MirrorPrune' mirrors the Prune field (orphan if false,\ndelete if true). Defaults to 'MirrorPrune'.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"depends_on_": {
 						Type:        schema.TypeList,
@@ -143,6 +157,13 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"ready_expr": {
+								Type:        schema.TypeString,
+								Description: "ReadyExpr is a CEL expression that can be used to assess the readiness\nof a dependency. When specified, the built-in readiness check\nis replaced by the logic defined in the CEL expression.\nTo make the CEL expression additive to the built-in readiness check,\nthe feature gate `AdditiveCELDependencyCheck` must be set to `true`.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 						}},
 					},
 					"force": {
@@ -151,6 +172,50 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"health_check_exprs": {
+						Type:        schema.TypeList,
+						Description: "HealthCheckExprs is a list of healthcheck expressions for evaluating the\nhealth of custom resources using Common Expression Language (CEL).\nThe expressions are evaluated only when Wait or HealthChecks are specified.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"api_version": {
+								Type:        schema.TypeString,
+								Description: "APIVersion of the custom resource under evaluation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"current": {
+								Type:        schema.TypeString,
+								Description: "Current is the CEL expression that determines if the status\nof the custom resource has reached the desired state.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"failed": {
+								Type:        schema.TypeString,
+								Description: "Failed is the CEL expression that determines if the status\nof the custom resource has failed to reach the desired state.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"in_progress": {
+								Type:        schema.TypeString,
+								Description: "InProgress is the CEL expression that determines if the status\nof the custom resource has not yet reached the desired state.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kind": {
+								Type:        schema.TypeString,
+								Description: "Kind of the custom resource under evaluation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"health_checks": {
 						Type:        schema.TypeList,
@@ -188,6 +253,13 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 								Computed:    true,
 							},
 						}},
+					},
+					"ignore_missing_components": {
+						Type:        schema.TypeBool,
+						Description: "IgnoreMissingComponents instructs the controller to ignore Components paths\nnot found in source by removing them from the generated kustomization.yaml\nbefore running kustomize build.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"images": {
 						Type:        schema.TypeList,
@@ -241,6 +313,23 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"config_map_ref": {
+								Type:        schema.TypeList,
+								Description: "ConfigMapRef holds an optional name of a ConfigMap that contains\nthe following keys:\n\n- `provider`: the provider to use. One of `aws`, `azure`, `gcp`, or\n   `generic`. Required.\n- `cluster`: the fully qualified resource name of the Kubernetes\n   cluster in the cloud provider API. Not used by the `generic`\n   provider. Required when one of `address` or `ca.crt` is not set.\n- `address`: the address of the Kubernetes API server. Required\n   for `generic`. For the other providers, if not specified, the\n   first address in the cluster resource will be used, and if\n   specified, it must match one of the addresses in the cluster\n   resource.\n   If audiences is not set, will be used as the audience for the\n   `generic` provider.\n- `ca.crt`: the optional PEM-encoded CA certificate for the\n   Kubernetes API server. If not set, the controller will use the\n   CA certificate from the cluster resource.\n- `audiences`: the optional audiences as a list of\n   line-break-separated strings for the Kubernetes ServiceAccount\n   token. Defaults to the `address` for the `generic` provider, or\n   to specific values for the other providers depending on the\n   provider.\n-  `serviceAccountName`: the optional name of the Kubernetes\n   ServiceAccount in the same namespace that should be used\n   for authentication. If not specified, the controller\n   ServiceAccount will be used.\n\nMutually exclusive with SecretRef.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"secret_ref": {
 								Type:        schema.TypeList,
 								Description: "SecretRef holds the name of a secret that contains a key with the kubeconfig file as the value. If no key is set, the key will default to 'value'. It is recommended that the kubeconfig is self-contained, and the secret is regularly updated if credentials such as a cloud-access-token expire. Cloud specific `cmd-path` auth helpers will not function without adding binaries and credentials to the Pod that is responsible for reconciling Kubernetes resources.",
@@ -266,6 +355,20 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 								}},
 							},
 						}},
+					},
+					"name_prefix": {
+						Type:        schema.TypeString,
+						Description: "NamePrefix will prefix the names of all managed resources.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"name_suffix": {
+						Type:        schema.TypeString,
+						Description: "NameSuffix will suffix the names of all managed resources.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"patches": {
 						Type:        schema.TypeList,
@@ -544,6 +647,64 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 							},
 						}},
 					},
+					"history": {
+						Type:        schema.TypeList,
+						Description: "History contains a set of snapshots of the last reconciliation attempts\ntracking the revision, the state and the duration of each attempt.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"digest": {
+								Type:        schema.TypeString,
+								Description: "Digest is the checksum in the format `<algo>:<hex>` of the resources in this snapshot.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"first_reconciled": {
+								Type:        schema.TypeString,
+								Description: "FirstReconciled is the time when this revision was first reconciled to the cluster.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"last_reconciled": {
+								Type:        schema.TypeString,
+								Description: "LastReconciled is the time when this revision was last reconciled to the cluster.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"last_reconciled_duration": {
+								Type:        schema.TypeString,
+								Description: "LastReconciledDuration is time it took to reconcile the resources in this revision.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"last_reconciled_status": {
+								Type:        schema.TypeString,
+								Description: "LastReconciledStatus is the status of the last reconciliation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"metadata": {
+								Type:        schema.TypeMap,
+								Description: "Metadata contains additional information about the snapshot.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"total_reconciliations": {
+								Type:        schema.TypeInt,
+								Description: "TotalReconciliations is the total number of reconciliations that have occurred for this snapshot.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"inventory": {
 						Type:        schema.TypeList,
 						Description: "Inventory contains the list of Kubernetes resource object references that have been successfully applied.",
@@ -576,6 +737,13 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 								}},
 							},
 						}},
+					},
+					"last_applied_origin_revision": {
+						Type:        schema.TypeString,
+						Description: "The last successfully applied origin revision.\nEquals the origin revision of the applied Artifact from the referenced Source.\nUsually present on the Metadata of the applied Artifact and depends on the\nSource type, e.g. for OCI it's the value associated with the key\n\"org.opencontainers.image.revision\".",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"last_applied_revision": {
 						Type:        schema.TypeString,
@@ -617,7 +785,7 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.toolkit.fluxcd.io/v1", "Kustomization", "kustomize.toolkit.fluxcd.io/v1/Kustomization"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "spec.decryption", "spec.decryption.secret_ref", "spec.kube_config", "spec.kube_config.secret_ref", "spec.patches.target", "spec.post_build", "spec.source_ref", "status", "status.inventory"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "spec.decryption", "spec.decryption.secret_ref", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.patches.target", "spec.post_build", "spec.source_ref", "status", "status.inventory"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

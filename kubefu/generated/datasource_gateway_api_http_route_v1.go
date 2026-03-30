@@ -100,6 +100,13 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoHTTPRouteV1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"port": {
+								Type:        schema.TypeInt,
+								Description: "Port is the network port this Route targets. It can be interpreted\ndifferently based on the type of parent resource.\n\n\nWhen the parent resource is a Gateway, this targets all listeners\nlistening on the specified port that also support this kind of Route(and\nselect this Route). It's not recommended to set `Port` unless the\nnetworking behaviors specified in a Route must apply to a specific port\nas opposed to a listener(s) whose port(s) may be changed. When both Port\nand SectionName are specified, the name and port of the selected listener\nmust match both specified values.\n\n\n\n\n\nImplementations MAY choose to support other parent resources.\nImplementations supporting other types of parent resources MUST clearly\ndocument how/if Port is interpreted.\n\n\nFor the purpose of status, an attachment is considered successful as\nlong as the parent resource accepts it partially. For example, Gateway\nlisteners can restrict which Routes can attach to them by Route kind,\nnamespace, or hostname. If 1 of 2 Gateway listeners accept attachment\nfrom the referencing Route, the Route MUST be considered successfully\nattached. If no Gateway listeners accept attachment from this Route,\nthe Route MUST be considered detached from the Gateway.\n\n\nSupport: Extended",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"section_name": {
 								Type:        schema.TypeString,
 								Description: "SectionName is the name of a section within the target resource. In the following resources, SectionName is interpreted as the following: \n * Gateway: Listener Name. When both Port (experimental) and SectionName are specified, the name and port of the selected listener must match both specified values. * Service: Port Name. When both Port (experimental) and SectionName are specified, the name and port of the selected listener must match both specified values. Note that attaching Routes to Services as Parents is part of experimental Mesh support and is not supported for any other purpose. \n Implementations MAY choose to support attaching Routes to other resources. If that is the case, they MUST clearly document how SectionName is interpreted. \n When unspecified (empty string), this will reference the entire resource. For the purpose of status, an attachment is considered successful if at least one section in the parent resource accepts it. For example, Gateway listeners can restrict which Routes can attach to them by Route kind, namespace, or hostname. If 1 of 2 Gateway listeners accept attachment from the referencing Route, the Route MUST be considered successfully attached. If no Gateway listeners accept attachment from this Route, the Route MUST be considered detached from the Gateway. \n Support: Core",
@@ -277,6 +284,37 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoHTTPRouteV1() *schema.Resource {
 																Computed:    true,
 															},
 														}},
+													},
+													"fraction": {
+														Type:        schema.TypeList,
+														Description: "Fraction represents the fraction of requests that should be\nmirrored to BackendRef.\n\nOnly one of Fraction or Percent may be specified. If neither field\nis specified, 100% of requests will be mirrored.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														MaxItems:    1,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"denominator": {
+																Type:        schema.TypeInt,
+																Description: "",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"numerator": {
+																Type:        schema.TypeInt,
+																Description: "",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+														}},
+													},
+													"percent": {
+														Type:        schema.TypeInt,
+														Description: "Percent represents the percentage of requests that should be\nmirrored to BackendRef. Its minimum value is 0 (indicating 0% of\nrequests) and its maximum value is 100 (indicating 100% of requests).\n\nOnly one of Fraction or Percent may be specified. If neither field\nis specified, 100% of requests will be mirrored.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 												}},
 											},
@@ -669,6 +707,37 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoHTTPRouteV1() *schema.Resource {
 													},
 												}},
 											},
+											"fraction": {
+												Type:        schema.TypeList,
+												Description: "Fraction represents the fraction of requests that should be\nmirrored to BackendRef.\n\nOnly one of Fraction or Percent may be specified. If neither field\nis specified, 100% of requests will be mirrored.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"denominator": {
+														Type:        schema.TypeInt,
+														Description: "",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"numerator": {
+														Type:        schema.TypeInt,
+														Description: "",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+											"percent": {
+												Type:        schema.TypeInt,
+												Description: "Percent represents the percentage of requests that should be\nmirrored to BackendRef. Its minimum value is 0 (indicating 0% of\nrequests) and its maximum value is 100 (indicating 100% of requests).\n\nOnly one of Fraction or Percent may be specified. If neither field\nis specified, 100% of requests will be mirrored.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 										}},
 									},
 									"request_redirect": {
@@ -961,6 +1030,37 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoHTTPRouteV1() *schema.Resource {
 									},
 								}},
 							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name is the name of the route rule. This name MUST be unique within a Route if it is set.\n\nSupport: Extended",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"timeouts": {
+								Type:        schema.TypeList,
+								Description: "Timeouts defines the timeouts that can be configured for an HTTP request.\n\nSupport: Extended",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"backend_request": {
+										Type:        schema.TypeString,
+										Description: "BackendRequest specifies a timeout for an individual request from the gateway\nto a backend. This covers the time from when the request first starts being\nsent from the gateway to when the full response has been received from the backend.\n\nSetting a timeout to the zero duration (e.g. \"0s\") SHOULD disable the timeout\ncompletely. Implementations that cannot completely disable the timeout MUST\ninstead interpret the zero duration as the longest possible value to which\nthe timeout can be set.\n\nAn entire client HTTP transaction with a gateway, covered by the Request timeout,\nmay result in more than one call from the gateway to the destination backend,\nfor example, if automatic retries are supported.\n\nThe value of BackendRequest must be a Gateway API Duration string as defined by\nGEP-2257.  When this field is unspecified, its behavior is implementation-specific;\nwhen specified, the value of BackendRequest must be no more than the value of the\nRequest timeout (since the Request timeout encompasses the BackendRequest timeout).\n\nSupport: Extended",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"request": {
+										Type:        schema.TypeString,
+										Description: "Request specifies the maximum duration for a gateway to respond to an HTTP request.\nIf the gateway has not been able to respond before this deadline is met, the gateway\nMUST return a timeout error.\n\nFor example, setting the `rules.timeouts.request` field to the value `10s` in an\n`HTTPRoute` will cause a timeout if a client request is taking longer than 10 seconds\nto complete.\n\nSetting a timeout to the zero duration (e.g. \"0s\") SHOULD disable the timeout\ncompletely. Implementations that cannot completely disable the timeout MUST\ninstead interpret the zero duration as the longest possible value to which\nthe timeout can be set.\n\nThis timeout is intended to cover as close to the whole request-response transaction\nas possible although an implementation MAY choose to start the timeout after the entire\nrequest stream has been received instead of immediately after the transaction is\ninitiated by the client.\n\nThe value of Request is a Gateway API Duration string as defined by GEP-2257. When this\nfield is unspecified, request timeout behavior is implementation-specific.\n\nSupport: Extended",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 						}},
 					},
 				}},
@@ -1074,6 +1174,13 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoHTTPRouteV1() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 									},
+									"port": {
+										Type:        schema.TypeInt,
+										Description: "Port is the network port this Route targets. It can be interpreted\ndifferently based on the type of parent resource.\n\n\nWhen the parent resource is a Gateway, this targets all listeners\nlistening on the specified port that also support this kind of Route(and\nselect this Route). It's not recommended to set `Port` unless the\nnetworking behaviors specified in a Route must apply to a specific port\nas opposed to a listener(s) whose port(s) may be changed. When both Port\nand SectionName are specified, the name and port of the selected listener\nmust match both specified values.\n\n\n\n\n\nImplementations MAY choose to support other parent resources.\nImplementations supporting other types of parent resources MUST clearly\ndocument how/if Port is interpreted.\n\n\nFor the purpose of status, an attachment is considered successful as\nlong as the parent resource accepts it partially. For example, Gateway\nlisteners can restrict which Routes can attach to them by Route kind,\nnamespace, or hostname. If 1 of 2 Gateway listeners accept attachment\nfrom the referencing Route, the Route MUST be considered successfully\nattached. If no Gateway listeners accept attachment from this Route,\nthe Route MUST be considered detached from the Gateway.\n\n\nSupport: Extended",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"section_name": {
 										Type:        schema.TypeString,
 										Description: "SectionName is the name of a section within the target resource. In the following resources, SectionName is interpreted as the following: \n * Gateway: Listener Name. When both Port (experimental) and SectionName are specified, the name and port of the selected listener must match both specified values. * Service: Port Name. When both Port (experimental) and SectionName are specified, the name and port of the selected listener must match both specified values. Note that attaching Routes to Services as Parents is part of experimental Mesh support and is not supported for any other purpose. \n Implementations MAY choose to support attaching Routes to other resources. If that is the case, they MUST clearly document how SectionName is interpreted. \n When unspecified (empty string), this will reference the entire resource. For the purpose of status, an attachment is considered successful if at least one section in the parent resource accepts it. For example, Gateway listeners can restrict which Routes can attach to them by Route kind, namespace, or hostname. If 1 of 2 Gateway listeners accept attachment from the referencing Route, the Route MUST be considered successfully attached. If no Gateway listeners accept attachment from this Route, the Route MUST be considered detached from the Gateway. \n Support: Core",
@@ -1097,7 +1204,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoHTTPRouteV1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1", "HTTPRoute", "gateway.networking.k8s.io/v1/HTTPRoute"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.rules.backend_refs.filters.extension_ref", "spec.rules.backend_refs.filters.request_header_modifier", "spec.rules.backend_refs.filters.request_mirror", "spec.rules.backend_refs.filters.request_mirror.backend_ref", "spec.rules.backend_refs.filters.request_redirect", "spec.rules.backend_refs.filters.request_redirect.path", "spec.rules.backend_refs.filters.response_header_modifier", "spec.rules.backend_refs.filters.url_rewrite", "spec.rules.backend_refs.filters.url_rewrite.path", "spec.rules.filters.extension_ref", "spec.rules.filters.request_header_modifier", "spec.rules.filters.request_mirror", "spec.rules.filters.request_mirror.backend_ref", "spec.rules.filters.request_redirect", "spec.rules.filters.request_redirect.path", "spec.rules.filters.response_header_modifier", "spec.rules.filters.url_rewrite", "spec.rules.filters.url_rewrite.path", "spec.rules.matches.path", "status", "status.parents.parent_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.rules.backend_refs.filters.extension_ref", "spec.rules.backend_refs.filters.request_header_modifier", "spec.rules.backend_refs.filters.request_mirror", "spec.rules.backend_refs.filters.request_mirror.backend_ref", "spec.rules.backend_refs.filters.request_mirror.fraction", "spec.rules.backend_refs.filters.request_redirect", "spec.rules.backend_refs.filters.request_redirect.path", "spec.rules.backend_refs.filters.response_header_modifier", "spec.rules.backend_refs.filters.url_rewrite", "spec.rules.backend_refs.filters.url_rewrite.path", "spec.rules.filters.extension_ref", "spec.rules.filters.request_header_modifier", "spec.rules.filters.request_mirror", "spec.rules.filters.request_mirror.backend_ref", "spec.rules.filters.request_mirror.fraction", "spec.rules.filters.request_redirect", "spec.rules.filters.request_redirect.path", "spec.rules.filters.response_header_modifier", "spec.rules.filters.url_rewrite", "spec.rules.filters.url_rewrite.path", "spec.rules.matches.path", "spec.rules.timeouts", "status", "status.parents.parent_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

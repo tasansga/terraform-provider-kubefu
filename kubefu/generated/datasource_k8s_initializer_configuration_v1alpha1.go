@@ -27,6 +27,13 @@ func dataSourceK8sAdmissionregistrationK8sIoInitializerConfigurationV1Alpha1() *
 				Required:    false,
 				Computed:    true,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"failure_policy": {
+						Type:        schema.TypeString,
+						Description: "FailurePolicy defines what happens if the responsible initializer controller fails to takes action. Allowed values are Ignore, or Fail. If \"Ignore\" is set, initializer is removed from the initializers list of an object if the timeout is reached; If \"Fail\" is set, admissionregistration returns timeout error if the timeout is reached.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"name": {
 						Type:        schema.TypeString,
 						Description: "Name is the identifier of the initializer. It will be added to the object that needs to be initialized. Name should be fully qualified, e.g., alwayspullimages.kubernetes.io, where \"alwayspullimages\" is the name of the webhook, and kubernetes.io is the name of the organization. Required",
@@ -128,7 +135,7 @@ func dataSourceK8sAdmissionregistrationK8sIoInitializerConfigurationV1Alpha1() *
 					},
 					"deletion_timestamp": {
 						Type:        schema.TypeString,
-						Description: "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
+						Description: "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field. Once set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -262,7 +269,7 @@ func dataSourceK8sAdmissionregistrationK8sIoInitializerConfigurationV1Alpha1() *
 											},
 											"retry_after_seconds": {
 												Type:        schema.TypeInt,
-												Description: "If specified, the time in seconds before the operation should be retried. Some errors may indicate the client must take an alternate action - for those errors this field may indicate how long to wait before taking the alternate action.",
+												Description: "If specified, the time in seconds before the operation should be retried.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -314,7 +321,7 @@ func dataSourceK8sAdmissionregistrationK8sIoInitializerConfigurationV1Alpha1() *
 											},
 											"self_link": {
 												Type:        schema.TypeString,
-												Description: "selfLink is a URL representing this object. Populated by the system. Read-only.",
+												Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,

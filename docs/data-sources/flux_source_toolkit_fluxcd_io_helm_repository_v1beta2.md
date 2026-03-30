@@ -35,11 +35,18 @@ HelmRepository is the Schema for the helmrepositories API.
 Optional:
 
 - `access_from` (Block List, Max: 1) AccessFrom specifies an Access Control List for allowing cross-namespace references to this object. NOTE: Not implemented, provisional as of https://github.com/fluxcd/flux2/pull/2092 (see [below for nested schema](#nestedblock--spec--access_from))
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef can be given the name of a Secret containing either or both of
+ - a PEM-encoded client certificate (`tls.crt`) and private key (`tls.key`); - a PEM-encoded CA certificate (`ca.crt`)
+ and whichever are supplied, will be used for connecting to the registry. The client cert and key are useful if you are authenticating with a certificate; the CA cert is useful if you are using a self-signed server certificate. The Secret must be of type `Opaque` or `kubernetes.io/tls`.
+ It takes precedence over the values specified in the Secret referred to by `.spec.secretRef`. (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
+- `insecure` (Boolean) Insecure allows connecting to a non-TLS HTTP container registry. This field is only taken into account if the .spec.type field is set to 'oci'.
 - `interval` (String) Interval at which to check the URL for updates.
 - `pass_credentials` (Boolean) PassCredentials allows the credentials from the SecretRef to be passed on to a host that does not match the host as defined in URL. This may be required if the host of the advertised chart URLs in the index differ from the defined URL. Enabling this should be done with caution, as it can potentially result in credentials getting stolen in a MITM-attack.
+- `provider_` (String) Provider used for authentication, can be 'aws', 'azure', 'gcp' or 'generic'. This field is optional, and only taken into account if the .spec.type field is set to 'oci'. When not specified, defaults to 'generic'.
 - `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing authentication credentials for the HelmRepository. For HTTP/S basic auth the secret must contain 'username' and 'password' fields. For TLS the secret must contain a 'certFile' and 'keyFile', and/or 'caCert' fields. (see [below for nested schema](#nestedblock--spec--secret_ref))
 - `suspend` (Boolean) Suspend tells the controller to suspend the reconciliation of this HelmRepository.
 - `timeout` (String) Timeout of the index fetch operation, defaults to 60s.
+- `type` (String) Type of the HelmRepository. When this field is set to  "oci", the URL field value must be prefixed with "oci://".
 - `url` (String) URL of the Helm repository, a valid URL contains at least a protocol and host.
 
 <a id="nestedblock--spec--access_from"></a>
@@ -56,6 +63,14 @@ Optional:
 
 - `match_labels` (Map of String) MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 
+
+
+<a id="nestedblock--spec--cert_secret_ref"></a>
+### Nested Schema for `spec.cert_secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
 
 
 <a id="nestedblock--spec--secret_ref"></a>
@@ -84,7 +99,9 @@ Optional:
 Optional:
 
 - `checksum` (String) Checksum is the SHA256 checksum of the Artifact file.
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
 - `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the Artifact.
+- `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
 - `path` (String) Path is the relative file path of the Artifact. It can be used to locate the file in the root of the Artifact storage on the local file system of the controller managing the Source.
 - `revision` (String) Revision is a human-readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
 - `size` (Number) Size is the number of bytes in the file.

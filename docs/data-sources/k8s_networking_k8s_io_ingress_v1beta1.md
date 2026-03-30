@@ -75,18 +75,15 @@ Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-gu
 <a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
-Required:
-
-- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
-
 Optional:
 
+- `pending` (Block List) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
 - `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
 <a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Required:
+Optional:
 
 - `name` (String) name of the process that is responsible for initializing this object.
 
@@ -138,6 +135,9 @@ Examples:
 Optional:
 
 - `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a consistent list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response, unless you have received this token from an error message.
+- `remaining_item_count` (Number) remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.
+
+This field is alpha and can be changed or removed without notice.
 - `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
 - `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
 
@@ -151,6 +151,8 @@ Optional:
 
 - `api_version` (String) APIVersion defines the version of this resource that this field set applies to. The format is "group/version" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.
 - `fields` (Map of String) Fields identifies a set of fields.
+- `fields_type` (String) FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: "FieldsV1"
+- `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
@@ -179,16 +181,28 @@ Optional:
 Optional:
 
 - `backend` (Block List, Max: 1) A default backend capable of servicing requests that don't match any rule. At least one of 'backend' or 'rules' must be specified. This field is optional to allow the loadbalancer controller or defaulting logic to specify a global default. (see [below for nested schema](#nestedblock--spec--backend))
+- `ingress_class_name` (String) IngressClassName is the name of the IngressClass cluster resource. The associated IngressClass defines which controller will implement the resource. This replaces the deprecated `kubernetes.io/ingress.class` annotation. For backwards compatibility, when that annotation is set, it must be given precedence over this field. The controller may emit a warning if the field and annotation have different values. Implementations of this API should ignore Ingresses without a class specified. An IngressClass resource may be marked as default, which can be used to set a default value for this field. For more information, refer to the IngressClass documentation.
 - `rules` (Block List) A list of host rules used to configure the Ingress. If unspecified, or no rule matches, all traffic is sent to the default backend. (see [below for nested schema](#nestedblock--spec--rules))
 - `tls` (Block List) TLS configuration. Currently the Ingress only supports a single TLS port, 443. If multiple members of this list specify different hosts, they will be multiplexed on the same port according to the hostname specified through the SNI TLS extension, if the ingress controller fulfilling the ingress supports SNI. (see [below for nested schema](#nestedblock--spec--tls))
 
 <a id="nestedblock--spec--backend"></a>
 ### Nested Schema for `spec.backend`
 
-Required:
+Optional:
 
+- `resource` (Block List, Max: 1) Resource is an ObjectRef to another Kubernetes resource in the namespace of the Ingress object. If resource is specified, serviceName and servicePort must not be specified. (see [below for nested schema](#nestedblock--spec--backend--resource))
 - `service_name` (String) Specifies the name of the referenced service.
 - `service_port` (String) Specifies the port of the referenced service.
+
+<a id="nestedblock--spec--backend--resource"></a>
+### Nested Schema for `spec.backend.resource`
+
+Optional:
+
+- `api_group` (String) APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
+- `kind` (String) Kind is the type of resource being referenced
+- `name` (String) Name is the name of resource being referenced
+
 
 
 <a id="nestedblock--spec--rules"></a>
@@ -221,14 +235,36 @@ Required:
 Optional:
 
 - `path` (String) Path is an extended POSIX regex as defined by IEEE Std 1003.1, (i.e this follows the egrep/unix syntax, not the perl syntax) matched against the path of an incoming request. Currently it can contain characters disallowed from the conventional "path" part of a URL as defined by RFC 3986. Paths must begin with a '/'. If unspecified, the path defaults to a catch all sending traffic to the backend.
+- `path_type` (String) PathType determines the interpretation of the Path matching. PathType can be one of the following values: * Exact: Matches the URL path exactly. * Prefix: Matches based on a URL path prefix split by '/'. Matching is
+  done on a path element by element basis. A path element refers is the
+  list of labels in the path split by the '/' separator. A request is a
+  match for path p if every p is an element-wise prefix of p of the
+  request path. Note that if the last element of the path is a substring
+  of the last element in request path, it is not a match (e.g. /foo/bar
+  matches /foo/bar/baz, but does not match /foo/barbaz).
+* ImplementationSpecific: Interpretation of the Path matching is up to
+  the IngressClass. Implementations can treat this as a separate PathType
+  or treat it identically to Prefix or Exact path types.
+Implementations are required to support all path types. Defaults to ImplementationSpecific.
 
 <a id="nestedblock--spec--rules--http--paths--backend"></a>
 ### Nested Schema for `spec.rules.http.paths.backend`
 
-Required:
+Optional:
 
+- `resource` (Block List, Max: 1) Resource is an ObjectRef to another Kubernetes resource in the namespace of the Ingress object. If resource is specified, serviceName and servicePort must not be specified. (see [below for nested schema](#nestedblock--spec--rules--http--paths--backend--resource))
 - `service_name` (String) Specifies the name of the referenced service.
 - `service_port` (String) Specifies the port of the referenced service.
+
+<a id="nestedblock--spec--rules--http--paths--backend--resource"></a>
+### Nested Schema for `spec.rules.http.paths.backend.resource`
+
+Optional:
+
+- `api_group` (String) APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
+- `kind` (String) Kind is the type of resource being referenced
+- `name` (String) Name is the name of resource being referenced
+
 
 
 
@@ -265,3 +301,16 @@ Optional:
 
 - `hostname` (String) Hostname is set for load-balancer ingress points that are DNS based (typically AWS load-balancers)
 - `ip` (String) IP is set for load-balancer ingress points that are IP based (typically GCE or OpenStack load-balancers)
+- `ports` (Block List) Ports is a list of records of service ports If used, every port defined in the service should have an entry in it (see [below for nested schema](#nestedblock--status--load_balancer--ingress--ports))
+
+<a id="nestedblock--status--load_balancer--ingress--ports"></a>
+### Nested Schema for `status.load_balancer.ingress.ports`
+
+Optional:
+
+- `error` (String) Error is to record the problem with the service port The format of the error shall comply with the following rules: - built-in error values shall be specified in this file and those shall use
+  CamelCase names
+- cloud provider specific error values must have names that comply with the
+  format foo.example.com/CamelCase.
+- `port` (Number) Port is the port number of the service port of which status is recorded here
+- `protocol` (String) Protocol is the protocol of the service port of which status is recorded here The supported values are: "TCP", "UDP", "SCTP"

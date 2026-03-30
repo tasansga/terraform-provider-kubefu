@@ -89,6 +89,13 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmChartV1Beta2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"ignore_missing_values_files": {
+						Type:        schema.TypeBool,
+						Description: "IgnoreMissingValuesFiles controls whether to silently ignore missing values\nfiles rather than failing.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"interval": {
 						Type:        schema.TypeString,
 						Description: "Interval is the interval at which to check the Source for updates.",
@@ -156,6 +163,63 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmChartV1Beta2() *schema.Resource {
 						Computed:    true,
 						Elem: &schema.Schema{Type: schema.TypeString},
 					},
+					"verify": {
+						Type:        schema.TypeList,
+						Description: "Verify contains the secret name containing the trusted public keys used to verify the signature and specifies which provider to use to check whether OCI image is authentic. This field is only supported when using HelmRepository source with spec.type 'oci'. Chart dependencies, which are not bundled in the umbrella chart artifact, are not verified.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"match_oidc_identity": {
+								Type:        schema.TypeList,
+								Description: "MatchOIDCIdentity specifies the identity matching criteria to use while verifying an OCI artifact which was signed using Cosign keyless signing. The artifact's identity is deemed to be verified if any of the specified matchers match against the identity.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"issuer": {
+										Type:        schema.TypeString,
+										Description: "Issuer specifies the regex pattern to match against to verify the OIDC issuer in the Fulcio certificate. The pattern must be a valid Go regular expression.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"subject": {
+										Type:        schema.TypeString,
+										Description: "Subject specifies the regex pattern to match against to verify the identity subject in the Fulcio certificate. The pattern must be a valid Go regular expression.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"provider_": {
+								Type:        schema.TypeString,
+								Description: "Provider specifies the technology used to sign the OCI Artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"secret_ref": {
+								Type:        schema.TypeList,
+								Description: "SecretRef specifies the Kubernetes Secret containing the trusted public keys.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
 					"version": {
 						Type:        schema.TypeString,
 						Description: "Version is the chart version semver expression, ignored for charts from GitRepository and Bucket sources. Defaults to latest when omitted.",
@@ -188,9 +252,23 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmChartV1Beta2() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"digest": {
+								Type:        schema.TypeString,
+								Description: "Digest is the digest of the file in the form of '<algorithm>:<checksum>'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"last_update_time": {
 								Type:        schema.TypeString,
 								Description: "LastUpdateTime is the timestamp corresponding to the last update of the Artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"metadata": {
+								Type:        schema.TypeMap,
+								Description: "Metadata holds upstream information such as OCI annotations.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -304,6 +382,14 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmChartV1Beta2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"observed_values_files": {
+						Type:        schema.TypeList,
+						Description: "ObservedValuesFiles are the observed value files of the last successful\nreconciliation.\nIt matches the chart in the last successfully reconciled artifact.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
 					"url": {
 						Type:        schema.TypeString,
 						Description: "URL is the dynamic fetch link for the latest Artifact. It is provided on a \"best effort\" basis, and using the precise BucketStatus.Artifact data is recommended.",
@@ -323,7 +409,7 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmChartV1Beta2Read(_ context.Context, 
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1beta2", "HelmChart", "source.toolkit.fluxcd.io/v1beta2/HelmChart"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.source_ref", "status", "status.artifact"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.source_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

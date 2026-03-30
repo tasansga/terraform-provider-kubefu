@@ -284,6 +284,37 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGRPCRouteV1() *schema.Resource {
 															},
 														}},
 													},
+													"fraction": {
+														Type:        schema.TypeList,
+														Description: "Fraction represents the fraction of requests that should be\nmirrored to BackendRef.\n\nOnly one of Fraction or Percent may be specified. If neither field\nis specified, 100% of requests will be mirrored.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														MaxItems:    1,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"denominator": {
+																Type:        schema.TypeInt,
+																Description: "",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"numerator": {
+																Type:        schema.TypeInt,
+																Description: "",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+														}},
+													},
+													"percent": {
+														Type:        schema.TypeInt,
+														Description: "Percent represents the percentage of requests that should be\nmirrored to BackendRef. Its minimum value is 0 (indicating 0% of\nrequests) and its maximum value is 100 (indicating 100% of requests).\n\nOnly one of Fraction or Percent may be specified. If neither field\nis specified, 100% of requests will be mirrored.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 												}},
 											},
 											"response_header_modifier": {
@@ -558,6 +589,37 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGRPCRouteV1() *schema.Resource {
 													},
 												}},
 											},
+											"fraction": {
+												Type:        schema.TypeList,
+												Description: "Fraction represents the fraction of requests that should be\nmirrored to BackendRef.\n\nOnly one of Fraction or Percent may be specified. If neither field\nis specified, 100% of requests will be mirrored.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"denominator": {
+														Type:        schema.TypeInt,
+														Description: "",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"numerator": {
+														Type:        schema.TypeInt,
+														Description: "",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+											"percent": {
+												Type:        schema.TypeInt,
+												Description: "Percent represents the percentage of requests that should be\nmirrored to BackendRef. Its minimum value is 0 (indicating 0% of\nrequests) and its maximum value is 100 (indicating 100% of requests).\n\nOnly one of Fraction or Percent may be specified. If neither field\nis specified, 100% of requests will be mirrored.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 										}},
 									},
 									"response_header_modifier": {
@@ -703,6 +765,13 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGRPCRouteV1() *schema.Resource {
 									},
 								}},
 							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name is the name of the route rule. This name MUST be unique within a Route if it is set.\n\nSupport: Extended",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 						}},
 					},
 				}},
@@ -846,7 +915,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGRPCRouteV1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1", "GRPCRoute", "gateway.networking.k8s.io/v1/GRPCRoute"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.rules.backend_refs.filters.extension_ref", "spec.rules.backend_refs.filters.request_header_modifier", "spec.rules.backend_refs.filters.request_mirror", "spec.rules.backend_refs.filters.request_mirror.backend_ref", "spec.rules.backend_refs.filters.response_header_modifier", "spec.rules.filters.extension_ref", "spec.rules.filters.request_header_modifier", "spec.rules.filters.request_mirror", "spec.rules.filters.request_mirror.backend_ref", "spec.rules.filters.response_header_modifier", "spec.rules.matches.method", "status", "status.parents.parent_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.rules.backend_refs.filters.extension_ref", "spec.rules.backend_refs.filters.request_header_modifier", "spec.rules.backend_refs.filters.request_mirror", "spec.rules.backend_refs.filters.request_mirror.backend_ref", "spec.rules.backend_refs.filters.request_mirror.fraction", "spec.rules.backend_refs.filters.response_header_modifier", "spec.rules.filters.extension_ref", "spec.rules.filters.request_header_modifier", "spec.rules.filters.request_mirror", "spec.rules.filters.request_mirror.backend_ref", "spec.rules.filters.request_mirror.fraction", "spec.rules.filters.response_header_modifier", "spec.rules.matches.method", "status", "status.parents.parent_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -76,6 +76,14 @@ Exactly one of NodeName, NodeSelector and AllNodes must be set. This field is im
 Must use exactly one term.
 
 Exactly one of NodeName, NodeSelector and AllNodes must be set. (see [below for nested schema](#nestedblock--spec--node_selector))
+- `per_device_node_selection` (Boolean) PerDeviceNodeSelection defines whether the access from nodes to resources in the pool is set on the ResourceSlice level or on each device. If it is set to true, every device defined the ResourceSlice must specify this individually.
+
+Exactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must be set.
+- `shared_counters` (Block List) SharedCounters defines a list of counter sets, each of which has a name and a list of counters available.
+
+The names of the SharedCounters must be unique in the ResourceSlice.
+
+The maximum number of SharedCounters is 32. (see [below for nested schema](#nestedblock--spec--shared_counters))
 
 <a id="nestedblock--spec--pool"></a>
 ### Nested Schema for `spec.pool`
@@ -109,12 +117,112 @@ Optional:
 
 Optional:
 
+- `all_nodes` (Boolean) AllNodes indicates that all nodes have access to the device.
+
+Must only be set if Spec.PerDeviceNodeSelection is set to true. At most one of NodeName, NodeSelector and AllNodes can be set.
+- `allow_multiple_allocations` (Boolean) AllowMultipleAllocations marks whether the device is allowed to be allocated to multiple DeviceRequests.
+
+If AllowMultipleAllocations is set to true, the device can be allocated more than once, and all of its capacity is consumable, regardless of whether the requestPolicy is defined or not.
 - `attributes` (Map of String) Attributes defines the set of attributes for this device. The name of each attribute must be unique in that set.
 
 The maximum number of attributes and capacities combined is 32.
+- `binding_conditions` (List of String) BindingConditions defines the conditions for proceeding with binding. All of these conditions must be set in the per-device status conditions with a value of True to proceed with binding the pod to the node while scheduling the pod.
+
+The maximum number of binding conditions is 4.
+
+The conditions must be a valid condition type string.
+
+This is an alpha field and requires enabling the DRADeviceBindingConditions and DRAResourceClaimDeviceStatus feature gates.
+- `binding_failure_conditions` (List of String) BindingFailureConditions defines the conditions for binding failure. They may be set in the per-device status conditions. If any is true, a binding failure occurred.
+
+The maximum number of binding failure conditions is 4.
+
+The conditions must be a valid condition type string.
+
+This is an alpha field and requires enabling the DRADeviceBindingConditions and DRAResourceClaimDeviceStatus feature gates.
+- `binds_to_node` (Boolean) BindsToNode indicates if the usage of an allocation involving this device has to be limited to exactly the node that was chosen when allocating the claim. If set to true, the scheduler will set the ResourceClaim.Status.Allocation.NodeSelector to match the node where the allocation was made.
+
+This is an alpha field and requires enabling the DRADeviceBindingConditions and DRAResourceClaimDeviceStatus feature gates.
 - `capacity` (Map of String) Capacity defines the set of capacities for this device. The name of each capacity must be unique in that set.
 
 The maximum number of attributes and capacities combined is 32.
+- `consumes_counters` (Block List) ConsumesCounters defines a list of references to sharedCounters and the set of counters that the device will consume from those counter sets.
+
+There can only be a single entry per counterSet.
+
+The total number of device counter consumption entries must be <= 32. In addition, the total number in the entire ResourceSlice must be <= 1024 (for example, 64 devices with 16 counters each). (see [below for nested schema](#nestedblock--spec--devices--basic--consumes_counters))
+- `node_name` (String) NodeName identifies the node where the device is available.
+
+Must only be set if Spec.PerDeviceNodeSelection is set to true. At most one of NodeName, NodeSelector and AllNodes can be set.
+- `node_selector` (Block List, Max: 1) NodeSelector defines the nodes where the device is available.
+
+Must use exactly one term.
+
+Must only be set if Spec.PerDeviceNodeSelection is set to true. At most one of NodeName, NodeSelector and AllNodes can be set. (see [below for nested schema](#nestedblock--spec--devices--basic--node_selector))
+- `taints` (Block List) If specified, these are the driver-defined taints.
+
+The maximum number of taints is 4.
+
+This is an alpha field and requires enabling the DRADeviceTaints feature gate. (see [below for nested schema](#nestedblock--spec--devices--basic--taints))
+
+<a id="nestedblock--spec--devices--basic--consumes_counters"></a>
+### Nested Schema for `spec.devices.basic.consumes_counters`
+
+Optional:
+
+- `counter_set` (String) CounterSet is the name of the set from which the counters defined will be consumed.
+- `counters` (Map of String) Counters defines the counters that will be consumed by the device.
+
+The maximum number counters in a device is 32. In addition, the maximum number of all counters in all devices is 1024 (for example, 64 devices with 16 counters each).
+
+
+<a id="nestedblock--spec--devices--basic--node_selector"></a>
+### Nested Schema for `spec.devices.basic.node_selector`
+
+Optional:
+
+- `node_selector_terms` (Block List) Required. A list of node selector terms. The terms are ORed. (see [below for nested schema](#nestedblock--spec--devices--basic--node_selector--node_selector_terms))
+
+<a id="nestedblock--spec--devices--basic--node_selector--node_selector_terms"></a>
+### Nested Schema for `spec.devices.basic.node_selector.node_selector_terms`
+
+Optional:
+
+- `match_expressions` (Block List) A list of node selector requirements by node's labels. (see [below for nested schema](#nestedblock--spec--devices--basic--node_selector--node_selector_terms--match_expressions))
+- `match_fields` (Block List) A list of node selector requirements by node's fields. (see [below for nested schema](#nestedblock--spec--devices--basic--node_selector--node_selector_terms--match_fields))
+
+<a id="nestedblock--spec--devices--basic--node_selector--node_selector_terms--match_expressions"></a>
+### Nested Schema for `spec.devices.basic.node_selector.node_selector_terms.match_expressions`
+
+Optional:
+
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+- `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
+
+
+<a id="nestedblock--spec--devices--basic--node_selector--node_selector_terms--match_fields"></a>
+### Nested Schema for `spec.devices.basic.node_selector.node_selector_terms.match_fields`
+
+Optional:
+
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+- `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
+
+
+
+
+<a id="nestedblock--spec--devices--basic--taints"></a>
+### Nested Schema for `spec.devices.basic.taints`
+
+Optional:
+
+- `effect` (String) The effect of the taint on claims that do not tolerate the taint and through such claims on the pods using them. Valid effects are NoSchedule and NoExecute. PreferNoSchedule as used for nodes is not valid here.
+- `key` (String) The taint key to be applied to a device. Must be a label name.
+- `time_added` (String) TimeAdded represents the time at which the taint was added. Added automatically during create or update if not set.
+- `value` (String) The taint value corresponding to the taint key. Must be a label value.
+
 
 
 
@@ -159,6 +267,17 @@ Optional:
 - `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
 
 
+
+
+<a id="nestedblock--spec--shared_counters"></a>
+### Nested Schema for `spec.shared_counters`
+
+Optional:
+
+- `counters` (Map of String) Counters defines the set of counters for this CounterSet The name of each counter must be unique in that set and must be a DNS label.
+
+The maximum number of counters is 32.
+- `name` (String) Name defines the name of the counter set. It must be a DNS label.
 
 
 

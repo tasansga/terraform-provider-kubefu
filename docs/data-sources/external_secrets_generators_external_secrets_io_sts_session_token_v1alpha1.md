@@ -24,7 +24,7 @@ For more information, see GetSessionToken (https://docs.aws.amazon.com/STS/lates
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
+- `spec` (Block List, Max: 1) STSSessionTokenSpec defines the desired state to generate an AWS STS session token. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 

@@ -79,7 +79,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 					},
 					"deletion_timestamp": {
 						Type:        schema.TypeString,
-						Description: "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
+						Description: "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field. Once set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -117,16 +117,16 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							"pending": {
 								Type:        schema.TypeList,
 								Description: "Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
 										Description: "name of the process that is responsible for initializing this object.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 								}},
 							},
@@ -213,7 +213,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 											},
 											"retry_after_seconds": {
 												Type:        schema.TypeInt,
-												Description: "If specified, the time in seconds before the operation should be retried. Some errors may indicate the client must take an alternate action - for those errors this field may indicate how long to wait before taking the alternate action.",
+												Description: "If specified, the time in seconds before the operation should be retried.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -256,6 +256,13 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"remaining_item_count": {
+												Type:        schema.TypeInt,
+												Description: "remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.\n\nThis field is alpha and can be changed or removed without notice.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_version": {
 												Type:        schema.TypeString,
 												Description: "String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency",
@@ -265,7 +272,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 											},
 											"self_link": {
 												Type:        schema.TypeString,
-												Description: "selfLink is a URL representing this object. Populated by the system. Read-only.",
+												Description: "SelfLink is a URL representing this object. Populated by the system. Read-only.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -296,6 +303,71 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"managed_fields": {
+						Type:        schema.TypeList,
+						Description: "ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like \"ci-cd\". The set of fields is always in the version that the workflow used when modifying the object.\n\nThis field is alpha and can be changed or removed without notice.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"api_version": {
+								Type:        schema.TypeString,
+								Description: "APIVersion defines the version of this resource that this field set applies to. The format is \"group/version\" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields": {
+								Type:        schema.TypeMap,
+								Description: "Fields identifies a set of fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_type": {
+								Type:        schema.TypeString,
+								Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_v1": {
+								Type:        schema.TypeMap,
+								Description: "FieldsV1 holds the first JSON version format as described in the \"FieldsV1\" type.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"manager": {
+								Type:        schema.TypeString,
+								Description: "Manager is an identifier of the workflow managing these fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"operation": {
+								Type:        schema.TypeString,
+								Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"time": {
+								Type:        schema.TypeString,
+								Description: "Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"name": {
 						Type:        schema.TypeString,
@@ -477,7 +549,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							},
 							"kind": {
 								Type:        schema.TypeString,
-								Description: "Expected values Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared",
+								Description: "Expected values Shared: mulitple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -583,7 +655,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
-										Description: "Name is unique within a namespace to reference a secret resource.",
+										Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -627,6 +699,30 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
+							},
+							"secret_ref": {
+								Type:        schema.TypeList,
+								Description: "Optional: points to a secret object containing parameters used to connect to OpenStack.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name is unique within a namespace to reference a secret resource.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"namespace": {
+										Type:        schema.TypeString,
+										Description: "Namespace defines the space within which the secret name must be unique.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
 							},
 							"volume_id": {
 								Type:        schema.TypeString,
@@ -698,12 +794,36 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 					},
 					"csi": {
 						Type:        schema.TypeList,
-						Description: "CSI represents storage that handled by an external CSI driver (Beta feature).",
+						Description: "CSI represents storage that handled by an external CSI driver",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"controller_expand_secret_ref": {
+								Type:        schema.TypeList,
+								Description: "ControllerExpandSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI ControllerExpandVolume call. This is an alpha field and requires enabling ExpandCSIVolumes feature gate. This field is optional, and may be empty if no secret is required. If the secret object contains more than one secret, all secrets are passed.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name is unique within a namespace to reference a secret resource.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"namespace": {
+										Type:        schema.TypeString,
+										Description: "Namespace defines the space within which the secret name must be unique.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"controller_publish_secret_ref": {
 								Type:        schema.TypeList,
 								Description: "ControllerPublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI ControllerPublishVolume and ControllerUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secrets are passed.",
@@ -731,9 +851,9 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							"driver": {
 								Type:        schema.TypeString,
 								Description: "Driver is the name of the driver to use for this volume. Required.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 							},
 							"fs_type": {
 								Type:        schema.TypeString,
@@ -741,6 +861,30 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
+							},
+							"node_expand_secret_ref": {
+								Type:        schema.TypeList,
+								Description: "nodeExpandSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodeExpandVolume call. This is an alpha field and requires enabling CSINodeExpandSecret feature gate. This field is optional, may be omitted if no secret is required. If the secret object contains more than one secret, all secrets are passed.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "name is unique within a namespace to reference a secret resource.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"namespace": {
+										Type:        schema.TypeString,
+										Description: "namespace defines the space within which the secret name must be unique.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
 							},
 							"node_publish_secret_ref": {
 								Type:        schema.TypeList,
@@ -807,9 +951,9 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							"volume_handle": {
 								Type:        schema.TypeString,
 								Description: "VolumeHandle is the unique volume name returned by the CSI volume plugin’s CreateVolume to refer to the volume on all subsequent calls. Required.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 							},
 						}},
 					},
@@ -830,7 +974,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							},
 							"lun": {
 								Type:        schema.TypeInt,
-								Description: "Optional: FC target lun number",
+								Description: "Required: FC target lun number",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -844,7 +988,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							},
 							"target_ww_ns": {
 								Type:        schema.TypeList,
-								Description: "Optional: FC target worldwide names (WWNs)",
+								Description: "Required: FC target worldwide names (WWNs)",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -862,7 +1006,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 					},
 					"flex_volume": {
 						Type:        schema.TypeList,
-						Description: "FlexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.",
+						Description: "FlexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin. This is an alpha feature and may change in future.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -906,7 +1050,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
-										Description: "Name is unique within a namespace to reference a secret resource.",
+										Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -999,6 +1143,13 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 								Required:    true,
 								Computed:    false,
 							},
+							"endpoints_namespace": {
+								Type:        schema.TypeString,
+								Description: "EndpointsNamespace is the namespace that contains Glusterfs endpoint. If this field is empty, the EndpointNamespace defaults to the same namespace as the bound PVC. More info: https://releases.k8s.io/HEAD/examples/volumes/glusterfs/README.md#create-a-pod",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"path": {
 								Type:        schema.TypeString,
 								Description: "Path is the Glusterfs volume path. More info: https://releases.k8s.io/HEAD/examples/volumes/glusterfs/README.md#create-a-pod",
@@ -1025,7 +1176,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"path": {
 								Type:        schema.TypeString,
-								Description: "Path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath",
+								Description: "Path of the directory on the host. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath",
 								Optional:    false,
 								Required:    true,
 								Computed:    false,
@@ -1070,7 +1221,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							},
 							"initiator_name": {
 								Type:        schema.TypeString,
-								Description: "Custom iSCSI Initiator Name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection.",
+								Description: "Custom iSCSI initiator name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -1084,21 +1235,21 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							},
 							"iscsi_interface": {
 								Type:        schema.TypeString,
-								Description: "iSCSI Interface Name that uses an iSCSI transport. Defaults to 'default' (tcp).",
+								Description: "Optional: Defaults to 'default' (tcp). iSCSI interface name that uses an iSCSI transport.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
 							},
 							"lun": {
 								Type:        schema.TypeInt,
-								Description: "iSCSI Target Lun number.",
+								Description: "iSCSI target lun number.",
 								Optional:    false,
 								Required:    true,
 								Computed:    false,
 							},
 							"portals": {
 								Type:        schema.TypeList,
-								Description: "iSCSI Target Portal List. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).",
+								Description: "iSCSI target portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -1113,7 +1264,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							},
 							"secret_ref": {
 								Type:        schema.TypeList,
-								Description: "CHAP Secret for iSCSI target and initiator authentication",
+								Description: "CHAP secret for iSCSI target and initiator authentication",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -1121,7 +1272,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
-										Description: "Name is unique within a namespace to reference a secret resource.",
+										Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -1137,7 +1288,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							},
 							"target_portal": {
 								Type:        schema.TypeString,
-								Description: "iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).",
+								Description: "iSCSI target portal. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).",
 								Optional:    false,
 								Required:    true,
 								Computed:    false,
@@ -1152,6 +1303,13 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"fs_type": {
+								Type:        schema.TypeString,
+								Description: "Filesystem type to mount. It applies only when the Path is a block device. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". The default value is to auto-select a fileystem if unspecified.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"path": {
 								Type:        schema.TypeString,
 								Description: "The full path to the volume on the node For alpha, this path must be a directory Once block as a source is supported, then this path can point to a block device",
@@ -1219,30 +1377,61 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 									"node_selector_terms": {
 										Type:        schema.TypeList,
 										Description: "Required. A list of node selector terms. The terms are ORed.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"match_expressions": {
 												Type:        schema.TypeList,
 												Description: "Required. A list of node selector requirements. The requirements are ANDed.",
-												Optional:    false,
-												Required:    true,
-												Computed:    false,
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"key": {
 														Type:        schema.TypeString,
 														Description: "The label key that the selector applies to.",
-														Optional:    false,
-														Required:    true,
-														Computed:    false,
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 													"operator": {
 														Type:        schema.TypeString,
 														Description: "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-														Optional:    false,
-														Required:    true,
-														Computed:    false,
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"values": {
+														Type:        schema.TypeList,
+														Description: "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
+												}},
+											},
+											"match_fields": {
+												Type:        schema.TypeList,
+												Description: "A list of node selector requirements by node's fields.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"key": {
+														Type:        schema.TypeString,
+														Description: "The label key that the selector applies to.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"operator": {
+														Type:        schema.TypeString,
+														Description: "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
 													},
 													"values": {
 														Type:        schema.TypeList,
@@ -1262,7 +1451,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 					},
 					"persistent_volume_reclaim_policy": {
 						Type:        schema.TypeString,
-						Description: "What happens to a persistent volume when released from its claim. Valid options are Retain (default for manually created PersistentVolumes), Delete (default for dynamically provisioned PersistentVolumes), and Recycle (deprecated). Recycle must be supported by the volume plugin underlying this PersistentVolume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#reclaiming",
+						Description: "What happens to a persistent volume when released from its claim. Valid options are Retain (default) and Recycle. Recycling must be supported by the volume plugin underlying this persistent volume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#reclaiming",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -1351,6 +1540,13 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 								Required:    true,
 								Computed:    false,
 							},
+							"tenant": {
+								Type:        schema.TypeString,
+								Description: "Tenant owning the given Quobyte volume in the Backend Used with dynamically provisioned Quobyte volumes, value is set by the plugin",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"user": {
 								Type:        schema.TypeString,
 								Description: "User to map volume access to Defaults to serivceaccount user",
@@ -1428,7 +1624,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
-										Description: "Name is unique within a namespace to reference a secret resource.",
+										Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -1475,7 +1671,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							},
 							"protection_domain": {
 								Type:        schema.TypeString,
-								Description: "The name of the ScaleIO Protection Domain for the configured storage.",
+								Description: "The name of the Protection Domain for the configured storage (defaults to \"default\").",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -1498,7 +1694,7 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
-										Description: "Name is unique within a namespace to reference a secret resource.",
+										Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -1521,14 +1717,14 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							},
 							"storage_mode": {
 								Type:        schema.TypeString,
-								Description: "Indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned.",
+								Description: "Indicates whether the storage for a volume should be thick or thin (defaults to \"thin\").",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
 							},
 							"storage_pool": {
 								Type:        schema.TypeString,
-								Description: "The ScaleIO Storage Pool associated with the protection domain.",
+								Description: "The Storage Pool associated with the protection domain (defaults to \"default\").",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -1653,6 +1849,13 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 							},
 						}},
 					},
+					"volume_attributes_class_name": {
+						Type:        schema.TypeString,
+						Description: "Name of VolumeAttributesClass to which this persistent volume belongs. Empty value is not allowed. When this field is not set, it indicates that this volume does not belong to any VolumeAttributesClass. This field is mutable and can be changed by the CSI driver after a volume has been updated successfully to a new class. For an unbound PersistentVolume, the volumeAttributesClassName will be matched with unbound PersistentVolumeClaims during the binding process. This is an alpha field and requires enabling VolumeAttributesClass feature.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"volume_mode": {
 						Type:        schema.TypeString,
 						Description: "volumeMode defines if a volume is intended to be used with a formatted filesystem or to remain in raw block state. Value of Filesystem is implied when not included in spec. This is an alpha feature and may change in the future.",
@@ -1708,6 +1911,13 @@ func dataSourceK8sCorePersistentVolumeV1() *schema.Resource {
 				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"last_phase_transition_time": {
+						Type:        schema.TypeString,
+						Description: "lastPhaseTransitionTime is the time the phase transitioned from one to another and automatically resets to current time everytime a volume phase transitions. This is an alpha field and requires enabling PersistentVolumeLastPhaseTransitionTime feature.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"message": {
 						Type:        schema.TypeString,
 						Description: "A human-readable message indicating details about why the volume is in this state.",
@@ -1741,7 +1951,7 @@ func dataSourceK8sCorePersistentVolumeV1Read(_ context.Context, d *schema.Resour
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "PersistentVolume", "core/v1/PersistentVolume"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.aws_elastic_block_store", "spec.azure_disk", "spec.azure_file", "spec.cephfs", "spec.cephfs.secret_ref", "spec.cinder", "spec.claim_ref", "spec.csi", "spec.csi.controller_publish_secret_ref", "spec.csi.node_publish_secret_ref", "spec.csi.node_stage_secret_ref", "spec.fc", "spec.flex_volume", "spec.flex_volume.secret_ref", "spec.flocker", "spec.gce_persistent_disk", "spec.glusterfs", "spec.host_path", "spec.iscsi", "spec.iscsi.secret_ref", "spec.local", "spec.nfs", "spec.node_affinity", "spec.node_affinity.required", "spec.photon_persistent_disk", "spec.portworx_volume", "spec.quobyte", "spec.rbd", "spec.rbd.secret_ref", "spec.scale_io", "spec.scale_io.secret_ref", "spec.storageos", "spec.storageos.secret_ref", "spec.vsphere_volume", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.aws_elastic_block_store", "spec.azure_disk", "spec.azure_file", "spec.cephfs", "spec.cephfs.secret_ref", "spec.cinder", "spec.cinder.secret_ref", "spec.claim_ref", "spec.csi", "spec.csi.controller_expand_secret_ref", "spec.csi.controller_publish_secret_ref", "spec.csi.node_expand_secret_ref", "spec.csi.node_publish_secret_ref", "spec.csi.node_stage_secret_ref", "spec.fc", "spec.flex_volume", "spec.flex_volume.secret_ref", "spec.flocker", "spec.gce_persistent_disk", "spec.glusterfs", "spec.host_path", "spec.iscsi", "spec.iscsi.secret_ref", "spec.local", "spec.nfs", "spec.node_affinity", "spec.node_affinity.required", "spec.photon_persistent_disk", "spec.portworx_volume", "spec.quobyte", "spec.rbd", "spec.rbd.secret_ref", "spec.scale_io", "spec.scale_io.secret_ref", "spec.storageos", "spec.storageos.secret_ref", "spec.vsphere_volume", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

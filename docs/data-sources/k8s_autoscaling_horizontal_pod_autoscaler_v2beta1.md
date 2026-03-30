@@ -40,7 +40,7 @@ Optional:
 
 Populated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 - `deletion_grace_period_seconds` (Number) Number of seconds allowed for this object to gracefully terminate before it will be removed from the system. Only set when deletionTimestamp is also set. May only be shortened. Read-only.
-- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
+- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field. Once set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
 
 Populated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 - `finalizers` (List of String) Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.
@@ -54,6 +54,9 @@ Applied only if Name is not specified. More info: https://git.k8s.io/community/c
 
 When an object is created, the system will populate this list with the current set of initializers. Only privileged users may set or modify this list. Once it is empty, it may not be modified further by any user. (see [below for nested schema](#nestedblock--metadata--initializers))
 - `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `managed_fields` (Block List) ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like "ci-cd". The set of fields is always in the version that the workflow used when modifying the object.
+
+This field is alpha and can be changed or removed without notice. (see [below for nested schema](#nestedblock--metadata--managed_fields))
 - `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
 - `namespace` (String) Namespace defines the space within each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
 
@@ -70,18 +73,15 @@ Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-gu
 <a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
-Required:
-
-- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
-
 Optional:
 
+- `pending` (Block List) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
 - `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
 <a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Required:
+Optional:
 
 - `name` (String) name of the process that is responsible for initializing this object.
 
@@ -133,10 +133,28 @@ Examples:
 Optional:
 
 - `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response.
+- `remaining_item_count` (Number) remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.
+
+This field is alpha and can be changed or removed without notice.
 - `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
 - `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
 
 
+
+
+<a id="nestedblock--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String) APIVersion defines the version of this resource that this field set applies to. The format is "group/version" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.
+- `fields` (Map of String) Fields identifies a set of fields.
+- `fields_type` (String) FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: "FieldsV1"
+- `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
+- `manager` (String) Manager is an identifier of the workflow managing these fields.
+- `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
+- `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
 <a id="nestedblock--metadata--owner_references"></a>
@@ -187,24 +205,33 @@ Optional:
 
 Required:
 
-- `type` (String) type is the type of metric source.  It should be one of "Object", "Pods" or "Resource", each mapping to a matching field in the object.
+- `type` (String) type is the type of metric source.  It should match one of the fields below.
 
 Optional:
 
+- `container_resource` (Block List, Max: 1) container resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing a single container in each pod of the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source. This is an alpha feature and can be enabled by the HPAContainerMetrics feature flag. (see [below for nested schema](#nestedblock--spec--metrics--container_resource))
 - `external` (Block List, Max: 1) external refers to a global metric that is not associated with any Kubernetes object. It allows autoscaling based on information coming from components running outside of cluster (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster). (see [below for nested schema](#nestedblock--spec--metrics--external))
 - `object` (Block List, Max: 1) object refers to a metric describing a single kubernetes object (for example, hits-per-second on an Ingress object). (see [below for nested schema](#nestedblock--spec--metrics--object))
 - `pods` (Block List, Max: 1) pods refers to a metric describing each pod in the current scale target (for example, transactions-processed-per-second).  The values will be averaged together before being compared to the target value. (see [below for nested schema](#nestedblock--spec--metrics--pods))
 - `resource` (Block List, Max: 1) resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing each pod in the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source. (see [below for nested schema](#nestedblock--spec--metrics--resource))
 
-<a id="nestedblock--spec--metrics--external"></a>
-### Nested Schema for `spec.metrics.external`
-
-Required:
-
-- `metric_name` (String) metricName is the name of the metric in question.
+<a id="nestedblock--spec--metrics--container_resource"></a>
+### Nested Schema for `spec.metrics.container_resource`
 
 Optional:
 
+- `container` (String) container is the name of the container in the pods of the scaling target
+- `name` (String) name is the name of the resource in question.
+- `target_average_utilization` (Number) targetAverageUtilization is the target value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods.
+- `target_average_value` (String) targetAverageValue is the target value of the average of the resource metric across all relevant pods, as a raw value (instead of as a percentage of the request), similar to the "pods" metric source type.
+
+
+<a id="nestedblock--spec--metrics--external"></a>
+### Nested Schema for `spec.metrics.external`
+
+Optional:
+
+- `metric_name` (String) metricName is the name of the metric in question.
 - `metric_selector` (Block List, Max: 1) metricSelector is used to identify a specific time series within a given metric. (see [below for nested schema](#nestedblock--spec--metrics--external--metric_selector))
 - `target_average_value` (String) targetAverageValue is the target per-pod value of global metric (as a quantity). Mutually exclusive with TargetValue.
 - `target_value` (String) targetValue is the target value of the metric (as a quantity). Mutually exclusive with TargetAverageValue.
@@ -220,13 +247,10 @@ Optional:
 <a id="nestedblock--spec--metrics--external--metric_selector--match_expressions"></a>
 ### Nested Schema for `spec.metrics.external.metric_selector.match_expressions`
 
-Required:
+Optional:
 
 - `key` (String) key is the label key that the selector applies to.
 - `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
-
-Optional:
-
 - `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
 
 
@@ -241,6 +265,11 @@ Required:
 - `target` (Block List, Min: 1, Max: 1) target is the described Kubernetes object. (see [below for nested schema](#nestedblock--spec--metrics--object--target))
 - `target_value` (String) targetValue is the target value of the metric (as a quantity).
 
+Optional:
+
+- `average_value` (String) averageValue is the target value of the average of the metric across all relevant pods (as a quantity)
+- `selector` (Block List, Max: 1) selector is the string-encoded form of a standard kubernetes label selector for the given metric When set, it is passed as an additional parameter to the metrics server for more specific metrics scoping When unset, just the metricName will be used to gather metrics. (see [below for nested schema](#nestedblock--spec--metrics--object--selector))
+
 <a id="nestedblock--spec--metrics--object--target"></a>
 ### Nested Schema for `spec.metrics.object.target`
 
@@ -254,6 +283,25 @@ Optional:
 - `api_version` (String) API version of the referent
 
 
+<a id="nestedblock--spec--metrics--object--selector"></a>
+### Nested Schema for `spec.metrics.object.selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--metrics--object--selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--metrics--object--selector--match_expressions"></a>
+### Nested Schema for `spec.metrics.object.selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
 
 <a id="nestedblock--spec--metrics--pods"></a>
 ### Nested Schema for `spec.metrics.pods`
@@ -262,6 +310,29 @@ Required:
 
 - `metric_name` (String) metricName is the name of the metric in question
 - `target_average_value` (String) targetAverageValue is the target value of the average of the metric across all relevant pods (as a quantity)
+
+Optional:
+
+- `selector` (Block List, Max: 1) selector is the string-encoded form of a standard kubernetes label selector for the given metric When set, it is passed as an additional parameter to the metrics server for more specific metrics scoping When unset, just the metricName will be used to gather metrics. (see [below for nested schema](#nestedblock--spec--metrics--pods--selector))
+
+<a id="nestedblock--spec--metrics--pods--selector"></a>
+### Nested Schema for `spec.metrics.pods.selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--metrics--pods--selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--metrics--pods--selector--match_expressions"></a>
+### Nested Schema for `spec.metrics.pods.selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
 
 
 <a id="nestedblock--spec--metrics--resource"></a>
@@ -284,13 +355,13 @@ Optional:
 
 Required:
 
-- `conditions` (Block List, Min: 1) conditions is the set of conditions required for this autoscaler to scale its target, and indicates whether or not those conditions are met. (see [below for nested schema](#nestedblock--status--conditions))
-- `current_metrics` (Block List, Min: 1) currentMetrics is the last read state of the metrics used by this autoscaler. (see [below for nested schema](#nestedblock--status--current_metrics))
 - `current_replicas` (Number) currentReplicas is current number of replicas of pods managed by this autoscaler, as last seen by the autoscaler.
 - `desired_replicas` (Number) desiredReplicas is the desired number of replicas of pods managed by this autoscaler, as last calculated by the autoscaler.
 
 Optional:
 
+- `conditions` (Block List) conditions is the set of conditions required for this autoscaler to scale its target, and indicates whether or not those conditions are met. (see [below for nested schema](#nestedblock--status--conditions))
+- `current_metrics` (Block List) currentMetrics is the last read state of the metrics used by this autoscaler. (see [below for nested schema](#nestedblock--status--current_metrics))
 - `last_scale_time` (String) lastScaleTime is the last time the HorizontalPodAutoscaler scaled the number of pods, used by the autoscaler to control how often the number of pods is changed.
 - `observed_generation` (Number) observedGeneration is the most recent generation observed by this autoscaler.
 
@@ -314,26 +385,35 @@ Optional:
 
 Required:
 
-- `type` (String) type is the type of metric source.  It will be one of "Object", "Pods" or "Resource", each corresponds to a matching field in the object.
+- `type` (String) type is the type of metric source.  It will match one of the fields below.
 
 Optional:
 
+- `container_resource` (Block List, Max: 1) container resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing a single container in each pod in the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source. (see [below for nested schema](#nestedblock--status--current_metrics--container_resource))
 - `external` (Block List, Max: 1) external refers to a global metric that is not associated with any Kubernetes object. It allows autoscaling based on information coming from components running outside of cluster (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster). (see [below for nested schema](#nestedblock--status--current_metrics--external))
 - `object` (Block List, Max: 1) object refers to a metric describing a single kubernetes object (for example, hits-per-second on an Ingress object). (see [below for nested schema](#nestedblock--status--current_metrics--object))
 - `pods` (Block List, Max: 1) pods refers to a metric describing each pod in the current scale target (for example, transactions-processed-per-second).  The values will be averaged together before being compared to the target value. (see [below for nested schema](#nestedblock--status--current_metrics--pods))
 - `resource` (Block List, Max: 1) resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing each pod in the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source. (see [below for nested schema](#nestedblock--status--current_metrics--resource))
 
+<a id="nestedblock--status--current_metrics--container_resource"></a>
+### Nested Schema for `status.current_metrics.container_resource`
+
+Optional:
+
+- `container` (String) container is the name of the container in the pods of the scaling target
+- `current_average_utilization` (Number) currentAverageUtilization is the current value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods.  It will only be present if `targetAverageValue` was set in the corresponding metric specification.
+- `current_average_value` (String) currentAverageValue is the current value of the average of the resource metric across all relevant pods, as a raw value (instead of as a percentage of the request), similar to the "pods" metric source type. It will always be set, regardless of the corresponding metric specification.
+- `name` (String) name is the name of the resource in question.
+
+
 <a id="nestedblock--status--current_metrics--external"></a>
 ### Nested Schema for `status.current_metrics.external`
-
-Required:
-
-- `current_value` (String) currentValue is the current value of the metric (as a quantity)
-- `metric_name` (String) metricName is the name of a metric used for autoscaling in metric system.
 
 Optional:
 
 - `current_average_value` (String) currentAverageValue is the current value of metric averaged over autoscaled pods.
+- `current_value` (String) currentValue is the current value of the metric (as a quantity)
+- `metric_name` (String) metricName is the name of a metric used for autoscaling in metric system.
 - `metric_selector` (Block List, Max: 1) metricSelector is used to identify a specific time series within a given metric. (see [below for nested schema](#nestedblock--status--current_metrics--external--metric_selector))
 
 <a id="nestedblock--status--current_metrics--external--metric_selector"></a>
@@ -347,13 +427,10 @@ Optional:
 <a id="nestedblock--status--current_metrics--external--metric_selector--match_expressions"></a>
 ### Nested Schema for `status.current_metrics.external.metric_selector.match_expressions`
 
-Required:
+Optional:
 
 - `key` (String) key is the label key that the selector applies to.
 - `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
-
-Optional:
-
 - `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
 
 
@@ -368,6 +445,11 @@ Required:
 - `metric_name` (String) metricName is the name of the metric in question.
 - `target` (Block List, Min: 1, Max: 1) target is the described Kubernetes object. (see [below for nested schema](#nestedblock--status--current_metrics--object--target))
 
+Optional:
+
+- `average_value` (String) averageValue is the current value of the average of the metric across all relevant pods (as a quantity)
+- `selector` (Block List, Max: 1) selector is the string-encoded form of a standard kubernetes label selector for the given metric When set in the ObjectMetricSource, it is passed as an additional parameter to the metrics server for more specific metrics scoping. When unset, just the metricName will be used to gather metrics. (see [below for nested schema](#nestedblock--status--current_metrics--object--selector))
+
 <a id="nestedblock--status--current_metrics--object--target"></a>
 ### Nested Schema for `status.current_metrics.object.target`
 
@@ -381,6 +463,25 @@ Optional:
 - `api_version` (String) API version of the referent
 
 
+<a id="nestedblock--status--current_metrics--object--selector"></a>
+### Nested Schema for `status.current_metrics.object.selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--status--current_metrics--object--selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--status--current_metrics--object--selector--match_expressions"></a>
+### Nested Schema for `status.current_metrics.object.selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
 
 <a id="nestedblock--status--current_metrics--pods"></a>
 ### Nested Schema for `status.current_metrics.pods`
@@ -389,6 +490,29 @@ Required:
 
 - `current_average_value` (String) currentAverageValue is the current value of the average of the metric across all relevant pods (as a quantity)
 - `metric_name` (String) metricName is the name of the metric in question
+
+Optional:
+
+- `selector` (Block List, Max: 1) selector is the string-encoded form of a standard kubernetes label selector for the given metric When set in the PodsMetricSource, it is passed as an additional parameter to the metrics server for more specific metrics scoping. When unset, just the metricName will be used to gather metrics. (see [below for nested schema](#nestedblock--status--current_metrics--pods--selector))
+
+<a id="nestedblock--status--current_metrics--pods--selector"></a>
+### Nested Schema for `status.current_metrics.pods.selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--status--current_metrics--pods--selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--status--current_metrics--pods--selector--match_expressions"></a>
+### Nested Schema for `status.current_metrics.pods.selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
 
 
 <a id="nestedblock--status--current_metrics--resource"></a>

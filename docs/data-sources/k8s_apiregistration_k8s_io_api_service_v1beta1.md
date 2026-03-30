@@ -40,7 +40,7 @@ Optional:
 
 Populated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 - `deletion_grace_period_seconds` (Number) Number of seconds allowed for this object to gracefully terminate before it will be removed from the system. Only set when deletionTimestamp is also set. May only be shortened. Read-only.
-- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
+- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field. Once set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
 
 Populated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 - `finalizers` (List of String) Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.
@@ -54,6 +54,9 @@ Applied only if Name is not specified. More info: https://git.k8s.io/community/c
 
 When an object is created, the system will populate this list with the current set of initializers. Only privileged users may set or modify this list. Once it is empty, it may not be modified further by any user. (see [below for nested schema](#nestedblock--metadata--initializers))
 - `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `managed_fields` (Block List) ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like "ci-cd". The set of fields is always in the version that the workflow used when modifying the object.
+
+This field is alpha and can be changed or removed without notice. (see [below for nested schema](#nestedblock--metadata--managed_fields))
 - `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
 - `namespace` (String) Namespace defines the space within each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
 
@@ -70,18 +73,15 @@ Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-gu
 <a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
-Required:
-
-- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
-
 Optional:
 
+- `pending` (Block List) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
 - `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
 <a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Required:
+Optional:
 
 - `name` (String) name of the process that is responsible for initializing this object.
 
@@ -109,7 +109,7 @@ Optional:
 - `group` (String) The group attribute of the resource associated with the status StatusReason.
 - `kind` (String) The kind attribute of the resource associated with the status StatusReason. On some operations may differ from the requested resource Kind. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `name` (String) The name attribute of the resource associated with the status StatusReason (when there is a single name which can be described).
-- `retry_after_seconds` (Number) If specified, the time in seconds before the operation should be retried. Some errors may indicate the client must take an alternate action - for those errors this field may indicate how long to wait before taking the alternate action.
+- `retry_after_seconds` (Number) If specified, the time in seconds before the operation should be retried.
 - `uid` (String) UID of the resource. (when there is a single resource which can be described). More info: http://kubernetes.io/docs/user-guide/identifiers#uids
 
 <a id="nestedblock--metadata--initializers--result--details--causes"></a>
@@ -133,10 +133,27 @@ Examples:
 Optional:
 
 - `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response.
+- `remaining_item_count` (Number) remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.
+
+This field is alpha and can be changed or removed without notice.
 - `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
-- `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
+- `self_link` (String) SelfLink is a URL representing this object. Populated by the system. Read-only.
 
 
+
+
+<a id="nestedblock--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String) APIVersion defines the version of this resource that this field set applies to. The format is "group/version" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.
+- `fields` (Map of String) Fields identifies a set of fields.
+- `fields_type` (String) FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: "FieldsV1"
+- `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
+- `manager` (String) Manager is an identifier of the workflow managing these fields.
+- `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
 <a id="nestedblock--metadata--owner_references"></a>
@@ -161,15 +178,15 @@ Optional:
 
 Required:
 
-- `ca_bundle` (String) CABundle is a PEM encoded CA bundle which will be used to validate an API server's serving certificate.
-- `group_priority_minimum` (Number) GroupPriorityMininum is the priority this group should have at least. Higher priority means that the group is preferred by clients over lower priority ones. Note that other versions of this group might specify even higher GroupPriorityMininum values such that the whole group gets a higher priority. The primary sort is based on GroupPriorityMinimum, ordered highest number to lowest (20 before 10). The secondary sort is based on the alphabetical comparison of the name of the object.  (v1.bar before v1.foo) We'd recommend something like: *.k8s.io (except extensions) at 18000 and PaaSes (OpenShift, Deis) are recommended to be in the 2000s
-- `service` (Block List, Min: 1, Max: 1) Service is a reference to the service for this API server.  It must communicate on port 443 If the Service is nil, that means the handling for the API groupversion is handled locally on this server. The call will simply delegate to the normal handler chain to be fulfilled. (see [below for nested schema](#nestedblock--spec--service))
+- `group_priority_minimum` (Number) GroupPriorityMininum is the priority this group should have at least. Higher priority means that the group is prefered by clients over lower priority ones. Note that other versions of this group might specify even higher GroupPriorityMininum values such that the whole group gets a higher priority. The primary sort is based on GroupPriorityMinimum, ordered highest number to lowest (20 before 10). The secondary sort is based on the alphabetical comparison of the name of the object.  (v1.bar before v1.foo) We'd recommend something like: *.k8s.io (except extensions) at 18000 and PaaSes (OpenShift, Deis) are recommended to be in the 2000s
 - `version_priority` (Number) VersionPriority controls the ordering of this API version inside of its group.  Must be greater than zero. The primary sort is based on VersionPriority, ordered highest to lowest (20 before 10). The secondary sort is based on the alphabetical comparison of the name of the object.  (v1.bar before v1.foo) Since it's inside of a group, the number can be small, probably in the 10s.
 
 Optional:
 
+- `ca_bundle` (String) CABundle is a PEM encoded CA bundle which will be used to validate an API server's serving certificate.
 - `group` (String) Group is the API group name this server hosts
 - `insecure_skip_tls_verify` (Boolean) InsecureSkipTLSVerify disables TLS certificate verification when communicating with this server. This is strongly discouraged.  You should use the CABundle instead.
+- `service` (Block List, Max: 1) Service is a reference to the service for this API server.  It must communicate on port 443 If the Service is nil, that means the handling for the API groupversion is handled locally on this server. The call will simply delegate to the normal handler chain to be fulfilled. (see [below for nested schema](#nestedblock--spec--service))
 - `version` (String) Version is the API version this server hosts.  For example, "v1"
 
 <a id="nestedblock--spec--service"></a>
@@ -179,6 +196,7 @@ Optional:
 
 - `name` (String) Name is the name of the service
 - `namespace` (String) Namespace is the namespace of the service
+- `port` (Number) If specified, the port on the service that hosting webhook. Default to 443 for backward compatibility. `port` should be a valid port number (1-65535, inclusive).
 
 
 

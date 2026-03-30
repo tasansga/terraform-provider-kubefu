@@ -18,6 +18,8 @@ Generated data source for io.k8s.api.apps.v1.Kustomization
 ### Optional
 
 - `config_map_generator` (Block List) (see [below for nested schema](#nestedblock--config_map_generator))
+- `namespace` (String) Namespace to apply to resources in this kustomization.
+- `resources` (List of String) Relative paths to resource files or directories.
 - `secret_generator` (Block List) (see [below for nested schema](#nestedblock--secret_generator))
 
 ### Read-Only
@@ -50,6 +52,7 @@ Optional:
 
 Optional:
 
+- `env` (String)
 - `envs` (List of String)
 - `files` (List of String)
 - `literals` (List of String)
@@ -80,6 +83,7 @@ Optional:
 
 Optional:
 
+- `env` (String)
 - `envs` (List of String)
 - `files` (List of String)
 - `literals` (List of String)

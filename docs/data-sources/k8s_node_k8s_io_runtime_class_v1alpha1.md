@@ -38,6 +38,40 @@ Required:
 
 - `runtime_handler` (String) RuntimeHandler specifies the underlying runtime and configuration that the CRI implementation will use to handle pods of this class. The possible values are specific to the node & CRI configuration.  It is assumed that all handlers are available on every node, and handlers of the same name are equivalent on every node. For example, a handler called "runc" might specify that the runc OCI runtime (using native Linux containers) will be used to run the containers in a pod. The RuntimeHandler must conform to the DNS Label (RFC 1123) requirements and is immutable.
 
+Optional:
+
+- `overhead` (Block List, Max: 1) Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. For more details, see https://git.k8s.io/enhancements/keps/sig-node/20190226-pod-overhead.md This field is alpha-level as of Kubernetes v1.15, and is only honored by servers that enable the PodOverhead feature. (see [below for nested schema](#nestedblock--spec--overhead))
+- `scheduling` (Block List, Max: 1) Scheduling holds the scheduling constraints to ensure that pods running with this RuntimeClass are scheduled to nodes that support it. If scheduling is nil, this RuntimeClass is assumed to be supported by all nodes. (see [below for nested schema](#nestedblock--spec--scheduling))
+
+<a id="nestedblock--spec--overhead"></a>
+### Nested Schema for `spec.overhead`
+
+Optional:
+
+- `pod_fixed` (Map of String) PodFixed represents the fixed resource overhead associated with running a pod.
+
+
+<a id="nestedblock--spec--scheduling"></a>
+### Nested Schema for `spec.scheduling`
+
+Optional:
+
+- `node_selector` (Map of String) nodeSelector lists labels that must be present on nodes that support this RuntimeClass. Pods using this RuntimeClass can only be scheduled to a node matched by this selector. The RuntimeClass nodeSelector is merged with a pod's existing nodeSelector. Any conflicts will cause the pod to be rejected in admission.
+- `tolerations` (Block List) tolerations are appended (excluding duplicates) to pods running with this RuntimeClass during admission, effectively unioning the set of nodes tolerated by the pod and the RuntimeClass. (see [below for nested schema](#nestedblock--spec--scheduling--tolerations))
+
+<a id="nestedblock--spec--scheduling--tolerations"></a>
+### Nested Schema for `spec.scheduling.tolerations`
+
+Optional:
+
+- `effect` (String) Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+- `key` (String) Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+- `operator` (String) Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a pod can tolerate all taints of a particular category.
+- `toleration_seconds` (Number) TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system.
+- `value` (String) Value is the taint value the toleration matches to. If the operator is Exists, the value should be empty, otherwise just a regular string.
+
+
+
 
 <a id="nestedblock--metadata"></a>
 ### Nested Schema for `metadata`
@@ -85,18 +119,15 @@ Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-gu
 <a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
-Required:
-
-- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
-
 Optional:
 
+- `pending` (Block List) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
 - `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
 <a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Required:
+Optional:
 
 - `name` (String) name of the process that is responsible for initializing this object.
 
@@ -148,6 +179,9 @@ Examples:
 Optional:
 
 - `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a consistent list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response, unless you have received this token from an error message.
+- `remaining_item_count` (Number) remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.
+
+This field is alpha and can be changed or removed without notice.
 - `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
 - `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
 
@@ -161,8 +195,11 @@ Optional:
 
 - `api_version` (String) APIVersion defines the version of this resource that this field set applies to. The format is "group/version" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.
 - `fields` (Map of String) Fields identifies a set of fields.
+- `fields_type` (String) FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: "FieldsV1"
+- `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 

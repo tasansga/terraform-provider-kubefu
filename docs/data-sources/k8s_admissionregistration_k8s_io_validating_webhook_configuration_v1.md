@@ -76,6 +76,7 @@ Optional:
 - `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
@@ -109,6 +110,16 @@ Required:
 Optional:
 
 - `failure_policy` (String) FailurePolicy defines how unrecognized errors from the admission endpoint are handled - allowed values are Ignore or Fail. Defaults to Fail.
+- `match_conditions` (Block List) MatchConditions is a list of conditions that must be met for a request to be sent to this webhook. Match conditions filter requests that have already been matched by the rules, namespaceSelector, and objectSelector. An empty list of matchConditions matches all requests. There are a maximum of 64 match conditions allowed.
+
+The exact matching logic is (in order):
+  1. If ANY matchCondition evaluates to FALSE, the webhook is skipped.
+  2. If ALL matchConditions evaluate to TRUE, the webhook is called.
+  3. If any matchCondition evaluates to an error (but none are FALSE):
+     - If failurePolicy=Fail, reject the request
+     - If failurePolicy=Ignore, the error is ignored and the webhook is skipped
+
+This is an alpha feature and managed by the AdmissionWebhookMatchConditions feature gate. (see [below for nested schema](#nestedblock--webhooks--match_conditions))
 - `match_policy` (String) matchPolicy defines how the "rules" list is used to match incoming requests. Allowed values are "Exact" or "Equivalent".
 
 - Exact: match a request only if it exactly matches a specified rule. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, but "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would not be sent to the webhook.
@@ -185,6 +196,25 @@ Optional:
 - `path` (String) `path` is an optional URL path which will be sent in any request to this service.
 - `port` (Number) If specified, the port on the service that hosting webhook. Default to 443 for backward compatibility. `port` should be a valid port number (1-65535, inclusive).
 
+
+
+<a id="nestedblock--webhooks--match_conditions"></a>
+### Nested Schema for `webhooks.match_conditions`
+
+Optional:
+
+- `expression` (String) Expression represents the expression which will be evaluated by CEL. Must evaluate to bool. CEL expressions have access to the contents of the AdmissionRequest and Authorizer, organized into CEL variables:
+
+'object' - The object from the incoming request. The value is null for DELETE requests. 'oldObject' - The existing object. The value is null for CREATE requests. 'request' - Attributes of the admission request(/pkg/apis/admission/types.go#AdmissionRequest). 'authorizer' - A CEL Authorizer. May be used to perform authorization checks for the principal (user or service account) of the request.
+  See https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#Authz
+'authorizer.requestResource' - A CEL ResourceCheck constructed from the 'authorizer' and configured with the
+  request resource.
+Documentation on CEL: https://kubernetes.io/docs/reference/using-api/cel/
+
+Required.
+- `name` (String) Name is an identifier for this match condition, used for strategic merging of MatchConditions, as well as providing an identifier for logging purposes. A good name should be descriptive of the associated expression. Name must be a qualified name consisting of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]') with an optional DNS subdomain prefix and '/' (e.g. 'example.com/MyName')
+
+Required.
 
 
 <a id="nestedblock--webhooks--namespace_selector"></a>

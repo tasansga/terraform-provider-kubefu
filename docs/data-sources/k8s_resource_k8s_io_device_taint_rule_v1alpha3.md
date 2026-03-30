@@ -24,6 +24,7 @@ Changing the spec automatically increments the metadata.generation number. (see 
 ### Optional
 
 - `metadata` (Block List, Max: 1) Standard object metadata (see [below for nested schema](#nestedblock--metadata))
+- `status` (Block List, Max: 1) Status provides information about what was requested in the spec. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -83,7 +84,7 @@ Optional:
 <a id="nestedblock--spec--device_selector--selectors--cel"></a>
 ### Nested Schema for `spec.device_selector.selectors.cel`
 
-Required:
+Optional:
 
 - `expression` (String) Expression is a CEL expression which evaluates a single device. It must evaluate to true when the device under consideration satisfies the desired criteria, and false when it does not. Any other result is an error and causes allocation of devices to abort.
 
@@ -182,3 +183,33 @@ Optional:
 
 - `block_owner_deletion` (Boolean) If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. See https://kubernetes.io/docs/concepts/architecture/garbage-collection/#foreground-deletion for how the garbage collector interacts with this field and enforces the foreground deletion. Defaults to false. To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned.
 - `controller` (Boolean) If true, this reference points to the managing controller.
+
+
+
+<a id="nestedblock--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (Block List) Conditions provide information about the state of the DeviceTaintRule and the cluster at some point in time, in a machine-readable and human-readable format.
+
+The following condition is currently defined as part of this API, more may get added: - Type: EvictionInProgress - Status: True if there are currently pods which need to be evicted, False otherwise
+  (includes the effects which don't cause eviction).
+- Reason: not specified, may change - Message: includes information about number of pending pods and already evicted pods
+  in a human-readable format, updated periodically, may change
+
+For `effect: None`, the condition above gets set once for each change to the spec, with the message containing information about what would happen if the effect was `NoExecute`. This feedback can be used to decide whether changing the effect to `NoExecute` will work as intended. It only gets set once to avoid having to constantly update the status.
+
+Must have 8 or fewer entries. (see [below for nested schema](#nestedblock--status--conditions))
+
+<a id="nestedblock--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase.

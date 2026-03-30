@@ -26,7 +26,7 @@ Event is a report of an event somewhere in the cluster. It generally denotes som
 - `deprecated_first_timestamp` (String) deprecatedFirstTimestamp is the deprecated field assuring backward compatibility with core.v1 Event type.
 - `deprecated_last_timestamp` (String) deprecatedLastTimestamp is the deprecated field assuring backward compatibility with core.v1 Event type.
 - `deprecated_source` (Block List, Max: 1) deprecatedSource is the deprecated field assuring backward compatibility with core.v1 Event type. (see [below for nested schema](#nestedblock--deprecated_source))
-- `metadata` (Block List, Max: 1) (see [below for nested schema](#nestedblock--metadata))
+- `metadata` (Block List, Max: 1) Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata (see [below for nested schema](#nestedblock--metadata))
 - `note` (String) note is a human-readable description of the status of this operation. Maximal length of the note is 1kB, but libraries should be prepared to handle values up to 64kB.
 - `reason` (String) reason is why the action was taken. It is human-readable. This field can have at most 128 characters.
 - `regarding` (Block List, Max: 1) regarding contains the object this Event is about. In most cases it's an Object reporting controller implements, e.g. ReplicaSetController implements ReplicaSets and this event is emitted because it acts on some changes in a ReplicaSet object. (see [below for nested schema](#nestedblock--regarding))
@@ -101,6 +101,7 @@ Optional:
 - `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 

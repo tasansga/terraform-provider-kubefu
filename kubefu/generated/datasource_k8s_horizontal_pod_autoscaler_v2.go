@@ -327,6 +327,13 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 									},
+									"tolerance": {
+										Type:        schema.TypeString,
+										Description: "tolerance is the tolerance on the ratio between the current and desired metric value under which no updates are made to the desired number of replicas (e.g. 0.01 for 1%). Must be greater than or equal to zero. If not set, the default cluster-wide tolerance is applied (by default 10%).\n\nFor example, if autoscaling is configured with a memory consumption target of 100Mi, and scale-down and scale-up tolerances of 5% and 1% respectively, scaling will be triggered when the actual consumption falls below 95Mi or exceeds 101Mi.\n\nThis is an alpha field and requires enabling the HPAConfigurableTolerance feature gate.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 								}},
 							},
 							"scale_up": {
@@ -377,6 +384,13 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2() *schema.Resource {
 									"stabilization_window_seconds": {
 										Type:        schema.TypeInt,
 										Description: "StabilizationWindowSeconds is the number of seconds for which past recommendations should be considered while scaling up or scaling down. StabilizationWindowSeconds must be greater than or equal to zero and less than or equal to 3600 (one hour). If not set, use the default values: - For scale up: 0 (i.e. no stabilization is done). - For scale down: 300 (i.e. the stabilization window is 300 seconds long).",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"tolerance": {
+										Type:        schema.TypeString,
+										Description: "tolerance is the tolerance on the ratio between the current and desired metric value under which no updates are made to the desired number of replicas (e.g. 0.01 for 1%). Must be greater than or equal to zero. If not set, the default cluster-wide tolerance is applied (by default 10%).\n\nFor example, if autoscaling is configured with a memory consumption target of 100Mi, and scale-down and scale-up tolerances of 5% and 1% respectively, scaling will be triggered when the actual consumption falls below 95Mi or exceeds 101Mi.\n\nThis is an alpha field and requires enabling the HPAConfigurableTolerance feature gate.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,

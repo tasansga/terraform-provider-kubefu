@@ -20,6 +20,13 @@ func dataSourceKustomizeKustomizeConfigK8sIoKvPairSourcesV1Beta1() *schema.Resou
 				Required:    false,
 				Computed:    true,
 			},
+			"env": {
+				Type:        schema.TypeString,
+				Description: "",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
 			"envs": {
 				Type:        schema.TypeList,
 				Description: "",
@@ -75,7 +82,7 @@ func dataSourceKustomizeKustomizeConfigK8sIoKvPairSourcesV1Beta1Read(_ context.C
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.config.k8s.io/v1beta1", "KvPairSources", "kustomize.config.k8s.io/v1beta1/KvPairSources"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"envs", "files", "literals"}, []string{}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"env", "envs", "files", "literals"}, []string{}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

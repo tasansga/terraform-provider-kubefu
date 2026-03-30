@@ -37,9 +37,17 @@ Optional:
 - `ignore` (String) Ignore overrides the set of excluded patterns in the .sourceignore format (which is the same as .gitignore). If not provided, a default will be used, consult the documentation for your version to find out what those are.
 - `include` (Block List) Include specifies a list of GitRepository resources which Artifacts should be included in the Artifact produced for this GitRepository. (see [below for nested schema](#nestedblock--spec--include))
 - `interval` (String) Interval at which to check the GitRepository for updates.
+- `provider_` (String) Provider used for authentication, can be 'azure', 'generic'.
+When not specified, defaults to 'generic'.
+- `proxy_secret_ref` (Block List, Max: 1) ProxySecretRef specifies the Secret containing the proxy configuration to use while communicating with the Git server. (see [below for nested schema](#nestedblock--spec--proxy_secret_ref))
 - `recurse_submodules` (Boolean) RecurseSubmodules enables the initialization of all submodules within the GitRepository as cloned from the URL, using their default settings.
 - `ref` (Block List, Max: 1) Reference specifies the Git reference to resolve and monitor for changes, defaults to the 'master' branch. (see [below for nested schema](#nestedblock--spec--ref))
 - `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing authentication credentials for the GitRepository. For HTTPS repositories the Secret must contain 'username' and 'password' fields for basic auth or 'bearerToken' field for token auth. For SSH repositories the Secret must contain 'identity' and 'known_hosts' fields. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `service_account_name` (String) ServiceAccountName is the name of the Kubernetes ServiceAccount used to
+authenticate to the GitRepository. This field is only supported for 'azure' provider.
+- `sparse_checkout` (List of String) SparseCheckout specifies a list of directories to checkout when cloning
+the repository. If specified, only these directories are included in the
+Artifact produced for this GitRepository.
 - `suspend` (Boolean) Suspend tells the controller to suspend the reconciliation of this GitRepository.
 - `timeout` (String) Timeout for Git operations like cloning, defaults to 60s.
 - `url` (String) URL specifies the Git repository URL, it can be an HTTP/S or SSH address.
@@ -61,6 +69,14 @@ Optional:
 
 - `name` (String) Name of the referent.
 
+
+
+<a id="nestedblock--spec--proxy_secret_ref"></a>
+### Nested Schema for `spec.proxy_secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
 
 
 <a id="nestedblock--spec--ref"></a>
@@ -116,6 +132,9 @@ Optional:
 - `observed_ignore` (String) ObservedIgnore is the observed exclusion patterns used for constructing the source artifact.
 - `observed_include` (Block List) ObservedInclude is the observed list of GitRepository resources used to produce the current Artifact. (see [below for nested schema](#nestedblock--status--observed_include))
 - `observed_recurse_submodules` (Boolean) ObservedRecurseSubmodules is the observed resource submodules configuration used to produce the current Artifact.
+- `observed_sparse_checkout` (List of String) ObservedSparseCheckout is the observed list of directories used to
+produce the current Artifact.
+- `source_verification_mode` (String) SourceVerificationMode is the last used verification mode indicating which Git object(s) have been verified.
 
 <a id="nestedblock--status--artifact"></a>
 ### Nested Schema for `status.artifact`

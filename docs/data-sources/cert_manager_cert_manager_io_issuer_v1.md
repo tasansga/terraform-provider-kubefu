@@ -48,11 +48,15 @@ Optional:
 
 Optional:
 
+- `ca_bundle` (String) Base64-encoded bundle of PEM CAs which can be used to validate the certificate chain presented by the ACME server. Mutually exclusive with SkipTLSVerify; prefer using CABundle to prevent various kinds of security vulnerabilities. If CABundle and SkipTLSVerify are unset, the system certificate bundle inside the container is used to validate the TLS connection.
 - `disable_account_key_generation` (Boolean) Enables or disables generating a new ACME account key. If true, the Issuer resource will *not* request a new account but will expect the account key to be supplied via an existing secret. If false, the cert-manager system will generate a new ACME account key for the Issuer. Defaults to false.
 - `email` (String) Email is the email address to be associated with the ACME account. This field is optional, but it is strongly recommended to be set. It will be used to contact you in case of issues with your account or certificates, including expiry notification emails. This field may be updated after the account is initially registered.
+- `enable_duration_feature` (Boolean) Enables requesting a Not After date on certificates that matches the duration of the certificate. This is not supported by all ACME servers like Let's Encrypt. If set to true when the ACME server does not support it it will create an error on the Order. Defaults to false.
 - `external_account_binding` (Block List, Max: 1) ExternalAccountBinding is a reference to a CA external account of the ACME server. If set, upon registration cert-manager will attempt to associate the given external account credentials with the registered ACME account. (see [below for nested schema](#nestedblock--spec--acme--external_account_binding))
 - `preferred_chain` (String) PreferredChain is the chain to use if the ACME server outputs multiple. PreferredChain is no guarantee that this one gets delivered by the ACME endpoint. For example, for Let's Encrypt's DST crosssign you would use: "DST Root CA X3" or "ISRG Root X1" for the newer Let's Encrypt root CA. This value picks the first certificate bundle in the ACME alternative chains that has a certificate with this value as its issuer's CN
 - `private_key_secret_ref` (Block List, Max: 1) PrivateKey is the name of a Kubernetes Secret resource that will be used to store the automatically generated ACME account private key. Optionally, a `key` may be specified to select a specific entry within the named Secret resource. If `key` is not specified, a default of `tls.key` will be used. (see [below for nested schema](#nestedblock--spec--acme--private_key_secret_ref))
+- `profile` (String) Profile allows requesting a certificate profile from the ACME server.
+Supported profiles are listed by the server's ACME directory URL.
 - `server` (String) Server is the URL used to access the ACME server's 'directory' endpoint. For example, for Let's Encrypt's staging endpoint, you would use: "https://acme-staging-v02.api.letsencrypt.org/directory". Only ACME v2 endpoints (i.e. RFC 8555) are supported.
 - `skip_tls_verify` (Boolean) Enables or disables validation of the ACME server TLS certificate. If true, requests to the ACME server will not have their TLS certificate validated (i.e. insecure connections will be allowed). Only enable this option in development environments. The cert-manager system installed roots will be used to verify connections to the ACME server if this is false. Defaults to false.
 - `solvers` (Block List) Solvers is a list of challenge solvers that will be used to solve ACME challenges for the matching domains. Solver configurations must be provided in order to obtain certificates from an ACME server. For more information, see: https://cert-manager.io/docs/configuration/acme/ (see [below for nested schema](#nestedblock--spec--acme--solvers))
@@ -173,10 +177,11 @@ Optional:
 
 - `client_id` (String) if both this and ClientSecret are left unset MSI will be used
 - `client_secret_secret_ref` (Block List, Max: 1) if both this and ClientID are left unset MSI will be used (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--azure_dns--client_secret_secret_ref))
-- `environment` (String)
-- `hosted_zone_name` (String)
-- `resource_group_name` (String)
-- `subscription_id` (String)
+- `environment` (String) name of the Azure environment (default AzurePublicCloud)
+- `hosted_zone_name` (String) name of the DNS zone that should be used
+- `managed_identity` (Block List, Max: 1) managed identity configuration, can not be used at the same time as clientID, clientSecretSecretRef or tenantID (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--azure_dns--managed_identity))
+- `resource_group_name` (String) resource group the DNS zone is located in
+- `subscription_id` (String) ID of the Azure subscription
 - `tenant_id` (String) when specifying ClientID and ClientSecret then this field is also needed
 
 <a id="nestedblock--spec--acme--solvers--dns01--azure_dns--client_secret_secret_ref"></a>
@@ -186,6 +191,16 @@ Optional:
 
 - `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
+
+<a id="nestedblock--spec--acme--solvers--dns01--azure_dns--managed_identity"></a>
+### Nested Schema for `spec.acme.solvers.dns01.azure_dns.managed_identity`
+
+Optional:
+
+- `client_id` (String) client ID of the managed identity, can not be used at the same time as resourceID
+- `resource_id` (String) resource ID of the managed identity, can not be used at the same time as clientID
+- `tenant_id` (String) tenant ID of the managed identity, can not be used at the same time as resourceID
 
 
 
@@ -259,6 +274,7 @@ Optional:
 Optional:
 
 - `nameserver` (String) The IP address or hostname of an authoritative DNS server supporting RFC2136 in the form host:port. If the host is an IPv6 address it must be enclosed in square brackets (e.g [2001:db8::1]) ; port is optional. This field is required.
+- `protocol` (String) Protocol to use for dynamic DNS update queries. Valid values are (case-sensitive) ``TCP`` and ``UDP``; ``UDP`` (default).
 - `tsig_algorithm` (String) The TSIG Algorithm configured in the DNS supporting RFC2136. Used only when ``tsigSecretSecretRef`` and ``tsigKeyName`` are defined. Supported values are (case-insensitive): ``HMACMD5`` (default), ``HMACSHA1``, ``HMACSHA256`` or ``HMACSHA512``.
 - `tsig_key_name` (String) The TSIG Key name configured in the DNS. If ``tsigSecretSecretRef`` is defined, this field is required.
 - `tsig_secret_secret_ref` (Block List, Max: 1) The name of the secret containing the TSIG value. If ``tsigKeyName`` is defined, this field is required. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--rfc2136--tsig_secret_secret_ref))
@@ -279,10 +295,52 @@ Optional:
 Optional:
 
 - `access_key_id` (String) The AccessKeyID is used for authentication. If not set we fall-back to using env vars, shared credentials file or AWS Instance metadata see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
+- `access_key_id_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication. If set, pull the AWS access key ID from a key within a Kubernetes Secret. Cannot be set when AccessKeyID is set. If neither the Access Key nor Key ID are set, we fall-back to using env vars, shared credentials file or AWS Instance metadata, see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--route53--access_key_id_secret_ref))
+- `auth` (Block List, Max: 1) Auth configures how cert-manager authenticates. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--route53--auth))
 - `hosted_zone_id` (String) If set, the provider will manage only this zone in Route53 and will not do an lookup using the route53:ListHostedZonesByName api call.
 - `region` (String) Always set the region when using AccessKeyID and SecretAccessKey
 - `role` (String) Role is a Role ARN which the Route53 provider will assume using either the explicit credentials AccessKeyID/SecretAccessKey or the inferred credentials from environment variables, shared credentials file or AWS Instance metadata
 - `secret_access_key_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication. If not set we fall-back to using env vars, shared credentials file or AWS Instance metadata https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--route53--secret_access_key_secret_ref))
+
+<a id="nestedblock--spec--acme--solvers--dns01--route53--access_key_id_secret_ref"></a>
+### Nested Schema for `spec.acme.solvers.dns01.route53.access_key_id_secret_ref`
+
+Optional:
+
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
+
+<a id="nestedblock--spec--acme--solvers--dns01--route53--auth"></a>
+### Nested Schema for `spec.acme.solvers.dns01.route53.auth`
+
+Optional:
+
+- `kubernetes` (Block List, Max: 1) Kubernetes authenticates with Route53 using AssumeRoleWithWebIdentity
+by passing a bound ServiceAccount token. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--route53--auth--kubernetes))
+
+<a id="nestedblock--spec--acme--solvers--dns01--route53--auth--kubernetes"></a>
+### Nested Schema for `spec.acme.solvers.dns01.route53.auth.kubernetes`
+
+Optional:
+
+- `service_account_ref` (Block List, Max: 1) A reference to a service account that will be used to request a bound
+token (also known as "projected token"). To use this field, you must
+configure an RBAC rule to let cert-manager request a token. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--route53--auth--kubernetes--service_account_ref))
+
+<a id="nestedblock--spec--acme--solvers--dns01--route53--auth--kubernetes--service_account_ref"></a>
+### Nested Schema for `spec.acme.solvers.dns01.route53.auth.kubernetes.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String) TokenAudiences is an optional list of audiences to include in the
+token passed to AWS. The default token consisting of the issuer's namespace
+and name is always included.
+If unset the audience defaults to `sts.amazonaws.com`.
+- `name` (String) Name of the ServiceAccount used to request a token.
+
+
+
 
 <a id="nestedblock--spec--acme--solvers--dns01--route53--secret_access_key_secret_ref"></a>
 ### Nested Schema for `spec.acme.solvers.dns01.route53.secret_access_key_secret_ref`
@@ -310,7 +368,790 @@ Optional:
 
 Optional:
 
+- `gateway_http_route` (Block List, Max: 1) The Gateway API is a sig-network community API that models service networking in Kubernetes (https://gateway-api.sigs.k8s.io/). The Gateway solver will create HTTPRoutes with the specified labels in the same namespace as the challenge. This solver is experimental, and fields / behaviour may change in the future. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route))
 - `ingress` (Block List, Max: 1) The ingress based HTTP01 challenge solver will solve challenges by creating or modifying Ingress resources in order to route requests for '/.well-known/acme-challenge/XYZ' to 'challenge solver' pods that are provisioned by cert-manager for each Challenge to be completed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route`
+
+Optional:
+
+- `labels` (Map of String) The labels that cert-manager will use when creating the temporary HTTPRoute needed for solving the HTTP-01 challenge. These labels must match the label selector of at least one Gateway.
+- `parent_refs` (Block List) When solving an HTTP-01 challenge, cert-manager creates an HTTPRoute. cert-manager needs to know which parentRefs should be used when creating the HTTPRoute. Usually, the parentRef references a Gateway. See: https://gateway-api.sigs.k8s.io/v1alpha2/api-types/httproute/#attaching-to-gateways (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--parent_refs))
+- `pod_template` (Block List, Max: 1) Optional pod template used to configure the ACME challenge solver pods
+used for HTTP01 challenges. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template))
+- `service_type` (String) Optional service type for Kubernetes solver service. Supported values are NodePort or ClusterIP. If unset, defaults to NodePort.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--parent_refs"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.parent_refs`
+
+Optional:
+
+- `group` (String) Group is the group of the referent.
+ Support: Core
+- `kind` (String) Kind is kind of the referent.
+ Support: Core (Gateway) Support: Custom (Other Resources)
+- `name` (String) Name is the name of the referent.
+ Support: Core
+- `namespace` (String) Namespace is the namespace of the referent. When unspecified (or empty string), this refers to the local namespace of the Route.
+ Support: Core
+- `port` (Number) Port is the network port this Route targets. It can be interpreted differently based on the type of parent resource.
+ When the parent resource is a Gateway, this targets all listeners listening on the specified port that also support this kind of Route(and select this Route). It's not recommended to set `Port` unless the networking behaviors specified in a Route must apply to a specific port as opposed to a listener(s) whose port(s) may be changed. When both Port and SectionName are specified, the name and port of the selected listener must match both specified values.
+ Implementations MAY choose to support other parent resources. Implementations supporting other types of parent resources MUST clearly document how/if Port is interpreted.
+ For the purpose of status, an attachment is considered successful as long as the parent resource accepts it partially. For example, Gateway listeners can restrict which Routes can attach to them by Route kind, namespace, or hostname. If 1 of 2 Gateway listeners accept attachment from the referencing Route, the Route MUST be considered successfully attached. If no Gateway listeners accept attachment from this Route, the Route MUST be considered detached from the Gateway.
+ Support: Extended
+ <gateway:experimental>
+- `section_name` (String) SectionName is the name of a section within the target resource. In the following resources, SectionName is interpreted as the following:
+ * Gateway: Listener Name
+ Implementations MAY choose to support attaching Routes to other resources. If that is the case, they MUST clearly document how SectionName is interpreted.
+ When unspecified (empty string), this will reference the entire resource. For the purpose of status, an attachment is considered successful if at least one section in the parent resource accepts it. For example, Gateway listeners can restrict which Routes can attach to them by Route kind, namespace, or hostname. If 1 of 2 Gateway listeners accept attachment from the referencing Route, the Route MUST be considered successfully attached. If no Gateway listeners accept attachment from this Route, the Route MUST be considered detached from the Gateway.
+ Support: Core
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template`
+
+Optional:
+
+- `metadata` (Block List, Max: 1) ObjectMeta overrides for the pod used to solve HTTP01 challenges.
+Only the 'labels' and 'annotations' fields may be set.
+If labels or annotations overlap with in-built values, the values here
+will override the in-built values. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--metadata))
+- `spec` (Block List, Max: 1) PodSpec defines overrides for the HTTP01 challenge solver pod.
+Check ACMEChallengeSolverHTTP01IngressPodSpec to find out currently supported fields.
+All other fields will be ignored. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--metadata"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.metadata`
+
+Optional:
+
+- `annotations` (Map of String) Annotations that should be added to the created ACME HTTP01 solver pods.
+- `labels` (Map of String) Labels that should be added to the created ACME HTTP01 solver pods.
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec`
+
+Optional:
+
+- `affinity` (Block List, Max: 1) If specified, the pod's scheduling constraints (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity))
+- `image_pull_secrets` (Block List) If specified, the pod's imagePullSecrets (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--image_pull_secrets))
+- `node_selector` (Map of String) NodeSelector is a selector which must be true for the pod to fit on a node.
+Selector which must match a node's labels for the pod to be scheduled on that node.
+More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+- `priority_class_name` (String) If specified, the pod's priorityClassName.
+- `resources` (Block List, Max: 1) If specified, the pod's resource requirements.
+These values override the global resource configuration flags.
+Note that when only specifying resource limits, ensure they are greater than or equal
+to the corresponding global resource requests configured via controller flags
+(--acme-http01-solver-resource-request-cpu, --acme-http01-solver-resource-request-memory).
+Kubernetes will reject pod creation if limits are lower than requests, causing challenge failures. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--resources))
+- `security_context` (Block List, Max: 1) If specified, the pod's security context (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--security_context))
+- `service_account_name` (String) If specified, the pod's service account
+- `tolerations` (Block List) If specified, the pod's tolerations. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--tolerations))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity`
+
+Optional:
+
+- `node_affinity` (Block List, Max: 1) Describes node affinity scheduling rules for the pod. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity))
+- `pod_affinity` (Block List, Max: 1) Describes pod affinity scheduling rules (e.g. co-locate this pod in the same node, zone, etc. as some other pod(s)). (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity))
+- `pod_anti_affinity` (Block List, Max: 1) Describes pod anti-affinity scheduling rules (e.g. avoid putting this pod in the same node, zone, etc. as some other pod(s)). (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity`
+
+Optional:
+
+- `preferred_during_scheduling_ignored_during_execution` (Block List) The scheduler will prefer to schedule pods to nodes that satisfy
+the affinity expressions specified by this field, but it may choose
+a node that violates one or more of the expressions. The node that is
+most preferred is the one with the greatest sum of weights, i.e.
+for each node that meets all of the scheduling requirements (resource
+request, requiredDuringScheduling affinity expressions, etc.),
+compute a sum by iterating through the elements of this field and adding
+"weight" to the sum if the node matches the corresponding matchExpressions; the
+node(s) with the highest sum are the most preferred. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (Block List, Max: 1) If the affinity requirements specified by this field are not met at
+scheduling time, the pod will not be scheduled onto the node.
+If the affinity requirements specified by this field cease to be met
+at some point during pod execution (e.g. due to an update), the system
+may or may not try to eventually evict the pod from its node. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution`
+
+Optional:
+
+- `preference` (Block List, Max: 1) A node selector term, associated with the corresponding weight. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference))
+- `weight` (Number) Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference`
+
+Optional:
+
+- `match_expressions` (Block List) A list of node selector requirements by node's labels. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_expressions))
+- `match_fields` (Block List) A list of node selector requirements by node's fields. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_fields))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_expressions`
+
+Optional:
+
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+- `values` (List of String) An array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. If the operator is Gt or Lt, the values
+array must have a single element, which will be interpreted as an integer.
+This array is replaced during a strategic merge patch.
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--preferred_during_scheduling_ignored_during_execution--preference--match_fields"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_fields`
+
+Optional:
+
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+- `values` (List of String) An array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. If the operator is Gt or Lt, the values
+array must have a single element, which will be interpreted as an integer.
+This array is replaced during a strategic merge patch.
+
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution`
+
+Optional:
+
+- `node_selector_terms` (Block List) Required. A list of node selector terms. The terms are ORed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms`
+
+Optional:
+
+- `match_expressions` (Block List) A list of node selector requirements by node's labels. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_expressions))
+- `match_fields` (Block List) A list of node selector requirements by node's fields. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_fields))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_expressions`
+
+Optional:
+
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+- `values` (List of String) An array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. If the operator is Gt or Lt, the values
+array must have a single element, which will be interpreted as an integer.
+This array is replaced during a strategic merge patch.
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--node_affinity--required_during_scheduling_ignored_during_execution--node_selector_terms--match_fields"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_fields`
+
+Optional:
+
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) Represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+- `values` (List of String) An array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. If the operator is Gt or Lt, the values
+array must have a single element, which will be interpreted as an integer.
+This array is replaced during a strategic merge patch.
+
+
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity`
+
+Optional:
+
+- `preferred_during_scheduling_ignored_during_execution` (Block List) The scheduler will prefer to schedule pods to nodes that satisfy
+the affinity expressions specified by this field, but it may choose
+a node that violates one or more of the expressions. The node that is
+most preferred is the one with the greatest sum of weights, i.e.
+for each node that meets all of the scheduling requirements (resource
+request, requiredDuringScheduling affinity expressions, etc.),
+compute a sum by iterating through the elements of this field and adding
+"weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+node(s) with the highest sum are the most preferred. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (Block List) If the affinity requirements specified by this field are not met at
+scheduling time, the pod will not be scheduled onto the node.
+If the affinity requirements specified by this field cease to be met
+at some point during pod execution (e.g. due to a pod label update), the
+system may or may not try to eventually evict the pod from its node.
+When there are multiple elements, the lists of nodes corresponding to each
+podAffinityTerm are intersected, i.e. all terms must be satisfied. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution`
+
+Optional:
+
+- `pod_affinity_term` (Block List, Max: 1) Required. A pod affinity term, associated with the corresponding weight. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term))
+- `weight` (Number) weight associated with matching the corresponding podAffinityTerm,
+in the range 1-100.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term`
+
+Optional:
+
+- `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods.
+If it's null, this PodAffinityTerm matches with no Pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both matchLabelKeys and labelSelector.
+Also, matchLabelKeys cannot be set when labelSelector isn't set.
+This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
+Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
+This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to.
+The term is applied to the union of the namespaces selected by this field
+and the ones listed in the namespaces field.
+null selector and null or empty namespaces list means "this pod's namespace".
+An empty selector ({}) matches all namespaces. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
+- `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to.
+The term is applied to the union of the namespaces listed in this field
+and the ones selected by namespaceSelector.
+null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+- `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
+the labelSelector in the specified namespaces, where co-located is defined as running on a node
+whose value of the label with key topologyKey matches that of any node on which any of the
+selected pods is running.
+Empty topologyKey is not allowed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
+
+
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution`
+
+Optional:
+
+- `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods.
+If it's null, this PodAffinityTerm matches with no Pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both matchLabelKeys and labelSelector.
+Also, matchLabelKeys cannot be set when labelSelector isn't set.
+This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
+Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
+This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to.
+The term is applied to the union of the namespaces selected by this field
+and the ones listed in the namespaces field.
+null selector and null or empty namespaces list means "this pod's namespace".
+An empty selector ({}) matches all namespaces. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
+- `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to.
+The term is applied to the union of the namespaces listed in this field
+and the ones selected by namespaceSelector.
+null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+- `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
+the labelSelector in the specified namespaces, where co-located is defined as running on a node
+whose value of the label with key topologyKey matches that of any node on which any of the
+selected pods is running.
+Empty topologyKey is not allowed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
+
+
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity`
+
+Optional:
+
+- `preferred_during_scheduling_ignored_during_execution` (Block List) The scheduler will prefer to schedule pods to nodes that satisfy
+the anti-affinity expressions specified by this field, but it may choose
+a node that violates one or more of the expressions. The node that is
+most preferred is the one with the greatest sum of weights, i.e.
+for each node that meets all of the scheduling requirements (resource
+request, requiredDuringScheduling anti-affinity expressions, etc.),
+compute a sum by iterating through the elements of this field and adding
+"weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+node(s) with the highest sum are the most preferred. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution))
+- `required_during_scheduling_ignored_during_execution` (Block List) If the anti-affinity requirements specified by this field are not met at
+scheduling time, the pod will not be scheduled onto the node.
+If the anti-affinity requirements specified by this field cease to be met
+at some point during pod execution (e.g. due to a pod label update), the
+system may or may not try to eventually evict the pod from its node.
+When there are multiple elements, the lists of nodes corresponding to each
+podAffinityTerm are intersected, i.e. all terms must be satisfied. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution`
+
+Optional:
+
+- `pod_affinity_term` (Block List, Max: 1) Required. A pod affinity term, associated with the corresponding weight. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term))
+- `weight` (Number) weight associated with matching the corresponding podAffinityTerm,
+in the range 1-100.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term`
+
+Optional:
+
+- `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods.
+If it's null, this PodAffinityTerm matches with no Pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both matchLabelKeys and labelSelector.
+Also, matchLabelKeys cannot be set when labelSelector isn't set.
+This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
+Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
+This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to.
+The term is applied to the union of the namespaces selected by this field
+and the ones listed in the namespaces field.
+null selector and null or empty namespaces list means "this pod's namespace".
+An empty selector ({}) matches all namespaces. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
+- `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to.
+The term is applied to the union of the namespaces listed in this field
+and the ones selected by namespaceSelector.
+null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+- `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
+the labelSelector in the specified namespaces, where co-located is defined as running on a node
+whose value of the label with key topologyKey matches that of any node on which any of the
+selected pods is running.
+Empty topologyKey is not allowed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
+
+
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution`
+
+Optional:
+
+- `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods.
+If it's null, this PodAffinityTerm matches with no Pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both matchLabelKeys and labelSelector.
+Also, matchLabelKeys cannot be set when labelSelector isn't set.
+This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
+Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
+This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to.
+The term is applied to the union of the namespaces selected by this field
+and the ones listed in the namespaces field.
+null selector and null or empty namespaces list means "this pod's namespace".
+An empty selector ({}) matches all namespaces. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
+- `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to.
+The term is applied to the union of the namespaces listed in this field
+and the ones selected by namespaceSelector.
+null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+- `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
+the labelSelector in the specified namespaces, where co-located is defined as running on a node
+whose value of the label with key topologyKey matches that of any node on which any of the
+selected pods is running.
+Empty topologyKey is not allowed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
+
+
+
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--image_pull_secrets"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.image_pull_secrets`
+
+Optional:
+
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--resources"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.resources`
+
+Optional:
+
+- `limits` (Map of String) Limits describes the maximum amount of compute resources allowed.
+More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+- `requests` (Map of String) Requests describes the minimum amount of compute resources required.
+If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+otherwise to the global values configured via controller flags. Requests cannot exceed Limits.
+More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--security_context"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.security_context`
+
+Optional:
+
+- `fs_group` (Number) A special supplemental group that applies to all containers in a pod.
+Some volume types allow the Kubelet to change the ownership of that volume
+to be owned by the pod:
+
+1. The owning GID will be the FSGroup
+2. The setgid bit is set (new files created in the volume will be owned by FSGroup)
+3. The permission bits are OR'd with rw-rw----
+
+If unset, the Kubelet will not modify the ownership and permissions of any volume.
+Note that this field cannot be set when spec.os.name is windows.
+- `fs_group_change_policy` (String) fsGroupChangePolicy defines behavior of changing ownership and permission of the volume
+before being exposed inside Pod. This field will only apply to
+volume types which support fsGroup based ownership(and permissions).
+It will have no effect on ephemeral volume types such as: secret, configmaps
+and emptydir.
+Valid values are "OnRootMismatch" and "Always". If not specified, "Always" is used.
+Note that this field cannot be set when spec.os.name is windows.
+- `run_as_group` (Number) The GID to run the entrypoint of the container process.
+Uses runtime default if unset.
+May also be set in SecurityContext.  If set in both SecurityContext and
+PodSecurityContext, the value specified in SecurityContext takes precedence
+for that container.
+Note that this field cannot be set when spec.os.name is windows.
+- `run_as_non_root` (Boolean) Indicates that the container must run as a non-root user.
+If true, the Kubelet will validate the image at runtime to ensure that it
+does not run as UID 0 (root) and fail to start the container if it does.
+If unset or false, no such validation will be performed.
+May also be set in SecurityContext.  If set in both SecurityContext and
+PodSecurityContext, the value specified in SecurityContext takes precedence.
+- `run_as_user` (Number) The UID to run the entrypoint of the container process.
+Defaults to user specified in image metadata if unspecified.
+May also be set in SecurityContext.  If set in both SecurityContext and
+PodSecurityContext, the value specified in SecurityContext takes precedence
+for that container.
+Note that this field cannot be set when spec.os.name is windows.
+- `se_linux_options` (Block List, Max: 1) The SELinux context to be applied to all containers.
+If unspecified, the container runtime will allocate a random SELinux context for each
+container.  May also be set in SecurityContext.  If set in
+both SecurityContext and PodSecurityContext, the value specified in SecurityContext
+takes precedence for that container.
+Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--security_context--se_linux_options))
+- `seccomp_profile` (Block List, Max: 1) The seccomp options to use by the containers in this pod.
+Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--security_context--seccomp_profile))
+- `supplemental_groups` (List of Number) A list of groups applied to the first process run in each container, in addition
+to the container's primary GID, the fsGroup (if specified), and group memberships
+defined in the container image for the uid of the container process. If unspecified,
+no additional groups are added to any container. Note that group memberships
+defined in the container image for the uid of the container process are still effective,
+even if they are not included in this list.
+Note that this field cannot be set when spec.os.name is windows.
+- `sysctls` (Block List) Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported
+sysctls (by the container runtime) might fail to launch.
+Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--security_context--sysctls))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--security_context--se_linux_options"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.security_context.se_linux_options`
+
+Optional:
+
+- `level` (String) Level is SELinux level label that applies to the container.
+- `role` (String) Role is a SELinux role label that applies to the container.
+- `type` (String) Type is a SELinux type label that applies to the container.
+- `user` (String) User is a SELinux user label that applies to the container.
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--security_context--seccomp_profile"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.security_context.seccomp_profile`
+
+Optional:
+
+- `localhost_profile` (String) localhostProfile indicates a profile defined in a file on the node should be used.
+The profile must be preconfigured on the node to work.
+Must be a descending path, relative to the kubelet's configured seccomp profile location.
+Must be set if type is "Localhost". Must NOT be set for any other type.
+- `type` (String) type indicates which kind of seccomp profile will be applied.
+Valid options are:
+
+Localhost - a profile defined in a file on the node should be used.
+RuntimeDefault - the container runtime default profile should be used.
+Unconfined - no profile should be applied.
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--security_context--sysctls"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.security_context.sysctls`
+
+Optional:
+
+- `name` (String) Name of a property to set
+- `value` (String) Value of a property to set
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route--pod_template--spec--tolerations"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route.pod_template.spec.tolerations`
+
+Optional:
+
+- `effect` (String) Effect indicates the taint effect to match. Empty means match all taint effects.
+When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+- `key` (String) Key is the taint key that the toleration applies to. Empty means match all taint keys.
+If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+- `operator` (String) Operator represents a key's relationship to the value.
+Valid operators are Exists and Equal. Defaults to Equal.
+Exists is equivalent to wildcard for value, so that a pod can
+tolerate all taints of a particular category.
+- `toleration_seconds` (Number) TolerationSeconds represents the period of time the toleration (which must be
+of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
+it is not set, which means tolerate the taint forever (do not evict). Zero and
+negative values will be treated as 0 (evict immediately) by the system.
+- `value` (String) Value is the taint value the toleration matches to.
+If the operator is Exists, the value should be empty, otherwise just a regular string.
+
+
+
+
 
 <a id="nestedblock--spec--acme--solvers--http01--ingress"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress`
@@ -318,6 +1159,10 @@ Optional:
 Optional:
 
 - `class` (String) The ingress class to use when creating Ingress resources to solve ACME challenges that use this challenge solver. Only one of 'class' or 'name' may be specified.
+- `ingress_class_name` (String) This field configures the field `ingressClassName` on the created Ingress
+resources used to solve ACME challenges that use this challenge solver.
+This is the recommended way of configuring the ingress class. Only one of
+`class`, `name` or `ingressClassName` may be specified.
 - `ingress_template` (Block List, Max: 1) Optional ingress template used to configure the ACME challenge solver ingress used for HTTP01 challenges (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--ingress_template))
 - `name` (String) The name of the ingress resource that should have ACME challenge solving routes inserted into it in order to solve HTTP01 challenges. This is typically used in conjunction with ingress controllers like ingress-gce, which maintains a 1:1 mapping between external IPs and ingress resources.
 - `pod_template` (Block List, Max: 1) Optional pod template used to configure the ACME challenge solver pods used for HTTP01 challenges (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template))
@@ -363,8 +1208,16 @@ Optional:
 Optional:
 
 - `affinity` (Block List, Max: 1) If specified, the pod's scheduling constraints (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity))
+- `image_pull_secrets` (Block List) If specified, the pod's imagePullSecrets (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--image_pull_secrets))
 - `node_selector` (Map of String) NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 - `priority_class_name` (String) If specified, the pod's priorityClassName.
+- `resources` (Block List, Max: 1) If specified, the pod's resource requirements.
+These values override the global resource configuration flags.
+Note that when only specifying resource limits, ensure they are greater than or equal
+to the corresponding global resource requests configured via controller flags
+(--acme-http01-solver-resource-request-cpu, --acme-http01-solver-resource-request-memory).
+Kubernetes will reject pod creation if limits are lower than requests, causing challenge failures. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--resources))
+- `security_context` (Block List, Max: 1) If specified, the pod's security context (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--security_context))
 - `service_account_name` (String) If specified, the pod's service account
 - `tolerations` (Block List) If specified, the pod's tolerations. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--tolerations))
 
@@ -483,6 +1336,25 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both MatchLabelKeys and LabelSelector.
+Also, MatchLabelKeys cannot be set when LabelSelector isn't set.
+This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector.
+Also, MismatchLabelKeys cannot be set when LabelSelector isn't set.
+This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
 - `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
@@ -505,6 +1377,25 @@ Optional:
 
 
 
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
 
 
 <a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution"></a>
@@ -513,6 +1404,25 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both MatchLabelKeys and LabelSelector.
+Also, MatchLabelKeys cannot be set when LabelSelector isn't set.
+This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector.
+Also, MismatchLabelKeys cannot be set when LabelSelector isn't set.
+This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
 - `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
@@ -526,6 +1436,25 @@ Optional:
 
 <a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions`
 
 Optional:
 
@@ -559,6 +1488,25 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both MatchLabelKeys and LabelSelector.
+Also, MatchLabelKeys cannot be set when LabelSelector isn't set.
+This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector.
+Also, MismatchLabelKeys cannot be set when LabelSelector isn't set.
+This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
 - `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
@@ -581,6 +1529,25 @@ Optional:
 
 
 
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
 
 
 <a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution"></a>
@@ -589,6 +1556,25 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both MatchLabelKeys and LabelSelector.
+Also, MatchLabelKeys cannot be set when LabelSelector isn't set.
+This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will
+be taken into consideration. The keys are used to lookup values from the
+incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)`
+to select the group of existing pods which pods will be taken into consideration
+for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+pod labels will be ignored. The default value is empty.
+The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector.
+Also, MismatchLabelKeys cannot be set when LabelSelector isn't set.
+This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
 - `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
@@ -611,6 +1597,144 @@ Optional:
 
 
 
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--image_pull_secrets"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.image_pull_secrets`
+
+Optional:
+
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--resources"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.resources`
+
+Optional:
+
+- `limits` (Map of String) Limits describes the maximum amount of compute resources allowed.
+More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+- `requests` (Map of String) Requests describes the minimum amount of compute resources required.
+If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+otherwise to the global values configured via controller flags. Requests cannot exceed Limits.
+More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--security_context"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.security_context`
+
+Optional:
+
+- `fs_group` (Number) A special supplemental group that applies to all containers in a pod.
+Some volume types allow the Kubelet to change the ownership of that volume
+to be owned by the pod:
+
+1. The owning GID will be the FSGroup
+2. The setgid bit is set (new files created in the volume will be owned by FSGroup)
+3. The permission bits are OR'd with rw-rw----
+
+If unset, the Kubelet will not modify the ownership and permissions of any volume.
+Note that this field cannot be set when spec.os.name is windows.
+- `fs_group_change_policy` (String) fsGroupChangePolicy defines behavior of changing ownership and permission of the volume
+before being exposed inside Pod. This field will only apply to
+volume types which support fsGroup based ownership(and permissions).
+It will have no effect on ephemeral volume types such as: secret, configmaps
+and emptydir.
+Valid values are "OnRootMismatch" and "Always". If not specified, "Always" is used.
+Note that this field cannot be set when spec.os.name is windows.
+- `run_as_group` (Number) The GID to run the entrypoint of the container process.
+Uses runtime default if unset.
+May also be set in SecurityContext.  If set in both SecurityContext and
+PodSecurityContext, the value specified in SecurityContext takes precedence
+for that container.
+Note that this field cannot be set when spec.os.name is windows.
+- `run_as_non_root` (Boolean) Indicates that the container must run as a non-root user.
+If true, the Kubelet will validate the image at runtime to ensure that it
+does not run as UID 0 (root) and fail to start the container if it does.
+If unset or false, no such validation will be performed.
+May also be set in SecurityContext.  If set in both SecurityContext and
+PodSecurityContext, the value specified in SecurityContext takes precedence.
+- `run_as_user` (Number) The UID to run the entrypoint of the container process.
+Defaults to user specified in image metadata if unspecified.
+May also be set in SecurityContext.  If set in both SecurityContext and
+PodSecurityContext, the value specified in SecurityContext takes precedence
+for that container.
+Note that this field cannot be set when spec.os.name is windows.
+- `se_linux_options` (Block List, Max: 1) The SELinux context to be applied to all containers.
+If unspecified, the container runtime will allocate a random SELinux context for each
+container.  May also be set in SecurityContext.  If set in
+both SecurityContext and PodSecurityContext, the value specified in SecurityContext
+takes precedence for that container.
+Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--security_context--se_linux_options))
+- `seccomp_profile` (Block List, Max: 1) The seccomp options to use by the containers in this pod.
+Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--security_context--seccomp_profile))
+- `supplemental_groups` (List of Number) A list of groups applied to the first process run in each container, in addition
+to the container's primary GID, the fsGroup (if specified), and group memberships
+defined in the container image for the uid of the container process. If unspecified,
+no additional groups are added to any container. Note that group memberships
+defined in the container image for the uid of the container process are still effective,
+even if they are not included in this list.
+Note that this field cannot be set when spec.os.name is windows.
+- `sysctls` (Block List) Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported
+sysctls (by the container runtime) might fail to launch.
+Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--security_context--sysctls))
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--security_context--se_linux_options"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.security_context.se_linux_options`
+
+Optional:
+
+- `level` (String) Level is SELinux level label that applies to the container.
+- `role` (String) Role is a SELinux role label that applies to the container.
+- `type` (String) Type is a SELinux type label that applies to the container.
+- `user` (String) User is a SELinux user label that applies to the container.
+
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--security_context--seccomp_profile"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.security_context.seccomp_profile`
+
+Optional:
+
+- `localhost_profile` (String) localhostProfile indicates a profile defined in a file on the node should be used.
+The profile must be preconfigured on the node to work.
+Must be a descending path, relative to the kubelet's configured seccomp profile location.
+Must be set if type is "Localhost". Must NOT be set for any other type.
+- `type` (String) type indicates which kind of seccomp profile will be applied.
+Valid options are:
+
+Localhost - a profile defined in a file on the node should be used.
+RuntimeDefault - the container runtime default profile should be used.
+Unconfined - no profile should be applied.
+
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--security_context--sysctls"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.security_context.sysctls`
+
+Optional:
+
+- `name` (String) Name of a property to set
+- `value` (String) Value of a property to set
 
 
 
@@ -648,6 +1772,8 @@ Optional:
 Optional:
 
 - `crl_distribution_points` (List of String) The CRL distribution points is an X.509 v3 certificate extension which identifies the location of the CRL from which the revocation of this certificate can be checked. If not set, certificates will be issued without distribution points set.
+- `issuing_certificate_ur_ls` (List of String) IssuingCertificateURLs is a list of URLs which this issuer should embed into certificates it creates. See https://www.rfc-editor.org/rfc/rfc5280#section-4.2.2.1 for more details. As an example, such a URL might be "http://ca.domain.com/ca.crt".
+- `ocsp_servers` (List of String) The OCSP server list is an X.509 v3 extension that defines a list of URLs of OCSP responders. The OCSP responders can be queried for the revocation status of an issued certificate. If not set, the certificate wil be issued with no OCSP servers set. For example, an OCSP server URL could be "http://ocsp.int-x3.letsencrypt.org".
 - `secret_name` (String) SecretName is the name of the secret used to sign Certificates issued by this Issuer.
 
 
@@ -666,9 +1792,16 @@ Optional:
 
 - `auth` (Block List, Max: 1) Auth configures how cert-manager authenticates with the Vault server. (see [below for nested schema](#nestedblock--spec--vault--auth))
 - `ca_bundle` (String) PEM encoded CA bundle used to validate Vault server certificate. Only used if the Server URL is using HTTPS protocol. This parameter is ignored for plain HTTP protocol connection. If not set the system root certificates are used to validate the TLS connection.
+- `ca_bundle_secret_ref` (Block List, Max: 1) CABundleSecretRef is a reference to a Secret which contains the CABundle which will be used when connecting to Vault when using HTTPS. Mutually exclusive with CABundle. If neither CABundleSecretRef nor CABundle are defined, the cert-manager controller system root certificates are used to validate the TLS connection. If no key for the Secret is specified, cert-manager will default to 'ca.crt'. (see [below for nested schema](#nestedblock--spec--vault--ca_bundle_secret_ref))
+- `client_cert_secret_ref` (Block List, Max: 1) Reference to a Secret containing a PEM-encoded Client Certificate to use when the
+Vault server requires mTLS. (see [below for nested schema](#nestedblock--spec--vault--client_cert_secret_ref))
+- `client_key_secret_ref` (Block List, Max: 1) Reference to a Secret containing a PEM-encoded Client Private Key to use when the
+Vault server requires mTLS. (see [below for nested schema](#nestedblock--spec--vault--client_key_secret_ref))
 - `namespace` (String) Name of the vault namespace. Namespaces is a set of features within Vault Enterprise that allows Vault environments to support Secure Multi-tenancy. e.g: "ns1" More about namespaces can be found here https://www.vaultproject.io/docs/enterprise/namespaces
 - `path` (String) Path is the mount path of the Vault PKI backend's `sign` endpoint, e.g: "my_pki_mount/sign/my-role-name".
 - `server` (String) Server is the connection address for the Vault server, e.g: "https://vault.example.com:8200".
+- `server_name` (String) ServerName is used to verify the hostname on the returned certificates
+by the Vault server.
 
 <a id="nestedblock--spec--vault--auth"></a>
 ### Nested Schema for `spec.vault.auth`
@@ -676,6 +1809,9 @@ Optional:
 Optional:
 
 - `app_role` (Block List, Max: 1) AppRole authenticates with Vault using the App Role auth mechanism, with the role and secret stored in a Kubernetes Secret resource. (see [below for nested schema](#nestedblock--spec--vault--auth--app_role))
+- `client_certificate` (Block List, Max: 1) ClientCertificate authenticates with Vault by presenting a client
+certificate during the request's TLS handshake.
+Works only when using HTTPS protocol. (see [below for nested schema](#nestedblock--spec--vault--auth--client_certificate))
 - `kubernetes` (Block List, Max: 1) Kubernetes authenticates with Vault by passing the ServiceAccount token stored in the named Secret resource to the Vault server. (see [below for nested schema](#nestedblock--spec--vault--auth--kubernetes))
 - `token_secret_ref` (Block List, Max: 1) TokenSecretRef authenticates with Vault by presenting a token. (see [below for nested schema](#nestedblock--spec--vault--auth--token_secret_ref))
 
@@ -698,6 +1834,22 @@ Optional:
 
 
 
+<a id="nestedblock--spec--vault--auth--client_certificate"></a>
+### Nested Schema for `spec.vault.auth.client_certificate`
+
+Optional:
+
+- `mount_path` (String) The Vault mountPath here is the mount path to use when authenticating with
+Vault. For example, setting a value to `/v1/auth/foo`, will use the path
+`/v1/auth/foo/login` to authenticate with Vault. If unspecified, the
+default value "/v1/auth/cert" will be used.
+- `name` (String) Name of the certificate role to authenticate against.
+If not set, matching any certificate role, if available.
+- `secret_name` (String) Reference to Kubernetes Secret of type "kubernetes.io/tls" (hence containing
+tls.crt and tls.key) used to authenticate to Vault using TLS client
+authentication.
+
+
 <a id="nestedblock--spec--vault--auth--kubernetes"></a>
 ### Nested Schema for `spec.vault.auth.kubernetes`
 
@@ -706,6 +1858,11 @@ Optional:
 - `mount_path` (String) The Vault mountPath here is the mount path to use when authenticating with Vault. For example, setting a value to `/v1/auth/foo`, will use the path `/v1/auth/foo/login` to authenticate with Vault. If unspecified, the default value "/v1/auth/kubernetes" will be used.
 - `role` (String) A required field containing the Vault Role to assume. A Role binds a Kubernetes ServiceAccount with a set of Vault policies.
 - `secret_ref` (Block List, Max: 1) The required Secret field containing a Kubernetes ServiceAccount JWT used for authenticating with Vault. Use of 'ambient credentials' is not supported. (see [below for nested schema](#nestedblock--spec--vault--auth--kubernetes--secret_ref))
+- `service_account_ref` (Block List, Max: 1) A reference to a service account that will be used to request a bound
+token (also known as "projected token"). Compared to using "secretRef",
+using this field means that you don't rely on statically bound tokens. To
+use this field, you must configure an RBAC rule to let cert-manager
+request a token. (see [below for nested schema](#nestedblock--spec--vault--auth--kubernetes--service_account_ref))
 
 <a id="nestedblock--spec--vault--auth--kubernetes--secret_ref"></a>
 ### Nested Schema for `spec.vault.auth.kubernetes.secret_ref`
@@ -714,6 +1871,16 @@ Optional:
 
 - `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
+
+<a id="nestedblock--spec--vault--auth--kubernetes--service_account_ref"></a>
+### Nested Schema for `spec.vault.auth.kubernetes.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String) TokenAudiences is an optional list of extra audiences to include in the token passed to Vault. The default token
+consisting of the issuer's namespace and name is always included.
+- `name` (String) Name of the ServiceAccount used to request a token.
 
 
 
@@ -725,6 +1892,39 @@ Optional:
 - `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
+
+
+<a id="nestedblock--spec--vault--ca_bundle_secret_ref"></a>
+### Nested Schema for `spec.vault.ca_bundle_secret_ref`
+
+Optional:
+
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
+
+<a id="nestedblock--spec--vault--client_cert_secret_ref"></a>
+### Nested Schema for `spec.vault.client_cert_secret_ref`
+
+Optional:
+
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used.
+Some instances of this field may be defaulted, in others it may be
+required.
+- `name` (String) Name of the resource being referred to.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
+
+<a id="nestedblock--spec--vault--client_key_secret_ref"></a>
+### Nested Schema for `spec.vault.client_key_secret_ref`
+
+Optional:
+
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used.
+Some instances of this field may be defaulted, in others it may be
+required.
+- `name` (String) Name of the resource being referred to.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 
@@ -761,8 +1961,25 @@ Optional:
 Optional:
 
 - `ca_bundle` (String) CABundle is a PEM encoded TLS certificate to use to verify connections to the TPP instance. If specified, system roots will not be used and the issuing CA for the TPP instance must be verifiable using the provided root. If not specified, the connection will be verified using the cert-manager system root certificates.
+- `ca_bundle_secret_ref` (Block List, Max: 1) Reference to a Secret containing a base64-encoded bundle of PEM CAs
+which will be used to validate the certificate chain presented by the TPP server.
+Only used if using HTTPS; ignored for HTTP. Mutually exclusive with CABundle.
+If neither CABundle nor CABundleSecretRef is defined, the certificate bundle in
+the cert-manager controller container is used to validate the TLS connection. (see [below for nested schema](#nestedblock--spec--venafi--tpp--ca_bundle_secret_ref))
 - `credentials_ref` (Block List, Max: 1) CredentialsRef is a reference to a Secret containing the username and password for the TPP server. The secret must contain two keys, 'username' and 'password'. (see [below for nested schema](#nestedblock--spec--venafi--tpp--credentials_ref))
 - `url` (String) URL is the base URL for the vedsdk endpoint of the Venafi TPP instance, for example: "https://tpp.example.com/vedsdk".
+
+<a id="nestedblock--spec--venafi--tpp--ca_bundle_secret_ref"></a>
+### Nested Schema for `spec.venafi.tpp.ca_bundle_secret_ref`
+
+Optional:
+
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used.
+Some instances of this field may be defaulted, in others it may be
+required.
+- `name` (String) Name of the resource being referred to.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
 
 <a id="nestedblock--spec--venafi--tpp--credentials_ref"></a>
 ### Nested Schema for `spec.venafi.tpp.credentials_ref`
@@ -788,6 +2005,9 @@ Optional:
 
 Optional:
 
+- `last_private_key_hash` (String) LastPrivateKeyHash is a hash of the private key associated with the latest
+registered ACME account, in order to track changes made to registered account
+associated with the Issuer
 - `last_registered_email` (String) LastRegisteredEmail is the email associated with the latest registered ACME account, in order to track changes made to registered account associated with the  Issuer
 - `uri` (String) URI is the unique account identifier, which can also be used to retrieve account details from the CA
 
@@ -799,6 +2019,7 @@ Optional:
 
 - `last_transition_time` (String) LastTransitionTime is the timestamp corresponding to the last status change of this condition.
 - `message` (String) Message is a human readable description of the details of the last transition, complementing reason.
+- `observed_generation` (Number) If set, this represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.condition[x].observedGeneration is 9, the condition is out of date with respect to the current state of the Issuer.
 - `reason` (String) Reason is a brief machine readable explanation for the condition's last transition.
 - `status` (String) Status of the condition, one of ('True', 'False', 'Unknown').
 - `type` (String) Type of the condition, known values are ('Ready').

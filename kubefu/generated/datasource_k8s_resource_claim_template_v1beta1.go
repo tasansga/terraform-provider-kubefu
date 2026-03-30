@@ -537,6 +537,13 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Beta1() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"distinct_attribute": {
+												Type:        schema.TypeString,
+												Description: "DistinctAttribute requires that all devices in question have this attribute and that its type and value are unique across those devices.\n\nThis acts as the inverse of MatchAttribute.\n\nThis constraint is used to avoid allocating multiple requests to the same device by ensuring attribute-level differentiation.\n\nThis is useful for scenarios where resource requests must be fulfilled by separate physical devices. For example, a container requests two network interfaces that must be allocated from two different physical NICs.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"match_attribute": {
 												Type:        schema.TypeString,
 												Description: "MatchAttribute requires that all devices in question have this attribute and that its type and value are the same across those devices.\n\nFor example, if you specified \"dra.example.com/numa\" (a hypothetical example!), then only devices in the same NUMA node will be chosen. A device which does not have that attribute will not be chosen. All devices should use a value of the same type for this attribute because that is part of its specification, but if one device doesn't, then it also will not be chosen.\n\nMust include the domain qualifier.",
@@ -575,6 +582,23 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Beta1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"capacity": {
+												Type:        schema.TypeList,
+												Description: "Capacity define resource requirements against each capacity.\n\nIf this field is unset and the device supports multiple allocations, the default value will be applied to each capacity according to requestPolicy. For the capacity that has no requestPolicy, default is the full capacity value.\n\nApplies to each device allocation. If Count > 1, the request fails if there aren't enough devices that meet the requirements. If AllocationMode is set to All, the request fails if there are devices that otherwise match the request, and have this capacity, with a value >= the requested amount, but which cannot be allocated to this request.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"requests": {
+														Type:        schema.TypeMap,
+														Description: "Requests represent individual device resource requests for distinct resources, all of which must be provided by the device.\n\nThis value is used as an additional filtering condition against the available capacity on the device. This is semantically equivalent to a CEL selector with `device.capacity[<domain>].<name>.compareTo(quantity(<request quantity>)) >= 0`. For example, device.capacity['test-driver.cdi.k8s.io'].counters.compareTo(quantity('2')) >= 0.\n\nWhen a requestPolicy is defined, the requested amount is adjusted upward to the nearest valid value based on the policy. If the requested amount cannot be adjusted to a valid value—because it exceeds what the requestPolicy allows— the device is considered ineligible for allocation.\n\nFor any capacity that is not explicitly requested: - If no requestPolicy is set, the default consumed capacity is equal to the full device capacity\n  (i.e., the whole device is claimed).\n- If a requestPolicy is set, the default consumed capacity is determined according to that policy.\n\nIf the device allows multiple allocation, the aggregated amount across all requests must not exceed the capacity value. The consumed capacity, which may be adjusted based on the requestPolicy if defined, is recorded in the resource claim’s status.devices[*].consumedCapacity field.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
 											"count_": {
 												Type:        schema.TypeInt,
 												Description: "Count is used only when the count mode is \"ExactCount\". Must be greater than zero. If AllocationMode is ExactCount and this field is not specified, the default is one.",
@@ -585,9 +609,133 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Beta1() *schema.Resource {
 											"device_class_name": {
 												Type:        schema.TypeString,
 												Description: "DeviceClassName references a specific DeviceClass, which can define additional configuration and selectors to be inherited by this request.\n\nA class is required. Which classes are available depends on the cluster.\n\nAdministrators may use this to restrict which devices may get requested by only installing classes with selectors for permitted devices. If users are free to request anything without restrictions, then administrators can create an empty DeviceClass for users to reference.",
-												Optional:    false,
-												Required:    true,
-												Computed:    false,
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"first_available": {
+												Type:        schema.TypeList,
+												Description: "FirstAvailable contains subrequests, of which exactly one will be satisfied by the scheduler to satisfy this request. It tries to satisfy them in the order in which they are listed here. So if there are two entries in the list, the scheduler will only check the second one if it determines that the first one cannot be used.\n\nThis field may only be set in the entries of DeviceClaim.Requests.\n\nDRA does not yet implement scoring, so the scheduler will select the first set of devices that satisfies all the requests in the claim. And if the requirements can be satisfied on more than one node, other scheduling features will determine which node is chosen. This means that the set of devices allocated to a claim might not be the optimal set available to the cluster. Scoring will be implemented later.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"allocation_mode": {
+														Type:        schema.TypeString,
+														Description: "AllocationMode and its related fields define how devices are allocated to satisfy this subrequest. Supported values are:\n\n- ExactCount: This request is for a specific number of devices.\n  This is the default. The exact number is provided in the\n  count field.\n\n- All: This subrequest is for all of the matching devices in a pool.\n  Allocation will fail if some devices are already allocated,\n  unless adminAccess is requested.\n\nIf AllocationMode is not specified, the default mode is ExactCount. If the mode is ExactCount and count is not specified, the default count is one. Any other subrequests must specify this field.\n\nMore modes may get added in the future. Clients must refuse to handle requests with unknown modes.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"capacity": {
+														Type:        schema.TypeList,
+														Description: "Capacity define resource requirements against each capacity.\n\nIf this field is unset and the device supports multiple allocations, the default value will be applied to each capacity according to requestPolicy. For the capacity that has no requestPolicy, default is the full capacity value.\n\nApplies to each device allocation. If Count > 1, the request fails if there aren't enough devices that meet the requirements. If AllocationMode is set to All, the request fails if there are devices that otherwise match the request, and have this capacity, with a value >= the requested amount, but which cannot be allocated to this request.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														MaxItems:    1,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"requests": {
+																Type:        schema.TypeMap,
+																Description: "Requests represent individual device resource requests for distinct resources, all of which must be provided by the device.\n\nThis value is used as an additional filtering condition against the available capacity on the device. This is semantically equivalent to a CEL selector with `device.capacity[<domain>].<name>.compareTo(quantity(<request quantity>)) >= 0`. For example, device.capacity['test-driver.cdi.k8s.io'].counters.compareTo(quantity('2')) >= 0.\n\nWhen a requestPolicy is defined, the requested amount is adjusted upward to the nearest valid value based on the policy. If the requested amount cannot be adjusted to a valid value—because it exceeds what the requestPolicy allows— the device is considered ineligible for allocation.\n\nFor any capacity that is not explicitly requested: - If no requestPolicy is set, the default consumed capacity is equal to the full device capacity\n  (i.e., the whole device is claimed).\n- If a requestPolicy is set, the default consumed capacity is determined according to that policy.\n\nIf the device allows multiple allocation, the aggregated amount across all requests must not exceed the capacity value. The consumed capacity, which may be adjusted based on the requestPolicy if defined, is recorded in the resource claim’s status.devices[*].consumedCapacity field.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+														}},
+													},
+													"count_": {
+														Type:        schema.TypeInt,
+														Description: "Count is used only when the count mode is \"ExactCount\". Must be greater than zero. If AllocationMode is ExactCount and this field is not specified, the default is one.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"device_class_name": {
+														Type:        schema.TypeString,
+														Description: "DeviceClassName references a specific DeviceClass, which can define additional configuration and selectors to be inherited by this subrequest.\n\nA class is required. Which classes are available depends on the cluster.\n\nAdministrators may use this to restrict which devices may get requested by only installing classes with selectors for permitted devices. If users are free to request anything without restrictions, then administrators can create an empty DeviceClass for users to reference.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"name": {
+														Type:        schema.TypeString,
+														Description: "Name can be used to reference this subrequest in the list of constraints or the list of configurations for the claim. References must use the format <main request>/<subrequest>.\n\nMust be a DNS label.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"selectors": {
+														Type:        schema.TypeList,
+														Description: "Selectors define criteria which must be satisfied by a specific device in order for that device to be considered for this subrequest. All selectors must be satisfied for a device to be considered.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"cel": {
+																Type:        schema.TypeList,
+																Description: "CEL contains a CEL expression for selecting a device.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+																MaxItems:    1,
+																Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+																	"expression": {
+																		Type:        schema.TypeString,
+																		Description: "Expression is a CEL expression which evaluates a single device. It must evaluate to true when the device under consideration satisfies the desired criteria, and false when it does not. Any other result is an error and causes allocation of devices to abort.\n\nThe expression's input is an object named \"device\", which carries the following properties:\n - driver (string): the name of the driver which defines this device.\n - attributes (map[string]object): the device's attributes, grouped by prefix\n   (e.g. device.attributes[\"dra.example.com\"] evaluates to an object with all\n   of the attributes which were prefixed by \"dra.example.com\".\n - capacity (map[string]object): the device's capacities, grouped by prefix.\n\nExample: Consider a device with driver=\"dra.example.com\", which exposes two attributes named \"model\" and \"ext.example.com/family\" and which exposes one capacity named \"modules\". This input to this expression would have the following fields:\n\n    device.driver\n    device.attributes[\"dra.example.com\"].model\n    device.attributes[\"ext.example.com\"].family\n    device.capacity[\"dra.example.com\"].modules\n\nThe device.driver field can be used to check for a specific driver, either as a high-level precondition (i.e. you only want to consider devices from this driver) or as part of a multi-clause expression that is meant to consider devices from different drivers.\n\nThe value type of each attribute is defined by the device definition, and users who write these expressions must consult the documentation for their specific drivers. The value type of each capacity is Quantity.\n\nIf an unknown prefix is used as a lookup in either device.attributes or device.capacity, an empty map will be returned. Any reference to an unknown field will cause an evaluation error and allocation to abort.\n\nA robust expression should check for the existence of attributes before referencing them.\n\nFor ease of use, the cel.bind() function is enabled, and can be used to simplify expressions that access multiple attributes with the same domain. For example:\n\n    cel.bind(dra, device.attributes[\"dra.example.com\"], dra.someBool && dra.anotherBool)\n\nThe length of the expression must be smaller or equal to 10 Ki. The cost of evaluating it is also limited based on the estimated number of logical steps.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
+																}},
+															},
+														}},
+													},
+													"tolerations": {
+														Type:        schema.TypeList,
+														Description: "If specified, the request's tolerations.\n\nTolerations for NoSchedule are required to allocate a device which has a taint with that effect. The same applies to NoExecute.\n\nIn addition, should any of the allocated devices get tainted with NoExecute after allocation and that effect is not tolerated, then all pods consuming the ResourceClaim get deleted to evict them. The scheduler will not let new pods reserve the claim while it has these tainted devices. Once all pods are evicted, the claim will get deallocated.\n\nThe maximum number of tolerations is 16.\n\nThis is an alpha field and requires enabling the DRADeviceTaints feature gate.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"effect": {
+																Type:        schema.TypeString,
+																Description: "Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule and NoExecute.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"key": {
+																Type:        schema.TypeString,
+																Description: "Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys. Must be a label name.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"operator": {
+																Type:        schema.TypeString,
+																Description: "Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a ResourceClaim can tolerate all taints of a particular category.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"toleration_seconds": {
+																Type:        schema.TypeInt,
+																Description: "TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system. If larger than zero, the time when the pod needs to be evicted is calculated as <time when taint was adedd> + <toleration seconds>.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"value": {
+																Type:        schema.TypeString,
+																Description: "Value is the taint value the toleration matches to. If the operator is Exists, the value must be empty, otherwise just a regular string. Must be a label value.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+														}},
+													},
+												}},
 											},
 											"name": {
 												Type:        schema.TypeString,
@@ -622,6 +770,50 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Beta1() *schema.Resource {
 													},
 												}},
 											},
+											"tolerations": {
+												Type:        schema.TypeList,
+												Description: "If specified, the request's tolerations.\n\nTolerations for NoSchedule are required to allocate a device which has a taint with that effect. The same applies to NoExecute.\n\nIn addition, should any of the allocated devices get tainted with NoExecute after allocation and that effect is not tolerated, then all pods consuming the ResourceClaim get deleted to evict them. The scheduler will not let new pods reserve the claim while it has these tainted devices. Once all pods are evicted, the claim will get deallocated.\n\nThe maximum number of tolerations is 16.\n\nThis field can only be set when deviceClassName is set and no subrequests are specified in the firstAvailable list.\n\nThis is an alpha field and requires enabling the DRADeviceTaints feature gate.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"effect": {
+														Type:        schema.TypeString,
+														Description: "Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule and NoExecute.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"key": {
+														Type:        schema.TypeString,
+														Description: "Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys. Must be a label name.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"operator": {
+														Type:        schema.TypeString,
+														Description: "Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a ResourceClaim can tolerate all taints of a particular category.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"toleration_seconds": {
+														Type:        schema.TypeInt,
+														Description: "TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system. If larger than zero, the time when the pod needs to be evicted is calculated as <time when taint was adedd> + <toleration seconds>.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"value": {
+														Type:        schema.TypeString,
+														Description: "Value is the taint value the toleration matches to. If the operator is Exists, the value must be empty, otherwise just a regular string. Must be a label value.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
 										}},
 									},
 								}},
@@ -640,7 +832,7 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Beta1Read(_ context.Contex
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1beta1", "ResourceClaimTemplate", "resource.k8s.io/v1beta1/ResourceClaimTemplate"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.metadata", "spec.spec", "spec.spec.devices", "spec.spec.devices.config.opaque", "spec.spec.devices.requests.selectors.cel"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.metadata", "spec.spec", "spec.spec.devices", "spec.spec.devices.config.opaque", "spec.spec.devices.requests.capacity", "spec.spec.devices.requests.first_available.capacity", "spec.spec.devices.requests.first_available.selectors.cel", "spec.spec.devices.requests.selectors.cel"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

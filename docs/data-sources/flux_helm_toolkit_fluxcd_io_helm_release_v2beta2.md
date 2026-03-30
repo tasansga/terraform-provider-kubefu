@@ -35,6 +35,12 @@ HelmRelease is the Schema for the helmreleases API
 Optional:
 
 - `chart` (Block List, Max: 1) Chart defines the template of the v1beta2.HelmChart that should be created for this HelmRelease. (see [below for nested schema](#nestedblock--spec--chart))
+- `chart_ref` (Block List, Max: 1) ChartRef holds a reference to a source controller resource containing the
+Helm chart artifact.
+
+
+Note: this field is provisional to the v2 API, and not actively used
+by v2beta2 HelmReleases. (see [below for nested schema](#nestedblock--spec--chart_ref))
 - `depends_on_` (Block List) DependsOn may contain a meta.NamespacedObjectReference slice with references to HelmRelease resources that must be ready before this HelmRelease can be reconciled. (see [below for nested schema](#nestedblock--spec--depends_on_))
 - `drift_detection` (Block List, Max: 1) DriftDetection holds the configuration for detecting and handling differences between the manifest in the Helm storage and the resources currently existing in the cluster. (see [below for nested schema](#nestedblock--spec--drift_detection))
 - `install` (Block List, Max: 1) Install holds the configuration for Helm install actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--install))
@@ -81,6 +87,7 @@ Optional:
 Optional:
 
 - `chart` (String) The name or path the Helm chart is available at in the SourceRef.
+- `ignore_missing_values_files` (Boolean) IgnoreMissingValuesFiles controls whether to silently ignore missing values files rather than failing.
 - `interval` (String) Interval at which to check the v1.Source for updates. Defaults to 'HelmReleaseSpec.Interval'.
 - `reconcile_strategy` (String) Determines what enables the creation of a new artifact. Valid values are ('ChartVersion', 'Revision'). See the documentation of the values for an explanation on their behavior. Defaults to ChartVersion when omitted.
 - `source_ref` (Block List, Max: 1) The name and namespace of the v1.Source the chart is available at. (see [below for nested schema](#nestedblock--spec--chart--spec--source_ref))
@@ -117,6 +124,18 @@ Optional:
 
 
 
+
+
+<a id="nestedblock--spec--chart_ref"></a>
+### Nested Schema for `spec.chart_ref`
+
+Optional:
+
+- `api_version` (String) APIVersion of the referent.
+- `kind` (String) Kind of the referent.
+- `name` (String) Name of the referent.
+- `namespace` (String) Namespace of the referent, defaults to the namespace of the Kubernetes
+resource object that contains the reference.
 
 
 <a id="nestedblock--spec--depends_on_"></a>
@@ -197,7 +216,44 @@ Optional:
 
 Optional:
 
+- `config_map_ref` (Block List, Max: 1) ConfigMapRef holds an optional name of a ConfigMap that contains
+the following keys:
+
+- `provider`: the provider to use. One of `aws`, `azure`, `gcp`, or
+   `generic`. Required.
+- `cluster`: the fully qualified resource name of the Kubernetes
+   cluster in the cloud provider API. Not used by the `generic`
+   provider. Required when one of `address` or `ca.crt` is not set.
+- `address`: the address of the Kubernetes API server. Required
+   for `generic`. For the other providers, if not specified, the
+   first address in the cluster resource will be used, and if
+   specified, it must match one of the addresses in the cluster
+   resource.
+   If audiences is not set, will be used as the audience for the
+   `generic` provider.
+- `ca.crt`: the optional PEM-encoded CA certificate for the
+   Kubernetes API server. If not set, the controller will use the
+   CA certificate from the cluster resource.
+- `audiences`: the optional audiences as a list of
+   line-break-separated strings for the Kubernetes ServiceAccount
+   token. Defaults to the `address` for the `generic` provider, or
+   to specific values for the other providers depending on the
+   provider.
+-  `serviceAccountName`: the optional name of the Kubernetes
+   ServiceAccount in the same namespace that should be used
+   for authentication. If not specified, the controller
+   ServiceAccount will be used.
+
+Mutually exclusive with SecretRef. (see [below for nested schema](#nestedblock--spec--kube_config--config_map_ref))
 - `secret_ref` (Block List, Max: 1) SecretRef holds the name of a secret that contains a key with the kubeconfig file as the value. If no key is set, the key will default to 'value'. It is recommended that the kubeconfig is self-contained, and the secret is regularly updated if credentials such as a cloud-access-token expire. Cloud specific `cmd-path` auth helpers will not function without adding binaries and credentials to the Pod that is responsible for reconciling Kubernetes resources. (see [below for nested schema](#nestedblock--spec--kube_config--secret_ref))
+
+<a id="nestedblock--spec--kube_config--config_map_ref"></a>
+### Nested Schema for `spec.kube_config.config_map_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
 
 <a id="nestedblock--spec--kube_config--secret_ref"></a>
 ### Nested Schema for `spec.kube_config.secret_ref`
@@ -402,12 +458,16 @@ Optional:
 - `last_attempted_generation` (Number) LastAttemptedGeneration is the last generation the controller attempted to reconcile.
 - `last_attempted_release_action` (String) LastAttemptedReleaseAction is the last release action performed for this HelmRelease. It is used to determine the active remediation strategy.
 - `last_attempted_revision` (String) LastAttemptedRevision is the Source revision of the last reconciliation attempt.
+- `last_attempted_revision_digest` (String) LastAttemptedRevisionDigest is the digest of the last reconciliation attempt.
+This is only set for OCIRepository sources.
 - `last_attempted_values_checksum` (String) LastAttemptedValuesChecksum is the SHA1 checksum for the values of the last reconciliation attempt. Deprecated: Use LastAttemptedConfigDigest instead.
 - `last_handled_force_at` (String) LastHandledForceAt holds the value of the most recent force request value, so a change of the annotation value can be detected.
 - `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.
 - `last_handled_reset_at` (String) LastHandledResetAt holds the value of the most recent reset request value, so a change of the annotation value can be detected.
 - `last_release_revision` (Number) LastReleaseRevision is the revision of the last successful Helm release. Deprecated: Use History instead.
 - `observed_generation` (Number) ObservedGeneration is the last observed generation.
+- `observed_post_renderers_digest` (String) ObservedPostRenderersDigest is the digest for the post-renderers of
+the last successful reconciliation attempt.
 - `storage_namespace` (String) StorageNamespace is the namespace of the Helm release storage for the current release.
 - `upgrade_failures` (Number) UpgradeFailures is the upgrade failure count against the latest desired state. It is reset after a successful reconciliation.
 
@@ -430,6 +490,7 @@ Optional:
 Optional:
 
 - `api_version` (String) APIVersion is the API version of the Snapshot. Provisional: when the calculation method of the Digest field is changed, this field will be used to distinguish between the old and new methods.
+- `app_version` (String) AppVersion is the chart app version of the release object in storage.
 - `chart_name` (String) ChartName is the chart name of the release object in storage.
 - `chart_version` (String) ChartVersion is the chart version of the release object in storage.
 - `config_digest` (String) ConfigDigest is the checksum of the config (better known as "values") of the release object in storage. It has the format of `<algo>:<checksum>`.
@@ -439,6 +500,7 @@ Optional:
 - `last_deployed` (String) LastDeployed is when the release was last deployed.
 - `name` (String) Name is the name of the release.
 - `namespace` (String) Namespace is the namespace the release is deployed to.
+- `oci_digest` (String) OCIDigest is the digest of the OCI artifact associated with the release.
 - `status` (String) Status is the current state of the release.
 - `test_hooks` (Map of String) TestHooks is the list of test hooks for the release as observed to be run by the controller.
 - `version` (Number) Version is the version of the release object in storage.

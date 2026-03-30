@@ -34,6 +34,8 @@ Kustomization is the Schema for the kustomizations API.
 
 Optional:
 
+- `common_metadata` (Block List, Max: 1) CommonMetadata specifies the common labels and annotations that are applied to all resources. Any existing label or annotation will be overridden if its key matches a common one. (see [below for nested schema](#nestedblock--spec--common_metadata))
+- `components` (List of String) Components specifies relative paths to specifications of other Components
 - `decryption` (Block List, Max: 1) Decrypt Kubernetes secrets before applying them on the cluster. (see [below for nested schema](#nestedblock--spec--decryption))
 - `depends_on_` (Block List) DependsOn may contain a dependency.CrossNamespaceDependencyReference slice with references to Kustomization resources that must be ready before this Kustomization can be reconciled. (see [below for nested schema](#nestedblock--spec--depends_on_))
 - `force` (Boolean) Force instructs the controller to recreate resources when patching fails due to an immutable field change.
@@ -55,6 +57,15 @@ Optional:
 - `timeout` (String) Timeout for validation, apply and health checking operations. Defaults to 'Interval' duration.
 - `validation` (String) Deprecated: Not used in v1beta2.
 - `wait` (Boolean) Wait instructs the controller to check the health of all the reconciled resources. When enabled, the HealthChecks are ignored. Defaults to false.
+
+<a id="nestedblock--spec--common_metadata"></a>
+### Nested Schema for `spec.common_metadata`
+
+Optional:
+
+- `annotations` (Map of String) Annotations to be added to the object's metadata.
+- `labels` (Map of String) Labels to be added to the object's metadata.
+
 
 <a id="nestedblock--spec--decryption"></a>
 ### Nested Schema for `spec.decryption`
@@ -109,13 +120,51 @@ Optional:
 
 Optional:
 
+- `config_map_ref` (Block List, Max: 1) ConfigMapRef holds an optional name of a ConfigMap that contains
+the following keys:
+
+- `provider`: the provider to use. One of `aws`, `azure`, `gcp`, or
+   `generic`. Required.
+- `cluster`: the fully qualified resource name of the Kubernetes
+   cluster in the cloud provider API. Not used by the `generic`
+   provider. Required when one of `address` or `ca.crt` is not set.
+- `address`: the address of the Kubernetes API server. Required
+   for `generic`. For the other providers, if not specified, the
+   first address in the cluster resource will be used, and if
+   specified, it must match one of the addresses in the cluster
+   resource.
+   If audiences is not set, will be used as the audience for the
+   `generic` provider.
+- `ca.crt`: the optional PEM-encoded CA certificate for the
+   Kubernetes API server. If not set, the controller will use the
+   CA certificate from the cluster resource.
+- `audiences`: the optional audiences as a list of
+   line-break-separated strings for the Kubernetes ServiceAccount
+   token. Defaults to the `address` for the `generic` provider, or
+   to specific values for the other providers depending on the
+   provider.
+-  `serviceAccountName`: the optional name of the Kubernetes
+   ServiceAccount in the same namespace that should be used
+   for authentication. If not specified, the controller
+   ServiceAccount will be used.
+
+Mutually exclusive with SecretRef. (see [below for nested schema](#nestedblock--spec--kube_config--config_map_ref))
 - `secret_ref` (Block List, Max: 1) SecretRef holds the name to a secret that contains a 'value' key with the kubeconfig file as the value. It must be in the same namespace as the Kustomization. It is recommended that the kubeconfig is self-contained, and the secret is regularly updated if credentials such as a cloud-access-token expire. Cloud specific `cmd-path` auth helpers will not function without adding binaries and credentials to the Pod that is responsible for reconciling the Kustomization. (see [below for nested schema](#nestedblock--spec--kube_config--secret_ref))
+
+<a id="nestedblock--spec--kube_config--config_map_ref"></a>
+### Nested Schema for `spec.kube_config.config_map_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
 
 <a id="nestedblock--spec--kube_config--secret_ref"></a>
 ### Nested Schema for `spec.kube_config.secret_ref`
 
 Optional:
 
+- `key` (String) Key in the Secret, when not specified an implementation-specific default key is used.
 - `name` (String) Name of the referent
 
 
@@ -156,10 +205,10 @@ Optional:
 
 Optional:
 
-- `from` (String)
-- `op` (String)
-- `path` (String)
-- `value` (Map of String)
+- `from` (String) From contains a JSON-pointer value that references a location within the target document where the operation is performed. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.
+- `op` (String) Op indicates the operation to perform. Its value MUST be one of "add", "remove", "replace", "move", "copy", or "test". https://datatracker.ietf.org/doc/html/rfc6902#section-4
+- `path` (String) Path contains the JSON-pointer value that references a location within the target document where the operation is performed. The meaning of the value depends on the value of Op.
+- `value` (Map of String) Value contains a valid JSON structure. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.
 
 
 <a id="nestedblock--spec--patches_json6902--target"></a>
@@ -192,6 +241,7 @@ Optional:
 
 - `kind` (String) Kind of the values referent, valid values are ('Secret', 'ConfigMap').
 - `name` (String) Name of the values referent. Should reside in the same namespace as the referring resource.
+- `optional` (Boolean) Optional indicates whether the referenced resource must exist, or whether to tolerate its absence. If true and the referenced resource is absent, proceed as if the resource was present but empty, without any variables defined.
 
 
 

@@ -77,6 +77,7 @@ Optional:
 - `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
@@ -271,3 +272,16 @@ Optional:
 
 - `hostname` (String) Hostname is set for load-balancer ingress points that are DNS based (typically AWS load-balancers)
 - `ip` (String) IP is set for load-balancer ingress points that are IP based (typically GCE or OpenStack load-balancers)
+- `ports` (Block List) Ports is a list of records of service ports If used, every port defined in the service should have an entry in it (see [below for nested schema](#nestedblock--status--load_balancer--ingress--ports))
+
+<a id="nestedblock--status--load_balancer--ingress--ports"></a>
+### Nested Schema for `status.load_balancer.ingress.ports`
+
+Optional:
+
+- `error` (String) Error is to record the problem with the service port The format of the error shall comply with the following rules: - built-in error values shall be specified in this file and those shall use
+  CamelCase names
+- cloud provider specific error values must have names that comply with the
+  format foo.example.com/CamelCase.
+- `port` (Number) Port is the port number of the service port of which status is recorded here
+- `protocol` (String) Protocol is the protocol of the service port of which status is recorded here The supported values are: "TCP", "UDP", "SCTP"

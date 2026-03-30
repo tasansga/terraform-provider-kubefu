@@ -56,6 +56,88 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoWebhookV1Alpha1() *sche
 				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"auth": {
+						Type:        schema.TypeList,
+						Description: "Auth specifies a authorization protocol. Only one protocol may be set.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"ntlm": {
+								Type:        schema.TypeList,
+								Description: "NTLMProtocol configures the store to use NTLM for auth",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"password_secret": {
+										Type:        schema.TypeList,
+										Description: "A reference to a specific 'key' within a Secret resource.\nIn some instances, `key` is a required field.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"key": {
+												Type:        schema.TypeString,
+												Description: "A key in the referenced Secret.\nSome instances of this field may be defaulted, in others it may be required.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the Secret resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "The namespace of the Secret resource being referred to.\nIgnored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"username_secret": {
+										Type:        schema.TypeList,
+										Description: "A reference to a specific 'key' within a Secret resource.\nIn some instances, `key` is a required field.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"key": {
+												Type:        schema.TypeString,
+												Description: "A key in the referenced Secret.\nSome instances of this field may be defaulted, in others it may be required.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the Secret resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "The namespace of the Secret resource being referred to.\nIgnored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+						}},
+					},
 					"body": {
 						Type:        schema.TypeString,
 						Description: "Body",
@@ -205,7 +287,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoWebhookV1Alpha1Read(_ c
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "Webhook", "generators.external-secrets.io/v1alpha1/Webhook"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.ca_provider", "spec.result", "spec.secrets.secret_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.ntlm", "spec.auth.ntlm.password_secret", "spec.auth.ntlm.username_secret", "spec.ca_provider", "spec.result", "spec.secrets.secret_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

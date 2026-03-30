@@ -41,6 +41,7 @@ Optional:
 - `images` (Block List) Images is a list of (image name, new name, new tag or digest) for changing image names, tags or digests. This can also be achieved with a patch, but this operator is simpler to specify. (see [below for nested schema](#nestedblock--spec--images))
 - `interval` (String) The interval at which to reconcile the Kustomization.
 - `kube_config` (Block List, Max: 1) The KubeConfig for reconciling the Kustomization on a remote cluster. When specified, KubeConfig takes precedence over ServiceAccountName. (see [below for nested schema](#nestedblock--spec--kube_config))
+- `patches` (Block List) Patches (also called overlays), defined as inline YAML objects. (see [below for nested schema](#nestedblock--spec--patches))
 - `patches_json6902` (Block List) JSON 6902 patches, defined as inline YAML objects. (see [below for nested schema](#nestedblock--spec--patches_json6902))
 - `patches_strategic_merge` (List of Map of String) Strategic merge patches, defined as inline YAML objects.
 - `path` (String) Path to the directory containing the kustomization.yaml file, or the set of plain YAMLs a kustomization.yaml should be generated for. Defaults to 'None', which translates to the root path of the SourceRef.
@@ -118,6 +119,29 @@ Optional:
 
 
 
+<a id="nestedblock--spec--patches"></a>
+### Nested Schema for `spec.patches`
+
+Optional:
+
+- `patch` (String) Patch contains the JSON6902 patch document with an array of operation objects.
+- `target` (Block List, Max: 1) Target points to the resources that the patch document should be applied to. (see [below for nested schema](#nestedblock--spec--patches--target))
+
+<a id="nestedblock--spec--patches--target"></a>
+### Nested Schema for `spec.patches.target`
+
+Optional:
+
+- `annotation_selector` (String) AnnotationSelector is a string that follows the label selection expression https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api It matches with the resource annotations.
+- `group` (String) Group is the API group to select resources from. Together with Version and Kind it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `kind` (String) Kind of the API Group to select resources from. Together with Group and Version it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `label_selector` (String) LabelSelector is a string that follows the label selection expression https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api It matches with the resource labels.
+- `name` (String) Name to match resources with.
+- `namespace` (String) Namespace to select resources from.
+- `version` (String) Version of the API Group to select resources from. Together with Group and Kind it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+
+
+
 <a id="nestedblock--spec--patches_json6902"></a>
 ### Nested Schema for `spec.patches_json6902`
 
@@ -131,10 +155,10 @@ Optional:
 
 Optional:
 
-- `from` (String)
-- `op` (String)
-- `path` (String)
-- `value` (Map of String)
+- `from` (String) From contains a JSON-pointer value that references a location within the target document where the operation is performed. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.
+- `op` (String) Op indicates the operation to perform. Its value MUST be one of "add", "remove", "replace", "move", "copy", or "test". https://datatracker.ietf.org/doc/html/rfc6902#section-4
+- `path` (String) Path contains the JSON-pointer value that references a location within the target document where the operation is performed. The meaning of the value depends on the value of Op.
+- `value` (Map of String) Value contains a valid JSON structure. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.
 
 
 <a id="nestedblock--spec--patches_json6902--target"></a>

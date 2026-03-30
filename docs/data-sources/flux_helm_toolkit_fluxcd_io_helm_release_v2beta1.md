@@ -35,11 +35,22 @@ HelmRelease is the Schema for the helmreleases API
 Optional:
 
 - `chart` (Block List, Max: 1) Chart defines the template of the v1beta1.HelmChart that should be created for this HelmRelease. (see [below for nested schema](#nestedblock--spec--chart))
+- `chart_ref` (Block List, Max: 1) ChartRef holds a reference to a source controller resource containing the
+Helm chart artifact.
+
+
+Note: this field is provisional to the v2 API, and not actively used
+by v2beta1 HelmReleases. (see [below for nested schema](#nestedblock--spec--chart_ref))
 - `depends_on_` (Block List) DependsOn may contain a dependency.CrossNamespaceDependencyReference slice with references to HelmRelease resources that must be ready before this HelmRelease can be reconciled. (see [below for nested schema](#nestedblock--spec--depends_on_))
+- `drift_detection` (Block List, Max: 1) DriftDetection holds the configuration for detecting and handling differences between the manifest in the Helm storage and the resources currently existing in the cluster.
+ Note: this field is provisional to the v2beta2 API, and not actively used by v2beta1 HelmReleases. (see [below for nested schema](#nestedblock--spec--drift_detection))
 - `install` (Block List, Max: 1) Install holds the configuration for Helm install actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--install))
 - `interval` (String) Interval at which to reconcile the Helm release.
 - `kube_config` (Block List, Max: 1) KubeConfig for reconciling the HelmRelease on a remote cluster. When specified, KubeConfig takes precedence over ServiceAccountName. (see [below for nested schema](#nestedblock--spec--kube_config))
 - `max_history` (Number) MaxHistory is the number of revisions saved by Helm for this HelmRelease. Use '0' for an unlimited number of revisions; defaults to '10'.
+- `persistent_client` (Boolean) PersistentClient tells the controller to use a persistent Kubernetes client for this release. When enabled, the client will be reused for the duration of the reconciliation, instead of being created and destroyed for each (step of a) Helm action.
+ This can improve performance, but may cause issues with some Helm charts that for example do create Custom Resource Definitions during installation outside Helm's CRD lifecycle hooks, which are then not observed to be available by e.g. post-install hooks.
+ If not set, it defaults to true.
 - `post_renderers` (Block List) PostRenderers holds an array of Helm PostRenderers, which will be applied in order of their definition. (see [below for nested schema](#nestedblock--spec--post_renderers))
 - `release_name` (String) ReleaseName used for the Helm release. Defaults to a composition of '[TargetNamespace-]Name'.
 - `rollback` (Block List, Max: 1) Rollback holds the configuration for Helm rollback actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--rollback))
@@ -59,7 +70,17 @@ Optional:
 
 Optional:
 
+- `metadata` (Block List, Max: 1) ObjectMeta holds the template for metadata like labels and annotations. (see [below for nested schema](#nestedblock--spec--chart--metadata))
 - `spec` (Block List, Max: 1) Spec holds the template for the v1beta1.HelmChartSpec for this HelmRelease. (see [below for nested schema](#nestedblock--spec--chart--spec))
+
+<a id="nestedblock--spec--chart--metadata"></a>
+### Nested Schema for `spec.chart.metadata`
+
+Optional:
+
+- `annotations` (Map of String) Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+- `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+
 
 <a id="nestedblock--spec--chart--spec"></a>
 ### Nested Schema for `spec.chart.spec`
@@ -68,8 +89,11 @@ Optional:
 
 - `chart` (String) The name or path the Helm chart is available at in the SourceRef.
 - `interval` (String) Interval at which to check the v1beta1.Source for updates. Defaults to 'HelmReleaseSpec.Interval'.
+- `reconcile_strategy` (String) Determines what enables the creation of a new artifact. Valid values are ('ChartVersion', 'Revision'). See the documentation of the values for an explanation on their behavior. Defaults to ChartVersion when omitted.
 - `source_ref` (Block List, Max: 1) The name and namespace of the v1beta1.Source the chart is available at. (see [below for nested schema](#nestedblock--spec--chart--spec--source_ref))
 - `values_file` (String) Alternative values file to use as the default chart values, expected to be a relative path in the SourceRef. Ignored when omitted.
+- `values_files` (List of String) Alternative list of values files to use as the chart values (values.yaml is not included by default), expected to be a relative path in the SourceRef. Values files are merged in the order of this list with the last file overriding the first. Ignored when omitted.
+- `verify` (Block List, Max: 1) Verify contains the secret name containing the trusted public keys used to verify the signature and specifies which provider to use to check whether OCI image is authentic. This field is only supported for OCI sources. Chart dependencies, which are not bundled in the umbrella chart artifact, are not verified. (see [below for nested schema](#nestedblock--spec--chart--spec--verify))
 - `version` (String) Version semver expression, ignored for charts from v1beta1.GitRepository and v1beta1.Bucket sources. Defaults to latest when omitted.
 
 <a id="nestedblock--spec--chart--spec--source_ref"></a>
@@ -83,6 +107,35 @@ Optional:
 - `namespace` (String) Namespace of the referent.
 
 
+<a id="nestedblock--spec--chart--spec--verify"></a>
+### Nested Schema for `spec.chart.spec.verify`
+
+Optional:
+
+- `provider_` (String) Provider specifies the technology used to sign the OCI Helm chart.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Kubernetes Secret containing the trusted public keys. (see [below for nested schema](#nestedblock--spec--chart--spec--verify--secret_ref))
+
+<a id="nestedblock--spec--chart--spec--verify--secret_ref"></a>
+### Nested Schema for `spec.chart.spec.verify.secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
+
+
+
+
+<a id="nestedblock--spec--chart_ref"></a>
+### Nested Schema for `spec.chart_ref`
+
+Optional:
+
+- `api_version` (String) APIVersion of the referent.
+- `kind` (String) Kind of the referent.
+- `name` (String) Name of the referent.
+- `namespace` (String) Namespace of the referent, defaults to the namespace of the Kubernetes
+resource object that contains the reference.
 
 
 <a id="nestedblock--spec--depends_on_"></a>
@@ -94,15 +147,53 @@ Optional:
 - `namespace` (String) Namespace holds the namespace reference of a dependency.
 
 
+<a id="nestedblock--spec--drift_detection"></a>
+### Nested Schema for `spec.drift_detection`
+
+Optional:
+
+- `ignore` (Block List) Ignore contains a list of rules for specifying which changes to ignore during diffing. (see [below for nested schema](#nestedblock--spec--drift_detection--ignore))
+- `mode` (String) Mode defines how differences should be handled between the Helm manifest and the manifest currently applied to the cluster. If not explicitly set, it defaults to DiffModeDisabled.
+
+<a id="nestedblock--spec--drift_detection--ignore"></a>
+### Nested Schema for `spec.drift_detection.ignore`
+
+Optional:
+
+- `paths` (List of String) Paths is a list of JSON Pointer (RFC 6901) paths to be excluded from consideration in a Kubernetes object.
+- `target` (Block List, Max: 1) Target is a selector for specifying Kubernetes objects to which this rule applies. If Target is not set, the Paths will be ignored for all Kubernetes objects within the manifest of the Helm release. (see [below for nested schema](#nestedblock--spec--drift_detection--ignore--target))
+
+<a id="nestedblock--spec--drift_detection--ignore--target"></a>
+### Nested Schema for `spec.drift_detection.ignore.target`
+
+Optional:
+
+- `annotation_selector` (String) AnnotationSelector is a string that follows the label selection expression https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api It matches with the resource annotations.
+- `group` (String) Group is the API group to select resources from. Together with Version and Kind it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `kind` (String) Kind of the API Group to select resources from. Together with Group and Version it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `label_selector` (String) LabelSelector is a string that follows the label selection expression https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api It matches with the resource labels.
+- `name` (String) Name to match resources with.
+- `namespace` (String) Namespace to select resources from.
+- `version` (String) Version of the API Group to select resources from. Together with Group and Kind it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+
+
+
+
 <a id="nestedblock--spec--install"></a>
 ### Nested Schema for `spec.install`
 
 Optional:
 
+- `crds` (String) CRDs upgrade CRDs from the Helm Chart's crds directory according to the CRD upgrade policy provided here. Valid values are `Skip`, `Create` or `CreateReplace`. Default is `Create` and if omitted CRDs are installed but not updated.
+ Skip: do neither install nor replace (update) any CRDs.
+ Create: new CRDs are created, existing CRDs are neither updated nor deleted.
+ CreateReplace: new CRDs are created, existing CRDs are updated (replaced) but not deleted.
+ By default, CRDs are applied (installed) during Helm install action. With this option users can opt-in to CRD replace existing CRDs on Helm install actions, which is not (yet) natively supported by Helm. https://helm.sh/docs/chart_best_practices/custom_resource_definitions.
 - `create_namespace` (Boolean) CreateNamespace tells the Helm install action to create the HelmReleaseSpec.TargetNamespace if it does not exist yet. On uninstall, the namespace will not be garbage collected.
 - `disable_hooks` (Boolean) DisableHooks prevents hooks from running during the Helm install action.
 - `disable_open_api_validation` (Boolean) DisableOpenAPIValidation prevents the Helm install action from validating rendered templates against the Kubernetes OpenAPI Schema.
 - `disable_wait` (Boolean) DisableWait disables the waiting for resources to be ready after a Helm install has been performed.
+- `disable_wait_for_jobs` (Boolean) DisableWaitForJobs disables waiting for jobs to complete after a Helm install has been performed.
 - `remediation` (Block List, Max: 1) Remediation holds the remediation configuration for when the Helm install action for the HelmRelease fails. The default is to not perform any action. (see [below for nested schema](#nestedblock--spec--install--remediation))
 - `replace` (Boolean) Replace tells the Helm install action to re-use the 'ReleaseName', but only if that name is a deleted release which remains in the history.
 - `skip_cr_ds` (Boolean) SkipCRDs tells the Helm install action to not install any CRDs. By default, CRDs are installed if not already present.
@@ -131,6 +222,7 @@ Optional:
 
 Optional:
 
+- `key` (String) Key in the Secret, when not specified an implementation-specific default key is used.
 - `name` (String) Name of the referent
 
 
@@ -148,6 +240,7 @@ Optional:
 Optional:
 
 - `images` (Block List) Images is a list of (image name, new name, new tag or digest) for changing image names, tags or digests. This can also be achieved with a patch, but this operator is simpler to specify. (see [below for nested schema](#nestedblock--spec--post_renderers--kustomize--images))
+- `patches` (Block List) Strategic merge and JSON patches, defined as inline YAML objects, capable of targeting objects based on kind, label and annotation selectors. (see [below for nested schema](#nestedblock--spec--post_renderers--kustomize--patches))
 - `patches_json6902` (Block List) JSON 6902 patches, defined as inline YAML objects. (see [below for nested schema](#nestedblock--spec--post_renderers--kustomize--patches_json6902))
 - `patches_strategic_merge` (List of Map of String) Strategic merge patches, defined as inline YAML objects.
 
@@ -160,6 +253,29 @@ Optional:
 - `name` (String) Name is a tag-less image name.
 - `new_name` (String) NewName is the value used to replace the original name.
 - `new_tag` (String) NewTag is the value used to replace the original tag.
+
+
+<a id="nestedblock--spec--post_renderers--kustomize--patches"></a>
+### Nested Schema for `spec.post_renderers.kustomize.patches`
+
+Optional:
+
+- `patch` (String) Patch contains an inline StrategicMerge patch or an inline JSON6902 patch with an array of operation objects.
+- `target` (Block List, Max: 1) Target points to the resources that the patch document should be applied to. (see [below for nested schema](#nestedblock--spec--post_renderers--kustomize--patches--target))
+
+<a id="nestedblock--spec--post_renderers--kustomize--patches--target"></a>
+### Nested Schema for `spec.post_renderers.kustomize.patches.target`
+
+Optional:
+
+- `annotation_selector` (String) AnnotationSelector is a string that follows the label selection expression https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api It matches with the resource annotations.
+- `group` (String) Group is the API group to select resources from. Together with Version and Kind it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `kind` (String) Kind of the API Group to select resources from. Together with Group and Version it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `label_selector` (String) LabelSelector is a string that follows the label selection expression https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api It matches with the resource labels.
+- `name` (String) Name to match resources with.
+- `namespace` (String) Namespace to select resources from.
+- `version` (String) Version of the API Group to select resources from. Together with Group and Kind it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+
 
 
 <a id="nestedblock--spec--post_renderers--kustomize--patches_json6902"></a>
@@ -175,10 +291,10 @@ Optional:
 
 Optional:
 
-- `from` (String)
-- `op` (String)
-- `path` (String)
-- `value` (Map of String)
+- `from` (String) From contains a JSON-pointer value that references a location within the target document where the operation is performed. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.
+- `op` (String) Op indicates the operation to perform. Its value MUST be one of "add", "remove", "replace", "move", "copy", or "test". https://datatracker.ietf.org/doc/html/rfc6902#section-4
+- `path` (String) Path contains the JSON-pointer value that references a location within the target document where the operation is performed. The meaning of the value depends on the value of Op.
+- `value` (Map of String) Value contains a valid JSON structure. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.
 
 
 <a id="nestedblock--spec--post_renderers--kustomize--patches_json6902--target"></a>
@@ -206,6 +322,7 @@ Optional:
 - `cleanup_on_fail` (Boolean) CleanupOnFail allows deletion of new resources created during the Helm rollback action when it fails.
 - `disable_hooks` (Boolean) DisableHooks prevents hooks from running during the Helm rollback action.
 - `disable_wait` (Boolean) DisableWait disables the waiting for resources to be ready after a Helm rollback has been performed.
+- `disable_wait_for_jobs` (Boolean) DisableWaitForJobs disables waiting for jobs to complete after a Helm rollback has been performed.
 - `force` (Boolean) Force forces resource updates through a replacement strategy.
 - `recreate` (Boolean) Recreate performs pod restarts for the resource if applicable.
 - `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like Jobs for hooks) during the performance of a Helm rollback action. Defaults to 'HelmReleaseSpec.Timeout'.
@@ -226,7 +343,9 @@ Optional:
 
 Optional:
 
+- `deletion_propagation` (String) DeletionPropagation specifies the deletion propagation policy when a Helm uninstall is performed.
 - `disable_hooks` (Boolean) DisableHooks prevents hooks from running during the Helm rollback action.
+- `disable_wait` (Boolean) DisableWait disables waiting for all the resources to be deleted after a Helm uninstall is performed.
 - `keep_history` (Boolean) KeepHistory tells Helm to remove all associated resources and mark the release as deleted, but retain the release history.
 - `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like Jobs for hooks) during the performance of a Helm uninstall action. Defaults to 'HelmReleaseSpec.Timeout'.
 
@@ -237,9 +356,15 @@ Optional:
 Optional:
 
 - `cleanup_on_fail` (Boolean) CleanupOnFail allows deletion of new resources created during the Helm upgrade action when it fails.
+- `crds` (String) CRDs upgrade CRDs from the Helm Chart's crds directory according to the CRD upgrade policy provided here. Valid values are `Skip`, `Create` or `CreateReplace`. Default is `Skip` and if omitted CRDs are neither installed nor upgraded.
+ Skip: do neither install nor replace (update) any CRDs.
+ Create: new CRDs are created, existing CRDs are neither updated nor deleted.
+ CreateReplace: new CRDs are created, existing CRDs are updated (replaced) but not deleted.
+ By default, CRDs are not applied during Helm upgrade action. With this option users can opt-in to CRD upgrade, which is not (yet) natively supported by Helm. https://helm.sh/docs/chart_best_practices/custom_resource_definitions.
 - `disable_hooks` (Boolean) DisableHooks prevents hooks from running during the Helm upgrade action.
 - `disable_open_api_validation` (Boolean) DisableOpenAPIValidation prevents the Helm upgrade action from validating rendered templates against the Kubernetes OpenAPI Schema.
 - `disable_wait` (Boolean) DisableWait disables the waiting for resources to be ready after a Helm upgrade has been performed.
+- `disable_wait_for_jobs` (Boolean) DisableWaitForJobs disables waiting for jobs to complete after a Helm upgrade has been performed.
 - `force` (Boolean) Force forces resource updates through a replacement strategy.
 - `preserve_values` (Boolean) PreserveValues will make Helm reuse the last release's values and merge in overrides from 'Values'. Setting this flag makes the HelmRelease non-declarative.
 - `remediation` (Block List, Max: 1) Remediation holds the remediation configuration for when the Helm upgrade action for the HelmRelease fails. The default is to not perform any action. (see [below for nested schema](#nestedblock--spec--upgrade--remediation))
@@ -278,13 +403,29 @@ Optional:
 - `conditions` (Block List) Conditions holds the conditions for the HelmRelease. (see [below for nested schema](#nestedblock--status--conditions))
 - `failures` (Number) Failures is the reconciliation failure count against the latest desired state. It is reset after a successful reconciliation.
 - `helm_chart` (String) HelmChart is the namespaced name of the HelmChart resource created by the controller for the HelmRelease.
+- `history` (Block List) History holds the history of Helm releases performed for this HelmRelease up to the last successfully completed release.
+ Note: this field is provisional to the v2beta2 API, and not actively used by v2beta1 HelmReleases. (see [below for nested schema](#nestedblock--status--history))
 - `install_failures` (Number) InstallFailures is the install failure count against the latest desired state. It is reset after a successful reconciliation.
 - `last_applied_revision` (String) LastAppliedRevision is the revision of the last successfully applied source.
+- `last_attempted_config_digest` (String) LastAttemptedConfigDigest is the digest for the config (better known as "values") of the last reconciliation attempt.
+ Note: this field is provisional to the v2beta2 API, and not actively used by v2beta1 HelmReleases.
+- `last_attempted_generation` (Number) LastAttemptedGeneration is the last generation the controller attempted to reconcile.
+ Note: this field is provisional to the v2beta2 API, and not actively used by v2beta1 HelmReleases.
+- `last_attempted_release_action` (String) LastAttemptedReleaseAction is the last release action performed for this HelmRelease. It is used to determine the active remediation strategy.
+ Note: this field is provisional to the v2beta2 API, and not actively used by v2beta1 HelmReleases.
 - `last_attempted_revision` (String) LastAttemptedRevision is the revision of the last reconciliation attempt.
 - `last_attempted_values_checksum` (String) LastAttemptedValuesChecksum is the SHA1 checksum of the values of the last reconciliation attempt.
+- `last_handled_force_at` (String) LastHandledForceAt holds the value of the most recent force request value, so a change of the annotation value can be detected.
+ Note: this field is provisional to the v2beta2 API, and not actively used by v2beta1 HelmReleases.
 - `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change can be detected.
+- `last_handled_reset_at` (String) LastHandledResetAt holds the value of the most recent reset request value, so a change of the annotation value can be detected.
+ Note: this field is provisional to the v2beta2 API, and not actively used by v2beta1 HelmReleases.
 - `last_release_revision` (Number) LastReleaseRevision is the revision of the last successful Helm release.
 - `observed_generation` (Number) ObservedGeneration is the last observed generation.
+- `observed_post_renderers_digest` (String) ObservedPostRenderersDigest is the digest for the post-renderers of
+the last successful reconciliation attempt.
+- `storage_namespace` (String) StorageNamespace is the namespace of the Helm release storage for the current release.
+ Note: this field is provisional to the v2beta2 API, and not actively used by v2beta1 HelmReleases.
 - `upgrade_failures` (Number) UpgradeFailures is the upgrade failure count against the latest desired state. It is reset after a successful reconciliation.
 
 <a id="nestedblock--status--conditions"></a>
@@ -298,3 +439,25 @@ Optional:
 - `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
 - `status` (String) status of the condition, one of True, False, Unknown.
 - `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+
+
+<a id="nestedblock--status--history"></a>
+### Nested Schema for `status.history`
+
+Optional:
+
+- `api_version` (String) APIVersion is the API version of the Snapshot. Provisional: when the calculation method of the Digest field is changed, this field will be used to distinguish between the old and new methods.
+- `app_version` (String) AppVersion is the chart app version of the release object in storage.
+- `chart_name` (String) ChartName is the chart name of the release object in storage.
+- `chart_version` (String) ChartVersion is the chart version of the release object in storage.
+- `config_digest` (String) ConfigDigest is the checksum of the config (better known as "values") of the release object in storage. It has the format of `<algo>:<checksum>`.
+- `deleted` (String) Deleted is when the release was deleted.
+- `digest` (String) Digest is the checksum of the release object in storage. It has the format of `<algo>:<checksum>`.
+- `first_deployed` (String) FirstDeployed is when the release was first deployed.
+- `last_deployed` (String) LastDeployed is when the release was last deployed.
+- `name` (String) Name is the name of the release.
+- `namespace` (String) Namespace is the namespace the release is deployed to.
+- `oci_digest` (String) OCIDigest is the digest of the OCI artifact associated with the release.
+- `status` (String) Status is the current state of the release.
+- `test_hooks` (Map of String) TestHooks is the list of test hooks for the release as observed to be run by the controller.
+- `version` (Number) Version is the version of the release object in storage.

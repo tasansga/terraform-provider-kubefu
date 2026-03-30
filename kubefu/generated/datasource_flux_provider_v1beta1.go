@@ -63,6 +63,23 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta1() *schema.Resource
 						Required:    false,
 						Computed:    true,
 					},
+					"cert_secret_ref": {
+						Type:        schema.TypeList,
+						Description: "CertSecretRef can be given the name of a secret containing a PEM-encoded CA certificate (`caFile`)",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"channel": {
 						Type:        schema.TypeString,
 						Description: "Alert channel for this provider",
@@ -93,6 +110,20 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta1() *schema.Resource
 								Computed:    true,
 							},
 						}},
+					},
+					"suspend": {
+						Type:        schema.TypeBool,
+						Description: "This flag tells the controller to suspend subsequent events handling. Defaults to false.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"timeout": {
+						Type:        schema.TypeString,
+						Description: "Timeout for sending alerts to the provider.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"type": {
 						Type:        schema.TypeString,
@@ -169,6 +200,13 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta1() *schema.Resource
 							},
 						}},
 					},
+					"observed_generation": {
+						Type:        schema.TypeInt,
+						Description: "ObservedGeneration is the last reconciled generation.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 				}},
 			},
 		},
@@ -181,7 +219,7 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta1Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "notification.toolkit.fluxcd.io/v1beta1", "Provider", "notification.toolkit.fluxcd.io/v1beta1/Provider"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.secret_ref", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.cert_secret_ref", "spec.secret_ref", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

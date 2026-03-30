@@ -71,6 +71,20 @@ Custom signerNames can also be specified. The signer defines:
 
 Optional:
 
+- `expiration_seconds` (Number) expirationSeconds is the requested duration of validity of the issued certificate. The certificate signer may issue a certificate with a different validity duration so a client must check the delta between the notBefore and and notAfter fields in the issued certificate to determine the actual duration.
+
+The v1.22+ in-tree implementations of the well-known Kubernetes signers will honor this field as long as the requested duration is not greater than the maximum duration they will honor per the --cluster-signing-duration CLI flag to the Kubernetes controller manager.
+
+Certificate signers may not honor this field for various reasons:
+
+  1. Old signer that is unaware of the field (such as the in-tree
+     implementations prior to v1.22)
+  2. Signer whose configured maximum is shorter than the requested duration
+  3. Signer whose configured minimum is longer than the requested duration
+
+The minimum valid value for expirationSeconds is 600, i.e. 10 minutes.
+
+As of v1.22, this field is beta and is controlled via the CSRDuration feature gate.
 - `extra` (Map of String) extra contains extra attributes of the user that created the CertificateSigningRequest. Populated by the API server on creation and immutable.
 - `groups` (List of String) groups contains group membership of the user that created the CertificateSigningRequest. Populated by the API server on creation and immutable.
 - `uid` (String) uid contains the uid of the user that created the CertificateSigningRequest. Populated by the API server on creation and immutable.
@@ -139,6 +153,7 @@ Optional:
 - `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 

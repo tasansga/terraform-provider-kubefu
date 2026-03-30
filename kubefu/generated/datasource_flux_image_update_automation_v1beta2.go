@@ -158,6 +158,13 @@ func dataSourceFluxImageToolkitFluxcdIoImageUpdateAutomationV1Beta2() *schema.Re
 										Required:    false,
 										Computed:    true,
 									},
+									"message_template_values": {
+										Type:        schema.TypeMap,
+										Description: "MessageTemplateValues provides additional values to be available to the\ntemplating rendering.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"signing_key": {
 										Type:        schema.TypeList,
 										Description: "SigningKey provides the option to sign commits with a GPG key",

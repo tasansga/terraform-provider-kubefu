@@ -453,3 +453,49 @@ func parseK8sSchemaMinor(path string) int {
 	}
 	return minor
 }
+
+func TestBuildDefinitionLookupUsesStableDefinitionSelection(t *testing.T) {
+	defs := map[string]definition{
+		"zzz.def": {
+			XGroupVersionKind: []groupVersionKind{
+				{Group: "monitoring.coreos.com", Version: "v1alpha1", Kind: "AlertmanagerConfig"},
+			},
+		},
+		"aaa.def": {
+			XGroupVersionKind: []groupVersionKind{
+				{Group: "monitoring.coreos.com", Version: "v1alpha1", Kind: "AlertmanagerConfig"},
+			},
+		},
+	}
+	lookup := buildDefinitionLookup(defs)
+	key := "monitoring.coreos.com/v1alpha1/AlertmanagerConfig"
+	if got := lookup[key]; got != "aaa.def" {
+		t.Fatalf("expected stable smallest definition name, got %q", got)
+	}
+}
+
+func TestFindDefinitionNameByGVKUsesSortedDefinitionNames(t *testing.T) {
+	defs := map[string]definition{
+		"zzz.def": {
+			XGroupVersionKind: []groupVersionKind{
+				{Group: "monitoring.coreos.com", Version: "v1alpha1", Kind: "AlertmanagerConfig"},
+			},
+		},
+		"aaa.def": {
+			XGroupVersionKind: []groupVersionKind{
+				{Group: "monitoring.coreos.com", Version: "v1alpha1", Kind: "AlertmanagerConfig"},
+			},
+		},
+	}
+	name, ok := findDefinitionNameByGVK(defs, &groupVersionKind{
+		Group:   "monitoring.coreos.com",
+		Version: "v1alpha1",
+		Kind:    "AlertmanagerConfig",
+	})
+	if !ok {
+		t.Fatalf("expected definition to be found")
+	}
+	if name != "aaa.def" {
+		t.Fatalf("expected deterministic sorted name, got %q", name)
+	}
+}

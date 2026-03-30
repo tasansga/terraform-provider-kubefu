@@ -40,7 +40,7 @@ Optional:
 
 Populated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 - `deletion_grace_period_seconds` (Number) Number of seconds allowed for this object to gracefully terminate before it will be removed from the system. Only set when deletionTimestamp is also set. May only be shortened. Read-only.
-- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
+- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field. Once set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
 
 Populated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 - `finalizers` (List of String) Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.
@@ -54,6 +54,9 @@ Applied only if Name is not specified. More info: https://git.k8s.io/community/c
 
 When an object is created, the system will populate this list with the current set of initializers. Only privileged users may set or modify this list. Once it is empty, it may not be modified further by any user. (see [below for nested schema](#nestedblock--metadata--initializers))
 - `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `managed_fields` (Block List) ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like "ci-cd". The set of fields is always in the version that the workflow used when modifying the object.
+
+This field is alpha and can be changed or removed without notice. (see [below for nested schema](#nestedblock--metadata--managed_fields))
 - `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
 - `namespace` (String) Namespace defines the space within each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
 
@@ -70,18 +73,15 @@ Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-gu
 <a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
-Required:
-
-- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
-
 Optional:
 
+- `pending` (Block List) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
 - `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
 <a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Required:
+Optional:
 
 - `name` (String) name of the process that is responsible for initializing this object.
 
@@ -109,7 +109,7 @@ Optional:
 - `group` (String) The group attribute of the resource associated with the status StatusReason.
 - `kind` (String) The kind attribute of the resource associated with the status StatusReason. On some operations may differ from the requested resource Kind. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `name` (String) The name attribute of the resource associated with the status StatusReason (when there is a single name which can be described).
-- `retry_after_seconds` (Number) If specified, the time in seconds before the operation should be retried. Some errors may indicate the client must take an alternate action - for those errors this field may indicate how long to wait before taking the alternate action.
+- `retry_after_seconds` (Number) If specified, the time in seconds before the operation should be retried.
 - `uid` (String) UID of the resource. (when there is a single resource which can be described). More info: http://kubernetes.io/docs/user-guide/identifiers#uids
 
 <a id="nestedblock--metadata--initializers--result--details--causes"></a>
@@ -133,10 +133,28 @@ Examples:
 Optional:
 
 - `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response.
+- `remaining_item_count` (Number) remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.
+
+This field is alpha and can be changed or removed without notice.
 - `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
-- `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
+- `self_link` (String) SelfLink is a URL representing this object. Populated by the system. Read-only.
 
 
+
+
+<a id="nestedblock--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String) APIVersion defines the version of this resource that this field set applies to. The format is "group/version" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.
+- `fields` (Map of String) Fields identifies a set of fields.
+- `fields_type` (String) FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: "FieldsV1"
+- `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
+- `manager` (String) Manager is an identifier of the workflow managing these fields.
+- `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
+- `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
 <a id="nestedblock--metadata--owner_references"></a>
@@ -162,19 +180,61 @@ Optional:
 Optional:
 
 - `access_modes` (List of String) AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1
+- `data_source` (Block List, Max: 1) This field requires the VolumeSnapshotDataSource alpha feature gate to be enabled and currently VolumeSnapshot is the only supported data source. If the provisioner can support VolumeSnapshot data source, it will create a new volume and data will be restored to the volume at the same time. If the provisioner does not support VolumeSnapshot data source, volume will not be created and the failure will be reported as an event. In the future, we plan to support more data source types and the behavior of the provisioner may change. (see [below for nested schema](#nestedblock--spec--data_source))
+- `data_source_ref` (Block List, Max: 1) Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef
+  allows any non-core object, as well as PersistentVolumeClaim objects.
+* While DataSource ignores disallowed values (dropping them), DataSourceRef
+  preserves all values, and generates an error if a disallowed value is
+  specified.
+(Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled. (see [below for nested schema](#nestedblock--spec--data_source_ref))
 - `resources` (Block List, Max: 1) Resources represents the minimum resources the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources (see [below for nested schema](#nestedblock--spec--resources))
 - `selector` (Block List, Max: 1) A label query over volumes to consider for binding. (see [below for nested schema](#nestedblock--spec--selector))
 - `storage_class_name` (String) Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1
+- `volume_attributes_class_name` (String) volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim. If specified, the CSI driver will create or update the volume with the attributes defined in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName, it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass will be applied to the claim but it's not allowed to reset this field to empty string once it is set. If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass will be set by the persistentvolume controller if it exists. If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource exists. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#volumeattributesclass (Alpha) Using this field requires the VolumeAttributesClass feature gate to be enabled.
 - `volume_mode` (String) volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec. This is an alpha feature and may change in the future.
 - `volume_name` (String) VolumeName is the binding reference to the PersistentVolume backing this claim.
+
+<a id="nestedblock--spec--data_source"></a>
+### Nested Schema for `spec.data_source`
+
+Optional:
+
+- `api_group` (String) APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
+- `kind` (String) Kind is the type of resource being referenced
+- `name` (String) Name is the name of resource being referenced
+
+
+<a id="nestedblock--spec--data_source_ref"></a>
+### Nested Schema for `spec.data_source_ref`
+
+Optional:
+
+- `api_group` (String) APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
+- `kind` (String) Kind is the type of resource being referenced
+- `name` (String) Name is the name of resource being referenced
+- `namespace` (String) Namespace is the namespace of resource being referenced Note that when a namespace is specified, a gateway.networking.k8s.io/ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details. (Alpha) This field requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
+
 
 <a id="nestedblock--spec--resources"></a>
 ### Nested Schema for `spec.resources`
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+This field is immutable. It can only be set for containers. (see [below for nested schema](#nestedblock--spec--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+
+<a id="nestedblock--spec--resources--claims"></a>
+### Nested Schema for `spec.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+
 
 
 <a id="nestedblock--spec--selector"></a>
@@ -191,7 +251,7 @@ Optional:
 Required:
 
 - `key` (String) key is the label key that the selector applies to.
-- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators ard In, NotIn, Exists and DoesNotExist.
 
 Optional:
 
@@ -206,17 +266,46 @@ Optional:
 Optional:
 
 - `access_modes` (List of String) AccessModes contains the actual access modes the volume backing the PVC has. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1
+- `allocated_resource_statuses` (Map of String) allocatedResourceStatuses stores status of resource being resized for the given PVC. Key names follow standard Kubernetes label syntax. Valid values are either:
+	* Un-prefixed keys:
+		- storage - the capacity of the volume.
+	* Custom resources must use implementation-defined prefixed names such as "example.com/my-custom-resource"
+Apart from above values - keys that are unprefixed or have kubernetes.io prefix are considered reserved and hence may not be used.
+
+ClaimResourceStatus can be in any of following states:
+	- ControllerResizeInProgress:
+		State set when resize controller starts resizing the volume in control-plane.
+	- ControllerResizeFailed:
+		State set when resize has failed in resize controller with a terminal error.
+	- NodeResizePending:
+		State set when resize controller has finished resizing the volume but further resizing of
+		volume is needed on the node.
+	- NodeResizeInProgress:
+		State set when kubelet starts resizing the volume.
+	- NodeResizeFailed:
+		State set when resizing has failed in kubelet with a terminal error. Transient errors don't set
+		NodeResizeFailed.
+For example: if expanding a PVC for more capacity - this field can be one of the following states:
+	- pvc.status.allocatedResourceStatus['storage'] = "ControllerResizeInProgress"
+     - pvc.status.allocatedResourceStatus['storage'] = "ControllerResizeFailed"
+     - pvc.status.allocatedResourceStatus['storage'] = "NodeResizePending"
+     - pvc.status.allocatedResourceStatus['storage'] = "NodeResizeInProgress"
+     - pvc.status.allocatedResourceStatus['storage'] = "NodeResizeFailed"
+When this field is not set, it means that no resize operation is in progress for the given PVC.
+
+A controller that receives PVC update with previously unknown resourceName or ClaimResourceStatus should ignore the update for the purpose it was designed. For example - a controller that only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid resources associated with PVC.
+
+This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
+- `allocated_resources` (Map of String) The storage resource within AllocatedResources tracks the capacity allocated to a PVC. It may be larger than the actual capacity when a volume expansion operation is requested. For storage quota, the larger value from allocatedResources and PVC.spec.resources is used. If allocatedResources is not set, PVC.spec.resources alone is used for quota calculation. If a volume expansion capacity request is lowered, allocatedResources is only lowered if there are no expansion operations in progress and if the actual volume capacity is equal or lower than the requested capacity. This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
 - `capacity` (Map of String) Represents the actual resources of the underlying volume.
 - `conditions` (Block List) Current Condition of persistent volume claim. If underlying persistent volume is being resized then the Condition will be set to 'ResizeStarted'. (see [below for nested schema](#nestedblock--status--conditions))
+- `current_volume_attributes_class_name` (String) currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using. When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim This is an alpha field and requires enabling VolumeAttributesClass feature.
+- `modify_volume_status` (Block List, Max: 1) ModifyVolumeStatus represents the status object of ControllerModifyVolume operation. When this is unset, there is no ModifyVolume operation being attempted. This is an alpha field and requires enabling VolumeAttributesClass feature. (see [below for nested schema](#nestedblock--status--modify_volume_status))
 - `phase` (String) Phase represents the current phase of PersistentVolumeClaim.
+- `resize_status` (String) ResizeStatus stores status of resize operation. ResizeStatus is not set by default but when expansion is complete resizeStatus is set to empty string by resize controller or kubelet. This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
 
 <a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
-
-Required:
-
-- `status` (String)
-- `type` (String)
 
 Optional:
 
@@ -224,3 +313,23 @@ Optional:
 - `last_transition_time` (String) Last time the condition transitioned from one status to another.
 - `message` (String) Human-readable message indicating details about last transition.
 - `reason` (String) Unique, this should be a short, machine understandable string that gives the reason for condition's last transition. If it reports "ResizeStarted" that means the underlying persistent volume is being resized.
+- `status` (String) Status is the status of the condition. Can be True, False, Unknown. More info: https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#:~:text=state%20of%20pvc-,conditions.status,-(string)%2C%20required
+- `type` (String) Type is the type of the condition. More info: https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#:~:text=set%20to%20%27ResizeStarted%27.-,PersistentVolumeClaimCondition,-contains%20details%20about
+
+
+<a id="nestedblock--status--modify_volume_status"></a>
+### Nested Schema for `status.modify_volume_status`
+
+Optional:
+
+- `status` (String) status is the status of the ControllerModifyVolume operation. It can be in any of following states:
+ - Pending
+   Pending indicates that the PersistentVolumeClaim cannot be modified due to unmet requirements, such as
+   the specified VolumeAttributesClass not existing.
+ - InProgress
+   InProgress indicates that the volume is being modified.
+ - Infeasible
+  Infeasible indicates that the request has been rejected as invalid by the CSI driver. To
+	  resolve the error, a valid VolumeAttributesClass needs to be specified.
+Note: New statuses can be added in the future. Consumers should check for unknown statuses and fail appropriately.
+- `target_volume_attributes_class_name` (String) targetVolumeAttributesClassName is the name of the VolumeAttributesClass the PVC currently being reconciled

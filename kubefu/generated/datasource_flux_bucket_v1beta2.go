@@ -89,6 +89,23 @@ func dataSourceFluxSourceToolkitFluxcdIoBucketV1Beta2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"cert_secret_ref": {
+						Type:        schema.TypeList,
+						Description: "CertSecretRef can be given the name of a Secret containing\neither or both of\n\n- a PEM-encoded client certificate (`tls.crt`) and private\nkey (`tls.key`);\n- a PEM-encoded CA certificate (`ca.crt`)\n\nand whichever are supplied, will be used for connecting to the\nbucket. The client cert and key are useful if you are\nauthenticating with a certificate; the CA cert is useful if\nyou are using a self-signed server certificate. The Secret must\nbe of type `Opaque` or `kubernetes.io/tls`.\n\nThis field is only supported for the `generic` provider.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"endpoint": {
 						Type:        schema.TypeString,
 						Description: "Endpoint is the object storage address the BucketName is located at.",
@@ -117,12 +134,36 @@ func dataSourceFluxSourceToolkitFluxcdIoBucketV1Beta2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"prefix": {
+						Type:        schema.TypeString,
+						Description: "Prefix to use for server-side filtering of files in the Bucket.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"provider_": {
 						Type:        schema.TypeString,
 						Description: "Provider of the object storage bucket. Defaults to 'generic', which expects an S3 (API) compatible object storage.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"proxy_secret_ref": {
+						Type:        schema.TypeList,
+						Description: "ProxySecretRef specifies the Secret containing the proxy configuration\nto use while communicating with the Bucket server.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"region": {
 						Type:        schema.TypeString,
@@ -145,6 +186,64 @@ func dataSourceFluxSourceToolkitFluxcdIoBucketV1Beta2() *schema.Resource {
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
+							},
+						}},
+					},
+					"sts": {
+						Type:        schema.TypeList,
+						Description: "STS specifies the required configuration to use a Security Token\nService for fetching temporary credentials to authenticate in a\nBucket provider.\n\nThis field is only supported for the `aws` and `generic` providers.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"cert_secret_ref": {
+								Type:        schema.TypeList,
+								Description: "CertSecretRef can be given the name of a Secret containing\neither or both of\n\n- a PEM-encoded client certificate (`tls.crt`) and private\nkey (`tls.key`);\n- a PEM-encoded CA certificate (`ca.crt`)\n\nand whichever are supplied, will be used for connecting to the\nSTS endpoint. The client cert and key are useful if you are\nauthenticating with a certificate; the CA cert is useful if\nyou are using a self-signed server certificate. The Secret must\nbe of type `Opaque` or `kubernetes.io/tls`.\n\nThis field is only supported for the `ldap` provider.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"endpoint": {
+								Type:        schema.TypeString,
+								Description: "Endpoint is the HTTP/S endpoint of the Security Token Service from\nwhere temporary credentials will be fetched.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"provider_": {
+								Type:        schema.TypeString,
+								Description: "Provider of the Security Token Service.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"secret_ref": {
+								Type:        schema.TypeList,
+								Description: "SecretRef specifies the Secret containing authentication credentials\nfor the STS endpoint. This Secret must contain the fields `username`\nand `password` and is supported only for the `ldap` provider.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
 							},
 						}},
 					},
@@ -187,9 +286,23 @@ func dataSourceFluxSourceToolkitFluxcdIoBucketV1Beta2() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"digest": {
+								Type:        schema.TypeString,
+								Description: "Digest is the digest of the file in the form of '<algorithm>:<checksum>'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"last_update_time": {
 								Type:        schema.TypeString,
 								Description: "LastUpdateTime is the timestamp corresponding to the last update of the Artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"metadata": {
+								Type:        schema.TypeMap,
+								Description: "Metadata holds upstream information such as OCI annotations.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -289,6 +402,13 @@ func dataSourceFluxSourceToolkitFluxcdIoBucketV1Beta2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"observed_ignore": {
+						Type:        schema.TypeString,
+						Description: "ObservedIgnore is the observed exclusion patterns used for constructing the source artifact.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"url": {
 						Type:        schema.TypeString,
 						Description: "URL is the dynamic fetch link for the latest Artifact. It is provided on a \"best effort\" basis, and using the precise BucketStatus.Artifact data is recommended.",
@@ -308,7 +428,7 @@ func dataSourceFluxSourceToolkitFluxcdIoBucketV1Beta2Read(_ context.Context, d *
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1beta2", "Bucket", "source.toolkit.fluxcd.io/v1beta2/Bucket"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.secret_ref", "status", "status.artifact"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.cert_secret_ref", "spec.proxy_secret_ref", "spec.secret_ref", "spec.sts", "spec.sts.cert_secret_ref", "spec.sts.secret_ref", "status", "status.artifact"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

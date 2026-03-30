@@ -22,6 +22,12 @@ Probe defines monitoring for a set of static targets or ingresses.
 ### Optional
 
 - `metadata` (Map of String)
+- `status` (Block List, Max: 1) status defines the status subresource. It is under active development and is updated only when the
+"StatusForConfigurationResources" feature gate is enabled.
+
+Most recent observed status of the Probe. Read-only.
+More info:
+https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -39,16 +45,46 @@ Optional:
 - `authorization` (Block List, Max: 1) Authorization section for this endpoint (see [below for nested schema](#nestedblock--spec--authorization))
 - `basic_auth` (Block List, Max: 1) BasicAuth allow an endpoint to authenticate over basic authentication. More info: https://prometheus.io/docs/operating/configuration/#endpoint (see [below for nested schema](#nestedblock--spec--basic_auth))
 - `bearer_token_secret` (Block List, Max: 1) Secret to mount to read bearer token for scraping targets. The secret needs to be in the same namespace as the probe and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--bearer_token_secret))
+- `convert_classic_histograms_to_nhcb` (Boolean) Whether to convert all scraped classic histograms into a native histogram with custom buckets.
+It requires Prometheus >= v3.0.0.
+- `enable_http2` (Boolean) enableHttp2 can be used to disable HTTP2.
+- `fallback_scrape_protocol` (String) The protocol to use if a scrape returns blank, unparseable, or otherwise invalid Content-Type.
+
+It requires Prometheus >= v3.0.0.
+- `follow_redirects` (Boolean) followRedirects defines whether the client should follow HTTP 3xx
+redirects.
 - `interval` (String) Interval at which targets are probed using the configured prober. If not specified Prometheus' global scrape interval is used.
 - `job_name` (String) The job name assigned to scraped metrics by default.
+- `keep_dropped_targets` (Number) Per-scrape limit on the number of targets dropped by relabeling that will be kept in memory. 0 means no limit.
+ It requires Prometheus >= v2.47.0.
 - `label_limit` (Number) Per-scrape limit on number of labels that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
 - `label_name_length_limit` (Number) Per-scrape limit on length of labels name that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
 - `label_value_length_limit` (Number) Per-scrape limit on length of labels value that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
 - `metric_relabelings` (Block List) MetricRelabelConfigs to apply to samples before ingestion. (see [below for nested schema](#nestedblock--spec--metric_relabelings))
 - `module` (String) The module to use for probing specifying how to probe the target. Example module configuring in the blackbox exporter: https://github.com/prometheus/blackbox_exporter/blob/master/example.yml
+- `native_histogram_bucket_limit` (Number) If there are more than this many buckets in a native histogram,
+buckets will be merged to stay within the limit.
+It requires Prometheus >= v2.45.0.
+- `native_histogram_min_bucket_factor` (String) If the growth factor of one bucket to the next is smaller than this,
+buckets will be merged to increase the factor sufficiently.
+It requires Prometheus >= v2.50.0.
 - `oauth2` (Block List, Max: 1) OAuth2 for the URL. Only valid in Prometheus versions 2.27.0 and newer. (see [below for nested schema](#nestedblock--spec--oauth2))
+- `params` (Block List) The list of HTTP query parameters for the scrape.
+Please note that the `.spec.module` field takes precedence over the `module` parameter from this list when both are defined.
+The module name must be added using Module under ProbeSpec. (see [below for nested schema](#nestedblock--spec--params))
 - `prober` (Block List, Max: 1) Specification for the prober to use for probing targets. The prober.URL parameter is required. Targets cannot be probed if left empty. (see [below for nested schema](#nestedblock--spec--prober))
 - `sample_limit` (Number) SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
+- `scrape_class` (String) The scrape class to apply.
+- `scrape_classic_histograms` (Boolean) Whether to scrape a classic histogram that is also exposed as a native histogram.
+It requires Prometheus >= v2.45.0.
+- `scrape_fallback_protocol` (String) The protocol to use if a scrape returns blank, unparseable, or otherwise invalid Content-Type.
+
+It requires Prometheus >= v3.0.0.
+- `scrape_native_histograms` (Boolean) scrapeNativeHistograms defines whether to enable scraping of native histograms.
+It requires Prometheus >= v3.8.0.
+- `scrape_protocols` (List of String) `scrapeProtocols` defines the protocols to negotiate during a scrape. It tells clients the protocols supported by Prometheus in order of preference (from most to least preferred).
+ If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.49.0.
 - `scrape_timeout` (String) Timeout for scraping metrics from the Prometheus exporter.
 - `target_limit` (Number) TargetLimit defines a limit on the number of scraped targets that will be accepted.
 - `targets` (Block List, Max: 1) Targets defines a set of static and/or dynamically discovered targets to be probed using the prober. (see [below for nested schema](#nestedblock--spec--targets))
@@ -134,7 +170,29 @@ Optional:
 - `client_id` (Block List, Max: 1) The secret or configmap containing the OAuth2 client id (see [below for nested schema](#nestedblock--spec--oauth2--client_id))
 - `client_secret` (Block List, Max: 1) The secret containing the OAuth2 client secret (see [below for nested schema](#nestedblock--spec--oauth2--client_secret))
 - `endpoint_params` (Map of String) Parameters to append to the token URL
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
 - `scopes` (List of String) OAuth2 scopes used for the token request
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config))
 - `token_url` (String) The URL to fetch the token from
 
 <a id="nestedblock--spec--oauth2--client_id"></a>
@@ -176,13 +234,152 @@ Optional:
 - `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
+<a id="nestedblock--spec--oauth2--tls_config"></a>
+### Nested Schema for `spec.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--params"></a>
+### Nested Schema for `spec.params`
+
+Optional:
+
+- `name` (String) The parameter name
+- `values` (List of String) The parameter values
+
 
 <a id="nestedblock--spec--prober"></a>
 ### Nested Schema for `spec.prober`
 
 Optional:
 
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
 - `path` (String) Path to collect metrics from. Defaults to `/probe`.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
 - `proxy_url` (String) Optional ProxyURL.
 - `scheme` (String) HTTP scheme to use for scraping. Defaults to `http`.
 - `url` (String) Mandatory URL of the prober.
@@ -282,6 +479,14 @@ Optional:
 - `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--cert))
 - `insecure_skip_verify` (Boolean) Disable target certificate validation.
 - `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
 - `server_name` (String) Used to verify the hostname for the targets.
 
 <a id="nestedblock--spec--tls_config--ca"></a>
@@ -350,3 +555,40 @@ Optional:
 - `key` (String) The key of the secret to select from.  Must be a valid secret key.
 - `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
 - `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `bindings` (Block List) bindings defines the list of workload resources (Prometheus, PrometheusAgent, ThanosRuler or Alertmanager) which select the configuration resource. (see [below for nested schema](#nestedblock--status--bindings))
+
+<a id="nestedblock--status--bindings"></a>
+### Nested Schema for `status.bindings`
+
+Optional:
+
+- `conditions` (Block List) conditions defines the current state of the configuration resource when bound to the referenced Workload object. (see [below for nested schema](#nestedblock--status--bindings--conditions))
+- `group` (String) group defines the group of the referenced resource.
+- `name` (String) name defines the name of the referenced object.
+- `namespace` (String) namespace defines the namespace of the referenced object.
+- `resource` (String) resource defines the type of resource being referenced (e.g. Prometheus, PrometheusAgent, ThanosRuler or Alertmanager).
+
+<a id="nestedblock--status--bindings--conditions"></a>
+### Nested Schema for `status.bindings.conditions`
+
+Optional:
+
+- `last_transition_time` (String) lastTransitionTime defines the time of the last update to the current status property.
+- `message` (String) message defines the human-readable message indicating details for the condition's last transition.
+- `observed_generation` (Number) observedGeneration defines the .metadata.generation that the
+condition was set based upon. For instance, if `.metadata.generation` is
+currently 12, but the `.status.conditions[].observedGeneration` is 9, the
+condition is out of date with respect to the current state of the object.
+- `reason` (String) reason for the condition's last transition.
+- `status` (String) status of the condition.
+- `type` (String) type of the condition being reported.
+Currently, only "Accepted" is supported.

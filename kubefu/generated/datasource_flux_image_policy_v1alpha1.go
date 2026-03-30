@@ -228,7 +228,7 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Alpha1() *schema.Resource {
 					},
 					"observed_generation": {
 						Type:        schema.TypeInt,
-						Description: "",
+						Description: "ObservedGeneration is the last reconciled generation.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,

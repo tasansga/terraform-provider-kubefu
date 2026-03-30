@@ -34,14 +34,33 @@ ImageRepository is the Schema for the imagerepositories API
 
 Optional:
 
+- `access_from` (Block List, Max: 1) AccessFrom defines an ACL for allowing cross-namespace references to the ImageRepository object based on the caller's namespace labels. (see [below for nested schema](#nestedblock--spec--access_from))
 - `cert_secret_ref` (Block List, Max: 1) CertSecretRef can be given the name of a secret containing either or both of
   - a PEM-encoded client certificate (`certFile`) and private  key (`keyFile`);  - a PEM-encoded CA certificate (`caFile`)
   and whichever are supplied, will be used for connecting to the  registry. The client cert and key are useful if you are  authenticating with a certificate; the CA cert is useful if  you are using a self-signed server certificate. (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
+- `exclusion_list` (List of String) ExclusionList is a list of regex strings used to exclude certain tags from being stored in the database.
 - `image` (String) Image is the name of the image repository
 - `interval` (String) Interval is the length of time to wait between scans of the image repository.
 - `secret_ref` (Block List, Max: 1) SecretRef can be given the name of a secret containing credentials to use for the image registry. The secret should be created with `kubectl create secret docker-registry`, or the equivalent. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `service_account_name` (String) ServiceAccountName is the name of the Kubernetes ServiceAccount used to authenticate the image pull if the service account has attached pull secrets.
 - `suspend` (Boolean) This flag tells the controller to suspend subsequent image scans. It does not apply to already started scans. Defaults to false.
 - `timeout` (String) Timeout for image scanning. Defaults to 'Interval' duration.
+
+<a id="nestedblock--spec--access_from"></a>
+### Nested Schema for `spec.access_from`
+
+Optional:
+
+- `namespace_selectors` (Block List) NamespaceSelectors is the list of namespace selectors to which this ACL applies. Items in this list are evaluated using a logical OR operation. (see [below for nested schema](#nestedblock--spec--access_from--namespace_selectors))
+
+<a id="nestedblock--spec--access_from--namespace_selectors"></a>
+### Nested Schema for `spec.access_from.namespace_selectors`
+
+Optional:
+
+- `match_labels` (Map of String) MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+
 
 <a id="nestedblock--spec--cert_secret_ref"></a>
 ### Nested Schema for `spec.cert_secret_ref`

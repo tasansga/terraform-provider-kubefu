@@ -37,6 +37,7 @@ ThanosRuler defines a ThanosRuler deployment.
 
 Optional:
 
+- `additional_args` (Block List) AdditionalArgs allows setting additional arguments for the ThanosRuler container. It is intended for e.g. activating hidden flags which are not supported by the dedicated configuration options yet. The arguments are passed as-is to the ThanosRuler container which may cause issues if they are invalid or not supported by the given ThanosRuler version. In case of an argument conflict (e.g. an argument which is already set by the operator itself) or when providing an invalid argument the reconciliation will fail and an error will be logged. (see [below for nested schema](#nestedblock--spec--additional_args))
 - `affinity` (Block List, Max: 1) If specified, the pod's scheduling constraints. (see [below for nested schema](#nestedblock--spec--affinity))
 - `alert_drop_labels` (List of String) AlertDropLabels configure the label names which should be dropped in ThanosRuler alerts. The replica label `thanos_ruler_replica` will always be dropped in alerts.
 - `alert_query_url` (String) The external Query URL the Thanos Ruler will set in the 'Source' field of all alerts. Maps to the '--alert.query-url' CLI arg.
@@ -45,11 +46,32 @@ Optional:
 - `alertmanagers_config` (Block List, Max: 1) Define configuration for connecting to alertmanager.  Only available with thanos v0.10.0 and higher.  Maps to the `alertmanagers.config` arg. (see [below for nested schema](#nestedblock--spec--alertmanagers_config))
 - `alertmanagers_url` (List of String) Define URLs to send alerts to Alertmanager.  For Thanos v0.10.0 and higher, AlertManagersConfig should be used instead.  Note: this field will be ignored if AlertManagersConfig is specified. Maps to the `alertmanagers.url` arg.
 - `containers` (Block List) Containers allows injecting additional containers or modifying operator generated containers. This can be used to allow adding an authentication proxy to a ThanosRuler pod or to change the behavior of an operator generated container. Containers described here modify an operator generated container if they share the same name and modifications are done via a strategic merge patch. The current container names are: `thanos-ruler` and `config-reloader`. Overriding containers is entirely outside the scope of what the maintainers will support and by doing so, you accept that this behaviour may break at any time without notice. (see [below for nested schema](#nestedblock--spec--containers))
+- `dns_config` (Block List, Max: 1) Defines the DNS configuration for the pods. (see [below for nested schema](#nestedblock--spec--dns_config))
+- `dns_policy` (String) Defines the DNS policy for the pods.
+- `enable_features` (List of String) Enable access to Thanos Ruler feature flags. By default, no features are enabled.
+
+Enabling features which are disabled by default is entirely outside the
+scope of what the maintainers will support and by doing so, you accept
+that this behaviour may break at any time without notice.
+
+For more information see https://thanos.io/tip/components/rule.md/
+
+It requires Thanos >= 0.39.0.
+- `enable_service_links` (Boolean) Indicates whether information about services should be injected into pod's environment variables
 - `enforced_namespace_label` (String) EnforcedNamespaceLabel enforces adding a namespace label of origin for each alert and metric that is user created. The label value will always be the namespace of the object that is being created.
 - `evaluation_interval` (String) Interval between consecutive evaluations.
+- `excluded_from_enforcement` (Block List) List of references to PrometheusRule objects to be excluded from enforcing a namespace label of origin. Applies only if enforcedNamespaceLabel set to true. (see [below for nested schema](#nestedblock--spec--excluded_from_enforcement))
 - `external_prefix` (String) The external URL the Thanos Ruler instances will be available under. This is necessary to generate correct URLs. This is necessary if Thanos Ruler is not served from root of a DNS name.
 - `grpc_server_tls_config` (Block List, Max: 1) GRPCServerTLSConfig configures the gRPC server from which Thanos Querier reads recorded rule data. Note: Currently only the CAFile, CertFile, and KeyFile fields are supported. Maps to the '--grpc-server-tls-*' CLI args. (see [below for nested schema](#nestedblock--spec--grpc_server_tls_config))
+- `host_aliases` (Block List) Pods' hostAliases configuration (see [below for nested schema](#nestedblock--spec--host_aliases))
+- `host_users` (Boolean) HostUsers supports the user space in Kubernetes.
+
+More info: https://kubernetes.io/docs/tasks/configure-pod-container/user-namespaces/
+
+The feature requires at least Kubernetes 1.28 with the `UserNamespacesSupport` feature gate enabled.
+Starting Kubernetes 1.33, the feature is enabled by default.
 - `image` (String) Thanos container image URL.
+- `image_pull_policy` (String) Image pull policy for the 'thanos', 'init-config-reloader' and 'config-reloader' containers. See https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy for more details.
 - `image_pull_secrets` (Block List) An optional list of references to secrets in the same namespace to use for pulling thanos images from registries see http://kubernetes.io/docs/user-guide/images#specifying-imagepullsecrets-on-a-pod (see [below for nested schema](#nestedblock--spec--image_pull_secrets))
 - `init_containers` (Block List) InitContainers allows adding initContainers to the pod definition. Those can be used to e.g. fetch secrets for injection into the ThanosRuler configuration from external sources. Any errors during the execution of an initContainer will lead to a restart of the Pod. More info: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/ Using initContainers for any use case other then secret fetching is entirely outside the scope of what the maintainers will support and by doing so, you accept that this behaviour may break at any time without notice. (see [below for nested schema](#nestedblock--spec--init_containers))
 - `labels` (Map of String) Labels configure the external label pairs to ThanosRuler. A default replica label `thanos_ruler_replica` will be always added  as a label with the value of the pod's name and it will be dropped in the alerts.
@@ -61,25 +83,77 @@ Optional:
 - `object_storage_config` (Block List, Max: 1) ObjectStorageConfig configures object storage in Thanos. Alternative to ObjectStorageConfigFile, and lower order priority. (see [below for nested schema](#nestedblock--spec--object_storage_config))
 - `object_storage_config_file` (String) ObjectStorageConfigFile specifies the path of the object storage configuration file. When used alongside with ObjectStorageConfig, ObjectStorageConfigFile takes precedence.
 - `paused` (Boolean) When a ThanosRuler deployment is paused, no actions except for deletion will be performed on the underlying objects.
+- `pod_management_policy` (String) podManagementPolicy defines the policy for creating/deleting pods when
+scaling up and down.
+
+Unlike the default StatefulSet behavior, the default policy is
+`Parallel` to avoid manual intervention in case a pod gets stuck during
+a rollout.
+
+Note that updating this value implies the recreation of the StatefulSet
+which incurs a service outage.
 - `pod_metadata` (Block List, Max: 1) PodMetadata contains Labels and Annotations gets propagated to the thanos ruler pods. (see [below for nested schema](#nestedblock--spec--pod_metadata))
 - `port_name` (String) Port name used for the pods and governing service. This defaults to web
 - `priority_class_name` (String) Priority class assigned to the Pods
 - `prometheus_rules_excluded_from_enforce` (Block List) PrometheusRulesExcludedFromEnforce - list of Prometheus rules to be excluded from enforcing of adding namespace labels. Works only if enforcedNamespaceLabel set to true. Make sure both ruleNamespace and ruleName are set for each pair (see [below for nested schema](#nestedblock--spec--prometheus_rules_excluded_from_enforce))
 - `query_config` (Block List, Max: 1) Define configuration for connecting to thanos query instances. If this is defined, the QueryEndpoints field will be ignored. Maps to the `query.config` CLI argument. Only available with thanos v0.11.0 and higher. (see [below for nested schema](#nestedblock--spec--query_config))
 - `query_endpoints` (List of String) QueryEndpoints defines Thanos querier endpoints from which to query metrics. Maps to the --query flag of thanos ruler.
+- `remote_write` (Block List) Defines the list of remote write configurations.
+
+When the list isn't empty, the ruler is configured with stateless mode.
+
+It requires Thanos >= 0.24.0. (see [below for nested schema](#nestedblock--spec--remote_write))
 - `replicas` (Number) Number of thanos ruler instances to deploy.
+- `resend_delay` (String) Minimum amount of time to wait before resending an alert to Alertmanager.
 - `resources` (Block List, Max: 1) Resources defines the resource requirements for single Pods. If not provided, no requests/limits will be set (see [below for nested schema](#nestedblock--spec--resources))
 - `retention` (String) Time duration ThanosRuler shall retain data for. Default is '24h', and must match the regular expression `[0-9]+(ms|s|m|h|d|w|y)` (milliseconds seconds minutes hours days weeks years).
 - `route_prefix` (String) The route prefix ThanosRuler registers HTTP handlers for. This allows thanos UI to be served on a sub-path.
+- `rule_concurrent_eval` (Number) How many rules can be evaluated concurrently.
+It requires Thanos >= v0.37.0.
+- `rule_grace_period` (String) Minimum duration between alert and restored "for" state.
+This is maintained only for alerts with configured "for" time greater than grace period.
+It requires Thanos >= v0.30.0.
 - `rule_namespace_selector` (Block List, Max: 1) Namespaces to be selected for Rules discovery. If unspecified, only the same namespace as the ThanosRuler object is in is used. (see [below for nested schema](#nestedblock--spec--rule_namespace_selector))
+- `rule_outage_tolerance` (String) Max time to tolerate prometheus outage for restoring "for" state of alert.
+It requires Thanos >= v0.30.0.
+- `rule_query_offset` (String) The default rule group's query offset duration to use.
+It requires Thanos >= v0.38.0.
 - `rule_selector` (Block List, Max: 1) A label selector to select which PrometheusRules to mount for alerting and recording. (see [below for nested schema](#nestedblock--spec--rule_selector))
 - `security_context` (Block List, Max: 1) SecurityContext holds pod-level security attributes and common container settings. This defaults to the default PodSecurityContext. (see [below for nested schema](#nestedblock--spec--security_context))
 - `service_account_name` (String) ServiceAccountName is the name of the ServiceAccount to use to run the Thanos Ruler Pods.
+- `service_name` (String) The name of the service name used by the underlying StatefulSet(s) as the governing service.
+If defined, the Service  must be created before the ThanosRuler resource in the same namespace and it must define a selector that matches the pod labels.
+If empty, the operator will create and manage a headless service named `thanos-ruler-operated` for ThanosRuler resources.
+When deploying multiple ThanosRuler resources in the same namespace, it is recommended to specify a different value for each.
+See https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#stable-network-id for more details.
 - `storage` (Block List, Max: 1) Storage spec to specify how storage shall be used. (see [below for nested schema](#nestedblock--spec--storage))
+- `termination_grace_period_seconds` (Number) Optional duration in seconds the pod needs to terminate gracefully.
+Value must be non-negative integer. The value zero indicates stop immediately via
+the kill signal (no opportunity to shut down) which may lead to data corruption.
+
+Defaults to 120 seconds.
 - `tolerations` (Block List) If specified, the pod's tolerations. (see [below for nested schema](#nestedblock--spec--tolerations))
 - `topology_spread_constraints` (Block List) If specified, the pod's topology spread constraints. (see [below for nested schema](#nestedblock--spec--topology_spread_constraints))
 - `tracing_config` (Block List, Max: 1) TracingConfig configures tracing in Thanos. This is an experimental feature, it may change in any upcoming release in a breaking way. (see [below for nested schema](#nestedblock--spec--tracing_config))
+- `tracing_config_file` (String) TracingConfig specifies the path of the tracing configuration file. When used alongside with TracingConfig, TracingConfigFile takes precedence.
+- `update_strategy` (Block List, Max: 1) updateStrategy indicates the strategy that will be employed to update
+Pods in the StatefulSet when a revision is made to statefulset's Pod
+Template.
+
+The default strategy is RollingUpdate. (see [below for nested schema](#nestedblock--spec--update_strategy))
+- `version` (String) Version of Thanos to be deployed.
+- `volume_mounts` (Block List) VolumeMounts allows configuration of additional VolumeMounts on the output StatefulSet definition. VolumeMounts specified will be appended to other VolumeMounts in the ruler container, that are generated as a result of StorageSpec objects. (see [below for nested schema](#nestedblock--spec--volume_mounts))
 - `volumes` (Block List) Volumes allows configuration of additional volumes on the output StatefulSet definition. Volumes specified will be appended to other volumes that are generated as a result of StorageSpec objects. (see [below for nested schema](#nestedblock--spec--volumes))
+- `web` (Block List, Max: 1) Defines the configuration of the ThanosRuler web server. (see [below for nested schema](#nestedblock--spec--web))
+
+<a id="nestedblock--spec--additional_args"></a>
+### Nested Schema for `spec.additional_args`
+
+Optional:
+
+- `name` (String) Name of the argument, e.g. "scrape.discovery-reload-interval".
+- `value` (String) Argument value, e.g. 30s. Can be empty for name-only arguments (e.g. --storage.tsdb.no-lockfile)
+
 
 <a id="nestedblock--spec--affinity"></a>
 ### Nested Schema for `spec.affinity`
@@ -196,6 +270,8 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector. Also, MatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector. Also, MismatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
 - `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
 - `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
@@ -246,6 +322,8 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector. Also, MatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector. Also, MismatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
 - `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
 - `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
@@ -312,6 +390,8 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector. Also, MatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector. Also, MismatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
 - `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
 - `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
@@ -362,6 +442,8 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector. Also, MatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector. Also, MismatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
 - `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
 - `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
@@ -443,7 +525,20 @@ Optional:
 - `name` (String) Name of the container specified as a DNS_LABEL. Each container in a pod must have a unique name (DNS_LABEL). Cannot be updated.
 - `ports` (Block List) List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated. (see [below for nested schema](#nestedblock--spec--containers--ports))
 - `readiness_probe` (Block List, Max: 1) Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes (see [below for nested schema](#nestedblock--spec--containers--readiness_probe))
+- `resize_policy` (Block List) Resources resize policy for the container. (see [below for nested schema](#nestedblock--spec--containers--resize_policy))
 - `resources` (Block List, Max: 1) Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ (see [below for nested schema](#nestedblock--spec--containers--resources))
+- `restart_policy` (String) RestartPolicy defines the restart behavior of individual containers in a pod. This field may only be set for init containers, and the only allowed value is "Always". For non-init containers or when this field is not specified, the restart behavior is defined by the Pod's restart policy and the container type. Setting the RestartPolicy as "Always" for the init container will have the following effect: this init container will be continually restarted on exit until all regular containers have terminated. Once all regular containers have completed, all init containers with restartPolicy "Always" will be shut down. This lifecycle differs from normal init containers and is often referred to as a "sidecar" container. Although this init container still starts in the init container sequence, it does not wait for the container to complete before proceeding to the next init container. Instead, the next init container starts immediately after this init container is started, or after any startupProbe has successfully completed.
+- `restart_policy_rules` (Block List) Represents a list of rules to be checked to determine if the
+container should be restarted on exit. The rules are evaluated in
+order. Once a rule matches a container exit condition, the remaining
+rules are ignored. If no rule matches the container exit condition,
+the Container-level restart policy determines the whether the container
+is restarted or not. Constraints on the rules:
+- At most 20 rules are allowed.
+- Rules can have the same action.
+- Identical rules are not forbidden in validations.
+When rules are specified, container MUST set RestartPolicy explicitly
+even it if matches the Pod's RestartPolicy. (see [below for nested schema](#nestedblock--spec--containers--restart_policy_rules))
 - `security_context` (Block List, Max: 1) SecurityContext defines the security options the container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ (see [below for nested schema](#nestedblock--spec--containers--security_context))
 - `startup_probe` (Block List, Max: 1) StartupProbe indicates that the Pod has successfully initialized. If specified, no other probes are executed until this completes successfully. If this probe fails, the Pod will be restarted, just as if the livenessProbe failed. This can be used to provide different probe parameters at the beginning of a Pod's lifecycle, when it might take a long time to load data or warm a cache, than during steady-state operation. This cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes (see [below for nested schema](#nestedblock--spec--containers--startup_probe))
 - `stdin` (Boolean) Whether this container should allocate a buffer for stdin in the container runtime. If this is not set, reads from stdin in the container will always result in EOF. Default is false.
@@ -471,6 +566,8 @@ Optional:
 
 - `config_map_key_ref` (Block List, Max: 1) Selects a key of a ConfigMap. (see [below for nested schema](#nestedblock--spec--containers--env--value_from--config_map_key_ref))
 - `field_ref` (Block List, Max: 1) Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs. (see [below for nested schema](#nestedblock--spec--containers--env--value_from--field_ref))
+- `file_key_ref` (Block List, Max: 1) FileKeyRef selects a key of the env file.
+Requires the EnvFiles feature gate to be enabled. (see [below for nested schema](#nestedblock--spec--containers--env--value_from--file_key_ref))
 - `resource_field_ref` (Block List, Max: 1) Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported. (see [below for nested schema](#nestedblock--spec--containers--env--value_from--resource_field_ref))
 - `secret_key_ref` (Block List, Max: 1) Selects a key of a secret in the pod's namespace (see [below for nested schema](#nestedblock--spec--containers--env--value_from--secret_key_ref))
 
@@ -491,6 +588,26 @@ Optional:
 
 - `api_version` (String) Version of the schema the FieldPath is written in terms of, defaults to "v1".
 - `field_path` (String) Path of the field to select in the specified API version.
+
+
+<a id="nestedblock--spec--containers--env--value_from--file_key_ref"></a>
+### Nested Schema for `spec.containers.env.value_from.file_key_ref`
+
+Optional:
+
+- `key` (String) The key within the env file. An invalid key will prevent the pod from starting.
+The keys defined within a source may consist of any printable ASCII characters except '='.
+During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+- `optional` (Boolean) Specify whether the file or its key must be defined. If the file or key
+does not exist, then the env var is not published.
+If optional is set to true and the specified key does not exist,
+the environment variable will not be set in the Pod's containers.
+
+If optional is set to false and the specified key does not exist,
+an error will be returned during Pod creation.
+- `path` (String) The path within the volume from which to select the file.
+Must be relative and may not contain the '..' path or start with '..'.
+- `volume_name` (String) The name of the volume mount containing the env file.
 
 
 <a id="nestedblock--spec--containers--env--value_from--resource_field_ref"></a>
@@ -550,6 +667,9 @@ Optional:
 
 - `post_start` (Block List, Max: 1) PostStart is called immediately after a container is created. If the handler fails, the container is terminated and restarted according to its restart policy. Other management of the container blocks until the hook completes. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--post_start))
 - `pre_stop` (Block List, Max: 1) PreStop is called immediately before a container is terminated due to an API request or management event such as liveness/startup probe failure, preemption, resource contention, etc. The handler is not called if the container crashes or exits. The Pod's termination grace period countdown begins before the PreStop hook is executed. Regardless of the outcome of the handler, the container will eventually terminate within the Pod's termination grace period (unless delayed by finalizers). Other management of the container blocks until the hook completes or until the termination grace period is reached. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--pre_stop))
+- `stop_signal` (String) StopSignal defines which signal will be sent to a container when it is being stopped.
+If not specified, the default is defined by the container runtime in use.
+StopSignal can only be set for Pods with a non-empty .spec.os.name
 
 <a id="nestedblock--spec--containers--lifecycle_--post_start"></a>
 ### Nested Schema for `spec.containers.lifecycle_.post_start`
@@ -558,6 +678,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--post_start--exec))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--post_start--http_get))
+- `sleep` (Block List, Max: 1) Sleep represents the duration that the container should sleep before being terminated. (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--post_start--sleep))
 - `tcp_socket` (Block List, Max: 1) Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept for the backward compatibility. There are no validation of this field and lifecycle hooks will fail in runtime when tcp handler is specified. (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--post_start--tcp_socket))
 
 <a id="nestedblock--spec--containers--lifecycle_--post_start--exec"></a>
@@ -589,6 +710,14 @@ Optional:
 
 
 
+<a id="nestedblock--spec--containers--lifecycle_--post_start--sleep"></a>
+### Nested Schema for `spec.containers.lifecycle_.post_start.sleep`
+
+Optional:
+
+- `seconds` (Number) Seconds is the number of seconds to sleep.
+
+
 <a id="nestedblock--spec--containers--lifecycle_--post_start--tcp_socket"></a>
 ### Nested Schema for `spec.containers.lifecycle_.post_start.tcp_socket`
 
@@ -606,6 +735,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--pre_stop--exec))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--pre_stop--http_get))
+- `sleep` (Block List, Max: 1) Sleep represents the duration that the container should sleep before being terminated. (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--pre_stop--sleep))
 - `tcp_socket` (Block List, Max: 1) Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept for the backward compatibility. There are no validation of this field and lifecycle hooks will fail in runtime when tcp handler is specified. (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--pre_stop--tcp_socket))
 
 <a id="nestedblock--spec--containers--lifecycle_--pre_stop--exec"></a>
@@ -635,6 +765,14 @@ Optional:
 - `name` (String) The header field name
 - `value` (String) The header field value
 
+
+
+<a id="nestedblock--spec--containers--lifecycle_--pre_stop--sleep"></a>
+### Nested Schema for `spec.containers.lifecycle_.pre_stop.sleep`
+
+Optional:
+
+- `seconds` (Number) Seconds is the number of seconds to sleep.
 
 
 <a id="nestedblock--spec--containers--lifecycle_--pre_stop--tcp_socket"></a>
@@ -790,13 +928,62 @@ Optional:
 
 
 
+<a id="nestedblock--spec--containers--resize_policy"></a>
+### Nested Schema for `spec.containers.resize_policy`
+
+Optional:
+
+- `resource_name` (String) Name of the resource to which this resource resize policy applies. Supported values: cpu, memory.
+- `restart_policy` (String) Restart policy to apply when specified resource is resized. If not specified, it defaults to NotRequired.
+
+
 <a id="nestedblock--spec--containers--resources"></a>
 ### Nested Schema for `spec.containers.resources`
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+ This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+ This field is immutable. (see [below for nested schema](#nestedblock--spec--containers--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--containers--resources--claims"></a>
+### Nested Schema for `spec.containers.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+- `request` (String) Request is the name chosen for a request in the referenced claim.
+If empty, everything from the claim is made available, otherwise
+only the result of this request.
+
+
+
+<a id="nestedblock--spec--containers--restart_policy_rules"></a>
+### Nested Schema for `spec.containers.restart_policy_rules`
+
+Optional:
+
+- `action` (String) Specifies the action taken on a container exit if the requirements
+are satisfied. The only possible value is "Restart" to restart the
+container.
+- `exit_codes` (Block List, Max: 1) Represents the exit codes to check on container exits. (see [below for nested schema](#nestedblock--spec--containers--restart_policy_rules--exit_codes))
+
+<a id="nestedblock--spec--containers--restart_policy_rules--exit_codes"></a>
+### Nested Schema for `spec.containers.restart_policy_rules.exit_codes`
+
+Optional:
+
+- `operator` (String) Represents the relationship between the container exit code(s) and the
+specified values. Possible values are:
+- In: the requirement is satisfied if the container exit code is in the
+  set of specified values.
+- NotIn: the requirement is satisfied if the container exit code is
+  not in the set of specified values.
+- `values` (List of Number) Specifies the set of values to check for container exit codes.
+At most 255 elements are allowed.
+
 
 
 <a id="nestedblock--spec--containers--security_context"></a>
@@ -805,6 +992,9 @@ Optional:
 Optional:
 
 - `allow_privilege_escalation` (Boolean) AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this field cannot be set when spec.os.name is windows.
+- `app_armor_profile` (Block List, Max: 1) appArmorProfile is the AppArmor options to use by this container. If set, this profile
+overrides the pod's appArmorProfile.
+Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--containers--security_context--app_armor_profile))
 - `capabilities` (Block List, Max: 1) The capabilities to add/drop when running containers. Defaults to the default set of capabilities granted by the container runtime. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--containers--security_context--capabilities))
 - `privileged` (Boolean) Run container in privileged mode. Processes in privileged containers are essentially equivalent to root on the host. Defaults to false. Note that this field cannot be set when spec.os.name is windows.
 - `proc_mount` (String) procMount denotes the type of proc mount to use for the containers. The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths. This requires the ProcMountType feature flag to be enabled. Note that this field cannot be set when spec.os.name is windows.
@@ -815,6 +1005,22 @@ Optional:
 - `se_linux_options` (Block List, Max: 1) The SELinux context to be applied to the container. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in PodSecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--containers--security_context--se_linux_options))
 - `seccomp_profile` (Block List, Max: 1) The seccomp options to use by this container. If seccomp options are provided at both the pod & container level, the container options override the pod options. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--containers--security_context--seccomp_profile))
 - `windows_options` (Block List, Max: 1) The Windows specific settings applied to all containers. If unspecified, the options from the PodSecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is linux. (see [below for nested schema](#nestedblock--spec--containers--security_context--windows_options))
+
+<a id="nestedblock--spec--containers--security_context--app_armor_profile"></a>
+### Nested Schema for `spec.containers.security_context.app_armor_profile`
+
+Optional:
+
+- `localhost_profile` (String) localhostProfile indicates a profile loaded on the node that should be used.
+The profile must be preconfigured on the node to work.
+Must match the loaded name of the profile.
+Must be set if and only if type is "Localhost".
+- `type` (String) type indicates which kind of AppArmor profile will be applied.
+Valid options are:
+  Localhost - a profile pre-loaded on the node.
+  RuntimeDefault - the container runtime's default profile.
+  Unconfined - no AppArmor enforcement.
+
 
 <a id="nestedblock--spec--containers--security_context--capabilities"></a>
 ### Nested Schema for `spec.containers.security_context.capabilities`
@@ -941,9 +1147,64 @@ Optional:
 - `mount_propagation` (String) mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10.
 - `name` (String) This must match the Name of a Volume.
 - `read_only` (Boolean) Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false.
+- `recursive_read_only` (String) RecursiveReadOnly specifies whether read-only mounts should be handled
+recursively.
+
+
+If ReadOnly is false, this field has no meaning and must be unspecified.
+
+
+If ReadOnly is true, and this field is set to Disabled, the mount is not made
+recursively read-only.  If this field is set to IfPossible, the mount is made
+recursively read-only, if it is supported by the container runtime.  If this
+field is set to Enabled, the mount is made recursively read-only if it is
+supported by the container runtime, otherwise the pod will not be started and
+an error will be generated to indicate the reason.
+
+
+If this field is set to IfPossible or Enabled, MountPropagation must be set to
+None (or be unspecified, which defaults to None).
+
+
+If this field is not specified, it is treated as an equivalent of Disabled.
 - `sub_path` (String) Path within the volume from which the container's volume should be mounted. Defaults to "" (volume's root).
 - `sub_path_expr` (String) Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to "" (volume's root). SubPathExpr and SubPath are mutually exclusive.
 
+
+
+<a id="nestedblock--spec--dns_config"></a>
+### Nested Schema for `spec.dns_config`
+
+Optional:
+
+- `nameservers` (List of String) A list of DNS name server IP addresses.
+This will be appended to the base nameservers generated from DNSPolicy.
+- `options` (Block List) A list of DNS resolver options.
+This will be merged with the base options generated from DNSPolicy.
+Resolution options given in Options
+will override those that appear in the base DNSPolicy. (see [below for nested schema](#nestedblock--spec--dns_config--options))
+- `searches` (List of String) A list of DNS search domains for host-name lookup.
+This will be appended to the base search paths generated from DNSPolicy.
+
+<a id="nestedblock--spec--dns_config--options"></a>
+### Nested Schema for `spec.dns_config.options`
+
+Optional:
+
+- `name` (String) Name is required and must be unique.
+- `value` (String) Value is optional.
+
+
+
+<a id="nestedblock--spec--excluded_from_enforcement"></a>
+### Nested Schema for `spec.excluded_from_enforcement`
+
+Optional:
+
+- `group` (String) Group of the referent. When not specified, it defaults to `monitoring.coreos.com`
+- `name` (String) Name of the referent. When not set, all resources are matched.
+- `namespace` (String) Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+- `resource` (String) Resource of the referent.
 
 
 <a id="nestedblock--spec--grpc_server_tls_config"></a>
@@ -958,6 +1219,14 @@ Optional:
 - `insecure_skip_verify` (Boolean) Disable target certificate validation.
 - `key_file` (String) Path to the client key file in the Prometheus container for the targets.
 - `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--grpc_server_tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
 - `server_name` (String) Used to verify the hostname for the targets.
 
 <a id="nestedblock--spec--grpc_server_tls_config--ca"></a>
@@ -1029,6 +1298,15 @@ Optional:
 
 
 
+<a id="nestedblock--spec--host_aliases"></a>
+### Nested Schema for `spec.host_aliases`
+
+Optional:
+
+- `hostnames` (List of String) Hostnames for the above IP address.
+- `ip` (String) IP address of the host file entry.
+
+
 <a id="nestedblock--spec--image_pull_secrets"></a>
 ### Nested Schema for `spec.image_pull_secrets`
 
@@ -1053,7 +1331,20 @@ Optional:
 - `name` (String) Name of the container specified as a DNS_LABEL. Each container in a pod must have a unique name (DNS_LABEL). Cannot be updated.
 - `ports` (Block List) List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated. (see [below for nested schema](#nestedblock--spec--init_containers--ports))
 - `readiness_probe` (Block List, Max: 1) Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes (see [below for nested schema](#nestedblock--spec--init_containers--readiness_probe))
+- `resize_policy` (Block List) Resources resize policy for the container. (see [below for nested schema](#nestedblock--spec--init_containers--resize_policy))
 - `resources` (Block List, Max: 1) Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ (see [below for nested schema](#nestedblock--spec--init_containers--resources))
+- `restart_policy` (String) RestartPolicy defines the restart behavior of individual containers in a pod. This field may only be set for init containers, and the only allowed value is "Always". For non-init containers or when this field is not specified, the restart behavior is defined by the Pod's restart policy and the container type. Setting the RestartPolicy as "Always" for the init container will have the following effect: this init container will be continually restarted on exit until all regular containers have terminated. Once all regular containers have completed, all init containers with restartPolicy "Always" will be shut down. This lifecycle differs from normal init containers and is often referred to as a "sidecar" container. Although this init container still starts in the init container sequence, it does not wait for the container to complete before proceeding to the next init container. Instead, the next init container starts immediately after this init container is started, or after any startupProbe has successfully completed.
+- `restart_policy_rules` (Block List) Represents a list of rules to be checked to determine if the
+container should be restarted on exit. The rules are evaluated in
+order. Once a rule matches a container exit condition, the remaining
+rules are ignored. If no rule matches the container exit condition,
+the Container-level restart policy determines the whether the container
+is restarted or not. Constraints on the rules:
+- At most 20 rules are allowed.
+- Rules can have the same action.
+- Identical rules are not forbidden in validations.
+When rules are specified, container MUST set RestartPolicy explicitly
+even it if matches the Pod's RestartPolicy. (see [below for nested schema](#nestedblock--spec--init_containers--restart_policy_rules))
 - `security_context` (Block List, Max: 1) SecurityContext defines the security options the container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ (see [below for nested schema](#nestedblock--spec--init_containers--security_context))
 - `startup_probe` (Block List, Max: 1) StartupProbe indicates that the Pod has successfully initialized. If specified, no other probes are executed until this completes successfully. If this probe fails, the Pod will be restarted, just as if the livenessProbe failed. This can be used to provide different probe parameters at the beginning of a Pod's lifecycle, when it might take a long time to load data or warm a cache, than during steady-state operation. This cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes (see [below for nested schema](#nestedblock--spec--init_containers--startup_probe))
 - `stdin` (Boolean) Whether this container should allocate a buffer for stdin in the container runtime. If this is not set, reads from stdin in the container will always result in EOF. Default is false.
@@ -1081,6 +1372,8 @@ Optional:
 
 - `config_map_key_ref` (Block List, Max: 1) Selects a key of a ConfigMap. (see [below for nested schema](#nestedblock--spec--init_containers--env--value_from--config_map_key_ref))
 - `field_ref` (Block List, Max: 1) Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs. (see [below for nested schema](#nestedblock--spec--init_containers--env--value_from--field_ref))
+- `file_key_ref` (Block List, Max: 1) FileKeyRef selects a key of the env file.
+Requires the EnvFiles feature gate to be enabled. (see [below for nested schema](#nestedblock--spec--init_containers--env--value_from--file_key_ref))
 - `resource_field_ref` (Block List, Max: 1) Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported. (see [below for nested schema](#nestedblock--spec--init_containers--env--value_from--resource_field_ref))
 - `secret_key_ref` (Block List, Max: 1) Selects a key of a secret in the pod's namespace (see [below for nested schema](#nestedblock--spec--init_containers--env--value_from--secret_key_ref))
 
@@ -1101,6 +1394,26 @@ Optional:
 
 - `api_version` (String) Version of the schema the FieldPath is written in terms of, defaults to "v1".
 - `field_path` (String) Path of the field to select in the specified API version.
+
+
+<a id="nestedblock--spec--init_containers--env--value_from--file_key_ref"></a>
+### Nested Schema for `spec.init_containers.env.value_from.file_key_ref`
+
+Optional:
+
+- `key` (String) The key within the env file. An invalid key will prevent the pod from starting.
+The keys defined within a source may consist of any printable ASCII characters except '='.
+During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+- `optional` (Boolean) Specify whether the file or its key must be defined. If the file or key
+does not exist, then the env var is not published.
+If optional is set to true and the specified key does not exist,
+the environment variable will not be set in the Pod's containers.
+
+If optional is set to false and the specified key does not exist,
+an error will be returned during Pod creation.
+- `path` (String) The path within the volume from which to select the file.
+Must be relative and may not contain the '..' path or start with '..'.
+- `volume_name` (String) The name of the volume mount containing the env file.
 
 
 <a id="nestedblock--spec--init_containers--env--value_from--resource_field_ref"></a>
@@ -1160,6 +1473,9 @@ Optional:
 
 - `post_start` (Block List, Max: 1) PostStart is called immediately after a container is created. If the handler fails, the container is terminated and restarted according to its restart policy. Other management of the container blocks until the hook completes. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--post_start))
 - `pre_stop` (Block List, Max: 1) PreStop is called immediately before a container is terminated due to an API request or management event such as liveness/startup probe failure, preemption, resource contention, etc. The handler is not called if the container crashes or exits. The Pod's termination grace period countdown begins before the PreStop hook is executed. Regardless of the outcome of the handler, the container will eventually terminate within the Pod's termination grace period (unless delayed by finalizers). Other management of the container blocks until the hook completes or until the termination grace period is reached. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--pre_stop))
+- `stop_signal` (String) StopSignal defines which signal will be sent to a container when it is being stopped.
+If not specified, the default is defined by the container runtime in use.
+StopSignal can only be set for Pods with a non-empty .spec.os.name
 
 <a id="nestedblock--spec--init_containers--lifecycle_--post_start"></a>
 ### Nested Schema for `spec.init_containers.lifecycle_.post_start`
@@ -1168,6 +1484,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--post_start--exec))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--post_start--http_get))
+- `sleep` (Block List, Max: 1) Sleep represents the duration that the container should sleep before being terminated. (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--post_start--sleep))
 - `tcp_socket` (Block List, Max: 1) Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept for the backward compatibility. There are no validation of this field and lifecycle hooks will fail in runtime when tcp handler is specified. (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--post_start--tcp_socket))
 
 <a id="nestedblock--spec--init_containers--lifecycle_--post_start--exec"></a>
@@ -1199,6 +1516,14 @@ Optional:
 
 
 
+<a id="nestedblock--spec--init_containers--lifecycle_--post_start--sleep"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.post_start.sleep`
+
+Optional:
+
+- `seconds` (Number) Seconds is the number of seconds to sleep.
+
+
 <a id="nestedblock--spec--init_containers--lifecycle_--post_start--tcp_socket"></a>
 ### Nested Schema for `spec.init_containers.lifecycle_.post_start.tcp_socket`
 
@@ -1216,6 +1541,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--pre_stop--exec))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--pre_stop--http_get))
+- `sleep` (Block List, Max: 1) Sleep represents the duration that the container should sleep before being terminated. (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--pre_stop--sleep))
 - `tcp_socket` (Block List, Max: 1) Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept for the backward compatibility. There are no validation of this field and lifecycle hooks will fail in runtime when tcp handler is specified. (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--pre_stop--tcp_socket))
 
 <a id="nestedblock--spec--init_containers--lifecycle_--pre_stop--exec"></a>
@@ -1245,6 +1571,14 @@ Optional:
 - `name` (String) The header field name
 - `value` (String) The header field value
 
+
+
+<a id="nestedblock--spec--init_containers--lifecycle_--pre_stop--sleep"></a>
+### Nested Schema for `spec.init_containers.lifecycle_.pre_stop.sleep`
+
+Optional:
+
+- `seconds` (Number) Seconds is the number of seconds to sleep.
 
 
 <a id="nestedblock--spec--init_containers--lifecycle_--pre_stop--tcp_socket"></a>
@@ -1400,13 +1734,62 @@ Optional:
 
 
 
+<a id="nestedblock--spec--init_containers--resize_policy"></a>
+### Nested Schema for `spec.init_containers.resize_policy`
+
+Optional:
+
+- `resource_name` (String) Name of the resource to which this resource resize policy applies. Supported values: cpu, memory.
+- `restart_policy` (String) Restart policy to apply when specified resource is resized. If not specified, it defaults to NotRequired.
+
+
 <a id="nestedblock--spec--init_containers--resources"></a>
 ### Nested Schema for `spec.init_containers.resources`
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+ This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+ This field is immutable. (see [below for nested schema](#nestedblock--spec--init_containers--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--init_containers--resources--claims"></a>
+### Nested Schema for `spec.init_containers.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+- `request` (String) Request is the name chosen for a request in the referenced claim.
+If empty, everything from the claim is made available, otherwise
+only the result of this request.
+
+
+
+<a id="nestedblock--spec--init_containers--restart_policy_rules"></a>
+### Nested Schema for `spec.init_containers.restart_policy_rules`
+
+Optional:
+
+- `action` (String) Specifies the action taken on a container exit if the requirements
+are satisfied. The only possible value is "Restart" to restart the
+container.
+- `exit_codes` (Block List, Max: 1) Represents the exit codes to check on container exits. (see [below for nested schema](#nestedblock--spec--init_containers--restart_policy_rules--exit_codes))
+
+<a id="nestedblock--spec--init_containers--restart_policy_rules--exit_codes"></a>
+### Nested Schema for `spec.init_containers.restart_policy_rules.exit_codes`
+
+Optional:
+
+- `operator` (String) Represents the relationship between the container exit code(s) and the
+specified values. Possible values are:
+- In: the requirement is satisfied if the container exit code is in the
+  set of specified values.
+- NotIn: the requirement is satisfied if the container exit code is
+  not in the set of specified values.
+- `values` (List of Number) Specifies the set of values to check for container exit codes.
+At most 255 elements are allowed.
+
 
 
 <a id="nestedblock--spec--init_containers--security_context"></a>
@@ -1415,6 +1798,9 @@ Optional:
 Optional:
 
 - `allow_privilege_escalation` (Boolean) AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this field cannot be set when spec.os.name is windows.
+- `app_armor_profile` (Block List, Max: 1) appArmorProfile is the AppArmor options to use by this container. If set, this profile
+overrides the pod's appArmorProfile.
+Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--init_containers--security_context--app_armor_profile))
 - `capabilities` (Block List, Max: 1) The capabilities to add/drop when running containers. Defaults to the default set of capabilities granted by the container runtime. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--init_containers--security_context--capabilities))
 - `privileged` (Boolean) Run container in privileged mode. Processes in privileged containers are essentially equivalent to root on the host. Defaults to false. Note that this field cannot be set when spec.os.name is windows.
 - `proc_mount` (String) procMount denotes the type of proc mount to use for the containers. The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths. This requires the ProcMountType feature flag to be enabled. Note that this field cannot be set when spec.os.name is windows.
@@ -1425,6 +1811,22 @@ Optional:
 - `se_linux_options` (Block List, Max: 1) The SELinux context to be applied to the container. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in PodSecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--init_containers--security_context--se_linux_options))
 - `seccomp_profile` (Block List, Max: 1) The seccomp options to use by this container. If seccomp options are provided at both the pod & container level, the container options override the pod options. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--init_containers--security_context--seccomp_profile))
 - `windows_options` (Block List, Max: 1) The Windows specific settings applied to all containers. If unspecified, the options from the PodSecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is linux. (see [below for nested schema](#nestedblock--spec--init_containers--security_context--windows_options))
+
+<a id="nestedblock--spec--init_containers--security_context--app_armor_profile"></a>
+### Nested Schema for `spec.init_containers.security_context.app_armor_profile`
+
+Optional:
+
+- `localhost_profile` (String) localhostProfile indicates a profile loaded on the node that should be used.
+The profile must be preconfigured on the node to work.
+Must match the loaded name of the profile.
+Must be set if and only if type is "Localhost".
+- `type` (String) type indicates which kind of AppArmor profile will be applied.
+Valid options are:
+  Localhost - a profile pre-loaded on the node.
+  RuntimeDefault - the container runtime's default profile.
+  Unconfined - no AppArmor enforcement.
+
 
 <a id="nestedblock--spec--init_containers--security_context--capabilities"></a>
 ### Nested Schema for `spec.init_containers.security_context.capabilities`
@@ -1551,6 +1953,26 @@ Optional:
 - `mount_propagation` (String) mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10.
 - `name` (String) This must match the Name of a Volume.
 - `read_only` (Boolean) Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false.
+- `recursive_read_only` (String) RecursiveReadOnly specifies whether read-only mounts should be handled
+recursively.
+
+
+If ReadOnly is false, this field has no meaning and must be unspecified.
+
+
+If ReadOnly is true, and this field is set to Disabled, the mount is not made
+recursively read-only.  If this field is set to IfPossible, the mount is made
+recursively read-only, if it is supported by the container runtime.  If this
+field is set to Enabled, the mount is made recursively read-only if it is
+supported by the container runtime, otherwise the pod will not be started and
+an error will be generated to indicate the reason.
+
+
+If this field is set to IfPossible or Enabled, MountPropagation must be set to
+None (or be unspecified, which defaults to None).
+
+
+If this field is not specified, it is treated as an equivalent of Disabled.
 - `sub_path` (String) Path within the volume from which the container's volume should be mounted. Defaults to "" (volume's root).
 - `sub_path_expr` (String) Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to "" (volume's root). SubPathExpr and SubPath are mutually exclusive.
 
@@ -1595,13 +2017,674 @@ Optional:
 - `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
+<a id="nestedblock--spec--remote_write"></a>
+### Nested Schema for `spec.remote_write`
+
+Optional:
+
+- `authorization` (Block List, Max: 1) Authorization section for the URL.
+
+It requires Prometheus >= v2.26.0 or Thanos >= v0.24.0.
+
+Cannot be set at the same time as `sigv4`, `basicAuth`, `oauth2`, or `azureAd`. (see [below for nested schema](#nestedblock--spec--remote_write--authorization))
+- `azure_ad` (Block List, Max: 1) AzureAD for the URL.
+
+It requires Prometheus >= v2.45.0 or Thanos >= v0.31.0.
+
+Cannot be set at the same time as `authorization`, `basicAuth`, `oauth2`, or `sigv4`. (see [below for nested schema](#nestedblock--spec--remote_write--azure_ad))
+- `basic_auth` (Block List, Max: 1) BasicAuth configuration for the URL.
+
+Cannot be set at the same time as `sigv4`, `authorization`, `oauth2`, or `azureAd`. (see [below for nested schema](#nestedblock--spec--remote_write--basic_auth))
+- `bearer_token` (String) *Warning: this field shouldn't be used because the token value appears
+in clear-text. Prefer using `authorization`.*
+
+Deprecated: this will be removed in a future release.
+- `bearer_token_file` (String) File from which to read bearer token for the URL.
+
+Deprecated: this will be removed in a future release. Prefer using `authorization`.
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+
+It requires Prometheus >= v2.26.0 or Thanos >= v0.24.0.
+- `headers` (Map of String) Custom HTTP headers to be sent along with each remote write request.
+Be aware that headers that are set by Prometheus itself can't be overwritten.
+
+It requires Prometheus >= v2.25.0 or Thanos >= v0.24.0.
+- `message_version` (String) The Remote Write message's version to use when writing to the endpoint.
+
+`Version1.0` corresponds to the `prometheus.WriteRequest` protobuf message introduced in Remote Write 1.0.
+`Version2.0` corresponds to the `io.prometheus.write.v2.Request` protobuf message introduced in Remote Write 2.0.
+
+When `Version2.0` is selected, Prometheus will automatically be
+configured to append the metadata of scraped metrics to the WAL.
+
+Before setting this field, consult with your remote storage provider
+what message version it supports.
+
+It requires Prometheus >= v2.54.0 or Thanos >= v0.37.0.
+- `metadata_config` (Block List, Max: 1) MetadataConfig configures the sending of series metadata to the remote storage. (see [below for nested schema](#nestedblock--spec--remote_write--metadata_config))
+- `name` (String) The name of the remote write queue, it must be unique if specified. The
+name is used in metrics and logging in order to differentiate queues.
+
+It requires Prometheus >= v2.15.0 or Thanos >= 0.24.0.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
+- `oauth2` (Block List, Max: 1) OAuth2 configuration for the URL.
+
+It requires Prometheus >= v2.27.0 or Thanos >= v0.24.0.
+
+Cannot be set at the same time as `sigv4`, `authorization`, `basicAuth`, or `azureAd`. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2))
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+- `queue_config` (Block List, Max: 1) QueueConfig allows tuning of the remote write queue parameters. (see [below for nested schema](#nestedblock--spec--remote_write--queue_config))
+- `remote_timeout` (String) Timeout for requests to the remote write endpoint.
+- `round_robin_dns` (Boolean) When enabled:
+    - The remote-write mechanism will resolve the hostname via DNS.
+    - It will randomly select one of the resolved IP addresses and connect to it.
+
+When disabled (default behavior):
+    - The Go standard library will handle hostname resolution.
+    - It will attempt connections to each resolved IP address sequentially.
+
+Note: The connection timeout applies to the entire resolution and connection process.
+      If disabled, the timeout is distributed across all connection attempts.
+
+It requires Prometheus >= v3.1.0 or Thanos >= v0.38.0.
+- `send_exemplars` (Boolean) Enables sending of exemplars over remote write. Note that
+exemplar-storage itself must be enabled using the `spec.enableFeatures`
+option for exemplars to be scraped in the first place.
+
+It requires Prometheus >= v2.27.0 or Thanos >= v0.24.0.
+- `send_native_histograms` (Boolean) Enables sending of native histograms, also known as sparse histograms
+over remote write.
+
+It requires Prometheus >= v2.40.0 or Thanos >= v0.30.0.
+- `sigv4` (Block List, Max: 1) Sigv4 allows to configures AWS's Signature Verification 4 for the URL.
+
+It requires Prometheus >= v2.26.0 or Thanos >= v0.24.0.
+
+Cannot be set at the same time as `authorization`, `basicAuth`, `oauth2`, or `azureAd`. (see [below for nested schema](#nestedblock--spec--remote_write--sigv4))
+- `tls_config` (Block List, Max: 1) TLS Config to use for the URL. (see [below for nested schema](#nestedblock--spec--remote_write--tls_config))
+- `url` (String) The URL of the endpoint to send samples to.
+- `write_relabel_configs` (Block List) The list of remote write relabel configurations. (see [below for nested schema](#nestedblock--spec--remote_write--write_relabel_configs))
+
+<a id="nestedblock--spec--remote_write--authorization"></a>
+### Nested Schema for `spec.remote_write.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--remote_write--authorization--credentials))
+- `credentials_file` (String) File to read a secret from, mutually exclusive with `credentials`.
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+
+"Basic" is not a supported value.
+
+Default: "Bearer"
+
+<a id="nestedblock--spec--remote_write--authorization--credentials"></a>
+### Nested Schema for `spec.remote_write.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--remote_write--azure_ad"></a>
+### Nested Schema for `spec.remote_write.azure_ad`
+
+Optional:
+
+- `cloud` (String) The Azure Cloud. Options are 'AzurePublic', 'AzureChina', or 'AzureGovernment'.
+- `managed_identity` (Block List, Max: 1) ManagedIdentity defines the Azure User-assigned Managed identity.
+Cannot be set at the same time as `oauth` or `sdk`. (see [below for nested schema](#nestedblock--spec--remote_write--azure_ad--managed_identity))
+- `oauth` (Block List, Max: 1) OAuth defines the oauth config that is being used to authenticate.
+Cannot be set at the same time as `managedIdentity` or `sdk`.
+
+It requires Prometheus >= v2.48.0 or Thanos >= v0.31.0. (see [below for nested schema](#nestedblock--spec--remote_write--azure_ad--oauth))
+- `scope` (String) scope is the custom OAuth 2.0 scope to request when acquiring tokens.
+It requires Prometheus >= 3.9.0. Currently not supported by Thanos.
+- `sdk` (Block List, Max: 1) SDK defines the Azure SDK config that is being used to authenticate.
+See https://learn.microsoft.com/en-us/azure/developer/go/azure-sdk-authentication
+Cannot be set at the same time as `oauth` or `managedIdentity`.
+
+It requires Prometheus >= v2.52.0 or Thanos >= v0.36.0. (see [below for nested schema](#nestedblock--spec--remote_write--azure_ad--sdk))
+- `workload_identity` (Block List, Max: 1) workloadIdentity defines the Azure Workload Identity authentication.
+Cannot be set at the same time as `oauth`, `managedIdentity`, or `sdk`.
+
+It requires Prometheus >= 3.7.0. Currently not supported by Thanos. (see [below for nested schema](#nestedblock--spec--remote_write--azure_ad--workload_identity))
+
+<a id="nestedblock--spec--remote_write--azure_ad--managed_identity"></a>
+### Nested Schema for `spec.remote_write.azure_ad.managed_identity`
+
+Optional:
+
+- `client_id` (String) The client id
+
+
+<a id="nestedblock--spec--remote_write--azure_ad--oauth"></a>
+### Nested Schema for `spec.remote_write.azure_ad.oauth`
+
+Optional:
+
+- `client_id` (String) `clientID` is the clientId of the Azure Active Directory application that is being used to authenticate.
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the client secret of the Azure Active Directory application that is being used to authenticate. (see [below for nested schema](#nestedblock--spec--remote_write--azure_ad--oauth--client_secret))
+- `tenant_id` (String) `tenantId` is the tenant ID of the Azure Active Directory application that is being used to authenticate.
+
+<a id="nestedblock--spec--remote_write--azure_ad--oauth--client_secret"></a>
+### Nested Schema for `spec.remote_write.azure_ad.oauth.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--remote_write--azure_ad--sdk"></a>
+### Nested Schema for `spec.remote_write.azure_ad.sdk`
+
+Optional:
+
+- `tenant_id` (String) `tenantId` is the tenant ID of the azure active directory application that is being used to authenticate.
+
+
+<a id="nestedblock--spec--remote_write--azure_ad--workload_identity"></a>
+### Nested Schema for `spec.remote_write.azure_ad.workload_identity`
+
+Optional:
+
+- `client_id` (String) clientId is the clientID of the Azure Active Directory application.
+- `tenant_id` (String) tenantId is the tenant ID of the Azure Active Directory application.
+
+
+
+<a id="nestedblock--spec--remote_write--basic_auth"></a>
+### Nested Schema for `spec.remote_write.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for
+authentication. (see [below for nested schema](#nestedblock--spec--remote_write--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for
+authentication. (see [below for nested schema](#nestedblock--spec--remote_write--basic_auth--username))
+
+<a id="nestedblock--spec--remote_write--basic_auth--password"></a>
+### Nested Schema for `spec.remote_write.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--remote_write--basic_auth--username"></a>
+### Nested Schema for `spec.remote_write.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--remote_write--metadata_config"></a>
+### Nested Schema for `spec.remote_write.metadata_config`
+
+Optional:
+
+- `max_samples_per_send` (Number) MaxSamplesPerSend is the maximum number of metadata samples per send.
+
+It requires Prometheus >= v2.29.0.
+- `send` (Boolean) Defines whether metric metadata is sent to the remote storage or not.
+- `send_interval` (String) Defines how frequently metric metadata is sent to the remote storage.
+
+
+<a id="nestedblock--spec--remote_write--oauth2"></a>
+### Nested Schema for `spec.remote_write.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the
+OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2
+client's secret. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token
+URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--remote_write--oauth2--client_id"></a>
+### Nested Schema for `spec.remote_write.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--remote_write--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.remote_write.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--remote_write--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.remote_write.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--remote_write--oauth2--client_secret"></a>
+### Nested Schema for `spec.remote_write.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--remote_write--oauth2--tls_config"></a>
+### Nested Schema for `spec.remote_write.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+It requires Prometheus >= v2.41.0 or Thanos >= v0.31.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+It requires Prometheus >= v2.35.0 or Thanos >= v0.28.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--remote_write--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.remote_write.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--remote_write--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.remote_write.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--remote_write--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.remote_write.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--remote_write--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.remote_write.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--remote_write--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.remote_write.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--remote_write--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.remote_write.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--remote_write--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.remote_write.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--remote_write--queue_config"></a>
+### Nested Schema for `spec.remote_write.queue_config`
+
+Optional:
+
+- `batch_send_deadline` (String) BatchSendDeadline is the maximum time a sample will wait in buffer.
+- `capacity` (Number) Capacity is the number of samples to buffer per shard before we start
+dropping them.
+- `max_backoff` (String) MaxBackoff is the maximum retry delay.
+- `max_retries` (Number) MaxRetries is the maximum number of times to retry a batch on recoverable errors.
+- `max_samples_per_send` (Number) MaxSamplesPerSend is the maximum number of samples per send.
+- `max_shards` (Number) MaxShards is the maximum number of shards, i.e. amount of concurrency.
+- `min_backoff` (String) MinBackoff is the initial retry delay. Gets doubled for every retry.
+- `min_shards` (Number) MinShards is the minimum number of shards, i.e. amount of concurrency.
+- `retry_on_rate_limit` (Boolean) Retry upon receiving a 429 status code from the remote-write storage.
+
+This is an *experimental feature*, it may change in any upcoming release
+in a breaking way.
+- `sample_age_limit` (String) SampleAgeLimit drops samples older than the limit.
+It requires Prometheus >= v2.50.0 or Thanos >= v0.32.0.
+
+
+<a id="nestedblock--spec--remote_write--sigv4"></a>
+### Nested Schema for `spec.remote_write.sigv4`
+
+Optional:
+
+- `access_key` (Block List, Max: 1) AccessKey is the AWS API key. If not specified, the environment variable
+`AWS_ACCESS_KEY_ID` is used. (see [below for nested schema](#nestedblock--spec--remote_write--sigv4--access_key))
+- `profile` (String) Profile is the named AWS profile used to authenticate.
+- `region` (String) Region is the AWS region. If blank, the region from the default credentials chain used.
+- `role_arn` (String) RoleArn is the named AWS profile used to authenticate.
+- `secret_key` (Block List, Max: 1) SecretKey is the AWS API secret. If not specified, the environment
+variable `AWS_SECRET_ACCESS_KEY` is used. (see [below for nested schema](#nestedblock--spec--remote_write--sigv4--secret_key))
+- `use_fipssts_endpoint` (Boolean) useFIPSSTSEndpoint defines FIPS mode for AWS STS endpoint.
+It requires Prometheus >= v2.54.0.
+
+<a id="nestedblock--spec--remote_write--sigv4--access_key"></a>
+### Nested Schema for `spec.remote_write.sigv4.access_key`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--remote_write--sigv4--secret_key"></a>
+### Nested Schema for `spec.remote_write.sigv4.secret_key`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--remote_write--tls_config"></a>
+### Nested Schema for `spec.remote_write.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--remote_write--tls_config--ca))
+- `ca_file` (String) Path to the CA cert in the Prometheus container to use for the targets.
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--remote_write--tls_config--cert))
+- `cert_file` (String) Path to the client cert file in the Prometheus container for the targets.
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_file` (String) Path to the client key file in the Prometheus container for the targets.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+It requires Prometheus >= v2.41.0 or Thanos >= v0.31.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+It requires Prometheus >= v2.35.0 or Thanos >= v0.28.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--remote_write--tls_config--ca"></a>
+### Nested Schema for `spec.remote_write.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--tls_config--ca--secret))
+
+<a id="nestedblock--spec--remote_write--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.remote_write.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--remote_write--tls_config--ca--secret"></a>
+### Nested Schema for `spec.remote_write.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--remote_write--tls_config--cert"></a>
+### Nested Schema for `spec.remote_write.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--remote_write--tls_config--cert--secret))
+
+<a id="nestedblock--spec--remote_write--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.remote_write.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--remote_write--tls_config--cert--secret"></a>
+### Nested Schema for `spec.remote_write.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--remote_write--tls_config--key_secret"></a>
+### Nested Schema for `spec.remote_write.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--remote_write--write_relabel_configs"></a>
+### Nested Schema for `spec.remote_write.write_relabel_configs`
+
+Optional:
+
+- `action` (String) Action to perform based on the regex matching.
+
+`Uppercase` and `Lowercase` actions require Prometheus >= v2.36.0.
+`DropEqual` and `KeepEqual` actions require Prometheus >= v2.41.0.
+
+Default: "Replace"
+- `modulus` (Number) Modulus to take of the hash of the source label values.
+
+Only applicable when the action is `HashMod`.
+- `regex` (String) Regular expression against which the extracted value is matched.
+- `replacement` (String) Replacement value against which a Replace action is performed if the
+regular expression matches.
+
+Regex capture groups are available.
+- `separator` (String) Separator is the string between concatenated SourceLabels.
+- `source_labels` (List of String) The source labels select values from existing labels. Their content is
+concatenated using the configured Separator and matched against the
+configured regular expression.
+- `target_label` (String) Label to which the resulting string is written in a replacement.
+
+It is mandatory for `Replace`, `HashMod`, `Lowercase`, `Uppercase`,
+`KeepEqual` and `DropEqual` actions.
+
+Regex capture groups are available.
+
+
+
 <a id="nestedblock--spec--resources"></a>
 ### Nested Schema for `spec.resources`
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+ This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+ This field is immutable. (see [below for nested schema](#nestedblock--spec--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--resources--claims"></a>
+### Nested Schema for `spec.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+- `request` (String) Request is the name chosen for a request in the referenced claim.
+If empty, everything from the claim is made available, otherwise
+only the result of this request.
+
 
 
 <a id="nestedblock--spec--rule_namespace_selector"></a>
@@ -1647,6 +2730,8 @@ Optional:
 
 Optional:
 
+- `app_armor_profile` (Block List, Max: 1) appArmorProfile is the AppArmor options to use by the containers in this pod.
+Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--security_context--app_armor_profile))
 - `fs_group` (Number) A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod:
  1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw----
  If unset, the Kubelet will not modify the ownership and permissions of any volume. Note that this field cannot be set when spec.os.name is windows.
@@ -1654,11 +2739,55 @@ Optional:
 - `run_as_group` (Number) The GID to run the entrypoint of the container process. Uses runtime default if unset. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows.
 - `run_as_non_root` (Boolean) Indicates that the container must run as a non-root user. If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does. If unset or false, no such validation will be performed. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
 - `run_as_user` (Number) The UID to run the entrypoint of the container process. Defaults to user specified in image metadata if unspecified. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows.
+- `se_linux_change_policy` (String) seLinuxChangePolicy defines how the container's SELinux label is applied to all volumes used by the Pod.
+It has no effect on nodes that do not support SELinux or to volumes does not support SELinux.
+Valid values are "MountOption" and "Recursive".
+
+"Recursive" means relabeling of all files on all Pod volumes by the container runtime.
+This may be slow for large volumes, but allows mixing privileged and unprivileged Pods sharing the same volume on the same node.
+
+"MountOption" mounts all eligible Pod volumes with `-o context` mount option.
+This requires all Pods that share the same volume to use the same SELinux label.
+It is not possible to share the same volume among privileged and unprivileged Pods.
+Eligible volumes are in-tree FibreChannel and iSCSI volumes, and all CSI volumes
+whose CSI driver announces SELinux support by setting spec.seLinuxMount: true in their
+CSIDriver instance. Other volumes are always re-labelled recursively.
+"MountOption" value is allowed only when SELinuxMount feature gate is enabled.
+
+If not specified and SELinuxMount feature gate is enabled, "MountOption" is used.
+If not specified and SELinuxMount feature gate is disabled, "MountOption" is used for ReadWriteOncePod volumes
+and "Recursive" for all other volumes.
+
+This field affects only Pods that have SELinux label set, either in PodSecurityContext or in SecurityContext of all containers.
+
+All Pods that use the same volume should use the same seLinuxChangePolicy, otherwise some pods can get stuck in ContainerCreating state.
+Note that this field cannot be set when spec.os.name is windows.
 - `se_linux_options` (Block List, Max: 1) The SELinux context to be applied to all containers. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--security_context--se_linux_options))
 - `seccomp_profile` (Block List, Max: 1) The seccomp options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--security_context--seccomp_profile))
 - `supplemental_groups` (List of Number) A list of groups applied to the first process run in each container, in addition to the container's primary GID.  If unspecified, no groups will be added to any container. Note that this field cannot be set when spec.os.name is windows.
+- `supplemental_groups_policy` (String) Defines how supplemental groups of the first container processes are calculated.
+Valid values are "Merge" and "Strict". If not specified, "Merge" is used.
+(Alpha) Using the field requires the SupplementalGroupsPolicy feature gate to be enabled
+and the container runtime must implement support for this feature.
+Note that this field cannot be set when spec.os.name is windows.
 - `sysctls` (Block List) Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--security_context--sysctls))
 - `windows_options` (Block List, Max: 1) The Windows specific settings applied to all containers. If unspecified, the options within a container's SecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is linux. (see [below for nested schema](#nestedblock--spec--security_context--windows_options))
+
+<a id="nestedblock--spec--security_context--app_armor_profile"></a>
+### Nested Schema for `spec.security_context.app_armor_profile`
+
+Optional:
+
+- `localhost_profile` (String) localhostProfile indicates a profile loaded on the node that should be used.
+The profile must be preconfigured on the node to work.
+Must match the loaded name of the profile.
+Must be set if and only if type is "Localhost".
+- `type` (String) type indicates which kind of AppArmor profile will be applied.
+Valid options are:
+  Localhost - a profile pre-loaded on the node.
+  RuntimeDefault - the container runtime's default profile.
+  Unconfined - no AppArmor enforcement.
+
 
 <a id="nestedblock--spec--security_context--se_linux_options"></a>
 ### Nested Schema for `spec.security_context.se_linux_options`
@@ -1750,6 +2879,7 @@ Optional:
 - `resources` (Block List, Max: 1) Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources (see [below for nested schema](#nestedblock--spec--storage--ephemeral--volume_claim_template--spec--resources))
 - `selector` (Block List, Max: 1) A label query over volumes to consider for binding. (see [below for nested schema](#nestedblock--spec--storage--ephemeral--volume_claim_template--spec--selector))
 - `storage_class_name` (String) Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1
+- `volume_attributes_class_name` (String) volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim. If specified, the CSI driver will create or update the volume with the attributes defined in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName, it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass will be applied to the claim but it's not allowed to reset this field to empty string once it is set. If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass will be set by the persistentvolume controller if it exists. If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource exists. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#volumeattributesclass (Alpha) Using this field requires the VolumeAttributesClass feature gate to be enabled.
 - `volume_mode` (String) volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec.
 - `volume_name` (String) VolumeName is the binding reference to the PersistentVolume backing this claim.
 
@@ -1771,6 +2901,7 @@ Optional:
 - `api_group` (String) APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
 - `kind` (String) Kind is the type of resource being referenced
 - `name` (String) Name is the name of resource being referenced
+- `namespace` (String) Namespace is the namespace of resource being referenced Note that when a namespace is specified, a gateway.networking.k8s.io/ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details. (Alpha) This field requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
 
 
 <a id="nestedblock--spec--storage--ephemeral--volume_claim_template--spec--resources"></a>
@@ -1778,8 +2909,19 @@ Optional:
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+ This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+ This field is immutable. (see [below for nested schema](#nestedblock--spec--storage--ephemeral--volume_claim_template--spec--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--storage--ephemeral--volume_claim_template--spec--resources--claims"></a>
+### Nested Schema for `spec.storage.ephemeral.volume_claim_template.spec.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+
 
 
 <a id="nestedblock--spec--storage--ephemeral--volume_claim_template--spec--selector"></a>
@@ -1836,6 +2978,7 @@ Optional:
 - `resources` (Block List, Max: 1) Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources (see [below for nested schema](#nestedblock--spec--storage--volume_claim_template--spec--resources))
 - `selector` (Block List, Max: 1) A label query over volumes to consider for binding. (see [below for nested schema](#nestedblock--spec--storage--volume_claim_template--spec--selector))
 - `storage_class_name` (String) Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1
+- `volume_attributes_class_name` (String) volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim. If specified, the CSI driver will create or update the volume with the attributes defined in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName, it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass will be applied to the claim but it's not allowed to reset this field to empty string once it is set. If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass will be set by the persistentvolume controller if it exists. If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource exists. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#volumeattributesclass (Alpha) Using this field requires the VolumeAttributesClass feature gate to be enabled.
 - `volume_mode` (String) volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec.
 - `volume_name` (String) VolumeName is the binding reference to the PersistentVolume backing this claim.
 
@@ -1857,6 +3000,7 @@ Optional:
 - `api_group` (String) APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
 - `kind` (String) Kind is the type of resource being referenced
 - `name` (String) Name is the name of resource being referenced
+- `namespace` (String) Namespace is the namespace of resource being referenced Note that when a namespace is specified, a gateway.networking.k8s.io/ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details. (Alpha) This field requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
 
 
 <a id="nestedblock--spec--storage--volume_claim_template--spec--resources"></a>
@@ -1864,8 +3008,19 @@ Optional:
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+ This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+ This field is immutable. (see [below for nested schema](#nestedblock--spec--storage--volume_claim_template--spec--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--storage--volume_claim_template--spec--resources--claims"></a>
+### Nested Schema for `spec.storage.volume_claim_template.spec.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+
 
 
 <a id="nestedblock--spec--storage--volume_claim_template--spec--selector"></a>
@@ -1894,9 +3049,15 @@ Optional:
 Optional:
 
 - `access_modes` (List of String) AccessModes contains the actual access modes the volume backing the PVC has. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1
+- `allocated_resource_statuses` (Map of String) allocatedResourceStatuses stores status of resource being resized for the given PVC. Key names follow standard Kubernetes label syntax. Valid values are either: * Un-prefixed keys: - storage - the capacity of the volume. * Custom resources must use implementation-defined prefixed names such as "example.com/my-custom-resource" Apart from above values - keys that are unprefixed or have kubernetes.io prefix are considered reserved and hence may not be used.
+ ClaimResourceStatus can be in any of following states: - ControllerResizeInProgress: State set when resize controller starts resizing the volume in control-plane. - ControllerResizeFailed: State set when resize has failed in resize controller with a terminal error. - NodeResizePending: State set when resize controller has finished resizing the volume but further resizing of volume is needed on the node. - NodeResizeInProgress: State set when kubelet starts resizing the volume. - NodeResizeFailed: State set when resizing has failed in kubelet with a terminal error. Transient errors don't set NodeResizeFailed. For example: if expanding a PVC for more capacity - this field can be one of the following states: - pvc.status.allocatedResourceStatus['storage'] = "ControllerResizeInProgress" - pvc.status.allocatedResourceStatus['storage'] = "ControllerResizeFailed" - pvc.status.allocatedResourceStatus['storage'] = "NodeResizePending" - pvc.status.allocatedResourceStatus['storage'] = "NodeResizeInProgress" - pvc.status.allocatedResourceStatus['storage'] = "NodeResizeFailed" When this field is not set, it means that no resize operation is in progress for the given PVC.
+ A controller that receives PVC update with previously unknown resourceName or ClaimResourceStatus should ignore the update for the purpose it was designed. For example - a controller that only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid resources associated with PVC.
+ This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
 - `allocated_resources` (Map of String) The storage resource within AllocatedResources tracks the capacity allocated to a PVC. It may be larger than the actual capacity when a volume expansion operation is requested. For storage quota, the larger value from allocatedResources and PVC.spec.resources is used. If allocatedResources is not set, PVC.spec.resources alone is used for quota calculation. If a volume expansion capacity request is lowered, allocatedResources is only lowered if there are no expansion operations in progress and if the actual volume capacity is equal or lower than the requested capacity. This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
 - `capacity` (Map of String) Represents the actual resources of the underlying volume.
 - `conditions` (Block List) Current Condition of persistent volume claim. If underlying persistent volume is being resized then the Condition will be set to 'ResizeStarted'. (see [below for nested schema](#nestedblock--spec--storage--volume_claim_template--status--conditions))
+- `current_volume_attributes_class_name` (String) currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using. When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim This is an alpha field and requires enabling VolumeAttributesClass feature.
+- `modify_volume_status` (Block List, Max: 1) ModifyVolumeStatus represents the status object of ControllerModifyVolume operation. When this is unset, there is no ModifyVolume operation being attempted. This is an alpha field and requires enabling VolumeAttributesClass feature. (see [below for nested schema](#nestedblock--spec--storage--volume_claim_template--status--modify_volume_status))
 - `phase` (String) Phase represents the current phase of PersistentVolumeClaim.
 - `resize_status` (String) ResizeStatus stores status of resize operation. ResizeStatus is not set by default but when expansion is complete resizeStatus is set to empty string by resize controller or kubelet. This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
 
@@ -1909,8 +3070,19 @@ Optional:
 - `last_transition_time` (String) Last time the condition transitioned from one status to another.
 - `message` (String) Human-readable message indicating details about last transition.
 - `reason` (String) Unique, this should be a short, machine understandable string that gives the reason for condition's last transition. If it reports "ResizeStarted" that means the underlying persistent volume is being resized.
-- `status` (String)
+- `status` (String) Status is the status of the condition.
+Can be True, False, Unknown.
+More info: https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#:~:text=state%20of%20pvc-,conditions.status,-(string)%2C%20required
 - `type` (String) PersistentVolumeClaimConditionType is a valid value of PersistentVolumeClaimCondition.Type
+
+
+<a id="nestedblock--spec--storage--volume_claim_template--status--modify_volume_status"></a>
+### Nested Schema for `spec.storage.volume_claim_template.status.modify_volume_status`
+
+Optional:
+
+- `status` (String) status is the status of the ControllerModifyVolume operation. It can be in any of following states: - Pending Pending indicates that the PersistentVolumeClaim cannot be modified due to unmet requirements, such as the specified VolumeAttributesClass not existing. - InProgress InProgress indicates that the volume is being modified. - Infeasible Infeasible indicates that the request has been rejected as invalid by the CSI driver. To resolve the error, a valid VolumeAttributesClass needs to be specified. Note: New statuses can be added in the future. Consumers should check for unknown statuses and fail appropriately.
+- `target_volume_attributes_class_name` (String) targetVolumeAttributesClassName is the name of the VolumeAttributesClass the PVC currently being reconciled
 
 
 
@@ -1934,7 +3106,15 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) LabelSelector is used to find matching pods. Pods that match this label selector are counted to determine the number of pods in their corresponding topology domain. (see [below for nested schema](#nestedblock--spec--topology_spread_constraints--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select the pods over which spreading will be calculated. The keys are used to lookup values from the incoming pod labels, those key-value labels are ANDed with labelSelector to select the group of existing pods over which spreading will be calculated for the incoming pod. Keys that don't exist in the incoming pod labels will be ignored. A null or empty list means only match against labelSelector.
 - `max_skew` (Number) MaxSkew describes the degree to which pods may be unevenly distributed. When `whenUnsatisfiable=DoNotSchedule`, it is the maximum permitted difference between the number of matching pods in the target topology and the global minimum. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 1/1/0: | zone1 | zone2 | zone3 | |   P   |   P   |       | - if MaxSkew is 1, incoming pod can only be scheduled to zone3 to become 1/1/1; scheduling it onto zone1(zone2) would make the ActualSkew(2-0) on zone1(zone2) violate MaxSkew(1). - if MaxSkew is 2, incoming pod can be scheduled onto any zone. When `whenUnsatisfiable=ScheduleAnyway`, it is used to give higher precedence to topologies that satisfy it. It's a required field. Default value is 1 and 0 is not allowed.
+- `min_domains` (Number) MinDomains indicates a minimum number of eligible domains. When the number of eligible domains with matching topology keys is less than minDomains, Pod Topology Spread treats "global minimum" as 0, and then the calculation of Skew is performed. And when the number of eligible domains with matching topology keys equals or greater than minDomains, this value has no effect on scheduling. As a result, when the number of eligible domains is less than minDomains, scheduler won't schedule more than maxSkew Pods to those domains. If value is nil, the constraint behaves as if MinDomains is equal to 1. Valid values are integers greater than 0. When value is not nil, WhenUnsatisfiable must be DoNotSchedule.
+ For example, in a 3-zone cluster, MaxSkew is set to 2, MinDomains is set to 5 and pods with the same labelSelector spread as 2/2/2: | zone1 | zone2 | zone3 | |  P P  |  P P  |  P P  | The number of domains is less than 5(MinDomains), so "global minimum" is treated as 0. In this situation, new pod with the same labelSelector cannot be scheduled, because computed skew will be 3(3 - 0) if new Pod is scheduled to any of the three zones, it will violate MaxSkew.
+ This is an alpha field and requires enabling MinDomainsInPodTopologySpread feature gate.
+- `node_affinity_policy` (String) NodeAffinityPolicy indicates how we will treat Pod's nodeAffinity/nodeSelector when calculating pod topology spread skew. Options are: - Honor: only nodes matching nodeAffinity/nodeSelector are included in the calculations. - Ignore: nodeAffinity/nodeSelector are ignored. All nodes are included in the calculations.
+ If this value is nil, the behavior is equivalent to the Honor policy. This is a alpha-level feature enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
+- `node_taints_policy` (String) NodeTaintsPolicy indicates how we will treat node taints when calculating pod topology spread skew. Options are: - Honor: nodes without taints, along with tainted nodes for which the incoming pod has a toleration, are included. - Ignore: node taints are ignored. All nodes are included.
+ If this value is nil, the behavior is equivalent to the Ignore policy. This is a alpha-level feature enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
 - `topology_key` (String) TopologyKey is the key of node labels. Nodes that have a label with this key and identical values are considered to be in the same topology. We consider each <key, value> as a "bucket", and try to put balanced number of pods into each bucket. It's a required field.
 - `when_unsatisfiable` (String) WhenUnsatisfiable indicates how to deal with a pod if it doesn't satisfy the spread constraint. - DoNotSchedule (default) tells the scheduler not to schedule it. - ScheduleAnyway tells the scheduler to schedule the pod in any location,   but giving higher precedence to topologies that would help reduce the   skew. A constraint is considered "Unsatisfiable" for an incoming pod if and only if every possible node assignment for that pod would violate "MaxSkew" on some topology. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   | If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be scheduled to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies MaxSkew(1). In other words, the cluster can still be imbalanced, but scheduler won't make it *more* imbalanced. It's a required field.
 
@@ -1968,6 +3148,65 @@ Optional:
 - `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
+<a id="nestedblock--spec--update_strategy"></a>
+### Nested Schema for `spec.update_strategy`
+
+Optional:
+
+- `rolling_update` (Block List, Max: 1) rollingUpdate is used to communicate parameters when type is RollingUpdate. (see [below for nested schema](#nestedblock--spec--update_strategy--rolling_update))
+- `type` (String) type indicates the type of the StatefulSetUpdateStrategy.
+
+Default is RollingUpdate.
+
+<a id="nestedblock--spec--update_strategy--rolling_update"></a>
+### Nested Schema for `spec.update_strategy.rolling_update`
+
+Optional:
+
+- `max_unavailable` (String) maxUnavailable is the maximum number of pods that can be unavailable
+during the update. The value can be an absolute number (ex: 5) or a
+percentage of desired pods (ex: 10%). Absolute number is calculated from
+percentage by rounding up. This can not be 0.  Defaults to 1. This field
+is alpha-level and is only honored by servers that enable the
+MaxUnavailableStatefulSet feature. The field applies to all pods in the
+range 0 to Replicas-1.  That means if there is any unavailable pod in
+the range 0 to Replicas-1, it will be counted towards MaxUnavailable.
+
+
+
+<a id="nestedblock--spec--volume_mounts"></a>
+### Nested Schema for `spec.volume_mounts`
+
+Optional:
+
+- `mount_path` (String) Path within the container at which the volume should be mounted.  Must not contain ':'.
+- `mount_propagation` (String) mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10.
+- `name` (String) This must match the Name of a Volume.
+- `read_only` (Boolean) Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false.
+- `recursive_read_only` (String) RecursiveReadOnly specifies whether read-only mounts should be handled
+recursively.
+
+
+If ReadOnly is false, this field has no meaning and must be unspecified.
+
+
+If ReadOnly is true, and this field is set to Disabled, the mount is not made
+recursively read-only.  If this field is set to IfPossible, the mount is made
+recursively read-only, if it is supported by the container runtime.  If this
+field is set to Enabled, the mount is made recursively read-only if it is
+supported by the container runtime, otherwise the pod will not be started and
+an error will be generated to indicate the reason.
+
+
+If this field is set to IfPossible or Enabled, MountPropagation must be set to
+None (or be unspecified, which defaults to None).
+
+
+If this field is not specified, it is treated as an equivalent of Disabled.
+- `sub_path` (String) Path within the volume from which the container's volume should be mounted. Defaults to "" (volume's root).
+- `sub_path_expr` (String) Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to "" (volume's root). SubPathExpr and SubPath are mutually exclusive.
+
+
 <a id="nestedblock--spec--volumes"></a>
 ### Nested Schema for `spec.volumes`
 
@@ -1994,6 +3233,20 @@ Optional:
 - `git_repo` (Block List, Max: 1) GitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container. (see [below for nested schema](#nestedblock--spec--volumes--git_repo))
 - `glusterfs` (Block List, Max: 1) Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md (see [below for nested schema](#nestedblock--spec--volumes--glusterfs))
 - `host_path` (Block List, Max: 1) HostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write. (see [below for nested schema](#nestedblock--spec--volumes--host_path))
+- `image` (Block List, Max: 1) image represents an OCI object (a container image or artifact) pulled and mounted on the kubelet's host machine.
+The volume is resolved at pod startup depending on which PullPolicy value is provided:
+
+- Always: the kubelet always attempts to pull the reference. Container creation will fail If the pull fails.
+- Never: the kubelet never pulls the reference and only uses a local image or artifact. Container creation will fail if the reference isn't present.
+- IfNotPresent: the kubelet pulls if the reference isn't already present on disk. Container creation will fail if the reference isn't present and the pull fails.
+
+The volume gets re-resolved if the pod gets deleted and recreated, which means that new remote content will become available on pod recreation.
+A failure to resolve or pull the image during pod startup will block containers from starting and may add significant latency. Failures will be retried using normal volume backoff and will be reported on the pod reason and message.
+The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
+The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
+The volume will be mounted read-only (ro) and non-executable files (noexec).
+Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath).
+The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type. (see [below for nested schema](#nestedblock--spec--volumes--image))
 - `iscsi` (Block List, Max: 1) ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md (see [below for nested schema](#nestedblock--spec--volumes--iscsi))
 - `name` (String) Volume's name. Must be a DNS_LABEL and unique within the pod. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 - `nfs` (Block List, Max: 1) NFS represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs (see [below for nested schema](#nestedblock--spec--volumes--nfs))
@@ -2200,6 +3453,7 @@ Optional:
 - `resources` (Block List, Max: 1) Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources (see [below for nested schema](#nestedblock--spec--volumes--ephemeral--volume_claim_template--spec--resources))
 - `selector` (Block List, Max: 1) A label query over volumes to consider for binding. (see [below for nested schema](#nestedblock--spec--volumes--ephemeral--volume_claim_template--spec--selector))
 - `storage_class_name` (String) Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1
+- `volume_attributes_class_name` (String) volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim. If specified, the CSI driver will create or update the volume with the attributes defined in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName, it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass will be applied to the claim but it's not allowed to reset this field to empty string once it is set. If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass will be set by the persistentvolume controller if it exists. If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource exists. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#volumeattributesclass (Alpha) Using this field requires the VolumeAttributesClass feature gate to be enabled.
 - `volume_mode` (String) volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec.
 - `volume_name` (String) VolumeName is the binding reference to the PersistentVolume backing this claim.
 
@@ -2221,6 +3475,7 @@ Optional:
 - `api_group` (String) APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
 - `kind` (String) Kind is the type of resource being referenced
 - `name` (String) Name is the name of resource being referenced
+- `namespace` (String) Namespace is the namespace of resource being referenced Note that when a namespace is specified, a gateway.networking.k8s.io/ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details. (Alpha) This field requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
 
 
 <a id="nestedblock--spec--volumes--ephemeral--volume_claim_template--spec--resources"></a>
@@ -2228,8 +3483,19 @@ Optional:
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+ This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+ This field is immutable. (see [below for nested schema](#nestedblock--spec--volumes--ephemeral--volume_claim_template--spec--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--volumes--ephemeral--volume_claim_template--spec--resources--claims"></a>
+### Nested Schema for `spec.volumes.ephemeral.volume_claim_template.spec.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+
 
 
 <a id="nestedblock--spec--volumes--ephemeral--volume_claim_template--spec--selector"></a>
@@ -2335,6 +3601,24 @@ Optional:
 - `type` (String) Type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath
 
 
+<a id="nestedblock--spec--volumes--image"></a>
+### Nested Schema for `spec.volumes.image`
+
+Optional:
+
+- `pull_policy` (String) Policy for pulling OCI objects. Possible values are:
+Always: the kubelet always attempts to pull the reference. Container creation will fail If the pull fails.
+Never: the kubelet never pulls the reference and only uses a local image or artifact. Container creation will fail if the reference isn't present.
+IfNotPresent: the kubelet pulls if the reference isn't already present on disk. Container creation will fail if the reference isn't present and the pull fails.
+Defaults to Always if :latest tag is specified, or IfNotPresent otherwise.
+- `reference` (String) Required: Image or artifact reference to be used.
+Behaves in the same way as pod.spec.containers[*].image.
+Pull secrets will be assembled in the same way as for the container image by looking up node credentials, SA image pull secrets, and pod spec image pull secrets.
+More info: https://kubernetes.io/docs/concepts/containers/images
+This field is optional to allow higher level config management to default or override
+container images in workload controllers like Deployments and StatefulSets.
+
+
 <a id="nestedblock--spec--volumes--iscsi"></a>
 ### Nested Schema for `spec.volumes.iscsi`
 
@@ -2412,10 +3696,79 @@ Optional:
 
 Optional:
 
+- `cluster_trust_bundle` (Block List, Max: 1) ClusterTrustBundle allows a pod to access the `.spec.trustBundle` field of ClusterTrustBundle objects in an auto-updating file.
+ Alpha, gated by the ClusterTrustBundleProjection feature gate.
+ ClusterTrustBundle objects can either be selected by name, or by the combination of signer name and a label selector.
+ Kubelet performs aggressive normalization of the PEM contents written into the pod filesystem.  Esoteric PEM features such as inter-block comments and block headers are stripped.  Certificates are deduplicated. The ordering of certificates within the file is arbitrary, and Kubelet may change the order over time. (see [below for nested schema](#nestedblock--spec--volumes--projected--sources--cluster_trust_bundle))
 - `config_map` (Block List, Max: 1) information about the configMap data to project (see [below for nested schema](#nestedblock--spec--volumes--projected--sources--config_map))
 - `downward_api` (Block List, Max: 1) information about the downwardAPI data to project (see [below for nested schema](#nestedblock--spec--volumes--projected--sources--downward_api))
+- `pod_certificate` (Block List, Max: 1) Projects an auto-rotating credential bundle (private key and certificate
+chain) that the pod can use either as a TLS client or server.
+
+Kubelet generates a private key and uses it to send a
+PodCertificateRequest to the named signer.  Once the signer approves the
+request and issues a certificate chain, Kubelet writes the key and
+certificate chain to the pod filesystem.  The pod does not start until
+certificates have been issued for each podCertificate projected volume
+source in its spec.
+
+Kubelet will begin trying to rotate the certificate at the time indicated
+by the signer using the PodCertificateRequest.Status.BeginRefreshAt
+timestamp.
+
+Kubelet can write a single file, indicated by the credentialBundlePath
+field, or separate files, indicated by the keyPath and
+certificateChainPath fields.
+
+The credential bundle is a single file in PEM format.  The first PEM
+entry is the private key (in PKCS#8 format), and the remaining PEM
+entries are the certificate chain issued by the signer (typically,
+signers will return their certificate chain in leaf-to-root order).
+
+Prefer using the credential bundle format, since your application code
+can read it atomically.  If you use keyPath and certificateChainPath,
+your application must make two separate file reads. If these coincide
+with a certificate rotation, it is possible that the private key and leaf
+certificate you read may not correspond to each other.  Your application
+will need to check for this condition, and re-read until they are
+consistent.
+
+The named signer controls chooses the format of the certificate it
+issues; consult the signer implementation's documentation to learn how to
+use the certificates it issues. (see [below for nested schema](#nestedblock--spec--volumes--projected--sources--pod_certificate))
 - `secret` (Block List, Max: 1) information about the secret data to project (see [below for nested schema](#nestedblock--spec--volumes--projected--sources--secret))
 - `service_account_token` (Block List, Max: 1) information about the serviceAccountToken data to project (see [below for nested schema](#nestedblock--spec--volumes--projected--sources--service_account_token))
+
+<a id="nestedblock--spec--volumes--projected--sources--cluster_trust_bundle"></a>
+### Nested Schema for `spec.volumes.projected.sources.cluster_trust_bundle`
+
+Optional:
+
+- `label_selector` (Block List, Max: 1) Select all ClusterTrustBundles that match this label selector.  Only has effect if signerName is set.  Mutually-exclusive with name.  If unset, interpreted as "match nothing".  If set but empty, interpreted as "match everything". (see [below for nested schema](#nestedblock--spec--volumes--projected--sources--cluster_trust_bundle--label_selector))
+- `name` (String) Select a single ClusterTrustBundle by object name.  Mutually-exclusive with signerName and labelSelector.
+- `optional` (Boolean) If true, don't block pod startup if the referenced ClusterTrustBundle(s) aren't available.  If using name, then the named ClusterTrustBundle is allowed not to exist.  If using signerName, then the combination of signerName and labelSelector is allowed to match zero ClusterTrustBundles.
+- `path` (String) Relative path from the volume root to write the bundle.
+- `signer_name` (String) Select all ClusterTrustBundles that match this signer name. Mutually-exclusive with name.  The contents of all selected ClusterTrustBundles will be unified and deduplicated.
+
+<a id="nestedblock--spec--volumes--projected--sources--cluster_trust_bundle--label_selector"></a>
+### Nested Schema for `spec.volumes.projected.sources.cluster_trust_bundle.label_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--volumes--projected--sources--cluster_trust_bundle--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--volumes--projected--sources--cluster_trust_bundle--label_selector--match_expressions"></a>
+### Nested Schema for `spec.volumes.projected.sources.cluster_trust_bundle.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
 
 <a id="nestedblock--spec--volumes--projected--sources--config_map"></a>
 ### Nested Schema for `spec.volumes.projected.sources.config_map`
@@ -2473,6 +3826,58 @@ Optional:
 - `resource` (String) Required: resource to select
 
 
+
+
+<a id="nestedblock--spec--volumes--projected--sources--pod_certificate"></a>
+### Nested Schema for `spec.volumes.projected.sources.pod_certificate`
+
+Optional:
+
+- `certificate_chain_path` (String) Write the certificate chain at this path in the projected volume.
+
+Most applications should use credentialBundlePath.  When using keyPath
+and certificateChainPath, your application needs to check that the key
+and leaf certificate are consistent, because it is possible to read the
+files mid-rotation.
+- `credential_bundle_path` (String) Write the credential bundle at this path in the projected volume.
+
+The credential bundle is a single file that contains multiple PEM blocks.
+The first PEM block is a PRIVATE KEY block, containing a PKCS#8 private
+key.
+
+The remaining blocks are CERTIFICATE blocks, containing the issued
+certificate chain from the signer (leaf and any intermediates).
+
+Using credentialBundlePath lets your Pod's application code make a single
+atomic read that retrieves a consistent key and certificate chain.  If you
+project them to separate files, your application code will need to
+additionally check that the leaf certificate was issued to the key.
+- `key_path` (String) Write the key at this path in the projected volume.
+
+Most applications should use credentialBundlePath.  When using keyPath
+and certificateChainPath, your application needs to check that the key
+and leaf certificate are consistent, because it is possible to read the
+files mid-rotation.
+- `key_type` (String) The type of keypair Kubelet will generate for the pod.
+
+Valid values are "RSA3072", "RSA4096", "ECDSAP256", "ECDSAP384",
+"ECDSAP521", and "ED25519".
+- `max_expiration_seconds` (Number) maxExpirationSeconds is the maximum lifetime permitted for the
+certificate.
+
+Kubelet copies this value verbatim into the PodCertificateRequests it
+generates for this projection.
+
+If omitted, kube-apiserver will set it to 86400(24 hours). kube-apiserver
+will reject values shorter than 3600 (1 hour).  The maximum allowable
+value is 7862400 (91 days).
+
+The signer implementation is then free to issue a certificate with any
+lifetime *shorter* than MaxExpirationSeconds, but no shorter than 3600
+seconds (1 hour).  This constraint is enforced by kube-apiserver.
+`kubernetes.io` signers will never issue certificates with a lifetime
+longer than 24 hours.
+- `signer_name` (String) Kubelet's generated CSRs will be addressed to this signer.
 
 
 <a id="nestedblock--spec--volumes--projected--sources--secret"></a>
@@ -2621,6 +4026,126 @@ Optional:
 
 
 
+<a id="nestedblock--spec--web"></a>
+### Nested Schema for `spec.web`
+
+Optional:
+
+- `http_config` (Block List, Max: 1) Defines HTTP parameters for web server. (see [below for nested schema](#nestedblock--spec--web--http_config))
+- `tls_config` (Block List, Max: 1) Defines the TLS parameters for HTTPS. (see [below for nested schema](#nestedblock--spec--web--tls_config))
+
+<a id="nestedblock--spec--web--http_config"></a>
+### Nested Schema for `spec.web.http_config`
+
+Optional:
+
+- `headers` (Block List, Max: 1) List of headers that can be added to HTTP responses. (see [below for nested schema](#nestedblock--spec--web--http_config--headers))
+- `http2` (Boolean) Enable HTTP/2 support. Note that HTTP/2 is only supported with TLS. When TLSConfig is not configured, HTTP/2 will be disabled. Whenever the value of the field changes, a rolling update will be triggered.
+
+<a id="nestedblock--spec--web--http_config--headers"></a>
+### Nested Schema for `spec.web.http_config.headers`
+
+Optional:
+
+- `content_security_policy` (String) Set the Content-Security-Policy header to HTTP responses. Unset if blank.
+- `strict_transport_security` (String) Set the Strict-Transport-Security header to HTTP responses. Unset if blank. Please make sure that you use this with care as this header might force browsers to load Prometheus and the other applications hosted on the same domain and subdomains over HTTPS. https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+- `x_content_type_options` (String) Set the X-Content-Type-Options header to HTTP responses. Unset if blank. Accepted value is nosniff. https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+- `x_frame_options` (String) Set the X-Frame-Options header to HTTP responses. Unset if blank. Accepted values are deny and sameorigin. https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+- `x_xss_protection` (String) Set the X-XSS-Protection header to all responses. Unset if blank. https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+
+
+
+<a id="nestedblock--spec--web--tls_config"></a>
+### Nested Schema for `spec.web.tls_config`
+
+Optional:
+
+- `cert` (Block List, Max: 1) Contains the TLS certificate for the server. (see [below for nested schema](#nestedblock--spec--web--tls_config--cert))
+- `cert_file` (String) Path to the TLS certificate file in the Prometheus container for the server.
+Mutually exclusive with `cert`.
+- `cipher_suites` (List of String) List of supported cipher suites for TLS versions up to TLS 1.2. If empty, Go default cipher suites are used. Available cipher suites are documented in the go documentation: https://golang.org/pkg/crypto/tls/#pkg-constants
+- `client_auth_type` (String) Server policy for client authentication. Maps to ClientAuth Policies. For more detail on clientAuth options: https://golang.org/pkg/crypto/tls/#ClientAuthType
+- `client_ca` (Block List, Max: 1) Contains the CA certificate for client certificate authentication to the server. (see [below for nested schema](#nestedblock--spec--web--tls_config--client_ca))
+- `client_ca_file` (String) Path to the CA certificate file for client certificate authentication to the server.
+Mutually exclusive with `client_ca`.
+- `curve_preferences` (List of String) Elliptic curves that will be used in an ECDHE handshake, in preference order. Available curves are documented in the go documentation: https://golang.org/pkg/crypto/tls/#CurveID
+- `key_file` (String) Path to the TLS key file in the Prometheus container for the server.
+Mutually exclusive with `keySecret`.
+- `key_secret` (Block List, Max: 1) Secret containing the TLS key for the server. (see [below for nested schema](#nestedblock--spec--web--tls_config--key_secret))
+- `max_version` (String) Maximum TLS version that is acceptable. Defaults to TLS13.
+- `min_version` (String) Minimum TLS version that is acceptable. Defaults to TLS12.
+- `prefer_server_cipher_suites` (Boolean) Controls whether the server selects the client's most preferred cipher suite, or the server's most preferred cipher suite. If true then the server's preference, as expressed in the order of elements in cipherSuites, is used.
+
+<a id="nestedblock--spec--web--tls_config--cert"></a>
+### Nested Schema for `spec.web.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--web--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--web--tls_config--cert--secret))
+
+<a id="nestedblock--spec--web--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.web.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--web--tls_config--cert--secret"></a>
+### Nested Schema for `spec.web.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--web--tls_config--client_ca"></a>
+### Nested Schema for `spec.web.tls_config.client_ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--web--tls_config--client_ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--web--tls_config--client_ca--secret))
+
+<a id="nestedblock--spec--web--tls_config--client_ca--config_map"></a>
+### Nested Schema for `spec.web.tls_config.client_ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--web--tls_config--client_ca--secret"></a>
+### Nested Schema for `spec.web.tls_config.client_ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--web--tls_config--key_secret"></a>
+### Nested Schema for `spec.web.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
 
 <a id="nestedblock--status"></a>
 ### Nested Schema for `status`
@@ -2628,7 +4153,20 @@ Optional:
 Optional:
 
 - `available_replicas` (Number) Total number of available pods (ready for at least minReadySeconds) targeted by this ThanosRuler deployment.
+- `conditions` (Block List) The current state of the Alertmanager object. (see [below for nested schema](#nestedblock--status--conditions))
 - `paused` (Boolean) Represents whether any actions on the underlying managed objects are being performed. Only delete actions will be performed.
 - `replicas` (Number) Total number of non-terminated pods targeted by this ThanosRuler deployment (their labels match the selector).
 - `unavailable_replicas` (Number) Total number of unavailable pods targeted by this ThanosRuler deployment.
 - `updated_replicas` (Number) Total number of non-terminated pods targeted by this ThanosRuler deployment that have the desired version spec.
+
+<a id="nestedblock--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String) lastTransitionTime is the time of the last update to the current status property.
+- `message` (String) Human-readable message indicating details for the condition's last transition.
+- `observed_generation` (Number) ObservedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if `.metadata.generation` is currently 12, but the `.status.conditions[].observedGeneration` is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) Reason for the condition's last transition.
+- `status` (String) Status of the condition.
+- `type` (String) Type of the condition being reported.

@@ -11,7 +11,7 @@ import (
 func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1Read,
-		Description: "Generated data source for crd.external-secrets.io.v1alpha1.ClusterPushSecret",
+		Description: "ClusterPushSecret is the Schema for the ClusterPushSecrets API that enables cluster-wide management of pushing Kubernetes secrets to external providers.",
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
@@ -50,7 +50,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 			},
 			"spec": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "ClusterPushSecretSpec defines the configuration for a ClusterPushSecret resource.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
@@ -421,7 +421,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 									},
 									"merge_policy": {
 										Type:        schema.TypeString,
-										Description: "",
+										Description: "TemplateMergePolicy defines how the rendered template should be merged with the existing Secret data.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -441,6 +441,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 												Required:    false,
 												Computed:    true,
 											},
+											"finalizers": {
+												Type:        schema.TypeList,
+												Description: "",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Schema{Type: schema.TypeString},
+											},
 											"labels": {
 												Type:        schema.TypeMap,
 												Description: "",
@@ -459,7 +467,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"config_map": {
 												Type:        schema.TypeList,
-												Description: "",
+												Description: "TemplateRef specifies a reference to either a ConfigMap or a Secret resource.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -481,7 +489,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 															},
 															"template_as": {
 																Type:        schema.TypeString,
-																Description: "",
+																Description: "TemplateScope specifies how the template keys should be interpreted.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -506,7 +514,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 											},
 											"secret": {
 												Type:        schema.TypeList,
-												Description: "",
+												Description: "TemplateRef specifies a reference to either a ConfigMap or a Secret resource.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -528,7 +536,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 															},
 															"template_as": {
 																Type:        schema.TypeString,
-																Description: "",
+																Description: "TemplateScope specifies how the template keys should be interpreted.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -546,7 +554,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 											},
 											"target": {
 												Type:        schema.TypeString,
-												Description: "",
+												Description: "TemplateTarget specifies where the rendered templates should be applied.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -582,7 +590,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 			},
 			"status": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "ClusterPushSecretStatus contains the status information for the ClusterPushSecret resource.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,

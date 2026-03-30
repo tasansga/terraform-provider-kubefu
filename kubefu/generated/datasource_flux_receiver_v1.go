@@ -71,6 +71,13 @@ func dataSourceFluxNotificationToolkitFluxcdIoReceiverV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"resource_filter": {
+						Type:        schema.TypeString,
+						Description: "ResourceFilter is a CEL expression expected to return a boolean that is\nevaluated for each resource referenced in the Resources field when a\nwebhook is received. If the expression returns false then the controller\nwill not request a reconciliation for the resource.\nWhen the expression is specified the controller will parse it and mark\nthe object as terminally failed if the expression is invalid or does not\nreturn a boolean.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"resources": {
 						Type:        schema.TypeList,
 						Description: "A list of resources to be notified about changes.",

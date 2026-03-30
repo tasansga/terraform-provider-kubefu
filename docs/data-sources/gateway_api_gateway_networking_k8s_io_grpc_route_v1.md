@@ -448,6 +448,9 @@ determined in order of the following criteria, continuing on ties:
 If ties still exist within the Route that has been given precedence,
 matching precedence MUST be granted to the first matching rule meeting
 the above criteria. (see [below for nested schema](#nestedblock--spec--rules--matches))
+- `name` (String) Name is the name of the route rule. This name MUST be unique within a Route if it is set.
+
+Support: Extended
 
 <a id="nestedblock--spec--rules--backend_refs"></a>
 ### Nested Schema for `spec.rules.backend_refs`
@@ -722,6 +725,17 @@ Support: Extended for Kubernetes Service
 
 
 Support: Implementation-specific for any other resource (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--request_mirror--backend_ref))
+- `fraction` (Block List, Max: 1) Fraction represents the fraction of requests that should be
+mirrored to BackendRef.
+
+Only one of Fraction or Percent may be specified. If neither field
+is specified, 100% of requests will be mirrored. (see [below for nested schema](#nestedblock--spec--rules--backend_refs--filters--request_mirror--fraction))
+- `percent` (Number) Percent represents the percentage of requests that should be
+mirrored to BackendRef. Its minimum value is 0 (indicating 0% of
+requests) and its maximum value is 100 (indicating 100% of requests).
+
+Only one of Fraction or Percent may be specified. If neither field
+is specified, 100% of requests will be mirrored.
 
 <a id="nestedblock--spec--rules--backend_refs--filters--request_mirror--backend_ref"></a>
 ### Nested Schema for `spec.rules.backend_refs.filters.request_mirror.backend_ref`
@@ -765,6 +779,15 @@ Port is required when the referent is a Kubernetes Service. In this
 case, the port number is the service port number, not the target port.
 For other resources, destination port might be derived from the referent
 resource or this field.
+
+
+<a id="nestedblock--spec--rules--backend_refs--filters--request_mirror--fraction"></a>
+### Nested Schema for `spec.rules.backend_refs.filters.request_mirror.fraction`
+
+Optional:
+
+- `denominator` (Number)
+- `numerator` (Number)
 
 
 
@@ -1077,6 +1100,17 @@ Support: Extended for Kubernetes Service
 
 
 Support: Implementation-specific for any other resource (see [below for nested schema](#nestedblock--spec--rules--filters--request_mirror--backend_ref))
+- `fraction` (Block List, Max: 1) Fraction represents the fraction of requests that should be
+mirrored to BackendRef.
+
+Only one of Fraction or Percent may be specified. If neither field
+is specified, 100% of requests will be mirrored. (see [below for nested schema](#nestedblock--spec--rules--filters--request_mirror--fraction))
+- `percent` (Number) Percent represents the percentage of requests that should be
+mirrored to BackendRef. Its minimum value is 0 (indicating 0% of
+requests) and its maximum value is 100 (indicating 100% of requests).
+
+Only one of Fraction or Percent may be specified. If neither field
+is specified, 100% of requests will be mirrored.
 
 <a id="nestedblock--spec--rules--filters--request_mirror--backend_ref"></a>
 ### Nested Schema for `spec.rules.filters.request_mirror.backend_ref`
@@ -1120,6 +1154,15 @@ Port is required when the referent is a Kubernetes Service. In this
 case, the port number is the service port number, not the target port.
 For other resources, destination port might be derived from the referent
 resource or this field.
+
+
+<a id="nestedblock--spec--rules--filters--request_mirror--fraction"></a>
+### Nested Schema for `spec.rules.filters.request_mirror.fraction`
+
+Optional:
+
+- `denominator` (Number)
+- `numerator` (Number)
 
 
 

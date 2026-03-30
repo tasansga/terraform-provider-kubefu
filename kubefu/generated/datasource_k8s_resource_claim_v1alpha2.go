@@ -426,6 +426,70 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Alpha2() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 									},
+									"structured_data": {
+										Type:        schema.TypeList,
+										Description: "If StructuredData is set, then it needs to be used instead of Data.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"node_name": {
+												Type:        schema.TypeString,
+												Description: "NodeName is the name of the node providing the necessary resources if the resources are local to a node.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"results": {
+												Type:        schema.TypeList,
+												Description: "Results lists all allocated driver resources.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"named_resources": {
+														Type:        schema.TypeList,
+														Description: "NamedResources describes the allocation result when using the named resources model.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														MaxItems:    1,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"name": {
+																Type:        schema.TypeString,
+																Description: "Name is the name of the selected resource instance.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+														}},
+													},
+													"vendor_request_parameters": {
+														Type:        schema.TypeMap,
+														Description: "VendorRequestParameters are the per-request configuration parameters from the time that the claim was allocated.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+											"vendor_claim_parameters": {
+												Type:        schema.TypeMap,
+												Description: "VendorClaimParameters are the per-claim configuration parameters from the resource claim parameters at the time that the claim was allocated.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"vendor_class_parameters": {
+												Type:        schema.TypeMap,
+												Description: "VendorClassParameters are the per-claim configuration parameters from the resource class at the time that the claim was allocated.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
 								}},
 							},
 							"shareable": {
@@ -500,7 +564,7 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Alpha2Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha2", "ResourceClaim", "resource.k8s.io/v1alpha2/ResourceClaim"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.parameters_ref", "status", "status.allocation", "status.allocation.available_on_nodes"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.parameters_ref", "status", "status.allocation", "status.allocation.available_on_nodes", "status.allocation.resource_handles.structured_data", "status.allocation.resource_handles.structured_data.results.named_resources"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

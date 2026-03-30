@@ -172,6 +172,13 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta2() *schema.Resource 
 								Required:    false,
 								Computed:    true,
 							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the reference to check out; takes precedence over Branch, Tag and SemVer. \n It must be a valid Git reference: https://git-scm.com/docs/git-check-ref-format#_description Examples: \"refs/heads/main\", \"refs/tags/v0.1.0\", \"refs/pull/420/head\", \"refs/merge-requests/1/head\"",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"semver": {
 								Type:        schema.TypeString,
 								Description: "SemVer tag expression to check out, takes precedence over Tag.",
@@ -285,9 +292,23 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta2() *schema.Resource 
 								Required:    false,
 								Computed:    true,
 							},
+							"digest": {
+								Type:        schema.TypeString,
+								Description: "Digest is the digest of the file in the form of '<algorithm>:<checksum>'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"last_update_time": {
 								Type:        schema.TypeString,
 								Description: "LastUpdateTime is the timestamp corresponding to the last update of the Artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"metadata": {
+								Type:        schema.TypeMap,
+								Description: "Metadata holds upstream information such as OCI annotations.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -373,6 +394,13 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta2() *schema.Resource 
 							},
 						}},
 					},
+					"content_config_checksum": {
+						Type:        schema.TypeString,
+						Description: "ContentConfigChecksum is a checksum of all the configurations related to the content of the source artifact:  - .spec.ignore  - .spec.recurseSubmodules  - .spec.included and the checksum of the included artifacts observed in .status.observedGeneration version of the object. This can be used to determine if the content of the included repository has changed. It has the format of `<algo>:<checksum>`, for example: `sha256:<checksum>`.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"included_artifacts": {
 						Type:        schema.TypeList,
 						Description: "IncludedArtifacts contains a list of the last successfully included Artifacts as instructed by GitRepositorySpec.Include.",
@@ -387,9 +415,23 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta2() *schema.Resource 
 								Required:    false,
 								Computed:    true,
 							},
+							"digest": {
+								Type:        schema.TypeString,
+								Description: "Digest is the digest of the file in the form of '<algorithm>:<checksum>'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"last_update_time": {
 								Type:        schema.TypeString,
 								Description: "LastUpdateTime is the timestamp corresponding to the last update of the Artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"metadata": {
+								Type:        schema.TypeMap,
+								Description: "Metadata holds upstream information such as OCI annotations.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -438,6 +480,60 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta2() *schema.Resource 
 						Required:    false,
 						Computed:    true,
 					},
+					"observed_ignore": {
+						Type:        schema.TypeString,
+						Description: "ObservedIgnore is the observed exclusion patterns used for constructing the source artifact.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"observed_include": {
+						Type:        schema.TypeList,
+						Description: "ObservedInclude is the observed list of GitRepository resources used to to produce the current Artifact.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"from_path": {
+								Type:        schema.TypeString,
+								Description: "FromPath specifies the path to copy contents from, defaults to the root of the Artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"repository": {
+								Type:        schema.TypeList,
+								Description: "GitRepositoryRef specifies the GitRepository which Artifact contents must be included.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"to_path": {
+								Type:        schema.TypeString,
+								Description: "ToPath specifies the path to copy contents to, defaults to the name of the GitRepositoryRef.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"observed_recurse_submodules": {
+						Type:        schema.TypeBool,
+						Description: "ObservedRecurseSubmodules is the observed resource submodules configuration used to produce the current Artifact.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"url": {
 						Type:        schema.TypeString,
 						Description: "URL is the dynamic fetch link for the latest Artifact. It is provided on a \"best effort\" basis, and using the precise GitRepositoryStatus.Artifact data is recommended.",
@@ -457,7 +553,7 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta2Read(_ context.Conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1beta2", "GitRepository", "source.toolkit.fluxcd.io/v1beta2/GitRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.include.repository", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.include.repository", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact", "status.observed_include.repository"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

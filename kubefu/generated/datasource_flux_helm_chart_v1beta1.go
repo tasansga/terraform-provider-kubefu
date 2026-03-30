@@ -56,6 +56,32 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmChartV1Beta1() *schema.Resource {
 				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"access_from": {
+						Type:        schema.TypeList,
+						Description: "AccessFrom defines an Access Control List for allowing cross-namespace references to this object.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"namespace_selectors": {
+								Type:        schema.TypeList,
+								Description: "NamespaceSelectors is the list of namespace selectors to which this ACL applies. Items in this list are evaluated using a logical OR operation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"match_labels": {
+										Type:        schema.TypeMap,
+										Description: "MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
 					"chart": {
 						Type:        schema.TypeString,
 						Description: "The name or path the Helm chart is available at in the SourceRef.",
@@ -66,6 +92,13 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmChartV1Beta1() *schema.Resource {
 					"interval": {
 						Type:        schema.TypeString,
 						Description: "The interval at which to check the Source for updates.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"reconcile_strategy": {
+						Type:        schema.TypeString,
+						Description: "Determines what enables the creation of a new artifact. Valid values are ('ChartVersion', 'Revision'). See the documentation of the values for an explanation on their behavior. Defaults to ChartVersion when omitted.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -114,6 +147,14 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmChartV1Beta1() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"values_files": {
+						Type:        schema.TypeList,
+						Description: "Alternative list of values files to use as the chart values (values.yaml is not included by default), expected to be a relative path in the SourceRef. Values files are merged in the order of this list with the last file overriding the first. Ignored when omitted.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
 					},
 					"version": {
 						Type:        schema.TypeString,
@@ -261,7 +302,7 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmChartV1Beta1Read(_ context.Context, 
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1beta1", "HelmChart", "source.toolkit.fluxcd.io/v1beta1/HelmChart"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.source_ref", "status", "status.artifact"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.source_ref", "status", "status.artifact"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

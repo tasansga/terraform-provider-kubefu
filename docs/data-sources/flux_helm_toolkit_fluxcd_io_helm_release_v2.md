@@ -45,6 +45,9 @@ Optional:
 for this HelmRelease. (see [below for nested schema](#nestedblock--spec--chart))
 - `chart_ref` (Block List, Max: 1) ChartRef holds a reference to a source controller resource containing the
 Helm chart artifact. (see [below for nested schema](#nestedblock--spec--chart_ref))
+- `common_metadata` (Block List, Max: 1) CommonMetadata specifies the common labels and annotations that are
+applied to all resources. Any existing label or annotation will be
+overridden if its key matches a common one. (see [below for nested schema](#nestedblock--spec--common_metadata))
 - `depends_on_` (Block List) DependsOn may contain a meta.NamespacedObjectReference slice with
 references to HelmRelease resources that must be ready before this HelmRelease
 can be reconciled. (see [below for nested schema](#nestedblock--spec--depends_on_))
@@ -189,6 +192,15 @@ Optional:
 resource object that contains the reference.
 
 
+<a id="nestedblock--spec--common_metadata"></a>
+### Nested Schema for `spec.common_metadata`
+
+Optional:
+
+- `annotations` (Map of String) Annotations to be added to the object's metadata.
+- `labels` (Map of String) Labels to be added to the object's metadata.
+
+
 <a id="nestedblock--spec--depends_on_"></a>
 ### Nested Schema for `spec.depends_on_`
 
@@ -196,6 +208,11 @@ Optional:
 
 - `name` (String) Name of the referent.
 - `namespace` (String) Namespace of the referent, when not specified it acts as LocalObjectReference.
+- `ready_expr` (String) ReadyExpr is a CEL expression that can be used to assess the readiness
+of a dependency. When specified, the built-in readiness check
+is replaced by the logic defined in the CEL expression.
+To make the CEL expression additive to the built-in readiness check,
+the feature gate `AdditiveCELDependencyCheck` must be set to `true`.
 
 
 <a id="nestedblock--spec--drift_detection"></a>
@@ -279,6 +296,10 @@ On uninstall, the namespace will not be garbage collected.
 - `disable_hooks` (Boolean) DisableHooks prevents hooks from running during the Helm install action.
 - `disable_open_api_validation` (Boolean) DisableOpenAPIValidation prevents the Helm install action from validating
 rendered templates against the Kubernetes OpenAPI Schema.
+- `disable_schema_validation` (Boolean) DisableSchemaValidation prevents the Helm install action from validating
+the values against the JSON Schema.
+- `disable_take_ownership` (Boolean) DisableTakeOwnership disables taking ownership of existing resources
+during the Helm install action. Defaults to false.
 - `disable_wait` (Boolean) DisableWait disables the waiting for resources to be ready after a Helm
 install has been performed.
 - `disable_wait_for_jobs` (Boolean) DisableWaitForJobs disables waiting for jobs to complete after a Helm
@@ -292,6 +313,8 @@ CRDs are installed if not already present.
 
 
 Deprecated use CRD policy (`crds`) attribute with value `Skip` instead.
+- `strategy` (Block List, Max: 1) Strategy defines the install strategy to use for this HelmRelease.
+Defaults to 'RemediateOnFailure'. (see [below for nested schema](#nestedblock--spec--install--strategy))
 - `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like
 Jobs for hooks) during the performance of a Helm install action. Defaults to
 'HelmReleaseSpec.Timeout'.
@@ -311,12 +334,52 @@ bailing. Remediation, using an uninstall, is performed between each attempt.
 Defaults to '0', a negative integer equals to unlimited retries.
 
 
+<a id="nestedblock--spec--install--strategy"></a>
+### Nested Schema for `spec.install.strategy`
+
+Optional:
+
+- `name` (String) Name of the install strategy.
+- `retry_interval` (String) RetryInterval is the interval at which to retry a failed install.
+Can be used only when Name is set to RetryOnFailure.
+Defaults to '5m'.
+
+
 
 <a id="nestedblock--spec--kube_config"></a>
 ### Nested Schema for `spec.kube_config`
 
 Optional:
 
+- `config_map_ref` (Block List, Max: 1) ConfigMapRef holds an optional name of a ConfigMap that contains
+the following keys:
+
+- `provider`: the provider to use. One of `aws`, `azure`, `gcp`, or
+   `generic`. Required.
+- `cluster`: the fully qualified resource name of the Kubernetes
+   cluster in the cloud provider API. Not used by the `generic`
+   provider. Required when one of `address` or `ca.crt` is not set.
+- `address`: the address of the Kubernetes API server. Required
+   for `generic`. For the other providers, if not specified, the
+   first address in the cluster resource will be used, and if
+   specified, it must match one of the addresses in the cluster
+   resource.
+   If audiences is not set, will be used as the audience for the
+   `generic` provider.
+- `ca.crt`: the optional PEM-encoded CA certificate for the
+   Kubernetes API server. If not set, the controller will use the
+   CA certificate from the cluster resource.
+- `audiences`: the optional audiences as a list of
+   line-break-separated strings for the Kubernetes ServiceAccount
+   token. Defaults to the `address` for the `generic` provider, or
+   to specific values for the other providers depending on the
+   provider.
+-  `serviceAccountName`: the optional name of the Kubernetes
+   ServiceAccount in the same namespace that should be used
+   for authentication. If not specified, the controller
+   ServiceAccount will be used.
+
+Mutually exclusive with SecretRef. (see [below for nested schema](#nestedblock--spec--kube_config--config_map_ref))
 - `secret_ref` (Block List, Max: 1) SecretRef holds the name of a secret that contains a key with
 the kubeconfig file as the value. If no key is set, the key will default
 to 'value'.
@@ -325,6 +388,14 @@ is regularly updated if credentials such as a cloud-access-token expire.
 Cloud specific `cmd-path` auth helpers will not function without adding
 binaries and credentials to the Pod that is responsible for reconciling
 Kubernetes resources. (see [below for nested schema](#nestedblock--spec--kube_config--secret_ref))
+
+<a id="nestedblock--spec--kube_config--config_map_ref"></a>
+### Nested Schema for `spec.kube_config.config_map_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
 
 <a id="nestedblock--spec--kube_config--secret_ref"></a>
 ### Nested Schema for `spec.kube_config.secret_ref`
@@ -492,6 +563,10 @@ https://helm.sh/docs/chart_best_practices/custom_resource_definitions.
 - `disable_hooks` (Boolean) DisableHooks prevents hooks from running during the Helm upgrade action.
 - `disable_open_api_validation` (Boolean) DisableOpenAPIValidation prevents the Helm upgrade action from validating
 rendered templates against the Kubernetes OpenAPI Schema.
+- `disable_schema_validation` (Boolean) DisableSchemaValidation prevents the Helm upgrade action from validating
+the values against the JSON Schema.
+- `disable_take_ownership` (Boolean) DisableTakeOwnership disables taking ownership of existing resources
+during the Helm upgrade action. Defaults to false.
 - `disable_wait` (Boolean) DisableWait disables the waiting for resources to be ready after a Helm
 upgrade has been performed.
 - `disable_wait_for_jobs` (Boolean) DisableWaitForJobs disables waiting for jobs to complete after a Helm
@@ -502,6 +577,8 @@ overrides from 'Values'. Setting this flag makes the HelmRelease
 non-declarative.
 - `remediation` (Block List, Max: 1) Remediation holds the remediation configuration for when the Helm upgrade
 action for the HelmRelease fails. The default is to not perform any action. (see [below for nested schema](#nestedblock--spec--upgrade--remediation))
+- `strategy` (Block List, Max: 1) Strategy defines the upgrade strategy to use for this HelmRelease.
+Defaults to 'RemediateOnFailure'. (see [below for nested schema](#nestedblock--spec--upgrade--strategy))
 - `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like
 Jobs for hooks) during the performance of a Helm upgrade action. Defaults to
 'HelmReleaseSpec.Timeout'.
@@ -520,6 +597,17 @@ no retries remain. Defaults to 'false' unless 'Retries' is greater than 0.
 bailing. Remediation, using 'Strategy', is performed between each attempt.
 Defaults to '0', a negative integer equals to unlimited retries.
 - `strategy` (String) Strategy to use for failure remediation. Defaults to 'rollback'.
+
+
+<a id="nestedblock--spec--upgrade--strategy"></a>
+### Nested Schema for `spec.upgrade.strategy`
+
+Optional:
+
+- `name` (String) Name of the upgrade strategy.
+- `retry_interval` (String) RetryInterval is the interval at which to retry a failed upgrade.
+Can be used only when Name is set to RetryOnFailure.
+Defaults to '5m'.
 
 
 
@@ -562,6 +650,8 @@ state. It is reset after a successful reconciliation.
 to reconcile.
 - `last_attempted_release_action` (String) LastAttemptedReleaseAction is the last release action performed for this
 HelmRelease. It is used to determine the active remediation strategy.
+- `last_attempted_release_action_duration` (String) LastAttemptedReleaseActionDuration is the duration of the last
+release action performed for this HelmRelease.
 - `last_attempted_revision` (String) LastAttemptedRevision is the Source revision of the last reconciliation
 attempt. For OCIRepository  sources, the 12 first characters of the digest are
 appended to the chart version e.g. "1.2.3+1234567890ab".
@@ -579,6 +669,8 @@ can be detected.
 value, so a change of the annotation value can be detected.
 - `last_release_revision` (Number) LastReleaseRevision is the revision of the last successful Helm release.
 Deprecated: Use History instead.
+- `observed_common_metadata_digest` (String) ObservedCommonMetadataDigest is the digest for the common metadata of
+the last successful reconciliation attempt.
 - `observed_generation` (Number) ObservedGeneration is the last observed generation.
 - `observed_post_renderers_digest` (String) ObservedPostRenderersDigest is the digest for the post-renderers of
 the last successful reconciliation attempt.

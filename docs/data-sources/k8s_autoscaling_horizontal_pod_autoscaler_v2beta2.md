@@ -54,6 +54,9 @@ Applied only if Name is not specified. More info: https://git.k8s.io/community/c
 
 When an object is created, the system will populate this list with the current set of initializers. Only privileged users may set or modify this list. Once it is empty, it may not be modified further by any user. (see [below for nested schema](#nestedblock--metadata--initializers))
 - `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `managed_fields` (Block List) ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like "ci-cd". The set of fields is always in the version that the workflow used when modifying the object.
+
+This field is alpha and can be changed or removed without notice. (see [below for nested schema](#nestedblock--metadata--managed_fields))
 - `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
 - `namespace` (String) Namespace defines the space within each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
 
@@ -70,18 +73,15 @@ Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-gu
 <a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
-Required:
-
-- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
-
 Optional:
 
+- `pending` (Block List) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
 - `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
 <a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Required:
+Optional:
 
 - `name` (String) name of the process that is responsible for initializing this object.
 
@@ -133,10 +133,28 @@ Examples:
 Optional:
 
 - `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a consistent list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response, unless you have received this token from an error message.
+- `remaining_item_count` (Number) remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.
+
+This field is alpha and can be changed or removed without notice.
 - `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
 - `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
 
 
+
+
+<a id="nestedblock--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String) APIVersion defines the version of this resource that this field set applies to. The format is "group/version" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.
+- `fields` (Map of String) Fields identifies a set of fields.
+- `fields_type` (String) FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: "FieldsV1"
+- `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
+- `manager` (String) Manager is an identifier of the workflow managing these fields.
+- `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
+- `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
 <a id="nestedblock--metadata--owner_references"></a>
@@ -166,6 +184,7 @@ Required:
 
 Optional:
 
+- `behavior` (Block List, Max: 1) behavior configures the scaling behavior of the target in both Up and Down directions (scaleUp and scaleDown fields respectively). If not set, the default HPAScalingRules for scale up and scale down are used. (see [below for nested schema](#nestedblock--spec--behavior))
 - `metrics` (Block List) metrics contains the specifications for which to use to calculate the desired replica count (the maximum replica count across all metrics will be used).  The desired replica count is calculated multiplying the ratio between the target value and the current value by the current number of pods.  Ergo, metrics used must decrease as the pod count is increased, and vice-versa.  See the individual metric source types for more information about how each type of metric must respond. If not set, the default metric will be set to 80% average CPU utilization. (see [below for nested schema](#nestedblock--spec--metrics))
 - `min_replicas` (Number) minReplicas is the lower limit for the number of replicas to which the autoscaler can scale down. It defaults to 1 pod.
 
@@ -182,6 +201,58 @@ Optional:
 - `api_version` (String) API version of the referent
 
 
+<a id="nestedblock--spec--behavior"></a>
+### Nested Schema for `spec.behavior`
+
+Optional:
+
+- `scale_down` (Block List, Max: 1) scaleDown is scaling policy for scaling Down. If not set, the default value is to allow to scale down to minReplicas pods, with a 300 second stabilization window (i.e., the highest recommendation for the last 300sec is used). (see [below for nested schema](#nestedblock--spec--behavior--scale_down))
+- `scale_up` (Block List, Max: 1) scaleUp is scaling policy for scaling Up. If not set, the default value is the higher of:
+  * increase no more than 4 pods per 60 seconds
+  * double the number of pods per 60 seconds
+No stabilization is used. (see [below for nested schema](#nestedblock--spec--behavior--scale_up))
+
+<a id="nestedblock--spec--behavior--scale_down"></a>
+### Nested Schema for `spec.behavior.scale_down`
+
+Optional:
+
+- `policies` (Block List) policies is a list of potential scaling polices which can be used during scaling. At least one policy must be specified, otherwise the HPAScalingRules will be discarded as invalid (see [below for nested schema](#nestedblock--spec--behavior--scale_down--policies))
+- `select_policy` (String) selectPolicy is used to specify which policy should be used. If not set, the default value MaxPolicySelect is used.
+- `stabilization_window_seconds` (Number) StabilizationWindowSeconds is the number of seconds for which past recommendations should be considered while scaling up or scaling down. StabilizationWindowSeconds must be greater than or equal to zero and less than or equal to 3600 (one hour). If not set, use the default values: - For scale up: 0 (i.e. no stabilization is done). - For scale down: 300 (i.e. the stabilization window is 300 seconds long).
+
+<a id="nestedblock--spec--behavior--scale_down--policies"></a>
+### Nested Schema for `spec.behavior.scale_down.policies`
+
+Optional:
+
+- `period_seconds` (Number) PeriodSeconds specifies the window of time for which the policy should hold true. PeriodSeconds must be greater than zero and less than or equal to 1800 (30 min).
+- `type` (String) Type is used to specify the scaling policy.
+- `value` (Number) Value contains the amount of change which is permitted by the policy. It must be greater than zero
+
+
+
+<a id="nestedblock--spec--behavior--scale_up"></a>
+### Nested Schema for `spec.behavior.scale_up`
+
+Optional:
+
+- `policies` (Block List) policies is a list of potential scaling polices which can be used during scaling. At least one policy must be specified, otherwise the HPAScalingRules will be discarded as invalid (see [below for nested schema](#nestedblock--spec--behavior--scale_up--policies))
+- `select_policy` (String) selectPolicy is used to specify which policy should be used. If not set, the default value MaxPolicySelect is used.
+- `stabilization_window_seconds` (Number) StabilizationWindowSeconds is the number of seconds for which past recommendations should be considered while scaling up or scaling down. StabilizationWindowSeconds must be greater than or equal to zero and less than or equal to 3600 (one hour). If not set, use the default values: - For scale up: 0 (i.e. no stabilization is done). - For scale down: 300 (i.e. the stabilization window is 300 seconds long).
+
+<a id="nestedblock--spec--behavior--scale_up--policies"></a>
+### Nested Schema for `spec.behavior.scale_up.policies`
+
+Optional:
+
+- `period_seconds` (Number) PeriodSeconds specifies the window of time for which the policy should hold true. PeriodSeconds must be greater than zero and less than or equal to 1800 (30 min).
+- `type` (String) Type is used to specify the scaling policy.
+- `value` (Number) Value contains the amount of change which is permitted by the policy. It must be greater than zero
+
+
+
+
 <a id="nestedblock--spec--metrics"></a>
 ### Nested Schema for `spec.metrics`
 
@@ -191,10 +262,32 @@ Required:
 
 Optional:
 
+- `container_resource` (Block List, Max: 1) container resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing a single container in each pod of the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source. This is an alpha feature and can be enabled by the HPAContainerMetrics feature flag. (see [below for nested schema](#nestedblock--spec--metrics--container_resource))
 - `external` (Block List, Max: 1) external refers to a global metric that is not associated with any Kubernetes object. It allows autoscaling based on information coming from components running outside of cluster (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster). (see [below for nested schema](#nestedblock--spec--metrics--external))
 - `object` (Block List, Max: 1) object refers to a metric describing a single kubernetes object (for example, hits-per-second on an Ingress object). (see [below for nested schema](#nestedblock--spec--metrics--object))
 - `pods` (Block List, Max: 1) pods refers to a metric describing each pod in the current scale target (for example, transactions-processed-per-second).  The values will be averaged together before being compared to the target value. (see [below for nested schema](#nestedblock--spec--metrics--pods))
 - `resource` (Block List, Max: 1) resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing each pod in the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source. (see [below for nested schema](#nestedblock--spec--metrics--resource))
+
+<a id="nestedblock--spec--metrics--container_resource"></a>
+### Nested Schema for `spec.metrics.container_resource`
+
+Optional:
+
+- `container` (String) container is the name of the container in the pods of the scaling target
+- `name` (String) name is the name of the resource in question.
+- `target` (Block List, Max: 1) target specifies the target value for the given metric (see [below for nested schema](#nestedblock--spec--metrics--container_resource--target))
+
+<a id="nestedblock--spec--metrics--container_resource--target"></a>
+### Nested Schema for `spec.metrics.container_resource.target`
+
+Optional:
+
+- `average_utilization` (Number) averageUtilization is the target value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods. Currently only valid for Resource metric source type
+- `average_value` (String) averageValue is the target value of the average of the metric across all relevant pods (as a quantity)
+- `type` (String) type represents whether the metric type is Utilization, Value, or AverageValue
+- `value` (String) value is the target value of the metric (as a quantity).
+
+
 
 <a id="nestedblock--spec--metrics--external"></a>
 ### Nested Schema for `spec.metrics.external`
@@ -411,12 +504,12 @@ Optional:
 
 Required:
 
-- `conditions` (Block List, Min: 1) conditions is the set of conditions required for this autoscaler to scale its target, and indicates whether or not those conditions are met. (see [below for nested schema](#nestedblock--status--conditions))
 - `current_replicas` (Number) currentReplicas is current number of replicas of pods managed by this autoscaler, as last seen by the autoscaler.
 - `desired_replicas` (Number) desiredReplicas is the desired number of replicas of pods managed by this autoscaler, as last calculated by the autoscaler.
 
 Optional:
 
+- `conditions` (Block List) conditions is the set of conditions required for this autoscaler to scale its target, and indicates whether or not those conditions are met. (see [below for nested schema](#nestedblock--status--conditions))
 - `current_metrics` (Block List) currentMetrics is the last read state of the metrics used by this autoscaler. (see [below for nested schema](#nestedblock--status--current_metrics))
 - `last_scale_time` (String) lastScaleTime is the last time the HorizontalPodAutoscaler scaled the number of pods, used by the autoscaler to control how often the number of pods is changed.
 - `observed_generation` (Number) observedGeneration is the most recent generation observed by this autoscaler.
@@ -445,10 +538,31 @@ Required:
 
 Optional:
 
+- `container_resource` (Block List, Max: 1) container resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing a single container in each pod in the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source. (see [below for nested schema](#nestedblock--status--current_metrics--container_resource))
 - `external` (Block List, Max: 1) external refers to a global metric that is not associated with any Kubernetes object. It allows autoscaling based on information coming from components running outside of cluster (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster). (see [below for nested schema](#nestedblock--status--current_metrics--external))
 - `object` (Block List, Max: 1) object refers to a metric describing a single kubernetes object (for example, hits-per-second on an Ingress object). (see [below for nested schema](#nestedblock--status--current_metrics--object))
 - `pods` (Block List, Max: 1) pods refers to a metric describing each pod in the current scale target (for example, transactions-processed-per-second).  The values will be averaged together before being compared to the target value. (see [below for nested schema](#nestedblock--status--current_metrics--pods))
 - `resource` (Block List, Max: 1) resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing each pod in the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source. (see [below for nested schema](#nestedblock--status--current_metrics--resource))
+
+<a id="nestedblock--status--current_metrics--container_resource"></a>
+### Nested Schema for `status.current_metrics.container_resource`
+
+Optional:
+
+- `container` (String) Container is the name of the container in the pods of the scaling target
+- `current` (Block List, Max: 1) current contains the current value for the given metric (see [below for nested schema](#nestedblock--status--current_metrics--container_resource--current))
+- `name` (String) Name is the name of the resource in question.
+
+<a id="nestedblock--status--current_metrics--container_resource--current"></a>
+### Nested Schema for `status.current_metrics.container_resource.current`
+
+Optional:
+
+- `average_utilization` (Number) currentAverageUtilization is the current value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods.
+- `average_value` (String) averageValue is the current value of the average of the metric across all relevant pods (as a quantity)
+- `value` (String) value is the current value of the metric (as a quantity).
+
+
 
 <a id="nestedblock--status--current_metrics--external"></a>
 ### Nested Schema for `status.current_metrics.external`

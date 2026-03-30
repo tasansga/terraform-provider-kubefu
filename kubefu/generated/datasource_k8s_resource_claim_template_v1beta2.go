@@ -537,6 +537,13 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Beta2() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"distinct_attribute": {
+												Type:        schema.TypeString,
+												Description: "DistinctAttribute requires that all devices in question have this attribute and that its type and value are unique across those devices.\n\nThis acts as the inverse of MatchAttribute.\n\nThis constraint is used to avoid allocating multiple requests to the same device by ensuring attribute-level differentiation.\n\nThis is useful for scenarios where resource requests must be fulfilled by separate physical devices. For example, a container requests two network interfaces that must be allocated from two different physical NICs.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"match_attribute": {
 												Type:        schema.TypeString,
 												Description: "MatchAttribute requires that all devices in question have this attribute and that its type and value are the same across those devices.\n\nFor example, if you specified \"dra.example.com/numa\" (a hypothetical example!), then only devices in the same NUMA node will be chosen. A device which does not have that attribute will not be chosen. All devices should use a value of the same type for this attribute because that is part of its specification, but if one device doesn't, then it also will not be chosen.\n\nMust include the domain qualifier.",
@@ -582,6 +589,23 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Beta2() *schema.Resource {
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
+													},
+													"capacity": {
+														Type:        schema.TypeList,
+														Description: "Capacity define resource requirements against each capacity.\n\nIf this field is unset and the device supports multiple allocations, the default value will be applied to each capacity according to requestPolicy. For the capacity that has no requestPolicy, default is the full capacity value.\n\nApplies to each device allocation. If Count > 1, the request fails if there aren't enough devices that meet the requirements. If AllocationMode is set to All, the request fails if there are devices that otherwise match the request, and have this capacity, with a value >= the requested amount, but which cannot be allocated to this request.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														MaxItems:    1,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"requests": {
+																Type:        schema.TypeMap,
+																Description: "Requests represent individual device resource requests for distinct resources, all of which must be provided by the device.\n\nThis value is used as an additional filtering condition against the available capacity on the device. This is semantically equivalent to a CEL selector with `device.capacity[<domain>].<name>.compareTo(quantity(<request quantity>)) >= 0`. For example, device.capacity['test-driver.cdi.k8s.io'].counters.compareTo(quantity('2')) >= 0.\n\nWhen a requestPolicy is defined, the requested amount is adjusted upward to the nearest valid value based on the policy. If the requested amount cannot be adjusted to a valid value—because it exceeds what the requestPolicy allows— the device is considered ineligible for allocation.\n\nFor any capacity that is not explicitly requested: - If no requestPolicy is set, the default consumed capacity is equal to the full device capacity\n  (i.e., the whole device is claimed).\n- If a requestPolicy is set, the default consumed capacity is determined according to that policy.\n\nIf the device allows multiple allocation, the aggregated amount across all requests must not exceed the capacity value. The consumed capacity, which may be adjusted based on the requestPolicy if defined, is recorded in the resource claim’s status.devices[*].consumedCapacity field.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+														}},
 													},
 													"count_": {
 														Type:        schema.TypeInt,
@@ -682,6 +706,23 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Beta2() *schema.Resource {
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
+													},
+													"capacity": {
+														Type:        schema.TypeList,
+														Description: "Capacity define resource requirements against each capacity.\n\nIf this field is unset and the device supports multiple allocations, the default value will be applied to each capacity according to requestPolicy. For the capacity that has no requestPolicy, default is the full capacity value.\n\nApplies to each device allocation. If Count > 1, the request fails if there aren't enough devices that meet the requirements. If AllocationMode is set to All, the request fails if there are devices that otherwise match the request, and have this capacity, with a value >= the requested amount, but which cannot be allocated to this request.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														MaxItems:    1,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"requests": {
+																Type:        schema.TypeMap,
+																Description: "Requests represent individual device resource requests for distinct resources, all of which must be provided by the device.\n\nThis value is used as an additional filtering condition against the available capacity on the device. This is semantically equivalent to a CEL selector with `device.capacity[<domain>].<name>.compareTo(quantity(<request quantity>)) >= 0`. For example, device.capacity['test-driver.cdi.k8s.io'].counters.compareTo(quantity('2')) >= 0.\n\nWhen a requestPolicy is defined, the requested amount is adjusted upward to the nearest valid value based on the policy. If the requested amount cannot be adjusted to a valid value—because it exceeds what the requestPolicy allows— the device is considered ineligible for allocation.\n\nFor any capacity that is not explicitly requested: - If no requestPolicy is set, the default consumed capacity is equal to the full device capacity\n  (i.e., the whole device is claimed).\n- If a requestPolicy is set, the default consumed capacity is determined according to that policy.\n\nIf the device allows multiple allocation, the aggregated amount across all requests must not exceed the capacity value. The consumed capacity, which may be adjusted based on the requestPolicy if defined, is recorded in the resource claim’s status.devices[*].consumedCapacity field.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+														}},
 													},
 													"count_": {
 														Type:        schema.TypeInt,
@@ -801,7 +842,7 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Beta2Read(_ context.Contex
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1beta2", "ResourceClaimTemplate", "resource.k8s.io/v1beta2/ResourceClaimTemplate"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.metadata", "spec.spec", "spec.spec.devices", "spec.spec.devices.config.opaque", "spec.spec.devices.requests.exactly", "spec.spec.devices.requests.exactly.selectors.cel", "spec.spec.devices.requests.first_available.selectors.cel"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.metadata", "spec.spec", "spec.spec.devices", "spec.spec.devices.config.opaque", "spec.spec.devices.requests.exactly", "spec.spec.devices.requests.exactly.capacity", "spec.spec.devices.requests.exactly.selectors.cel", "spec.spec.devices.requests.first_available.capacity", "spec.spec.devices.requests.first_available.selectors.cel"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

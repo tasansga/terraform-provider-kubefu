@@ -28,6 +28,7 @@ Resource drivers have a unique name in forward domain order (acme.example.com).
 
 - `metadata` (Block List, Max: 1) Standard object metadata (see [below for nested schema](#nestedblock--metadata))
 - `parameters_ref` (Block List, Max: 1) ParametersRef references an arbitrary separate object that may hold parameters that will be used by the driver when allocating a resource that uses this class. A dynamic resource driver can distinguish between parameters stored here and and those stored in ResourceClaimSpec. (see [below for nested schema](#nestedblock--parameters_ref))
+- `structured_parameters` (Boolean) If and only if allocation of claims using this class is handled via structured parameters, then StructuredParameters must be set to true.
 - `suitable_nodes` (Block List, Max: 1) Only nodes matching the selector will be considered by the scheduler when trying to find a Node that fits a Pod when that Pod uses a ResourceClaim that has not been allocated yet.
 
 Setting this field is optional. If null, all nodes are candidates. (see [below for nested schema](#nestedblock--suitable_nodes))

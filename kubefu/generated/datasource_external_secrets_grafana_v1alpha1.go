@@ -11,7 +11,7 @@ import (
 func dataSourceExternalSecretsGeneratorsExternalSecretsIoGrafanaV1Alpha1() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceExternalSecretsGeneratorsExternalSecretsIoGrafanaV1Alpha1Read,
-		Description: "Generated data source for crd.generators.external-secrets.io.v1alpha1.Grafana",
+		Description: "Grafana represents a generator for Grafana service account tokens.",
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
@@ -64,6 +64,47 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGrafanaV1Alpha1() *sche
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"basic": {
+								Type:        schema.TypeList,
+								Description: "Basic auth credentials used to authenticate against the Grafana instance.\nNote: you need a token which has elevated permissions to create service accounts.\nSee here for the documentation on basic roles offered by Grafana:\nhttps://grafana.com/docs/grafana/latest/administration/roles-and-permissions/access-control/rbac-fixed-basic-role-definitions/",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"password": {
+										Type:        schema.TypeList,
+										Description: "A basic auth password used to authenticate against the Grafana instance.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"key": {
+												Type:        schema.TypeString,
+												Description: "The key where the token is found.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the Secret resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"username": {
+										Type:        schema.TypeString,
+										Description: "A basic auth username used to authenticate against the Grafana instance.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"token": {
 								Type:        schema.TypeList,
 								Description: "A service account token used to authenticate against the Grafana instance.\nNote: you need a token which has elevated permissions to create service accounts.\nSee here for the documentation on basic roles offered by Grafana:\nhttps://grafana.com/docs/grafana/latest/administration/roles-and-permissions/access-control/rbac-fixed-basic-role-definitions/",
@@ -133,7 +174,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGrafanaV1Alpha1Read(_ c
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "Grafana", "generators.external-secrets.io/v1alpha1/Grafana"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.token", "spec.service_account"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.basic", "spec.auth.basic.password", "spec.auth.token", "spec.service_account"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

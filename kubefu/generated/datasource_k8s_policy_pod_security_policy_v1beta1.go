@@ -117,16 +117,16 @@ func dataSourceK8sPolicyPodSecurityPolicyV1Beta1() *schema.Resource {
 							"pending": {
 								Type:        schema.TypeList,
 								Description: "Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
 										Description: "name of the process that is responsible for initializing this object.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 								}},
 							},
@@ -256,6 +256,13 @@ func dataSourceK8sPolicyPodSecurityPolicyV1Beta1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"remaining_item_count": {
+												Type:        schema.TypeInt,
+												Description: "remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.\n\nThis field is alpha and can be changed or removed without notice.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_version": {
 												Type:        schema.TypeString,
 												Description: "String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency",
@@ -296,6 +303,71 @@ func dataSourceK8sPolicyPodSecurityPolicyV1Beta1() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"managed_fields": {
+						Type:        schema.TypeList,
+						Description: "ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like \"ci-cd\". The set of fields is always in the version that the workflow used when modifying the object.\n\nThis field is alpha and can be changed or removed without notice.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"api_version": {
+								Type:        schema.TypeString,
+								Description: "APIVersion defines the version of this resource that this field set applies to. The format is \"group/version\" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields": {
+								Type:        schema.TypeMap,
+								Description: "Fields identifies a set of fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_type": {
+								Type:        schema.TypeString,
+								Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_v1": {
+								Type:        schema.TypeMap,
+								Description: "FieldsV1 holds the first JSON version format as described in the \"FieldsV1\" type.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"manager": {
+								Type:        schema.TypeString,
+								Description: "Manager is an identifier of the workflow managing these fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"operation": {
+								Type:        schema.TypeString,
+								Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"time": {
+								Type:        schema.TypeString,
+								Description: "Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"name": {
 						Type:        schema.TypeString,
@@ -408,6 +480,22 @@ func dataSourceK8sPolicyPodSecurityPolicyV1Beta1() *schema.Resource {
 						Computed:    true,
 						Elem: &schema.Schema{Type: schema.TypeString},
 					},
+					"allowed_csi_drivers": {
+						Type:        schema.TypeList,
+						Description: "AllowedCSIDrivers is a whitelist of inline CSI drivers that must be explicitly set to be embedded within a pod spec. An empty value means no CSI drivers can run inline within a pod spec.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name is the registered name of the CSI driver",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"allowed_flex_volumes": {
 						Type:        schema.TypeList,
 						Description: "AllowedFlexVolumes is a whitelist of allowed Flexvolumes.  Empty or nil indicates that all Flexvolumes may be used.  This parameter is effective only when the usage of the Flexvolumes is allowed in the \"Volumes\" field.",
@@ -438,7 +526,30 @@ func dataSourceK8sPolicyPodSecurityPolicyV1Beta1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"read_only": {
+								Type:        schema.TypeBool,
+								Description: "when set to true, will allow host volumes matching the pathPrefix only if all volume mounts are readOnly.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 						}},
+					},
+					"allowed_proc_mount_types": {
+						Type:        schema.TypeList,
+						Description: "AllowedProcMountTypes is a whitelist of allowed ProcMountTypes. Empty or nil indicates that only the DefaultProcMountType may be used. This requires the ProcMountType feature flag to be enabled.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
+					"allowed_unsafe_sysctls": {
+						Type:        schema.TypeList,
+						Description: "allowedUnsafeSysctls is a list of explicitly allowed unsafe sysctls, defaults to none. Each entry is either a plain sysctl name or ends in \"*\" in which case it is considered as a prefix of allowed sysctls. Single * means all unsafe sysctls are allowed. Kubelet has to whitelist all allowed unsafe sysctls explicitly to avoid rejection.\n\nExamples: e.g. \"foo/*\" allows \"foo/bar\", \"foo/baz\", etc. e.g. \"foo.*\" allows \"foo.bar\", \"foo.baz\", etc.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
 					},
 					"default_add_capabilities": {
 						Type:        schema.TypeList,
@@ -454,6 +565,14 @@ func dataSourceK8sPolicyPodSecurityPolicyV1Beta1() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"forbidden_sysctls": {
+						Type:        schema.TypeList,
+						Description: "forbiddenSysctls is a list of explicitly forbidden sysctls, defaults to none. Each entry is either a plain sysctl name or ends in \"*\" in which case it is considered as a prefix of forbidden sysctls. Single * means all sysctls are forbidden.\n\nExamples: e.g. \"foo/*\" forbids \"foo/bar\", \"foo/baz\", etc. e.g. \"foo.*\" forbids \"foo.bar\", \"foo.baz\", etc.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
 					},
 					"fs_group": {
 						Type:        schema.TypeList,
@@ -562,6 +681,46 @@ func dataSourceK8sPolicyPodSecurityPolicyV1Beta1() *schema.Resource {
 						Computed:    true,
 						Elem: &schema.Schema{Type: schema.TypeString},
 					},
+					"run_as_group": {
+						Type:        schema.TypeList,
+						Description: "RunAsGroup is the strategy that will dictate the allowable RunAsGroup values that may be set. If this field is omitted, the pod's RunAsGroup can take any value. This field requires the RunAsGroup feature gate to be enabled.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"ranges": {
+								Type:        schema.TypeList,
+								Description: "ranges are the allowed ranges of gids that may be used. If you would like to force a single gid then supply a single range with the same start and end. Required for MustRunAs.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"max": {
+										Type:        schema.TypeInt,
+										Description: "max is the end of the range, inclusive.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"min": {
+										Type:        schema.TypeInt,
+										Description: "min is the start of the range, inclusive.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"rule": {
+								Type:        schema.TypeString,
+								Description: "rule is the strategy that will dictate the allowable RunAsGroup values that may be set.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"run_as_user": {
 						Type:        schema.TypeList,
 						Description: "runAsUser is the strategy that will dictate the allowable RunAsUser values that may be set.",
@@ -600,6 +759,31 @@ func dataSourceK8sPolicyPodSecurityPolicyV1Beta1() *schema.Resource {
 								Optional:    false,
 								Required:    true,
 								Computed:    false,
+							},
+						}},
+					},
+					"runtime_class": {
+						Type:        schema.TypeList,
+						Description: "runtimeClass is the strategy that will dictate the allowable RuntimeClasses for a pod. If this field is omitted, the pod's runtimeClassName field is unrestricted. Enforcement of this field depends on the RuntimeClass feature gate being enabled.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"allowed_runtime_class_names": {
+								Type:        schema.TypeList,
+								Description: "allowedRuntimeClassNames is a whitelist of RuntimeClass names that may be specified on a pod. A value of \"*\" means that any RuntimeClass name is allowed, and must be the only item in the list. An empty list requires the RuntimeClassName field to be unset.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Schema{Type: schema.TypeString},
+							},
+							"default_runtime_class_name": {
+								Type:        schema.TypeString,
+								Description: "defaultRuntimeClassName is the default RuntimeClassName to set on the pod. The default MUST be allowed by the allowedRuntimeClassNames list. A value of nil does not mutate the Pod.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 							},
 						}},
 					},
@@ -720,7 +904,7 @@ func dataSourceK8sPolicyPodSecurityPolicyV1Beta1Read(_ context.Context, d *schem
 	if err := manifestpkg.SetDataSourceDefaults(d, "policy/v1beta1", "PodSecurityPolicy", "policy/v1beta1/PodSecurityPolicy"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.fs_group", "spec.run_as_user", "spec.se_linux", "spec.se_linux.se_linux_options", "spec.supplemental_groups"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.fs_group", "spec.run_as_group", "spec.run_as_user", "spec.runtime_class", "spec.se_linux", "spec.se_linux.se_linux_options", "spec.supplemental_groups"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

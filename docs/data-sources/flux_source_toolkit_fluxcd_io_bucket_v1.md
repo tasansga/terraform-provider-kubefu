@@ -74,6 +74,10 @@ to use while communicating with the Bucket server. (see [below for nested schema
 - `region` (String) Region of the Endpoint where the BucketName is located in.
 - `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing authentication credentials
 for the Bucket. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `service_account_name` (String) ServiceAccountName is the name of the Kubernetes ServiceAccount used to authenticate
+the bucket. This field is only supported for the 'gcp' and 'aws' providers.
+For more information about workload identity:
+https://fluxcd.io/flux/components/source/buckets/#workload-identity
 - `sts` (Block List, Max: 1) STS specifies the required configuration to use a Security Token
 Service for fetching temporary credentials to authenticate in a
 Bucket provider.

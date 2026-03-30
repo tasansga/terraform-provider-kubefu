@@ -65,7 +65,16 @@ Optional:
 
 Optional:
 
+- `for_nodes` (Block List) forNodes indicates the node(s) this endpoint should be consumed by when using topology aware routing. May contain a maximum of 8 entries. This is an Alpha feature and is only used when the PreferSameTrafficDistribution feature gate is enabled. (see [below for nested schema](#nestedblock--endpoints--hints--for_nodes))
 - `for_zones` (Block List) forZones indicates the zone(s) this endpoint should be consumed by to enable topology aware routing. (see [below for nested schema](#nestedblock--endpoints--hints--for_zones))
+
+<a id="nestedblock--endpoints--hints--for_nodes"></a>
+### Nested Schema for `endpoints.hints.for_nodes`
+
+Optional:
+
+- `name` (String) name represents the name of the node.
+
 
 <a id="nestedblock--endpoints--hints--for_zones"></a>
 ### Nested Schema for `endpoints.hints.for_zones`
@@ -139,6 +148,7 @@ Optional:
 - `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 

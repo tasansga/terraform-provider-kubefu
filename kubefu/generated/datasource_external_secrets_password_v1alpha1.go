@@ -11,18 +11,18 @@ import (
 func dataSourceExternalSecretsGeneratorsExternalSecretsIoPasswordV1Alpha1() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceExternalSecretsGeneratorsExternalSecretsIoPasswordV1Alpha1Read,
-		Description: "Password generates a random password based on the\nconfiguration parameters in spec.\nYou can specify the length, characterset and other attributes.",
+		Description: "Password generates a random password based on the configuration parameters in spec. You can specify the length, characterset and other attributes.",
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
-				Description: "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
 			},
 			"kind": {
 				Type:        schema.TypeString,
-				Description: "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
@@ -65,14 +65,21 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoPasswordV1Alpha1() *sch
 					},
 					"digits": {
 						Type:        schema.TypeInt,
-						Description: "Digits specifies the number of digits in the generated\npassword. If omitted it defaults to 25% of the length of the password",
+						Description: "Digits specifies the number of digits in the generated password. If omitted it defaults to 25% of the length of the password",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"encoding": {
+						Type:        schema.TypeString,
+						Description: "Encoding specifies the encoding of the generated password.\nValid values are:\n- \"raw\" (default): no encoding\n- \"base64\": standard base64 encoding\n- \"base64url\": base64url encoding\n- \"base32\": base32 encoding\n- \"hex\": hexadecimal encoding",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
 					},
 					"length": {
 						Type:        schema.TypeInt,
-						Description: "Length of the password to be generated.\nDefaults to 24",
+						Description: "Length of the password to be generated. Defaults to 24",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -84,16 +91,24 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoPasswordV1Alpha1() *sch
 						Required:    false,
 						Computed:    true,
 					},
+					"secret_keys": {
+						Type:        schema.TypeList,
+						Description: "SecretKeys defines the keys that will be populated with generated passwords.\nDefaults to \"password\" when not set.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
 					"symbol_characters": {
 						Type:        schema.TypeString,
-						Description: "SymbolCharacters specifies the special characters that should be used\nin the generated password.",
+						Description: "SymbolCharacters specifies the special characters that should be used in the generated password.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
 					},
 					"symbols": {
 						Type:        schema.TypeInt,
-						Description: "Symbols specifies the number of symbol characters in the generated\npassword. If omitted it defaults to 25% of the length of the password",
+						Description: "Symbols specifies the number of symbol characters in the generated password. If omitted it defaults to 25% of the length of the password",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,

@@ -15,14 +15,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
-				Description: "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
 			},
 			"kind": {
 				Type:        schema.TypeString,
-				Description: "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
@@ -104,7 +104,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"remote_ref": {
 										Type:        schema.TypeList,
-										Description: "RemoteRef points to the remote secret and defines\nwhich secret (version/property/..) to fetch.",
+										Description: "RemoteRef points to the remote secret and defines which secret (version/property/..) to fetch.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -156,14 +156,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 									},
 									"secret_key": {
 										Type:        schema.TypeString,
-										Description: "SecretKey defines the key in which the controller stores\nthe value. This is the key in the Kind=Secret",
+										Description: "SecretKey defines the key in which the controller stores the value. This is the key in the Kind=Secret",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"source_ref": {
 										Type:        schema.TypeList,
-										Description: "SourceRef allows you to override the source\nfrom which the value will pulled from.",
+										Description: "SourceRef allows you to override the source from which the value will pulled from.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -171,7 +171,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"generator_ref": {
 												Type:        schema.TypeList,
-												Description: "GeneratorRef points to a generator custom resource.\n\n\nDeprecated: The generatorRef is not implemented in .data[].\nthis will be removed with v1.",
+												Description: "GeneratorRef points to a generator custom resource in",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -210,7 +210,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"kind": {
 														Type:        schema.TypeString,
-														Description: "Kind of the SecretStore resource (SecretStore or ClusterSecretStore)\nDefaults to `SecretStore`",
+														Description: "Kind of the SecretStore resource (SecretStore or ClusterSecretStore) Defaults to `SecretStore`",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -230,14 +230,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 							},
 							"data_from": {
 								Type:        schema.TypeList,
-								Description: "DataFrom is used to fetch all properties from a specific Provider data\nIf multiple entries are specified, the Secret keys are merged in the specified order",
+								Description: "DataFrom is used to fetch all properties from a specific Provider data If multiple entries are specified, the Secret keys are merged in the specified order",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"extract": {
 										Type:        schema.TypeList,
-										Description: "Used to extract multiple key/value pairs from one secret\nNote: Extract does not support sourceRef.Generator or sourceRef.GeneratorRef.",
+										Description: "Used to extract multiple key/value pairs from one secret Note: Extract does not support sourceRef.Generator or sourceRef.GeneratorRef.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -289,7 +289,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 									},
 									"find": {
 										Type:        schema.TypeList,
-										Description: "Used to find secrets based on tags or regular expressions\nNote: Find does not support sourceRef.Generator or sourceRef.GeneratorRef.",
+										Description: "Used to find secrets based on tags or regular expressions Note: Find does not support sourceRef.Generator or sourceRef.GeneratorRef.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -344,14 +344,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 									},
 									"rewrite": {
 										Type:        schema.TypeList,
-										Description: "Used to rewrite secret Keys after getting them from the secret Provider\nMultiple Rewrite operations can be provided. They are applied in a layered order (first to last)",
+										Description: "Used to rewrite secret Keys after getting them from the secret Provider Multiple Rewrite operations can be provided. They are applied in a layered order (first to last)",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"regexp": {
 												Type:        schema.TypeList,
-												Description: "Used to rewrite with regular expressions.\nThe resulting key will be the output of a regexp.ReplaceAll operation.",
+												Description: "Used to rewrite with regular expressions. The resulting key will be the output of a regexp.ReplaceAll operation.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -375,7 +375,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 											},
 											"transform": {
 												Type:        schema.TypeList,
-												Description: "Used to apply string transformation on the secrets.\nThe resulting key will be the output of the template applied by the operation.",
+												Description: "Used to apply string transformation on the secrets. The resulting key will be the output of the template applied by the operation.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -383,7 +383,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"template": {
 														Type:        schema.TypeString,
-														Description: "Used to define the template to apply on the secret name.\n`.value ` will specify the secret name in the template.",
+														Description: "Used to define the template to apply on the secret name. `.value ` will specify the secret name in the template.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -394,7 +394,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 									},
 									"source_ref": {
 										Type:        schema.TypeList,
-										Description: "SourceRef points to a store or generator\nwhich contains secret values ready to use.\nUse this in combination with Extract or Find pull values out of\na specific SecretStore.\nWhen sourceRef points to a generator Extract or Find is not supported.\nThe generator returns a static map of values",
+										Description: "SourceRef points to a store or generator which contains secret values ready to use. Use this in combination with Extract or Find pull values out of a specific SecretStore. When sourceRef points to a generator Extract or Find is not supported. The generator returns a static map of values",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -402,7 +402,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"generator_ref": {
 												Type:        schema.TypeList,
-												Description: "GeneratorRef points to a generator custom resource.",
+												Description: "GeneratorRef points to a generator custom resource in",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -441,7 +441,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"kind": {
 														Type:        schema.TypeString,
-														Description: "Kind of the SecretStore resource (SecretStore or ClusterSecretStore)\nDefaults to `SecretStore`",
+														Description: "Kind of the SecretStore resource (SecretStore or ClusterSecretStore) Defaults to `SecretStore`",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -461,7 +461,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 							},
 							"refresh_interval": {
 								Type:        schema.TypeString,
-								Description: "RefreshInterval is the amount of time before the values are read again from the SecretStore provider\nValid time units are \"ns\", \"us\" (or \"µs\"), \"ms\", \"s\", \"m\", \"h\"\nMay be set to zero to fetch and create it once. Defaults to 1h.",
+								Description: "RefreshInterval is the amount of time before the values are read again from the SecretStore provider Valid time units are \"ns\", \"us\" (or \"µs\"), \"ms\", \"s\", \"m\", \"h\" May be set to zero to fetch and create it once. Defaults to 1h.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"refresh_policy": {
+								Type:        schema.TypeString,
+								Description: "RefreshPolicy determines how the ExternalSecret should be refreshed:\n- CreatedOnce: Creates the Secret only if it does not exist and does not update it thereafter\n- Periodic: Synchronizes the Secret from the external source at regular intervals specified by refreshInterval.\n  No periodic updates occur if refreshInterval is 0.\n- OnChange: Only synchronizes the Secret when the ExternalSecret's metadata or specification changes",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -476,7 +483,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"kind": {
 										Type:        schema.TypeString,
-										Description: "Kind of the SecretStore resource (SecretStore or ClusterSecretStore)\nDefaults to `SecretStore`",
+										Description: "Kind of the SecretStore resource (SecretStore or ClusterSecretStore) Defaults to `SecretStore`",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -492,7 +499,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 							},
 							"target": {
 								Type:        schema.TypeList,
-								Description: "ExternalSecretTarget defines the Kubernetes Secret to be created\nThere can be only one target per ExternalSecret.",
+								Description: "ExternalSecretTarget defines the Kubernetes Secret to be created There can be only one target per ExternalSecret.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -500,14 +507,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"creation_policy": {
 										Type:        schema.TypeString,
-										Description: "CreationPolicy defines rules on how to create the resulting Secret\nDefaults to 'Owner'",
+										Description: "CreationPolicy defines rules on how to create the resulting Secret Defaults to 'Owner'",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"deletion_policy": {
 										Type:        schema.TypeString,
-										Description: "DeletionPolicy defines rules on how to delete the resulting Secret\nDefaults to 'Retain'",
+										Description: "DeletionPolicy defines rules on how to delete the resulting Secret Defaults to 'Retain'",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -521,7 +528,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 									},
 									"name": {
 										Type:        schema.TypeString,
-										Description: "Name defines the name of the Secret resource to be managed\nThis field is immutable\nDefaults to the .metadata.name of the ExternalSecret resource",
+										Description: "Name defines the name of the Secret resource to be managed This field is immutable Defaults to the .metadata.name of the ExternalSecret resource",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -543,14 +550,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 											},
 											"engine_version": {
 												Type:        schema.TypeString,
-												Description: "EngineVersion specifies the template engine version\nthat should be used to compile/execute the\ntemplate specified in .data and .templateFrom[].",
+												Description: "EngineVersion specifies the template engine version that should be used to compile/execute the template specified in .data and .templateFrom[].",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
 											},
 											"merge_policy": {
 												Type:        schema.TypeString,
-												Description: "",
+												Description: "TemplateMergePolicy defines how template values should be merged when generating a secret.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -588,7 +595,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"config_map": {
 														Type:        schema.TypeList,
-														Description: "",
+														Description: "TemplateRef defines a reference to a template source in a ConfigMap or Secret.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -596,21 +603,21 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"items": {
 																Type:        schema.TypeList,
-																Description: "",
+																Description: "A list of keys in the ConfigMap/Secret to use as templates for Secret data",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
 																Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 																	"key": {
 																		Type:        schema.TypeString,
-																		Description: "",
+																		Description: "A key in the ConfigMap/Secret",
 																		Optional:    true,
 																		Required:    false,
 																		Computed:    true,
 																	},
 																	"template_as": {
 																		Type:        schema.TypeString,
-																		Description: "",
+																		Description: "TemplateScope defines the scope of the template when processing template data.",
 																		Optional:    true,
 																		Required:    false,
 																		Computed:    true,
@@ -619,7 +626,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 															},
 															"name": {
 																Type:        schema.TypeString,
-																Description: "",
+																Description: "The name of the ConfigMap/Secret resource",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -635,7 +642,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 													},
 													"secret": {
 														Type:        schema.TypeList,
-														Description: "",
+														Description: "TemplateRef defines a reference to a template source in a ConfigMap or Secret.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -643,21 +650,21 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"items": {
 																Type:        schema.TypeList,
-																Description: "",
+																Description: "A list of keys in the ConfigMap/Secret to use as templates for Secret data",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
 																Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 																	"key": {
 																		Type:        schema.TypeString,
-																		Description: "",
+																		Description: "A key in the ConfigMap/Secret",
 																		Optional:    true,
 																		Required:    false,
 																		Computed:    true,
 																	},
 																	"template_as": {
 																		Type:        schema.TypeString,
-																		Description: "",
+																		Description: "TemplateScope defines the scope of the template when processing template data.",
 																		Optional:    true,
 																		Required:    false,
 																		Computed:    true,
@@ -666,7 +673,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 															},
 															"name": {
 																Type:        schema.TypeString,
-																Description: "",
+																Description: "The name of the ConfigMap/Secret resource",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -675,7 +682,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 													},
 													"target": {
 														Type:        schema.TypeString,
-														Description: "",
+														Description: "TemplateTarget defines the target field where the template result will be stored.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -697,7 +704,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 					},
 					"namespace_selector": {
 						Type:        schema.TypeList,
-						Description: "The labels to select by to find the Namespaces to create the ExternalSecrets in.\nDeprecated: Use NamespaceSelectors instead.",
+						Description: "The labels to select by to find the Namespaces to create the ExternalSecrets in.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -719,14 +726,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 									},
 									"operator": {
 										Type:        schema.TypeString,
-										Description: "operator represents a key's relationship to a set of values.\nValid operators are In, NotIn, Exists and DoesNotExist.",
+										Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"values": {
 										Type:        schema.TypeList,
-										Description: "values is an array of string values. If the operator is In or NotIn,\nthe values array must be non-empty. If the operator is Exists or DoesNotExist,\nthe values array must be empty. This array is replaced during a strategic\nmerge patch.",
+										Description: "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -736,7 +743,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 							},
 							"match_labels": {
 								Type:        schema.TypeMap,
-								Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels\nmap is equivalent to an element of matchExpressions, whose key field is \"key\", the\noperator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+								Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -792,7 +799,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 					},
 					"namespaces": {
 						Type:        schema.TypeList,
-						Description: "Choose namespaces by name. This field is ORed with anything that NamespaceSelectors ends up choosing.",
+						Description: "Choose namespaces by name. This field is ORed with anything that NamespaceSelector ends up choosing.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -800,7 +807,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 					},
 					"refresh_time": {
 						Type:        schema.TypeString,
-						Description: "The time in which the controller should reconcile its objects and recheck namespaces for labels.",
+						Description: "The time in which the controller should reconcile it's objects and recheck namespaces for labels.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -838,7 +845,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1() *s
 							},
 							"type": {
 								Type:        schema.TypeString,
-								Description: "",
+								Description: "ClusterExternalSecretConditionType indicates the condition of the ClusterExternalSecret.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,

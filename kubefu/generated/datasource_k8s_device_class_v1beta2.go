@@ -294,6 +294,13 @@ func dataSourceK8sResourceK8sIoDeviceClassV1Beta2() *schema.Resource {
 							},
 						}},
 					},
+					"extended_resource_name": {
+						Type:        schema.TypeString,
+						Description: "ExtendedResourceName is the extended resource name for the devices of this class. The devices of this class can be used to satisfy a pod's extended resource requests. It has the same format as the name of a pod's extended resource. It should be unique among all the device classes in a cluster. If two device classes have the same name, then the class created later is picked to satisfy a pod's extended resource requests. If two classes are created at the same time, then the name of the class lexicographically sorted first is picked.\n\nThis is an alpha field.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"selectors": {
 						Type:        schema.TypeList,
 						Description: "Each selector must be satisfied by a device which is claimed via this class.",

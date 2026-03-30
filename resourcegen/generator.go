@@ -11,8 +11,8 @@ import (
 
 type dataSourceEntry struct {
 	Key                  string
-	FuncName             string
 	Provider             string
+	FuncName             string
 	HasSupportedVersions bool
 }
 
@@ -33,7 +33,7 @@ func GenerateFromSchemas(schemaRoot, outDir, pkgName string) error {
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return fmt.Errorf("create output dir %s: %w", outDir, err)
 	}
-	var entries []dataSourceEntry
+	entriesByKey := make(map[string]*dataSourceEntry)
 	for _, provider := range providerNames {
 		defs := providers[provider]
 		if len(defs) == 0 {
@@ -51,14 +51,26 @@ func GenerateFromSchemas(schemaRoot, outDir, pkgName string) error {
 			if err := os.WriteFile(path, ensureTrailingNewline(fileData.Content), 0o644); err != nil {
 				return fmt.Errorf("write file %s: %w", path, err)
 			}
-			entries = append(entries, dataSourceEntry{
-				Key:                  dataSourceKey(providerName, def.Group, def.Kind, def.Version),
-				FuncName:             def.DataSourceFuncName(providerName),
-				Provider:             providerName,
-				HasSupportedVersions: len(def.ProviderVersions) > 0,
-			})
+			key := dataSourceKey(providerName, def.Group, def.Kind, def.Version)
+			entry, ok := entriesByKey[key]
+			if !ok {
+				entry = &dataSourceEntry{
+					Key:      key,
+					Provider: providerName,
+				}
+				entriesByKey[key] = entry
+			}
+			entry.FuncName = def.DataSourceFuncName(providerName)
+			entry.HasSupportedVersions = len(def.ProviderVersions) > 0
 		}
 	}
+	var entries []dataSourceEntry
+	for _, entry := range entriesByKey {
+		entries = append(entries, *entry)
+	}
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Key < entries[j].Key
+	})
 	if len(entries) == 0 {
 		return fmt.Errorf("no definitions found under %s", schemaRoot)
 	}
@@ -98,9 +110,6 @@ func dataSourceFinalFileName(providerName string, def Definition, baseCounts map
 }
 
 func writeDataSourcesFile(dir, pkgName string, entries []dataSourceEntry) error {
-	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].Key < entries[j].Key
-	})
 	data := providerTemplateData{
 		Package: pkgName,
 		Entries: entries,
@@ -144,21 +153,28 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 	{{- range .Entries }}
 	{
 		ds := {{ .FuncName }}()
-		configured := versions.versionFor("{{ .Provider }}")
+		warnings := make([]string, 0, 2)
 		{{- if .HasSupportedVersions }}
+		configured := versionpkg.NormalizeList(versions.versionFor("{{ .Provider }}"))
 		if len(configured) > 0 {
 			incompatible := versionpkg.FilterIncompatible(configured, {{ .FuncName }}CompatibleVersions)
 			if len(incompatible) > 0 {
-			ds.DeprecationMessage = fmt.Sprintf(
-				"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
-				"{{ .Key }}",
-				"{{ .Provider }}",
-				strings.Join({{ .FuncName }}CompatibleVersions, ", "),
-				strings.Join(incompatible, ", "),
-			)
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"{{ .Key }}",
+					"{{ .Provider }}",
+					strings.Join({{ .FuncName }}CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
 			}
 		}
+		{{- else }}
+		_ = fmt.Sprintf
+		_ = versionpkg.NormalizeList
 		{{- end }}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
 		result["{{ .Key }}"] = ds
 	}
 	{{- end }}

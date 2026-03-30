@@ -56,6 +56,13 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Beta2() *schema.Resource {
 				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"digest_reflection_policy": {
+						Type:        schema.TypeString,
+						Description: "DigestReflectionPolicy governs the setting of the `.status.latestRef.digest` field.\n\nNever: The digest field will always be set to the empty string.\n\nIfNotPresent: The digest field will be set to the digest of the elected\nlatest image if the field is empty and the image did not change.\n\nAlways: The digest field will always be set to the digest of the elected\nlatest image.\n\nDefault: Never.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"filter_tags": {
 						Type:        schema.TypeList,
 						Description: "FilterTags enables filtering for only a subset of tags based on a set of rules. If no rules are provided, all the tags from the repository will be ordered and compared.",
@@ -103,6 +110,13 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Beta2() *schema.Resource {
 								Computed:    true,
 							},
 						}},
+					},
+					"interval": {
+						Type:        schema.TypeString,
+						Description: "Interval is the length of time to wait between\nrefreshing the digest of the latest tag when the\nreflection policy is set to \"Always\".\n\nDefaults to 10m.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"policy": {
 						Type:        schema.TypeList,
@@ -165,6 +179,13 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Beta2() *schema.Resource {
 							},
 						}},
 					},
+					"suspend": {
+						Type:        schema.TypeBool,
+						Description: "This flag tells the controller to suspend subsequent policy reconciliations.\nIt does not apply to already started reconciliations. Defaults to false.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 				}},
 			},
 			"status": {
@@ -226,12 +247,50 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Beta2() *schema.Resource {
 							},
 						}},
 					},
+					"last_handled_reconcile_at": {
+						Type:        schema.TypeString,
+						Description: "LastHandledReconcileAt holds the value of the most recent\nreconcile request value, so a change of the annotation value\ncan be detected.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"latest_image": {
 						Type:        schema.TypeString,
 						Description: "LatestImage gives the first in the list of images scanned by the image repository, when filtered and ordered according to the policy.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"latest_ref": {
+						Type:        schema.TypeList,
+						Description: "LatestRef gives the first in the list of images scanned by\nthe image repository, when filtered and ordered according\nto the policy.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"digest": {
+								Type:        schema.TypeString,
+								Description: "Digest is the image's digest.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name is the bare image's name.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"tag": {
+								Type:        schema.TypeString,
+								Description: "Tag is the image's tag.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"observed_generation": {
 						Type:        schema.TypeInt,
@@ -247,6 +306,37 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Beta2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"observed_previous_ref": {
+						Type:        schema.TypeList,
+						Description: "ObservedPreviousRef is the observed previous LatestRef. It is used\nto keep track of the previous and current images.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"digest": {
+								Type:        schema.TypeString,
+								Description: "Digest is the image's digest.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name is the bare image's name.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"tag": {
+								Type:        schema.TypeString,
+								Description: "Tag is the image's tag.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 				}},
 			},
 		},
@@ -259,7 +349,7 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Beta2Read(_ context.Context,
 	if err := manifestpkg.SetDataSourceDefaults(d, "image.toolkit.fluxcd.io/v1beta2", "ImagePolicy", "image.toolkit.fluxcd.io/v1beta2/ImagePolicy"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.filter_tags", "spec.image_repository_ref", "spec.policy", "spec.policy.alphabetical", "spec.policy.numerical", "spec.policy.semver", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.filter_tags", "spec.image_repository_ref", "spec.policy", "spec.policy.alphabetical", "spec.policy.numerical", "spec.policy.semver", "status", "status.latest_ref", "status.observed_previous_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

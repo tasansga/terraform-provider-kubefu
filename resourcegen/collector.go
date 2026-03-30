@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"golang.org/x/mod/semver"
 	"gopkg.in/yaml.v3"
 
 	"github.com/tasansga/terraform-provider-kubefu/resourcegen/version"
@@ -68,6 +70,7 @@ func CollectDefinitions(root string) (map[string][]Definition, error) {
 
 func collectProviderDefinitions(dir, provider string) ([]Definition, error) {
 	collector := newDefinitionCollector()
+	var files []schemaInputFile
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -75,29 +78,59 @@ func collectProviderDefinitions(dir, provider string) ([]Definition, error) {
 		if d.IsDir() {
 			return nil
 		}
-		version := version.FromFilename(d.Name())
-		switch strings.ToLower(filepath.Ext(d.Name())) {
-		case ".json":
-			if err := processOpenAPISpec(path, provider, version, collector); err != nil {
-				return fmt.Errorf("process OpenAPI spec %s: %w", path, err)
-			}
-		case ".yaml", ".yml":
-			if err := processCRDFile(path, provider, version, collector); err != nil {
-				return fmt.Errorf("process CRD file %s: %w", path, err)
-			}
-		default:
-			// ignore other files
-		}
+		files = append(files, schemaInputFile{
+			path:            path,
+			ext:             strings.ToLower(filepath.Ext(d.Name())),
+			providerVersion: version.FromFilename(d.Name()),
+		})
 		return nil
 	})
 	if err != nil {
 		return nil, err
+	}
+	sortSchemaInputFiles(files)
+	for _, file := range files {
+		switch file.ext {
+		case ".json":
+			if err := processOpenAPISpec(file.path, provider, file.providerVersion, collector); err != nil {
+				return nil, fmt.Errorf("process OpenAPI spec %s: %w", file.path, err)
+			}
+		case ".yaml", ".yml":
+			if err := processCRDFile(file.path, provider, file.providerVersion, collector); err != nil {
+				return nil, fmt.Errorf("process CRD file %s: %w", file.path, err)
+			}
+		default:
+			// ignore other files
+		}
 	}
 	defs := collector.list()
 	sort.Slice(defs, func(i, j int) bool {
 		return definitionID(defs[i]) < definitionID(defs[j])
 	})
 	return defs, nil
+}
+
+type schemaInputFile struct {
+	path            string
+	ext             string
+	providerVersion string
+}
+
+func sortSchemaInputFiles(files []schemaInputFile) {
+	sort.Slice(files, func(i, j int) bool {
+		left := version.Canonical(files[i].providerVersion)
+		right := version.Canonical(files[j].providerVersion)
+		if left == "" && right != "" {
+			return true
+		}
+		if right == "" && left != "" {
+			return false
+		}
+		if left != right {
+			return semver.Compare(left, right) < 0
+		}
+		return files[i].path < files[j].path
+	})
 }
 
 func processOpenAPISpec(path, provider, providerVersion string, collector *definitionCollector) error {
@@ -199,12 +232,12 @@ type crdVersionSchema struct {
 }
 
 type definitionCollector struct {
-	definitions map[string]Definition
+	merged map[string]Definition
 }
 
 func newDefinitionCollector() *definitionCollector {
 	return &definitionCollector{
-		definitions: make(map[string]Definition),
+		merged: make(map[string]Definition),
 	}
 }
 
@@ -213,9 +246,9 @@ func (c *definitionCollector) add(def Definition, provider, providerVersion stri
 		return
 	}
 	key := definitionID(def)
-	existing, ok := c.definitions[key]
+	existing, ok := c.merged[key]
 	if ok {
-		def = existing
+		def = mergeDefinitions(existing, def)
 	}
 	if provider != "" {
 		def.Provider = provider
@@ -223,12 +256,249 @@ func (c *definitionCollector) add(def Definition, provider, providerVersion stri
 	if canonical := version.Canonical(providerVersion); canonical != "" {
 		def.ProviderVersions = append(def.ProviderVersions, canonical)
 	}
-	c.definitions[key] = def
+	c.merged[key] = def
+}
+
+func mergeDefinitions(existing, incoming Definition) Definition {
+	merged := existing
+	if merged.Kind == "" {
+		merged.Kind = incoming.Kind
+	}
+	if merged.Group == "" {
+		merged.Group = incoming.Group
+	}
+	if merged.Version == "" {
+		merged.Version = incoming.Version
+	}
+	if merged.Description == "" {
+		merged.Description = incoming.Description
+	}
+	if merged.DefinitionName == "" {
+		merged.DefinitionName = incoming.DefinitionName
+	}
+	merged.Schema = mergeSchemaMap(merged.Schema, incoming.Schema)
+	return merged
+}
+
+func mergeSchemaMap(existing, incoming map[string]*schema.Schema) map[string]*schema.Schema {
+	if existing == nil && incoming == nil {
+		return nil
+	}
+	if existing == nil {
+		out := make(map[string]*schema.Schema, len(incoming))
+		for k, v := range incoming {
+			out[k] = copySchema(v)
+		}
+		return out
+	}
+	out := make(map[string]*schema.Schema, len(existing))
+	for k, v := range existing {
+		out[k] = copySchema(v)
+	}
+	for k, incomingField := range incoming {
+		existingField, ok := out[k]
+		if !ok {
+			out[k] = relaxSchemaForCompatibility(copySchema(incomingField))
+			continue
+		}
+		out[k] = mergeSchemaField(existingField, incomingField)
+	}
+	// If a field disappears in a newer schema snapshot, keep it in merged output
+	// but relax it so merged/default validation remains compatible with versions
+	// where that field is absent.
+	for k, existingField := range out {
+		if _, ok := incoming[k]; ok {
+			continue
+		}
+		out[k] = relaxSchemaForCompatibility(existingField)
+	}
+	return out
+}
+
+func mergeSchemaField(existing, incoming *schema.Schema) *schema.Schema {
+	if existing == nil {
+		return copySchema(incoming)
+	}
+	if incoming == nil {
+		return copySchema(existing)
+	}
+	if existing.Type != incoming.Type {
+		merged := chooseConflictSchema(existing, incoming)
+		merged.Description = firstNonEmpty(existing.Description, incoming.Description)
+		merged.Required = false
+		merged.Optional = true
+		merged.Computed = true
+		merged.MinItems = 0
+		merged.MaxItems = 0
+		return merged
+	}
+	merged := copySchema(existing)
+	merged.Description = firstNonEmpty(existing.Description, incoming.Description)
+	merged.Required = existing.Required && incoming.Required
+	merged.Optional = !merged.Required && (existing.Optional || incoming.Optional)
+	merged.Computed = existing.Computed || incoming.Computed
+	if !merged.Required && !merged.Optional && !merged.Computed {
+		merged.Computed = true
+	}
+	if existing.MaxItems == 0 || incoming.MaxItems == 0 {
+		merged.MaxItems = 0
+	} else if existing.MaxItems > incoming.MaxItems {
+		merged.MaxItems = existing.MaxItems
+	} else {
+		merged.MaxItems = incoming.MaxItems
+	}
+	if existing.MinItems == 0 || incoming.MinItems == 0 {
+		merged.MinItems = 0
+	} else if existing.MinItems < incoming.MinItems {
+		merged.MinItems = existing.MinItems
+	} else {
+		merged.MinItems = incoming.MinItems
+	}
+	if existing.Elem == nil && incoming.Elem != nil {
+		switch incomingElem := incoming.Elem.(type) {
+		case *schema.Resource:
+			if incomingElem != nil {
+				merged.Elem = &schema.Resource{Schema: copySchemaMap(incomingElem.Schema)}
+			}
+		case *schema.Schema:
+			merged.Elem = copySchema(incomingElem)
+		default:
+			merged.Elem = incoming.Elem
+		}
+		return merged
+	}
+	switch existingElem := existing.Elem.(type) {
+	case *schema.Resource:
+		incomingElem, ok := incoming.Elem.(*schema.Resource)
+		if ok && existingElem != nil && incomingElem != nil {
+			merged.Elem = &schema.Resource{
+				Schema: mergeSchemaMap(existingElem.Schema, incomingElem.Schema),
+			}
+		}
+		incomingElemSchema, ok := incoming.Elem.(*schema.Schema)
+		if ok && existingElem != nil && incomingElemSchema != nil {
+			if incomingElemSchema.Type != schema.TypeMap {
+				chosen := copySchema(incomingElemSchema)
+				chosen.Optional = true
+				chosen.Required = false
+				chosen.Computed = true
+				merged.Elem = chosen
+			} else {
+				merged.Elem = &schema.Resource{Schema: copySchemaMap(existingElem.Schema)}
+			}
+		}
+	case *schema.Schema:
+		incomingElem, ok := incoming.Elem.(*schema.Schema)
+		if ok && existingElem != nil && incomingElem != nil && existingElem.Type != incomingElem.Type {
+			chosen := chooseConflictElem(existingElem, incomingElem)
+			chosen.Optional = true
+			chosen.Required = false
+			chosen.Computed = true
+			merged.Elem = chosen
+		}
+		incomingElemResource, ok := incoming.Elem.(*schema.Resource)
+		if ok && existingElem != nil && incomingElemResource != nil {
+			if existingElem.Type == schema.TypeMap {
+				merged.Elem = &schema.Resource{Schema: copySchemaMap(incomingElemResource.Schema)}
+			} else {
+				chosen := copySchema(existingElem)
+				chosen.Optional = true
+				chosen.Required = false
+				chosen.Computed = true
+				merged.Elem = chosen
+			}
+		}
+	}
+	return merged
+}
+
+func chooseConflictSchema(existing, incoming *schema.Schema) *schema.Schema {
+	if existing != nil && incoming != nil {
+		if existing.Type == schema.TypeMap && incoming.Type != schema.TypeMap {
+			return copySchema(incoming)
+		}
+		if incoming.Type == schema.TypeMap && existing.Type != schema.TypeMap {
+			return copySchema(existing)
+		}
+		if conflictTypeRank(existing.Type) >= conflictTypeRank(incoming.Type) {
+			return copySchema(existing)
+		}
+		return copySchema(incoming)
+	}
+	return copySchema(existing)
+}
+
+func chooseConflictElem(existing, incoming *schema.Schema) *schema.Schema {
+	if existing != nil && incoming != nil {
+		if existing.Type == schema.TypeMap && incoming.Type != schema.TypeMap {
+			return copySchema(incoming)
+		}
+		if incoming.Type == schema.TypeMap && existing.Type != schema.TypeMap {
+			return copySchema(existing)
+		}
+		if conflictTypeRank(existing.Type) >= conflictTypeRank(incoming.Type) {
+			return copySchema(existing)
+		}
+		return copySchema(incoming)
+	}
+	return copySchema(existing)
+}
+
+func conflictTypeRank(valueType schema.ValueType) int {
+	switch valueType {
+	case schema.TypeSet:
+		return 60
+	case schema.TypeList:
+		return 50
+	case schema.TypeString:
+		return 40
+	case schema.TypeFloat:
+		return 30
+	case schema.TypeInt:
+		return 20
+	case schema.TypeBool:
+		return 10
+	case schema.TypeMap:
+		return 0
+	default:
+		return -1
+	}
+}
+
+func relaxSchemaForCompatibility(sch *schema.Schema) *schema.Schema {
+	if sch == nil {
+		return nil
+	}
+	out := copySchema(sch)
+	out.Required = false
+	out.Optional = true
+	out.Computed = true
+	switch elem := out.Elem.(type) {
+	case *schema.Resource:
+		if elem == nil {
+			return out
+		}
+		relaxed := make(map[string]*schema.Schema, len(elem.Schema))
+		for k, v := range elem.Schema {
+			relaxed[k] = relaxSchemaForCompatibility(v)
+		}
+		out.Elem = &schema.Resource{Schema: relaxed}
+	}
+	return out
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, value := range values {
+		if strings.TrimSpace(value) != "" {
+			return value
+		}
+	}
+	return ""
 }
 
 func (c *definitionCollector) list() []Definition {
 	var defs []Definition
-	for _, def := range c.definitions {
+	for _, def := range c.merged {
 		def.ProviderVersions = version.NormalizeList(def.ProviderVersions)
 		defs = append(defs, def)
 	}

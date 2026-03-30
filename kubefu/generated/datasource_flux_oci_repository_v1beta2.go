@@ -80,6 +80,13 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1Beta2() *schema.Resource 
 						Required:    false,
 						Computed:    true,
 					},
+					"insecure": {
+						Type:        schema.TypeBool,
+						Description: "Insecure allows connecting to a non-TLS HTTP container registry.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"interval": {
 						Type:        schema.TypeString,
 						Description: "The interval at which to check for image updates.",
@@ -87,12 +94,53 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1Beta2() *schema.Resource 
 						Required:    false,
 						Computed:    true,
 					},
+					"layer_selector": {
+						Type:        schema.TypeList,
+						Description: "LayerSelector specifies which layer should be extracted from the OCI artifact. When not specified, the first layer found in the artifact is selected.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"media_type": {
+								Type:        schema.TypeString,
+								Description: "MediaType specifies the OCI media type of the layer which should be extracted from the OCI Artifact. The first layer matching this type is selected.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"operation": {
+								Type:        schema.TypeString,
+								Description: "Operation specifies how the selected layer should be processed. By default, the layer compressed content is extracted to storage. When the operation is set to 'copy', the layer compressed content is persisted to storage as it is.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"provider_": {
 						Type:        schema.TypeString,
 						Description: "The provider used for authentication, can be 'aws', 'azure', 'gcp' or 'generic'. When not specified, defaults to 'generic'.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"proxy_secret_ref": {
+						Type:        schema.TypeList,
+						Description: "ProxySecretRef specifies the Secret containing the proxy configuration\nto use while communicating with the container registry.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"ref": {
 						Type:        schema.TypeList,
@@ -112,6 +160,13 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1Beta2() *schema.Resource 
 							"semver": {
 								Type:        schema.TypeString,
 								Description: "SemVer is the range of tags to pull selecting the latest within the range, takes precedence over Tag.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"semver_filter": {
+								Type:        schema.TypeString,
+								Description: "SemverFilter is a regex pattern to filter the tags within the SemVer range.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -170,6 +225,63 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1Beta2() *schema.Resource 
 						Required:    false,
 						Computed:    true,
 					},
+					"verify": {
+						Type:        schema.TypeList,
+						Description: "Verify contains the secret name containing the trusted public keys used to verify the signature and specifies which provider to use to check whether OCI image is authentic.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"match_oidc_identity": {
+								Type:        schema.TypeList,
+								Description: "MatchOIDCIdentity specifies the identity matching criteria to use while verifying an OCI artifact which was signed using Cosign keyless signing. The artifact's identity is deemed to be verified if any of the specified matchers match against the identity.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"issuer": {
+										Type:        schema.TypeString,
+										Description: "Issuer specifies the regex pattern to match against to verify the OIDC issuer in the Fulcio certificate. The pattern must be a valid Go regular expression.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"subject": {
+										Type:        schema.TypeString,
+										Description: "Subject specifies the regex pattern to match against to verify the identity subject in the Fulcio certificate. The pattern must be a valid Go regular expression.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"provider_": {
+								Type:        schema.TypeString,
+								Description: "Provider specifies the technology used to sign the OCI Artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"secret_ref": {
+								Type:        schema.TypeList,
+								Description: "SecretRef specifies the Kubernetes Secret containing the trusted public keys.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
 				}},
 			},
 			"status": {
@@ -191,6 +303,13 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1Beta2() *schema.Resource 
 							"checksum": {
 								Type:        schema.TypeString,
 								Description: "Checksum is the SHA256 checksum of the Artifact file.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"digest": {
+								Type:        schema.TypeString,
+								Description: "Digest is the digest of the file in the form of '<algorithm>:<checksum>'.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -290,6 +409,13 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1Beta2() *schema.Resource 
 							},
 						}},
 					},
+					"content_config_checksum": {
+						Type:        schema.TypeString,
+						Description: "ContentConfigChecksum is a checksum of all the configurations related to the content of the source artifact: - .spec.ignore - .spec.layerSelector observed in .status.observedGeneration version of the object. This can be used to determine if the content configuration has changed and the artifact needs to be rebuilt. It has the format of `<algo>:<checksum>`, for example: `sha256:<checksum>`.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"last_handled_reconcile_at": {
 						Type:        schema.TypeString,
 						Description: "LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.",
@@ -303,6 +429,37 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1Beta2() *schema.Resource 
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"observed_ignore": {
+						Type:        schema.TypeString,
+						Description: "ObservedIgnore is the observed exclusion patterns used for constructing the source artifact.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"observed_layer_selector": {
+						Type:        schema.TypeList,
+						Description: "ObservedLayerSelector is the observed layer selector used for constructing the source artifact.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"media_type": {
+								Type:        schema.TypeString,
+								Description: "MediaType specifies the OCI media type of the layer which should be extracted from the OCI Artifact. The first layer matching this type is selected.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"operation": {
+								Type:        schema.TypeString,
+								Description: "Operation specifies how the selected layer should be processed. By default, the layer compressed content is extracted to storage. When the operation is set to 'copy', the layer compressed content is persisted to storage as it is.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"url": {
 						Type:        schema.TypeString,
@@ -323,7 +480,7 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1Beta2Read(_ context.Conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1beta2", "OCIRepository", "source.toolkit.fluxcd.io/v1beta2/OCIRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.cert_secret_ref", "spec.ref", "spec.secret_ref", "status", "status.artifact"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.cert_secret_ref", "spec.layer_selector", "spec.proxy_secret_ref", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact", "status.observed_layer_selector"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

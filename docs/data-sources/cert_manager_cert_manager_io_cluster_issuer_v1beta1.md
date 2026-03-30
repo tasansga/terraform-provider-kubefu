@@ -48,8 +48,11 @@ Optional:
 
 Optional:
 
+- `disable_account_key_generation` (Boolean) Enables or disables generating a new ACME account key. If true, the Issuer resource will *not* request a new account but will expect the account key to be supplied via an existing secret. If false, the cert-manager system will generate a new ACME account key for the Issuer. Defaults to false.
 - `email` (String) Email is the email address to be associated with the ACME account. This field is optional, but it is strongly recommended to be set. It will be used to contact you in case of issues with your account or certificates, including expiry notification emails. This field may be updated after the account is initially registered.
+- `enable_duration_feature` (Boolean) Enables requesting a Not After date on certificates that matches the duration of the certificate. This is not supported by all ACME servers like Let's Encrypt. If set to true when the ACME server does not support it it will create an error on the Order. Defaults to false.
 - `external_account_binding` (Block List, Max: 1) ExternalAccountBinding is a reference to a CA external account of the ACME server. If set, upon registration cert-manager will attempt to associate the given external account credentials with the registered ACME account. (see [below for nested schema](#nestedblock--spec--acme--external_account_binding))
+- `preferred_chain` (String) PreferredChain is the chain to use if the ACME server outputs multiple. PreferredChain is no guarantee that this one gets delivered by the ACME endpoint. For example, for Let's Encrypt's DST crosssign you would use: "DST Root CA X3" or "ISRG Root X1" for the newer Let's Encrypt root CA. This value picks the first certificate bundle in the ACME alternative chains that has a certificate with this value as its issuer's CN
 - `private_key_secret_ref` (Block List, Max: 1) PrivateKey is the name of a Kubernetes Secret resource that will be used to store the automatically generated ACME account private key. Optionally, a `key` may be specified to select a specific entry within the named Secret resource. If `key` is not specified, a default of `tls.key` will be used. (see [below for nested schema](#nestedblock--spec--acme--private_key_secret_ref))
 - `server` (String) Server is the URL used to access the ACME server's 'directory' endpoint. For example, for Let's Encrypt's staging endpoint, you would use: "https://acme-staging-v02.api.letsencrypt.org/directory". Only ACME v2 endpoints (i.e. RFC 8555) are supported.
 - `skip_tls_verify` (Boolean) Enables or disables validation of the ACME server TLS certificate. If true, requests to the ACME server will not have their TLS certificate validated (i.e. insecure connections will be allowed). Only enable this option in development environments. The cert-manager system installed roots will be used to verify connections to the ACME server if this is false. Defaults to false.
@@ -171,10 +174,11 @@ Optional:
 
 - `client_id` (String) if both this and ClientSecret are left unset MSI will be used
 - `client_secret_secret_ref` (Block List, Max: 1) if both this and ClientID are left unset MSI will be used (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--azure_dns--client_secret_secret_ref))
-- `environment` (String)
-- `hosted_zone_name` (String)
-- `resource_group_name` (String)
-- `subscription_id` (String)
+- `environment` (String) name of the Azure environment (default AzurePublicCloud)
+- `hosted_zone_name` (String) name of the DNS zone that should be used
+- `managed_identity` (Block List, Max: 1) managed identity configuration, can not be used at the same time as clientID, clientSecretSecretRef or tenantID (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01--azure_dns--managed_identity))
+- `resource_group_name` (String) resource group the DNS zone is located in
+- `subscription_id` (String) ID of the Azure subscription
 - `tenant_id` (String) when specifying ClientID and ClientSecret then this field is also needed
 
 <a id="nestedblock--spec--acme--solvers--dns01--azure_dns--client_secret_secret_ref"></a>
@@ -184,6 +188,15 @@ Optional:
 
 - `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
+
+<a id="nestedblock--spec--acme--solvers--dns01--azure_dns--managed_identity"></a>
+### Nested Schema for `spec.acme.solvers.dns01.azure_dns.managed_identity`
+
+Optional:
+
+- `client_id` (String) client ID of the managed identity, can not be used at the same time as resourceID
+- `resource_id` (String) resource ID of the managed identity, can not be used at the same time as clientID
 
 
 
@@ -308,7 +321,17 @@ Optional:
 
 Optional:
 
+- `gateway_http_route` (Block List, Max: 1) The Gateway API is a sig-network community API that models service networking in Kubernetes (https://gateway-api.sigs.k8s.io/). The Gateway solver will create HTTPRoutes with the specified labels in the same namespace as the challenge. This solver is experimental, and fields / behaviour may change in the future. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--gateway_http_route))
 - `ingress` (Block List, Max: 1) The ingress based HTTP01 challenge solver will solve challenges by creating or modifying Ingress resources in order to route requests for '/.well-known/acme-challenge/XYZ' to 'challenge solver' pods that are provisioned by cert-manager for each Challenge to be completed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress))
+
+<a id="nestedblock--spec--acme--solvers--http01--gateway_http_route"></a>
+### Nested Schema for `spec.acme.solvers.http01.gateway_http_route`
+
+Optional:
+
+- `labels` (Map of String) The labels that cert-manager will use when creating the temporary HTTPRoute needed for solving the HTTP-01 challenge. These labels must match the label selector of at least one Gateway.
+- `service_type` (String) Optional service type for Kubernetes solver service. Supported values are NodePort or ClusterIP. If unset, defaults to NodePort.
+
 
 <a id="nestedblock--spec--acme--solvers--http01--ingress"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress`
@@ -362,6 +385,8 @@ Optional:
 
 - `affinity` (Block List, Max: 1) If specified, the pod's scheduling constraints (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity))
 - `node_selector` (Map of String) NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+- `priority_class_name` (String) If specified, the pod's priorityClassName.
+- `service_account_name` (String) If specified, the pod's service account
 - `tolerations` (Block List) If specified, the pod's tolerations. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--tolerations))
 
 <a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity"></a>
@@ -479,6 +504,7 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
 - `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
@@ -501,6 +527,25 @@ Optional:
 
 
 
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
 
 
 <a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution"></a>
@@ -509,6 +554,7 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
 - `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
@@ -522,6 +568,25 @@ Optional:
 
 <a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions`
 
 Optional:
 
@@ -555,6 +620,7 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
 - `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
@@ -577,6 +643,25 @@ Optional:
 
 
 
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
 
 
 <a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution"></a>
@@ -585,6 +670,7 @@ Optional:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
 - `namespaces` (List of String) namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
 - `topology_key` (String) This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
 
@@ -598,6 +684,25 @@ Optional:
 
 <a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector--match_expressions"></a>
 ### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--acme--solvers--http01--ingress--pod_template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector--match_expressions"></a>
+### Nested Schema for `spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions`
 
 Optional:
 
@@ -644,6 +749,7 @@ Optional:
 Optional:
 
 - `crl_distribution_points` (List of String) The CRL distribution points is an X.509 v3 certificate extension which identifies the location of the CRL from which the revocation of this certificate can be checked. If not set, certificates will be issued without distribution points set.
+- `ocsp_servers` (List of String) The OCSP server list is an X.509 v3 extension that defines a list of URLs of OCSP responders. The OCSP responders can be queried for the revocation status of an issued certificate. If not set, the certificate wil be issued with no OCSP servers set. For example, an OCSP server URL could be "http://ocsp.int-x3.letsencrypt.org".
 - `secret_name` (String) SecretName is the name of the secret used to sign Certificates issued by this Issuer.
 
 
@@ -662,6 +768,7 @@ Optional:
 
 - `auth` (Block List, Max: 1) Auth configures how cert-manager authenticates with the Vault server. (see [below for nested schema](#nestedblock--spec--vault--auth))
 - `ca_bundle` (String) PEM encoded CA bundle used to validate Vault server certificate. Only used if the Server URL is using HTTPS protocol. This parameter is ignored for plain HTTP protocol connection. If not set the system root certificates are used to validate the TLS connection.
+- `namespace` (String) Name of the vault namespace. Namespaces is a set of features within Vault Enterprise that allows Vault environments to support Secure Multi-tenancy. e.g: "ns1" More about namespaces can be found here https://www.vaultproject.io/docs/enterprise/namespaces
 - `path` (String) Path is the mount path of the Vault PKI backend's `sign` endpoint, e.g: "my_pki_mount/sign/my-role-name".
 - `server` (String) Server is the connection address for the Vault server, e.g: "https://vault.example.com:8200".
 
@@ -794,6 +901,7 @@ Optional:
 
 - `last_transition_time` (String) LastTransitionTime is the timestamp corresponding to the last status change of this condition.
 - `message` (String) Message is a human readable description of the details of the last transition, complementing reason.
+- `observed_generation` (Number) If set, this represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.condition[x].observedGeneration is 9, the condition is out of date with respect to the current state of the Issuer.
 - `reason` (String) Reason is a brief machine readable explanation for the condition's last transition.
 - `status` (String) Status of the condition, one of ('True', 'False', 'Unknown').
 - `type` (String) Type of the condition, known values are ('Ready').

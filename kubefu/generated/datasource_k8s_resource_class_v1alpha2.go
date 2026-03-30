@@ -297,6 +297,13 @@ func dataSourceK8sResourceK8sIoResourceClassV1Alpha2() *schema.Resource {
 					},
 				}},
 			},
+			"structured_parameters": {
+				Type:        schema.TypeBool,
+				Description: "If and only if allocation of claims using this class is handled via structured parameters, then StructuredParameters must be set to true.",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
 			"suitable_nodes": {
 				Type:        schema.TypeList,
 				Description: "Only nodes matching the selector will be considered by the scheduler when trying to find a Node that fits a Pod when that Pod uses a ResourceClaim that has not been allocated yet.\n\nSetting this field is optional. If null, all nodes are candidates.",
@@ -388,7 +395,7 @@ func dataSourceK8sResourceK8sIoResourceClassV1Alpha2Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha2", "ResourceClass", "resource.k8s.io/v1alpha2/ResourceClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"driver_name", "metadata", "parameters_ref", "suitable_nodes"}, []string{"metadata", "parameters_ref", "suitable_nodes"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"driver_name", "metadata", "parameters_ref", "structured_parameters", "suitable_nodes"}, []string{"metadata", "parameters_ref", "suitable_nodes"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

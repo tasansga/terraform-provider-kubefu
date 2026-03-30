@@ -163,6 +163,13 @@ func dataSourceFluxSourceToolkitFluxcdIoBucketV1() *schema.Resource {
 							},
 						}},
 					},
+					"service_account_name": {
+						Type:        schema.TypeString,
+						Description: "ServiceAccountName is the name of the Kubernetes ServiceAccount used to authenticate\nthe bucket. This field is only supported for the 'gcp' and 'aws' providers.\nFor more information about workload identity:\nhttps://fluxcd.io/flux/components/source/buckets/#workload-identity",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"sts": {
 						Type:        schema.TypeList,
 						Description: "STS specifies the required configuration to use a Security Token\nService for fetching temporary credentials to authenticate in a\nBucket provider.\n\nThis field is only supported for the `aws` and `generic` providers.",

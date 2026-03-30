@@ -95,6 +95,13 @@ func dataSourceFluxImageToolkitFluxcdIoImagePolicyV1Beta1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "Namespace of the referent, when not specified it acts as LocalObjectReference",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 						}},
 					},
 					"policy": {

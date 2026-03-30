@@ -507,6 +507,61 @@ func dataSourceK8sAdmissionregistrationK8sIoValidatingAdmissionPolicyBindingV1Al
 								Required:    false,
 								Computed:    true,
 							},
+							"parameter_not_found_action": {
+								Type:        schema.TypeString,
+								Description: "`parameterNotFoundAction` controls the behavior of the binding when the resource exists, and name or selector is valid, but there are no parameters matched by the binding. If the value is set to `Allow`, then no matched parameters will be treated as successful validation by the binding. If set to `Deny`, then no matched parameters will be subject to the `failurePolicy` of the policy.\n\nAllowed values are `Allow` or `Deny` Default to `Deny`",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"selector": {
+								Type:        schema.TypeList,
+								Description: "selector can be used to match multiple param objects based on their labels. Supply selector: {} to match all resources of the ParamKind.\n\nIf multiple params are found, they are all evaluated with the policy expressions and the results are ANDed together.\n\nOne of `name` or `selector` must be set, but `name` and `selector` are mutually exclusive properties. If one is set, the other must be unset.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"match_expressions": {
+										Type:        schema.TypeList,
+										Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"key": {
+												Type:        schema.TypeString,
+												Description: "key is the label key that the selector applies to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"operator": {
+												Type:        schema.TypeString,
+												Description: "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"values": {
+												Type:        schema.TypeList,
+												Description: "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Schema{Type: schema.TypeString},
+											},
+										}},
+									},
+									"match_labels": {
+										Type:        schema.TypeMap,
+										Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 						}},
 					},
 					"policy_name": {
@@ -515,6 +570,14 @@ func dataSourceK8sAdmissionregistrationK8sIoValidatingAdmissionPolicyBindingV1Al
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"validation_actions": {
+						Type:        schema.TypeList,
+						Description: "validationActions declares how Validations of the referenced ValidatingAdmissionPolicy are enforced. If a validation evaluates to false it is always enforced according to these actions.\n\nFailures defined by the ValidatingAdmissionPolicy's FailurePolicy are enforced according to these actions only if the FailurePolicy is set to Fail, otherwise the failures are ignored. This includes compilation errors, runtime errors and misconfigurations of the policy.\n\nvalidationActions is declared as a set of action values. Order does not matter. validationActions may not contain duplicates of the same action.\n\nThe supported actions values are:\n\n\"Deny\" specifies that a validation failure results in a denied request.\n\n\"Warn\" specifies that a validation failure is reported to the request client in HTTP Warning headers, with a warning code of 299. Warnings can be sent both for allowed or denied admission responses.\n\n\"Audit\" specifies that a validation failure is included in the published audit event for the request. The audit event will contain a `validation.policy.admission.k8s.io/validation_failure` audit annotation with a value containing the details of the validation failures, formatted as a JSON list of objects, each with the following fields: - message: The validation failure message string - policy: The resource name of the ValidatingAdmissionPolicy - binding: The resource name of the ValidatingAdmissionPolicyBinding - expressionIndex: The index of the failed validations in the ValidatingAdmissionPolicy - validationActions: The enforcement actions enacted for the validation failure Example audit annotation: `\"validation.policy.admission.k8s.io/validation_failure\": \"[{\"message\": \"Invalid value\", {\"policy\": \"policy.example.com\", {\"binding\": \"policybinding.example.com\", {\"expressionIndex\": \"1\", {\"validationActions\": [\"Audit\"]}]\"`\n\nClients should expect to handle additional values by ignoring any values not recognized.\n\n\"Deny\" and \"Warn\" may not be used together since this combination needlessly duplicates the validation failure both in the API response body and the HTTP warning headers.\n\nRequired.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
 					},
 				}},
 			},
@@ -528,7 +591,7 @@ func dataSourceK8sAdmissionregistrationK8sIoValidatingAdmissionPolicyBindingV1Al
 	if err := manifestpkg.SetDataSourceDefaults(d, "admissionregistration.k8s.io/v1alpha1", "ValidatingAdmissionPolicyBinding", "admissionregistration.k8s.io/v1alpha1/ValidatingAdmissionPolicyBinding"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.match_resources", "spec.match_resources.namespace_selector", "spec.match_resources.object_selector", "spec.param_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.match_resources", "spec.match_resources.namespace_selector", "spec.match_resources.object_selector", "spec.param_ref", "spec.param_ref.selector"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

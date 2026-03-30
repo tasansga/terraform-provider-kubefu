@@ -3,14 +3,12 @@
 page_title: "kubefu_external_secrets_generators_external_secrets_io_fake_v1alpha1 Data Source - terraform-provider-kubefu"
 subcategory: ""
 description: |-
-  Fake generator is used for testing. It lets you define
-  a static set of credentials that is always returned.
+  Fake generator is used for testing. It lets you define a static set of credentials that is always returned.
 ---
 
 # kubefu_external_secrets_generators_external_secrets_io_fake_v1alpha1 (Data Source)
 
-Fake generator is used for testing. It lets you define
-a static set of credentials that is always returned.
+Fake generator is used for testing. It lets you define a static set of credentials that is always returned.
 
 
 
@@ -24,16 +22,9 @@ a static set of credentials that is always returned.
 
 ### Read-Only
 
-- `api_version` (String) APIVersion defines the versioned schema of this representation of an object.
-Servers should convert recognized schemas to the latest internal value, and
-may reject unrecognized values.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
 - `id` (String) The ID of this resource.
-- `kind` (String) Kind is a string value representing the REST resource this object represents.
-Servers may infer this from the endpoint the client submits requests to.
-Cannot be updated.
-In CamelCase.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
@@ -42,7 +33,5 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 
 Optional:
 
-- `controller` (String) Used to select the correct ESO controller (think: ingress.ingressClassName)
-The ESO controller is instantiated with a specific controller name and filters VDS based on this property
-- `data` (Map of String) Data defines the static data returned
-by this generator.
+- `controller` (String) Used to select the correct ESO controller (think: ingress.ingressClassName) The ESO controller is instantiated with a specific controller name and filters VDS based on this property
+- `data` (Map of String) Data defines the static data returned by this generator.

@@ -15,14 +15,14 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
-				Description: "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
 			},
 			"kind": {
 				Type:        schema.TypeString,
-				Description: "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
@@ -103,7 +103,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 							},
 							"secret_key": {
 								Type:        schema.TypeString,
-								Description: "",
+								Description: "The key in the Kubernetes Secret to store the value.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -112,7 +112,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 					},
 					"data_from": {
 						Type:        schema.TypeList,
-						Description: "DataFrom is used to fetch all properties from a specific Provider data\nIf multiple entries are specified, the Secret keys are merged in the specified order",
+						Description: "DataFrom is used to fetch all properties from a specific Provider data If multiple entries are specified, the Secret keys are merged in the specified order",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -149,7 +149,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 					},
 					"refresh_interval": {
 						Type:        schema.TypeString,
-						Description: "RefreshInterval is the amount of time before the values are read again from the SecretStore provider\nValid time units are \"ns\", \"us\" (or \"µs\"), \"ms\", \"s\", \"m\", \"h\"\nMay be set to zero to fetch and create it once. Defaults to 1h.",
+						Description: "RefreshInterval is the amount of time before the values are read again from the SecretStore provider Valid time units are \"ns\", \"us\" (or \"µs\"), \"ms\", \"s\", \"m\", \"h\" May be set to zero to fetch and create it once. Defaults to 1h.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -164,7 +164,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"kind": {
 								Type:        schema.TypeString,
-								Description: "Kind of the SecretStore resource (SecretStore or ClusterSecretStore)\nDefaults to `SecretStore`",
+								Description: "Kind of the SecretStore resource (SecretStore or ClusterSecretStore) Defaults to `SecretStore`",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -180,7 +180,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 					},
 					"target": {
 						Type:        schema.TypeList,
-						Description: "ExternalSecretTarget defines the Kubernetes Secret to be created\nThere can be only one target per ExternalSecret.",
+						Description: "ExternalSecretTarget defines the Kubernetes Secret to be created There can be only one target per ExternalSecret.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -188,7 +188,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"creation_policy": {
 								Type:        schema.TypeString,
-								Description: "CreationPolicy defines rules on how to create the resulting Secret\nDefaults to 'Owner'",
+								Description: "CreationPolicy defines rules on how to create the resulting Secret Defaults to 'Owner'",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -202,7 +202,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 							},
 							"name": {
 								Type:        schema.TypeString,
-								Description: "Name defines the name of the Secret resource to be managed\nThis field is immutable\nDefaults to the .metadata.name of the ExternalSecret resource",
+								Description: "Name defines the name of the Secret resource to be managed This field is immutable Defaults to the .metadata.name of the ExternalSecret resource",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -224,7 +224,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 									},
 									"engine_version": {
 										Type:        schema.TypeString,
-										Description: "EngineVersion specifies the template engine version\nthat should be used to compile/execute the\ntemplate specified in .data and .templateFrom[].",
+										Description: "EngineVersion specifies the template engine version that should be used to compile/execute the template specified in .data and .templateFrom[].",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -270,14 +270,14 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"items": {
 														Type:        schema.TypeList,
-														Description: "",
+														Description: "A list of keys in the ConfigMap/Secret to use as templates for Secret data",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "",
+																Description: "A key in the ConfigMap/Secret",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -286,7 +286,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 													},
 													"name": {
 														Type:        schema.TypeString,
-														Description: "",
+														Description: "The name of the ConfigMap/Secret resource",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -303,14 +303,14 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"items": {
 														Type:        schema.TypeList,
-														Description: "",
+														Description: "A list of keys in the ConfigMap/Secret to use as templates for Secret data",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 															"key": {
 																Type:        schema.TypeString,
-																Description: "",
+																Description: "A key in the ConfigMap/Secret",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -319,7 +319,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 													},
 													"name": {
 														Type:        schema.TypeString,
-														Description: "",
+														Description: "The name of the ConfigMap/Secret resource",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -359,7 +359,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"name": {
 								Type:        schema.TypeString,
-								Description: "Name of the referent.\nThis field is effectively required, but due to backwards compatibility is\nallowed to be empty. Instances of this type with an empty value here are\nalmost certainly wrong.\nTODO: Add other useful fields. apiVersion, kind, uid?\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names\nTODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.",
+								Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -412,7 +412,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Alpha1() *schema.
 					},
 					"refresh_time": {
 						Type:        schema.TypeString,
-						Description: "refreshTime is the time and date the external secret was fetched and\nthe target secret updated",
+						Description: "refreshTime is the time and date the external secret was fetched and the target secret updated",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,

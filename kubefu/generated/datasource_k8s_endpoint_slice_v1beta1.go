@@ -57,11 +57,58 @@ func dataSourceK8sDiscoveryK8sIoEndpointSliceV1Beta1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"serving": {
+								Type:        schema.TypeBool,
+								Description: "serving is identical to ready except that it is set regardless of the terminating state of endpoints. This condition should be set to true for a ready endpoint that is terminating. If nil, consumers should defer to the ready condition. This field can be enabled with the EndpointSliceTerminatingCondition feature gate.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"terminating": {
+								Type:        schema.TypeBool,
+								Description: "terminating indicates that this endpoint is terminating. A nil value indicates an unknown state. Consumers should interpret this unknown state to mean that the endpoint is not terminating. This field can be enabled with the EndpointSliceTerminatingCondition feature gate.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"hints": {
+						Type:        schema.TypeList,
+						Description: "hints contains information associated with how an endpoint should be consumed.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"for_zones": {
+								Type:        schema.TypeList,
+								Description: "forZones indicates the zone(s) this endpoint should be consumed by to enable topology aware routing. May contain a maximum of 8 entries.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "name represents the name of the zone.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 						}},
 					},
 					"hostname": {
 						Type:        schema.TypeString,
 						Description: "hostname of this endpoint. This field may be used by consumers of endpoints to distinguish endpoints from each other (e.g. in DNS names). Multiple endpoints which use the same hostname should be considered fungible (e.g. multiple A values in DNS). Must pass DNS Label (RFC 1123) validation.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"node_name": {
+						Type:        schema.TypeString,
+						Description: "nodeName represents the name of the Node hosting this endpoint. This can be used to determine endpoints local to a Node. This field can be enabled with the EndpointSliceNodeName feature gate.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -269,6 +316,13 @@ func dataSourceK8sDiscoveryK8sIoEndpointSliceV1Beta1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"time": {
 								Type:        schema.TypeString,
 								Description: "Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'",
@@ -413,7 +467,7 @@ func dataSourceK8sDiscoveryK8sIoEndpointSliceV1Beta1Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "discovery.k8s.io/v1beta1", "EndpointSlice", "discovery.k8s.io/v1beta1/EndpointSlice"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"address_type", "endpoints", "metadata", "ports"}, []string{"endpoints.conditions", "endpoints.target_ref", "metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"address_type", "endpoints", "metadata", "ports"}, []string{"endpoints.conditions", "endpoints.hints", "endpoints.target_ref", "metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

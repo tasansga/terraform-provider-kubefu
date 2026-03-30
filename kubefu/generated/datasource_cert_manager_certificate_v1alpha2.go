@@ -86,6 +86,13 @@ func dataSourceCertManagerCertManagerIoCertificateV1Alpha2() *schema.Resource {
 						Computed:    true,
 						Elem: &schema.Schema{Type: schema.TypeString},
 					},
+					"encode_usages_in_request": {
+						Type:        schema.TypeBool,
+						Description: "EncodeUsagesInRequest controls whether key usages should be present in the CertificateRequest",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"ip_addresses": {
 						Type:        schema.TypeList,
 						Description: "IPAddresses is a list of IP addresses to be used on the Certificate",
@@ -111,21 +118,21 @@ func dataSourceCertManagerCertManagerIoCertificateV1Alpha2() *schema.Resource {
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"group": {
 								Type:        schema.TypeString,
-								Description: "",
+								Description: "Group of the resource being referred to.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
 							},
 							"kind": {
 								Type:        schema.TypeString,
-								Description: "",
+								Description: "Kind of the resource being referred to.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
 							},
 							"name": {
 								Type:        schema.TypeString,
-								Description: "",
+								Description: "Name of the resource being referred to.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -277,12 +284,43 @@ func dataSourceCertManagerCertManagerIoCertificateV1Alpha2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"revision_history_limit": {
+						Type:        schema.TypeInt,
+						Description: "revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history. Each revision represents a single `CertificateRequest` created by this Certificate, either when it was created, renewed, or Spec was changed. Revisions will be removed by oldest first if the number of revisions exceeds this number. If set, revisionHistoryLimit must be a value of `1` or greater. If unset (`nil`), revisions will not be garbage collected. Default value is `nil`.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"secret_name": {
 						Type:        schema.TypeString,
 						Description: "SecretName is the name of the secret resource to store this secret in",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"secret_template": {
+						Type:        schema.TypeList,
+						Description: "SecretTemplate defines annotations and labels to be propagated to the Kubernetes Secret when it is created or updated. Once created, labels and annotations are not yet removed from the Secret when they are removed from the template. See https://github.com/jetstack/cert-manager/issues/4292",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"annotations": {
+								Type:        schema.TypeMap,
+								Description: "Annotations is a key value map to be copied to the target Kubernetes Secret.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"labels": {
+								Type:        schema.TypeMap,
+								Description: "Labels is a key value map to be copied to the target Kubernetes Secret.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"subject": {
 						Type:        schema.TypeList,
@@ -377,7 +415,7 @@ func dataSourceCertManagerCertManagerIoCertificateV1Alpha2() *schema.Resource {
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 					"conditions": {
 						Type:        schema.TypeList,
-						Description: "",
+						Description: "List of status conditions to indicate the status of certificates. Known condition types are `Ready` and `Issuing`.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -392,6 +430,13 @@ func dataSourceCertManagerCertManagerIoCertificateV1Alpha2() *schema.Resource {
 							"message": {
 								Type:        schema.TypeString,
 								Description: "Message is a human readable description of the details of the last transition, complementing reason.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "If set, this represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.condition[x].observedGeneration is 9, the condition is out of date with respect to the current state of the Certificate.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -421,7 +466,7 @@ func dataSourceCertManagerCertManagerIoCertificateV1Alpha2() *schema.Resource {
 					},
 					"last_failure_time": {
 						Type:        schema.TypeString,
-						Description: "",
+						Description: "LastFailureTime is the time as recorded by the Certificate controller of the most recent failure to complete a CertificateRequest for this Certificate resource. If set, cert-manager will not re-request another Certificate until 1 hour has elapsed from this time.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -436,6 +481,20 @@ func dataSourceCertManagerCertManagerIoCertificateV1Alpha2() *schema.Resource {
 					"not_after": {
 						Type:        schema.TypeString,
 						Description: "The expiration time of the certificate stored in the secret named by this resource in spec.secretName.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"not_before": {
+						Type:        schema.TypeString,
+						Description: "The time after which the certificate stored in the secret named by this resource in spec.secretName is valid.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"renewal_time": {
+						Type:        schema.TypeString,
+						Description: "RenewalTime is the time at which the certificate will be next renewed. If not set, no upcoming renewal is scheduled.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -459,7 +518,7 @@ func dataSourceCertManagerCertManagerIoCertificateV1Alpha2Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "cert-manager.io/v1alpha2", "Certificate", "cert-manager.io/v1alpha2/Certificate"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "spec.keystores", "spec.keystores.jks", "spec.keystores.jks.password_secret_ref", "spec.keystores.pkcs12", "spec.keystores.pkcs12.password_secret_ref", "spec.private_key", "spec.subject", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "spec.keystores", "spec.keystores.jks", "spec.keystores.jks.password_secret_ref", "spec.keystores.pkcs12", "spec.keystores.pkcs12.password_secret_ref", "spec.private_key", "spec.secret_template", "spec.subject", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

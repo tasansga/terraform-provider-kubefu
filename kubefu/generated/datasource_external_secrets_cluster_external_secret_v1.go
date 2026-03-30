@@ -349,6 +349,52 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1() *schema
 										Required:    false,
 										Computed:    true,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"merge": {
+												Type:        schema.TypeList,
+												Description: "Used to merge key/values in one single Secret\nThe resulting key will contain all values from the specified secrets",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"conflict_policy": {
+														Type:        schema.TypeString,
+														Description: "Used to define the policy to use in conflict resolution.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"into": {
+														Type:        schema.TypeString,
+														Description: "Used to define the target key of the merge operation.\nRequired if strategy is JSON. Ignored otherwise.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"priority": {
+														Type:        schema.TypeList,
+														Description: "Used to define key priority in conflict resolution.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
+													"priority_policy": {
+														Type:        schema.TypeString,
+														Description: "Used to define the policy when a key in the priority list does not exist in the input.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"strategy": {
+														Type:        schema.TypeString,
+														Description: "Used to define the strategy to use in the merge operation.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
 											"regexp": {
 												Type:        schema.TypeList,
 												Description: "Used to rewrite with regular expressions.\nThe resulting key will be the output of a regexp.ReplaceAll operation.",
@@ -526,6 +572,30 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1() *schema
 										Required:    false,
 										Computed:    true,
 									},
+									"manifest": {
+										Type:        schema.TypeList,
+										Description: "Manifest defines a custom Kubernetes resource to create instead of a Secret.\nWhen specified, ExternalSecret will create the resource type defined here\n(e.g., ConfigMap, Custom Resource) instead of a Secret.\nWarning: Using Generic target. Make sure access policies and encryption are properly configured.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"api_version": {
+												Type:        schema.TypeString,
+												Description: "APIVersion of the target resource (e.g., \"v1\" for ConfigMap, \"argoproj.io/v1alpha1\" for ArgoCD Application)",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"kind": {
+												Type:        schema.TypeString,
+												Description: "Kind of the target resource (e.g., \"ConfigMap\", \"Application\")",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
 									"name": {
 										Type:        schema.TypeString,
 										Description: "The name of the Secret resource to be managed.\nDefaults to the .metadata.name of the ExternalSecret resource",
@@ -557,7 +627,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1() *schema
 											},
 											"merge_policy": {
 												Type:        schema.TypeString,
-												Description: "",
+												Description: "TemplateMergePolicy defines how the rendered template should be merged with the existing Secret data.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -577,6 +647,14 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1() *schema
 														Required:    false,
 														Computed:    true,
 													},
+													"finalizers": {
+														Type:        schema.TypeList,
+														Description: "",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
 													"labels": {
 														Type:        schema.TypeMap,
 														Description: "",
@@ -595,7 +673,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1() *schema
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"config_map": {
 														Type:        schema.TypeList,
-														Description: "",
+														Description: "TemplateRef specifies a reference to either a ConfigMap or a Secret resource.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -617,7 +695,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1() *schema
 																	},
 																	"template_as": {
 																		Type:        schema.TypeString,
-																		Description: "",
+																		Description: "TemplateScope specifies how the template keys should be interpreted.",
 																		Optional:    true,
 																		Required:    false,
 																		Computed:    true,
@@ -642,7 +720,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1() *schema
 													},
 													"secret": {
 														Type:        schema.TypeList,
-														Description: "",
+														Description: "TemplateRef specifies a reference to either a ConfigMap or a Secret resource.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -664,7 +742,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1() *schema
 																	},
 																	"template_as": {
 																		Type:        schema.TypeString,
-																		Description: "",
+																		Description: "TemplateScope specifies how the template keys should be interpreted.",
 																		Optional:    true,
 																		Required:    false,
 																		Computed:    true,
@@ -682,7 +760,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1() *schema
 													},
 													"target": {
 														Type:        schema.TypeString,
-														Description: "",
+														Description: "TemplateTarget specifies where the rendered templates should be applied.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -845,7 +923,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1() *schema
 							},
 							"type": {
 								Type:        schema.TypeString,
-								Description: "",
+								Description: "ClusterExternalSecretConditionType defines a value type for ClusterExternalSecret conditions.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -902,7 +980,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Read(_ con
 	if err := manifestpkg.SetDataSourceDefaults(d, "external-secrets.io/v1", "ClusterExternalSecret", "external-secrets.io/v1/ClusterExternalSecret"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.external_secret_metadata", "spec.external_secret_spec", "spec.external_secret_spec.data.remote_ref", "spec.external_secret_spec.data.source_ref", "spec.external_secret_spec.data.source_ref.generator_ref", "spec.external_secret_spec.data.source_ref.store_ref", "spec.external_secret_spec.data_from.extract", "spec.external_secret_spec.data_from.find", "spec.external_secret_spec.data_from.find.name", "spec.external_secret_spec.data_from.rewrite.regexp", "spec.external_secret_spec.data_from.rewrite.transform", "spec.external_secret_spec.data_from.source_ref", "spec.external_secret_spec.data_from.source_ref.generator_ref", "spec.external_secret_spec.data_from.source_ref.store_ref", "spec.external_secret_spec.secret_store_ref", "spec.external_secret_spec.target", "spec.external_secret_spec.target.template", "spec.external_secret_spec.target.template.metadata", "spec.external_secret_spec.target.template.template_from.config_map", "spec.external_secret_spec.target.template.template_from.secret", "spec.namespace_selector", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.external_secret_metadata", "spec.external_secret_spec", "spec.external_secret_spec.data.remote_ref", "spec.external_secret_spec.data.source_ref", "spec.external_secret_spec.data.source_ref.generator_ref", "spec.external_secret_spec.data.source_ref.store_ref", "spec.external_secret_spec.data_from.extract", "spec.external_secret_spec.data_from.find", "spec.external_secret_spec.data_from.find.name", "spec.external_secret_spec.data_from.rewrite.merge", "spec.external_secret_spec.data_from.rewrite.regexp", "spec.external_secret_spec.data_from.rewrite.transform", "spec.external_secret_spec.data_from.source_ref", "spec.external_secret_spec.data_from.source_ref.generator_ref", "spec.external_secret_spec.data_from.source_ref.store_ref", "spec.external_secret_spec.secret_store_ref", "spec.external_secret_spec.target", "spec.external_secret_spec.target.manifest", "spec.external_secret_spec.target.template", "spec.external_secret_spec.target.template.metadata", "spec.external_secret_spec.target.template.template_from.config_map", "spec.external_secret_spec.target.template.template_from.secret", "spec.namespace_selector", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

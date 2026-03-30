@@ -11,18 +11,18 @@ import (
 func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1Read,
-		Description: "ACRAccessToken returns a Azure Container Registry token\nthat can be used for pushing/pulling images.\nNote: by default it will return an ACR Refresh Token with full access\n(depending on the identity).\nThis can be scoped down to the repository level using .spec.scope.\nIn case scope is defined it will return an ACR Access Token.\n\n\nSee docs: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md",
+		Description: "ACRAccessToken returns a Azure Container Registry token that can be used for pushing/pulling images. Note: by default it will return an ACR Refresh Token with full access (depending on the identity). This can be scoped down to the repository level using .spec.scope. In case scope is defined it will return an ACR Access Token. \n See docs: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md",
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
-				Description: "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
 			},
 			"kind": {
 				Type:        schema.TypeString,
-				Description: "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
@@ -50,7 +50,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 			},
 			"spec": {
 				Type:        schema.TypeList,
-				Description: "ACRAccessTokenSpec defines how to generate the access token\ne.g. how to authenticate and which registry to use.\nsee: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md#overview",
+				Description: "ACRAccessTokenSpec defines how to generate the access token e.g. how to authenticate and which registry to use. see: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md#overview",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
@@ -58,7 +58,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 					"auth": {
 						Type:        schema.TypeList,
-						Description: "",
+						Description: "ACRAuth defines the authentication methods for Azure Container Registry.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -91,7 +91,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"secret_ref": {
 										Type:        schema.TypeList,
-										Description: "Configuration used to authenticate with Azure using static\ncredentials stored in a Kind=Secret.",
+										Description: "Configuration used to authenticate with Azure using static credentials stored in a Kind=Secret.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -107,7 +107,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"key": {
 														Type:        schema.TypeString,
-														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -121,7 +121,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 													},
 													"namespace": {
 														Type:        schema.TypeString,
-														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -138,7 +138,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 													"key": {
 														Type:        schema.TypeString,
-														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+														Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -152,7 +152,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 													},
 													"namespace": {
 														Type:        schema.TypeString,
-														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+														Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -173,7 +173,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"service_account_ref": {
 										Type:        schema.TypeList,
-										Description: "ServiceAccountRef specified the service account\nthat should be used when authenticating with WorkloadIdentity.",
+										Description: "ServiceAccountRef specified the service account that should be used when authenticating with WorkloadIdentity.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -181,7 +181,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"audiences": {
 												Type:        schema.TypeList,
-												Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+												Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -196,7 +196,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 											},
 											"namespace": {
 												Type:        schema.TypeString,
-												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -209,21 +209,21 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoACRAccessTokenV1Alpha1(
 					},
 					"environment_type": {
 						Type:        schema.TypeString,
-						Description: "EnvironmentType specifies the Azure cloud environment endpoints to use for\nconnecting and authenticating with Azure. By default it points to the public cloud AAD endpoint.\nThe following endpoints are available, also see here: https://github.com/Azure/go-autorest/blob/main/autorest/azure/environments.go#L152\nPublicCloud, USGovernmentCloud, ChinaCloud, GermanCloud",
+						Description: "EnvironmentType specifies the Azure cloud environment endpoints to use for connecting and authenticating with Azure. By default it points to the public cloud AAD endpoint. The following endpoints are available, also see here: https://github.com/Azure/go-autorest/blob/main/autorest/azure/environments.go#L152 PublicCloud, USGovernmentCloud, ChinaCloud, GermanCloud",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
 					},
 					"registry": {
 						Type:        schema.TypeString,
-						Description: "the domain name of the ACR registry\ne.g. foobarexample.azurecr.io",
+						Description: "the domain name of the ACR registry e.g. foobarexample.azurecr.io",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
 					},
 					"scope": {
 						Type:        schema.TypeString,
-						Description: "Define the scope for the access token, e.g. pull/push access for a repository.\nif not provided it will return a refresh token that has full scope.\nNote: you need to pin it down to the repository level, there is no wildcard available.\n\n\nexamples:\nrepository:my-repository:pull,push\nrepository:my-repository:pull\n\n\nsee docs for details: https://docs.docker.com/registry/spec/auth/scope/",
+						Description: "Define the scope for the access token, e.g. pull/push access for a repository. if not provided it will return a refresh token that has full scope. Note: you need to pin it down to the repository level, there is no wildcard available. \n examples: repository:my-repository:pull,push repository:my-repository:pull \n see docs for details: https://docs.docker.com/registry/spec/auth/scope/",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,

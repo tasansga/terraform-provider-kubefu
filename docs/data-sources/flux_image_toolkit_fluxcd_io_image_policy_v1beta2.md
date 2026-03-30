@@ -34,9 +34,27 @@ ImagePolicy is the Schema for the imagepolicies API
 
 Optional:
 
+- `digest_reflection_policy` (String) DigestReflectionPolicy governs the setting of the `.status.latestRef.digest` field.
+
+Never: The digest field will always be set to the empty string.
+
+IfNotPresent: The digest field will be set to the digest of the elected
+latest image if the field is empty and the image did not change.
+
+Always: The digest field will always be set to the digest of the elected
+latest image.
+
+Default: Never.
 - `filter_tags` (Block List, Max: 1) FilterTags enables filtering for only a subset of tags based on a set of rules. If no rules are provided, all the tags from the repository will be ordered and compared. (see [below for nested schema](#nestedblock--spec--filter_tags))
 - `image_repository_ref` (Block List, Max: 1) ImageRepositoryRef points at the object specifying the image being scanned (see [below for nested schema](#nestedblock--spec--image_repository_ref))
+- `interval` (String) Interval is the length of time to wait between
+refreshing the digest of the latest tag when the
+reflection policy is set to "Always".
+
+Defaults to 10m.
 - `policy` (Block List, Max: 1) Policy gives the particulars of the policy to be followed in selecting the most recent image (see [below for nested schema](#nestedblock--spec--policy))
+- `suspend` (Boolean) This flag tells the controller to suspend subsequent policy reconciliations.
+It does not apply to already started reconciliations. Defaults to false.
 
 <a id="nestedblock--spec--filter_tags"></a>
 ### Nested Schema for `spec.filter_tags`
@@ -97,9 +115,17 @@ Optional:
 Optional:
 
 - `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
+- `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent
+reconcile request value, so a change of the annotation value
+can be detected.
 - `latest_image` (String) LatestImage gives the first in the list of images scanned by the image repository, when filtered and ordered according to the policy.
+- `latest_ref` (Block List, Max: 1) LatestRef gives the first in the list of images scanned by
+the image repository, when filtered and ordered according
+to the policy. (see [below for nested schema](#nestedblock--status--latest_ref))
 - `observed_generation` (Number)
 - `observed_previous_image` (String) ObservedPreviousImage is the observed previous LatestImage. It is used to keep track of the previous and current images.
+- `observed_previous_ref` (Block List, Max: 1) ObservedPreviousRef is the observed previous LatestRef. It is used
+to keep track of the previous and current images. (see [below for nested schema](#nestedblock--status--observed_previous_ref))
 
 <a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`
@@ -112,3 +138,23 @@ Optional:
 - `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
 - `status` (String) status of the condition, one of True, False, Unknown.
 - `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+
+
+<a id="nestedblock--status--latest_ref"></a>
+### Nested Schema for `status.latest_ref`
+
+Optional:
+
+- `digest` (String) Digest is the image's digest.
+- `name` (String) Name is the bare image's name.
+- `tag` (String) Tag is the image's tag.
+
+
+<a id="nestedblock--status--observed_previous_ref"></a>
+### Nested Schema for `status.observed_previous_ref`
+
+Optional:
+
+- `digest` (String) Digest is the image's digest.
+- `name` (String) Name is the bare image's name.
+- `tag` (String) Tag is the image's tag.

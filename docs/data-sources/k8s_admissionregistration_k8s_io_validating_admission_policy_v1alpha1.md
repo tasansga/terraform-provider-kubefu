@@ -19,6 +19,7 @@ ValidatingAdmissionPolicy describes the definition of an admission validation po
 
 - `metadata` (Block List, Max: 1) Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata. (see [below for nested schema](#nestedblock--metadata))
 - `spec` (Block List, Max: 1) Specification of the desired behavior of the ValidatingAdmissionPolicy. (see [below for nested schema](#nestedblock--spec))
+- `status` (Block List, Max: 1) The status of the ValidatingAdmissionPolicy, including warnings that are useful to determine if the policy behaves in the expected way. Populated by the system. Read-only. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -97,47 +98,63 @@ Optional:
 <a id="nestedblock--spec"></a>
 ### Nested Schema for `spec`
 
-Required:
-
-- `validations` (Block List, Min: 1) Validations contain CEL expressions which is used to apply the validation. A minimum of one validation is required for a policy definition. Required. (see [below for nested schema](#nestedblock--spec--validations))
-
 Optional:
 
+- `audit_annotations` (Block List) auditAnnotations contains CEL expressions which are used to produce audit annotations for the audit event of the API request. validations and auditAnnotations may not both be empty; a least one of validations or auditAnnotations is required. (see [below for nested schema](#nestedblock--spec--audit_annotations))
 - `failure_policy` (String) FailurePolicy defines how to handle failures for the admission policy. Failures can occur from invalid or mis-configured policy definitions or bindings. A policy is invalid if spec.paramKind refers to a non-existent Kind. A binding is invalid if spec.paramRef.name refers to a non-existent resource. Allowed values are Ignore or Fail. Defaults to Fail.
+- `match_conditions` (Block List) MatchConditions is a list of conditions that must be met for a request to be validated. Match conditions filter requests that have already been matched by the rules, namespaceSelector, and objectSelector. An empty list of matchConditions matches all requests. There are a maximum of 64 match conditions allowed.
+
+If a parameter object is provided, it can be accessed via the `params` handle in the same manner as validation expressions.
+
+The exact matching logic is (in order):
+  1. If ANY matchCondition evaluates to FALSE, the policy is skipped.
+  2. If ALL matchConditions evaluate to TRUE, the policy is evaluated.
+  3. If any matchCondition evaluates to an error (but none are FALSE):
+     - If failurePolicy=Fail, reject the request
+     - If failurePolicy=Ignore, the policy is skipped (see [below for nested schema](#nestedblock--spec--match_conditions))
 - `match_constraints` (Block List, Max: 1) MatchConstraints specifies what resources this policy is designed to validate. The AdmissionPolicy cares about a request if it matches _all_ Constraints. However, in order to prevent clusters from being put into an unstable state that cannot be recovered from via the API ValidatingAdmissionPolicy cannot match ValidatingAdmissionPolicy and ValidatingAdmissionPolicyBinding. Required. (see [below for nested schema](#nestedblock--spec--match_constraints))
 - `param_kind` (Block List, Max: 1) ParamKind specifies the kind of resources used to parameterize this policy. If absent, there are no parameters for this policy and the param CEL variable will not be provided to validation expressions. If ParamKind refers to a non-existent kind, this policy definition is mis-configured and the FailurePolicy is applied. If paramKind is specified but paramRef is unset in ValidatingAdmissionPolicyBinding, the params variable will be null. (see [below for nested schema](#nestedblock--spec--param_kind))
+- `validations` (Block List) Validations contain CEL expressions which is used to apply the validation. A minimum of one validation is required for a policy definition. Required. (see [below for nested schema](#nestedblock--spec--validations))
+- `variables` (Block List) Variables contain definitions of variables that can be used in composition of other expressions. Each variable is defined as a named CEL expression. The variables defined here will be available under `variables` in other expressions of the policy except MatchConditions because MatchConditions are evaluated before the rest of the policy.
 
-<a id="nestedblock--spec--validations"></a>
-### Nested Schema for `spec.validations`
+The expression of a variable can refer to other variables defined earlier in the list but not those after. Thus, Variables must be sorted by the order of first appearance and acyclic. (see [below for nested schema](#nestedblock--spec--variables))
 
-Required:
-
-- `expression` (String) Expression represents the expression which will be evaluated by CEL. ref: https://github.com/google/cel-spec CEL expressions have access to the contents of the Admission request/response, organized into CEL variables as well as some other useful variables:
-
-'object' - The object from the incoming request. The value is null for DELETE requests. 'oldObject' - The existing object. The value is null for CREATE requests. 'request' - Attributes of the admission request([ref](/pkg/apis/admission/types.go#AdmissionRequest)). 'params' - Parameter resource referred to by the policy binding being evaluated. Only populated if the policy has a ParamKind.
-
-The `apiVersion`, `kind`, `metadata.name` and `metadata.generateName` are always accessible from the root of the object. No other metadata properties are accessible.
-
-Only property names of the form `[a-zA-Z_.-/][a-zA-Z0-9_.-/]*` are accessible. Accessible property names are escaped according to the following rules when accessed in the expression: - '__' escapes to '__underscores__' - '.' escapes to '__dot__' - '-' escapes to '__dash__' - '/' escapes to '__slash__' - Property names that exactly match a CEL RESERVED keyword escape to '__{keyword}__'. The keywords are:
-	  "true", "false", "null", "in", "as", "break", "const", "continue", "else", "for", "function", "if",
-	  "import", "let", "loop", "package", "namespace", "return".
-Examples:
-  - Expression accessing a property named "namespace": {"Expression": "object.__namespace__ > 0"}
-  - Expression accessing a property named "x-prop": {"Expression": "object.x__dash__prop > 0"}
-  - Expression accessing a property named "redact__d": {"Expression": "object.redact__underscores__d > 0"}
-
-Equality on arrays with list type of 'set' or 'map' ignores element order, i.e. [1, 2] == [2, 1]. Concatenation on arrays with x-kubernetes-list-type use the semantics of the list type:
-  - 'set': `X + Y` performs a union where the array positions of all elements in `X` are preserved and
-    non-intersecting elements in `Y` are appended, retaining their partial order.
-  - 'map': `X + Y` performs a merge where the array positions of all keys in `X` are preserved but the values
-    are overwritten by values in `Y` when the key sets of `X` and `Y` intersect. Elements in `Y` with
-    non-intersecting keys are appended, retaining their partial order.
-Required.
+<a id="nestedblock--spec--audit_annotations"></a>
+### Nested Schema for `spec.audit_annotations`
 
 Optional:
 
-- `message` (String) Message represents the message displayed when validation fails. The message is required if the Expression contains line breaks. The message must not contain line breaks. If unset, the message is "failed rule: {Rule}". e.g. "must be a URL with the host matching spec.host" If the Expression contains line breaks. Message is required. The message must not contain line breaks. If unset, the message is "failed Expression: {Expression}".
-- `reason` (String) Reason represents a machine-readable description of why this validation failed. If this is the first validation in the list to fail, this reason, as well as the corresponding HTTP response code, are used in the HTTP response to the client. The currently supported reasons are: "Unauthorized", "Forbidden", "Invalid", "RequestEntityTooLarge". If not set, StatusReasonInvalid is used in the response to the client.
+- `key` (String) key specifies the audit annotation key. The audit annotation keys of a ValidatingAdmissionPolicy must be unique. The key must be a qualified name ([A-Za-z0-9][-A-Za-z0-9_.]*) no more than 63 bytes in length.
+
+The key is combined with the resource name of the ValidatingAdmissionPolicy to construct an audit annotation key: "{ValidatingAdmissionPolicy name}/{key}".
+
+If an admission webhook uses the same resource name as this ValidatingAdmissionPolicy and the same audit annotation key, the annotation key will be identical. In this case, the first annotation written with the key will be included in the audit event and all subsequent annotations with the same key will be discarded.
+
+Required.
+- `value_expression` (String) valueExpression represents the expression which is evaluated by CEL to produce an audit annotation value. The expression must evaluate to either a string or null value. If the expression evaluates to a string, the audit annotation is included with the string value. If the expression evaluates to null or empty string the audit annotation will be omitted. The valueExpression may be no longer than 5kb in length. If the result of the valueExpression is more than 10kb in length, it will be truncated to 10kb.
+
+If multiple ValidatingAdmissionPolicyBinding resources match an API request, then the valueExpression will be evaluated for each binding. All unique values produced by the valueExpressions will be joined together in a comma-separated list.
+
+Required.
+
+
+<a id="nestedblock--spec--match_conditions"></a>
+### Nested Schema for `spec.match_conditions`
+
+Optional:
+
+- `expression` (String) Expression represents the expression which will be evaluated by CEL. Must evaluate to bool. CEL expressions have access to the contents of the AdmissionRequest and Authorizer, organized into CEL variables:
+
+'object' - The object from the incoming request. The value is null for DELETE requests. 'oldObject' - The existing object. The value is null for CREATE requests. 'request' - Attributes of the admission request(/pkg/apis/admission/types.go#AdmissionRequest). 'authorizer' - A CEL Authorizer. May be used to perform authorization checks for the principal (user or service account) of the request.
+  See https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#Authz
+'authorizer.requestResource' - A CEL ResourceCheck constructed from the 'authorizer' and configured with the
+  request resource.
+Documentation on CEL: https://kubernetes.io/docs/reference/using-api/cel/
+
+Required.
+- `name` (String) Name is an identifier for this match condition, used for strategic merging of MatchConditions, as well as providing an identifier for logging purposes. A good name should be descriptive of the associated expression. Name must be a qualified name consisting of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]') with an optional DNS subdomain prefix and '/' (e.g. 'example.com/MyName')
+
+Required.
 
 
 <a id="nestedblock--spec--match_constraints"></a>
@@ -277,3 +294,85 @@ Optional:
 
 - `api_version` (String) APIVersion is the API group version the resources belong to. In format of "group/version". Required.
 - `kind` (String) Kind is the API kind the resources belong to. Required.
+
+
+<a id="nestedblock--spec--validations"></a>
+### Nested Schema for `spec.validations`
+
+Required:
+
+- `expression` (String) Expression represents the expression which will be evaluated by CEL. ref: https://github.com/google/cel-spec CEL expressions have access to the contents of the Admission request/response, organized into CEL variables as well as some other useful variables:
+
+'object' - The object from the incoming request. The value is null for DELETE requests. 'oldObject' - The existing object. The value is null for CREATE requests. 'request' - Attributes of the admission request([ref](/pkg/apis/admission/types.go#AdmissionRequest)). 'params' - Parameter resource referred to by the policy binding being evaluated. Only populated if the policy has a ParamKind.
+
+The `apiVersion`, `kind`, `metadata.name` and `metadata.generateName` are always accessible from the root of the object. No other metadata properties are accessible.
+
+Only property names of the form `[a-zA-Z_.-/][a-zA-Z0-9_.-/]*` are accessible. Accessible property names are escaped according to the following rules when accessed in the expression: - '__' escapes to '__underscores__' - '.' escapes to '__dot__' - '-' escapes to '__dash__' - '/' escapes to '__slash__' - Property names that exactly match a CEL RESERVED keyword escape to '__{keyword}__'. The keywords are:
+	  "true", "false", "null", "in", "as", "break", "const", "continue", "else", "for", "function", "if",
+	  "import", "let", "loop", "package", "namespace", "return".
+Examples:
+  - Expression accessing a property named "namespace": {"Expression": "object.__namespace__ > 0"}
+  - Expression accessing a property named "x-prop": {"Expression": "object.x__dash__prop > 0"}
+  - Expression accessing a property named "redact__d": {"Expression": "object.redact__underscores__d > 0"}
+
+Equality on arrays with list type of 'set' or 'map' ignores element order, i.e. [1, 2] == [2, 1]. Concatenation on arrays with x-kubernetes-list-type use the semantics of the list type:
+  - 'set': `X + Y` performs a union where the array positions of all elements in `X` are preserved and
+    non-intersecting elements in `Y` are appended, retaining their partial order.
+  - 'map': `X + Y` performs a merge where the array positions of all keys in `X` are preserved but the values
+    are overwritten by values in `Y` when the key sets of `X` and `Y` intersect. Elements in `Y` with
+    non-intersecting keys are appended, retaining their partial order.
+Required.
+
+Optional:
+
+- `message` (String) Message represents the message displayed when validation fails. The message is required if the Expression contains line breaks. The message must not contain line breaks. If unset, the message is "failed rule: {Rule}". e.g. "must be a URL with the host matching spec.host" If the Expression contains line breaks. Message is required. The message must not contain line breaks. If unset, the message is "failed Expression: {Expression}".
+- `message_expression` (String) messageExpression declares a CEL expression that evaluates to the validation failure message that is returned when this rule fails. Since messageExpression is used as a failure message, it must evaluate to a string. If both message and messageExpression are present on a validation, then messageExpression will be used if validation fails. If messageExpression results in a runtime error, the runtime error is logged, and the validation failure message is produced as if the messageExpression field were unset. If messageExpression evaluates to an empty string, a string with only spaces, or a string that contains line breaks, then the validation failure message will also be produced as if the messageExpression field were unset, and the fact that messageExpression produced an empty string/string with only spaces/string with line breaks will be logged. messageExpression has access to all the same variables as the `expression` except for 'authorizer' and 'authorizer.requestResource'. Example: "object.x must be less than max ("+string(params.max)+")"
+- `reason` (String) Reason represents a machine-readable description of why this validation failed. If this is the first validation in the list to fail, this reason, as well as the corresponding HTTP response code, are used in the HTTP response to the client. The currently supported reasons are: "Unauthorized", "Forbidden", "Invalid", "RequestEntityTooLarge". If not set, StatusReasonInvalid is used in the response to the client.
+
+
+<a id="nestedblock--spec--variables"></a>
+### Nested Schema for `spec.variables`
+
+Optional:
+
+- `expression` (String) Expression is the expression that will be evaluated as the value of the variable. The CEL expression has access to the same identifiers as the CEL expressions in Validation.
+- `name` (String) Name is the name of the variable. The name must be a valid CEL identifier and unique among all variables. The variable can be accessed in other expressions through `variables` For example, if name is "foo", the variable will be available as `variables.foo`
+
+
+
+<a id="nestedblock--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `conditions` (Block List) The conditions represent the latest available observations of a policy's current state. (see [below for nested schema](#nestedblock--status--conditions))
+- `observed_generation` (Number) The generation observed by the controller.
+- `type_checking` (Block List, Max: 1) The results of type checking for each expression. Presence of this field indicates the completion of the type checking. (see [below for nested schema](#nestedblock--status--type_checking))
+
+<a id="nestedblock--status--conditions"></a>
+### Nested Schema for `status.conditions`
+
+Optional:
+
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase.
+
+
+<a id="nestedblock--status--type_checking"></a>
+### Nested Schema for `status.type_checking`
+
+Optional:
+
+- `expression_warnings` (Block List) The type checking warnings for each expression. (see [below for nested schema](#nestedblock--status--type_checking--expression_warnings))
+
+<a id="nestedblock--status--type_checking--expression_warnings"></a>
+### Nested Schema for `status.type_checking.expression_warnings`
+
+Optional:
+
+- `field_ref` (String) The path to the field that refers the expression. For example, the reference to the expression of the first item of validations is "spec.validations[0].expression"
+- `warning` (String) The content of type checking information in a human-readable form. Each line of the warning contains the type that the expression is checked against, followed by the type check error from the compiler.

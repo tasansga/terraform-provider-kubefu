@@ -228,6 +228,81 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta1() *schema.Resour
 							},
 						}},
 					},
+					"patches": {
+						Type:        schema.TypeList,
+						Description: "Patches (also called overlays), defined as inline YAML objects.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"patch": {
+								Type:        schema.TypeString,
+								Description: "Patch contains the JSON6902 patch document with an array of operation objects.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"target": {
+								Type:        schema.TypeList,
+								Description: "Target points to the resources that the patch document should be applied to.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"annotation_selector": {
+										Type:        schema.TypeString,
+										Description: "AnnotationSelector is a string that follows the label selection expression https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api It matches with the resource annotations.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"group": {
+										Type:        schema.TypeString,
+										Description: "Group is the API group to select resources from. Together with Version and Kind it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"kind": {
+										Type:        schema.TypeString,
+										Description: "Kind of the API Group to select resources from. Together with Group and Version it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"label_selector": {
+										Type:        schema.TypeString,
+										Description: "LabelSelector is a string that follows the label selection expression https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api It matches with the resource labels.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name to match resources with.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"namespace": {
+										Type:        schema.TypeString,
+										Description: "Namespace to select resources from.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"version": {
+										Type:        schema.TypeString,
+										Description: "Version of the API Group to select resources from. Together with Group and Kind it is capable of unambiguously identifying and/or selecting resources. https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
 					"patches_json6902": {
 						Type:        schema.TypeList,
 						Description: "JSON 6902 patches, defined as inline YAML objects.",
@@ -244,28 +319,28 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta1() *schema.Resour
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"from": {
 										Type:        schema.TypeString,
-										Description: "",
+										Description: "From contains a JSON-pointer value that references a location within the target document where the operation is performed. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"op": {
 										Type:        schema.TypeString,
-										Description: "",
+										Description: "Op indicates the operation to perform. Its value MUST be one of \"add\", \"remove\", \"replace\", \"move\", \"copy\", or \"test\". https://datatracker.ietf.org/doc/html/rfc6902#section-4",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"path": {
 										Type:        schema.TypeString,
-										Description: "",
+										Description: "Path contains the JSON-pointer value that references a location within the target document where the operation is performed. The meaning of the value depends on the value of Op.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"value": {
 										Type:        schema.TypeMap,
-										Description: "",
+										Description: "Value contains a valid JSON structure. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -616,7 +691,7 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta1Read(_ context.Co
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.toolkit.fluxcd.io/v1beta1", "Kustomization", "kustomize.toolkit.fluxcd.io/v1beta1/Kustomization"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.decryption", "spec.decryption.secret_ref", "spec.kube_config", "spec.kube_config.secret_ref", "spec.patches_json6902.target", "spec.post_build", "spec.source_ref", "status", "status.snapshot"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.decryption", "spec.decryption.secret_ref", "spec.kube_config", "spec.kube_config.secret_ref", "spec.patches.target", "spec.patches_json6902.target", "spec.post_build", "spec.source_ref", "status", "status.snapshot"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

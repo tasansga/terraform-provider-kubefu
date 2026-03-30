@@ -77,6 +77,7 @@ Optional:
 - `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
@@ -112,6 +113,7 @@ Optional:
 - `starting_deadline_seconds` (Number) Optional deadline in seconds for starting the job if it misses scheduled time for any reason.  Missed jobs executions will be counted as failed ones.
 - `successful_jobs_history_limit` (Number) The number of successful finished jobs to retain. Value must be non-negative integer. Defaults to 3.
 - `suspend` (Boolean) This flag tells the controller to suspend subsequent executions, it does not apply to already started executions.  Defaults to false.
+- `time_zone` (String) The time zone for the given schedule, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones. If not specified, this will rely on the time zone of the kube-controller-manager process. ALPHA: This field is in alpha and must be enabled via the `CronJobTimeZone` feature gate.
 
 <a id="nestedblock--spec--job_template"></a>
 ### Nested Schema for `spec.job_template`
@@ -169,6 +171,7 @@ Optional:
 - `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
@@ -200,6 +203,7 @@ Optional:
 
 - `active_deadline_seconds` (Number) Specifies the duration in seconds relative to the startTime that the job may be continuously active before the system tries to terminate it; value must be positive integer. If a Job is suspended (at creation or through an update), this timer will effectively be stopped and reset when the Job is resumed again.
 - `backoff_limit` (Number) Specifies the number of retries before marking this job failed. Defaults to 6
+- `backoff_limit_per_index` (Number) Specifies the limit for the number of retries within an index before marking this index as failed. When enabled the number of failures per index is kept in the pod's batch.kubernetes.io/job-index-failure-count annotation. It can only be set when Job's completionMode=Indexed, and the Pod's restart policy is Never. The field is immutable. This field is alpha-level. It can be used when the `JobBackoffLimitPerIndex` feature gate is enabled (disabled by default).
 - `completion_mode` (String) CompletionMode specifies how Pod completions are tracked. It can be `NonIndexed` (default) or `Indexed`.
 
 `NonIndexed` means that the Job is considered complete when there have been .spec.completions successfully completed Pods. Each Pod completion is homologous to each other.
@@ -208,9 +212,25 @@ Optional:
 
 This field is alpha-level and is only honored by servers that enable the IndexedJob feature gate. More completion modes can be added in the future. If the Job controller observes a mode that it doesn't recognize, the controller skips updates for the Job.
 - `completions` (Number) Specifies the desired number of successfully finished pods the job should be run with.  Setting to nil means that the success of any pod signals the success of all pods, and allows parallelism to have any positive value.  Setting to 1 means that parallelism is limited to 1 and the success of that pod signals the success of the job. More info: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
+- `managed_by` (String) ManagedBy field indicates the controller that manages a Job. The k8s Job controller reconciles jobs which don't have this field at all or the field value is the reserved string `kubernetes.io/job-controller`, but skips reconciling Jobs with a custom value for this field. The value must be a valid domain-prefixed path (e.g. acme.io/foo) - all characters before the first "/" must be a valid subdomain as defined by RFC 1123. All characters trailing the first "/" must be valid HTTP Path characters as defined by RFC 3986. The value cannot exceed 64 characters.
+
+This field is alpha-level. The job controller accepts setting the field when the feature gate JobManagedBy is enabled (disabled by default).
 - `manual_selector` (Boolean) manualSelector controls generation of pod labels and pod selectors. Leave `manualSelector` unset unless you are certain what you are doing. When false or unset, the system pick labels unique to this job and appends those labels to the pod template.  When true, the user is responsible for picking unique labels and specifying the selector.  Failure to pick a unique label may cause this and other jobs to not function correctly.  However, You may see `manualSelector=true` in jobs that were created with the old `extensions/v1beta1` API. More info: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/#specifying-your-own-pod-selector
+- `max_failed_indexes` (Number) Specifies the maximal number of failed indexes before marking the Job as failed, when backoffLimitPerIndex is set. Once the number of failed indexes exceeds this number the entire Job is marked as Failed and its execution is terminated. When left as null the job continues execution of all of its indexes and is marked with the `Complete` Job condition. It can only be specified when backoffLimitPerIndex is set. It can be null or up to completions. It is required and must be less than or equal to 10^4 when is completions greater than 10^5. This field is alpha-level. It can be used when the `JobBackoffLimitPerIndex` feature gate is enabled (disabled by default).
 - `parallelism` (Number) Specifies the maximum desired number of pods the job should run at any given time. The actual number of pods running in steady state will be less than this number when ((.spec.completions - .status.successful) < .spec.parallelism), i.e. when the work left to do is less than max parallelism. More info: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
+- `pod_failure_policy` (Block List, Max: 1) Specifies the policy of handling failed pods. In particular, it allows to specify the set of actions and conditions which need to be satisfied to take the associated action. If empty, the default behaviour applies - the counter of failed pods, represented by the jobs's .status.failed field, is incremented and it is checked against the backoffLimit. This field cannot be used in combination with restartPolicy=OnFailure.
+
+This field is alpha-level. To use this field, you must enable the `JobPodFailurePolicy` feature gate (disabled by default). (see [below for nested schema](#nestedblock--spec--job_template--spec--pod_failure_policy))
+- `pod_replacement_policy` (String) podReplacementPolicy specifies when to create replacement Pods. Possible values are: - TerminatingOrFailed means that we recreate pods
+  when they are terminating (has a metadata.deletionTimestamp) or failed.
+- Failed means to wait until a previously created Pod is fully terminated (has phase
+  Failed or Succeeded) before creating a replacement Pod.
+
+When using podFailurePolicy, Failed is the the only allowed value. TerminatingOrFailed and Failed are allowed values when podFailurePolicy is not in use. This is an alpha field. Enable JobPodReplacementPolicy to be able to use this field.
 - `selector` (Block List, Max: 1) A label query over pods that should match the pod count. Normally, the system sets this field for you. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors (see [below for nested schema](#nestedblock--spec--job_template--spec--selector))
+- `success_policy` (Block List, Max: 1) successPolicy specifies the policy when the Job can be declared as succeeded. If empty, the default behavior applies - the Job is declared as succeeded only when the number of succeeded pods equals to the completions. When the field is specified, it must be immutable and works only for the Indexed Jobs. Once the Job meets the SuccessPolicy, the lingering pods are terminated.
+
+This field  is alpha-level. To use this field, you must enable the `JobSuccessPolicy` feature gate (disabled by default). (see [below for nested schema](#nestedblock--spec--job_template--spec--success_policy))
 - `suspend` (Boolean) Suspend specifies whether the Job controller should create Pods or not. If a Job is created with suspend set to true, no Pods are created by the Job controller. If a Job is suspended after creation (i.e. the flag goes from false to true), the Job controller will delete all active Pods associated with this Job. Users must design their workload to gracefully handle this. Suspending a Job will reset the StartTime field of the Job, effectively resetting the ActiveDeadlineSeconds timer too. This is an alpha field and requires the SuspendJob feature gate to be enabled; otherwise this field may not be set to true. Defaults to false.
 - `ttl_seconds_after_finished` (Number) ttlSecondsAfterFinished limits the lifetime of a Job that has finished execution (either Complete or Failed). If this field is set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be automatically deleted. When the Job is being deleted, its lifecycle guarantees (e.g. finalizers) will be honored. If this field is unset, the Job won't be automatically deleted. If this field is set to zero, the Job becomes eligible to be deleted immediately after it finishes. This field is alpha-level and is only honored by servers that enable the TTLAfterFinished feature.
 
@@ -270,6 +290,7 @@ Optional:
 - `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
@@ -310,19 +331,41 @@ Optional:
 - `host_ipc` (Boolean) Use the host's ipc namespace. Optional: Default to false.
 - `host_network` (Boolean) Host networking requested for this pod. Use the host's network namespace. If this option is set, the ports that will be used must be specified. Default to false.
 - `host_pid` (Boolean) Use the host's pid namespace. Optional: Default to false.
+- `host_users` (Boolean) Use the host's user namespace. Optional: Default to true. If set to true or not present, the pod will be run in the host user namespace, useful for when the pod needs a feature only available to the host user namespace, such as loading a kernel module with CAP_SYS_MODULE. When set to false, a new userns is created for the pod. Setting false is useful for mitigating container breakout vulnerabilities even allowing users to run their containers as root without actually having root privileges on the host. This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature.
 - `hostname` (String) Specifies the hostname of the Pod If not specified, the pod's hostname will be set to a system-defined value.
+- `hostname_override` (String) HostnameOverride specifies an explicit override for the pod's hostname as perceived by the pod. This field only specifies the pod's hostname and does not affect its DNS records. When this field is set to a non-empty string: - It takes precedence over the values set in `hostname` and `subdomain`. - The Pod's hostname will be set to this value. - `setHostnameAsFQDN` must be nil or set to false. - `hostNetwork` must be set to false.
+
+This field must be a valid DNS subdomain as defined in RFC 1123 and contain at most 64 characters. Requires the HostnameOverride feature gate to be enabled.
 - `image_pull_secrets` (Block List) ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec. If specified, these secrets will be passed to individual puller implementations for them to use. For example, in the case of docker, only DockerConfig type secrets are honored. More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--image_pull_secrets))
 - `init_containers` (Block List) List of initialization containers belonging to the pod. Init containers are executed in order prior to containers being started. If any init container fails, the pod is considered to have failed and is handled according to its restartPolicy. The name for an init container or normal container must be unique among all containers. Init containers may not have Lifecycle actions, Readiness probes, Liveness probes, or Startup probes. The resourceRequirements of an init container are taken into account during scheduling by finding the highest request/limit for each resource type, and then using the max of of that value or the sum of the normal containers. Limits are applied to init containers in a similar fashion. Init containers cannot currently be added or removed. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/ (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers))
 - `node_name` (String) NodeName is a request to schedule this pod onto a specific node. If it is non-empty, the scheduler simply schedules this pod onto that node, assuming that it fits resource requirements.
 - `node_selector` (Map of String) NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+- `os` (Block List, Max: 1) Specifies the OS of the containers in the pod. Some pod and container fields are restricted if this is set.
+
+If the OS field is set to linux, the following fields must be unset: -securityContext.windowsOptions
+
+If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup This is an alpha field and requires the IdentifyPodOS feature (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--os))
 - `overhead` (Map of String) Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller. If the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests. The RuntimeClass admission controller will reject Pod create requests which have the overhead already set. If RuntimeClass is configured and selected in the PodSpec, Overhead will be set to the value defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero. More info: https://git.k8s.io/enhancements/keps/sig-node/20190226-pod-overhead.md This field is alpha-level as of Kubernetes v1.16, and is only honored by servers that enable the PodOverhead feature.
 - `preemption_policy` (String) PreemptionPolicy is the Policy for preempting pods with lower priority. One of Never, PreemptLowerPriority. Defaults to PreemptLowerPriority if unset. This field is beta-level, gated by the NonPreemptingPriority feature-gate.
 - `priority` (Number) The priority value. Various system components use this field to find the priority of the pod. When Priority Admission Controller is enabled, it prevents users from setting this field. The admission controller populates this field from PriorityClassName. The higher the value, the higher the priority.
 - `priority_class_name` (String) If specified, indicates the pod's priority. "system-node-critical" and "system-cluster-critical" are two special keywords which indicate the highest priorities with the former being the highest priority. Any other name must be defined by creating a PriorityClass object with that name. If not specified, the pod priority will be default or zero if there is no default.
 - `readiness_gates` (Block List) If specified, all readiness gates will be evaluated for pod readiness. A pod is ready when all its containers are ready AND all conditions specified in the readiness gates have status equal to "True" More info: https://git.k8s.io/enhancements/keps/sig-network/0007-pod-ready%2B%2B.md (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--readiness_gates))
+- `resource_claims` (Block List) ResourceClaims defines which ResourceClaims must be allocated and reserved before the Pod is allowed to start. The resources will be made available to those containers which consume them by name.
+
+This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+This field is immutable. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--resource_claims))
+- `resources` (Block List, Max: 1) Resources is the total amount of CPU and Memory resources required by all containers in the pod. It supports specifying Requests and Limits for "cpu" and "memory" resource names only. ResourceClaims are not supported.
+
+This field enables fine-grained control over resource allocation for the entire pod, allowing resource sharing among containers in a pod.
+
+This is an alpha field and requires enabling the PodLevelResources feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--resources))
 - `restart_policy` (String) Restart policy for all containers within the pod. One of Always, OnFailure, Never. Default to Always. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy
 - `runtime_class_name` (String) RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used to run this pod.  If no RuntimeClass resource matches the named class, the pod will not be run. If unset or empty, the "legacy" RuntimeClass will be used, which is an implicit class with an empty definition that uses the default runtime handler. More info: https://git.k8s.io/enhancements/keps/sig-node/runtime-class.md This is a beta feature as of Kubernetes v1.14.
 - `scheduler_name` (String) If specified, the pod will be dispatched by specified scheduler. If not specified, the pod will be dispatched by default scheduler.
+- `scheduling_gates` (Block List) SchedulingGates is an opaque list of values that if specified will block scheduling the pod. More info:  https://git.k8s.io/enhancements/keps/sig-scheduling/3521-pod-scheduling-readiness.
+
+This is an alpha-level feature enabled by PodSchedulingReadiness feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--scheduling_gates))
 - `security_context` (Block List, Max: 1) SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty.  See type description for default values of each field. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--security_context))
 - `service_account` (String) DeprecatedServiceAccount is a depreciated alias for ServiceAccountName. Deprecated: Use serviceAccountName instead.
 - `service_account_name` (String) ServiceAccountName is the name of the ServiceAccount to use to run this pod. More info: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
@@ -333,6 +376,7 @@ Optional:
 - `tolerations` (Block List) If specified, the pod's tolerations. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--tolerations))
 - `topology_spread_constraints` (Block List) TopologySpreadConstraints describes how a group of pods ought to spread across topology domains. Scheduler will schedule pods in a way which abides by the constraints. All topologySpreadConstraints are ANDed. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--topology_spread_constraints))
 - `volumes` (Block List) List of volumes that can be mounted by containers belonging to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes))
+- `workload_ref` (Block List, Max: 1) WorkloadRef provides a reference to the Workload object that this Pod belongs to. This field is used by the scheduler to identify the PodGroup and apply the correct group scheduling policies. The Workload object referenced by this field may not exist at the time the Pod is created. This field is immutable, but a Workload object with the same name may be recreated with different policies. Doing this during pod scheduling may result in the placement not conforming to the expected policies. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--workload_ref))
 
 <a id="nestedblock--spec--job_template--spec--template--spec--containers"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.containers`
@@ -353,7 +397,10 @@ Optional:
 - `liveness_probe` (Block List, Max: 1) Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--liveness_probe))
 - `ports` (Block List) List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--ports))
 - `readiness_probe` (Block List, Max: 1) Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--readiness_probe))
+- `resize_policy` (Block List) Resources resize policy for the container. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--resize_policy))
 - `resources` (Block List, Max: 1) Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--resources))
+- `restart_policy` (String) RestartPolicy defines the restart behavior of individual containers in a pod. This field may only be set for init containers, and the only allowed value is "Always". For non-init containers or when this field is not specified, the restart behavior is defined by the Pod's restart policy and the container type. Setting the RestartPolicy as "Always" for the init container will have the following effect: this init container will be continually restarted on exit until all regular containers have terminated. Once all regular containers have completed, all init containers with restartPolicy "Always" will be shut down. This lifecycle differs from normal init containers and is often referred to as a "sidecar" container. Although this init container still starts in the init container sequence, it does not wait for the container to complete before proceeding to the next init container. Instead, the next init container starts immediately after this init container is started, or after any startupProbe has successfully completed.
+- `restart_policy_rules` (Block List) Represents a list of rules to be checked to determine if the container should be restarted on exit. The rules are evaluated in order. Once a rule matches a container exit condition, the remaining rules are ignored. If no rule matches the container exit condition, the Container-level restart policy determines the whether the container is restarted or not. Constraints on the rules: - At most 20 rules are allowed. - Rules can have the same action. - Identical rules are not forbidden in validations. When rules are specified, container MUST set RestartPolicy explicitly even it if matches the Pod's RestartPolicy. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--restart_policy_rules))
 - `security_context` (Block List, Max: 1) Security options the pod should run with. More info: https://kubernetes.io/docs/concepts/policy/security-context/ More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--security_context))
 - `startup_probe` (Block List, Max: 1) StartupProbe indicates that the Pod has successfully initialized. If specified, no other probes are executed until this completes successfully. If this probe fails, the Pod will be restarted, just as if the livenessProbe failed. This can be used to provide different probe parameters at the beginning of a Pod's lifecycle, when it might take a long time to load data or warm a cache, than during steady-state operation. This cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--startup_probe))
 - `stdin` (Boolean) Whether this container should allocate a buffer for stdin in the container runtime. If this is not set, reads from stdin in the container will always result in EOF. Default is false.
@@ -384,6 +431,7 @@ Optional:
 
 - `config_map_key_ref` (Block List, Max: 1) Selects a key of a ConfigMap. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--env--value_from--config_map_key_ref))
 - `field_ref` (Block List, Max: 1) Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--env--value_from--field_ref))
+- `file_key_ref` (Block List, Max: 1) FileKeyRef selects a key of the env file. Requires the EnvFiles feature gate to be enabled. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--env--value_from--file_key_ref))
 - `resource_field_ref` (Block List, Max: 1) Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--env--value_from--resource_field_ref))
 - `secret_key_ref` (Block List, Max: 1) Selects a key of a secret in the pod's namespace (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--env--value_from--secret_key_ref))
 
@@ -410,6 +458,19 @@ Required:
 Optional:
 
 - `api_version` (String) Version of the schema the FieldPath is written in terms of, defaults to "v1".
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--env--value_from--file_key_ref"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.env.value_from.file_key_ref`
+
+Optional:
+
+- `key` (String) The key within the env file. An invalid key will prevent the pod from starting. The keys defined within a source may consist of any printable ASCII characters except '='. During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+- `optional` (Boolean) Specify whether the file or its key must be defined. If the file or key does not exist, then the env var is not published. If optional is set to true and the specified key does not exist, the environment variable will not be set in the Pod's containers.
+
+If optional is set to false and the specified key does not exist, an error will be returned during Pod creation.
+- `path` (String) The path within the volume from which to select the file. Must be relative and may not contain the '..' path or start with '..'.
+- `volume_name` (String) The name of the volume mount containing the env file.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--env--value_from--resource_field_ref"></a>
@@ -475,6 +536,7 @@ Optional:
 
 - `post_start` (Block List, Max: 1) PostStart is called immediately after a container is created. If the handler fails, the container is terminated and restarted according to its restart policy. Other management of the container blocks until the hook completes. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--post_start))
 - `pre_stop` (Block List, Max: 1) PreStop is called immediately before a container is terminated due to an API request or management event such as liveness/startup probe failure, preemption, resource contention, etc. The handler is not called if the container crashes or exits. The reason for termination is passed to the handler. The Pod's termination grace period countdown begins before the PreStop hooked is executed. Regardless of the outcome of the handler, the container will eventually terminate within the Pod's termination grace period. Other management of the container blocks until the hook completes or until the termination grace period is reached. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--pre_stop))
+- `stop_signal` (String) StopSignal defines which signal will be sent to a container when it is being stopped. If not specified, the default is defined by the container runtime in use. StopSignal can only be set for Pods with a non-empty .spec.os.name
 
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--post_start"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.containers.lifecycle_.post_start`
@@ -483,6 +545,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--post_start--exec))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--post_start--http_get))
+- `sleep` (Block List, Max: 1) Sleep represents the duration that the container should sleep before being terminated. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--post_start--sleep))
 - `tcp_socket` (Block List, Max: 1) TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--post_start--tcp_socket))
 
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--post_start--exec"></a>
@@ -517,6 +580,14 @@ Required:
 
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--post_start--sleep"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.lifecycle_.post_start.sleep`
+
+Optional:
+
+- `seconds` (Number) Seconds is the number of seconds to sleep.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--post_start--tcp_socket"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.containers.lifecycle_.post_start.tcp_socket`
 
@@ -537,6 +608,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--pre_stop--exec))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--pre_stop--http_get))
+- `sleep` (Block List, Max: 1) Sleep represents the duration that the container should sleep before being terminated. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--pre_stop--sleep))
 - `tcp_socket` (Block List, Max: 1) TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--pre_stop--tcp_socket))
 
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--pre_stop--exec"></a>
@@ -571,6 +643,14 @@ Required:
 
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--pre_stop--sleep"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.lifecycle_.pre_stop.sleep`
+
+Optional:
+
+- `seconds` (Number) Seconds is the number of seconds to sleep.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--lifecycle_--pre_stop--tcp_socket"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.containers.lifecycle_.pre_stop.tcp_socket`
 
@@ -592,6 +672,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--liveness_probe--exec))
 - `failure_threshold` (Number) Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1.
+- `grpc` (Block List, Max: 1) GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--liveness_probe--grpc))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--liveness_probe--http_get))
 - `initial_delay_seconds` (Number) Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
 - `period_seconds` (Number) How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1.
@@ -606,6 +687,17 @@ Optional:
 Optional:
 
 - `command` (List of String) Command is the command line to execute inside the container, the working directory for the command  is root ('/') in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--liveness_probe--grpc"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.liveness_probe.grpc`
+
+Optional:
+
+- `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
+- `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+If this is not specified, the default behavior is defined by gRPC.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--liveness_probe--http_get"></a>
@@ -667,6 +759,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--readiness_probe--exec))
 - `failure_threshold` (Number) Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1.
+- `grpc` (Block List, Max: 1) GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--readiness_probe--grpc))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--readiness_probe--http_get))
 - `initial_delay_seconds` (Number) Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
 - `period_seconds` (Number) How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1.
@@ -681,6 +774,17 @@ Optional:
 Optional:
 
 - `command` (List of String) Command is the command line to execute inside the container, the working directory for the command  is root ('/') in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--readiness_probe--grpc"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.readiness_probe.grpc`
+
+Optional:
+
+- `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
+- `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+If this is not specified, the default behavior is defined by gRPC.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--readiness_probe--http_get"></a>
@@ -720,13 +824,57 @@ Optional:
 
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--resize_policy"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.resize_policy`
+
+Optional:
+
+- `resource_name` (String) Name of the resource to which this resource resize policy applies. Supported values: cpu, memory.
+- `restart_policy` (String) Restart policy to apply when specified resource is resized. If not specified, it defaults to NotRequired.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--resources"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.containers.resources`
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+This field is immutable. It can only be set for containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--resources--claims"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+- `request` (String) Request is the name chosen for a request in the referenced claim. If empty, everything from the claim is made available, otherwise only the result of this request.
+
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--restart_policy_rules"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.restart_policy_rules`
+
+Optional:
+
+- `action` (String) Specifies the action taken on a container exit if the requirements are satisfied. The only possible value is "Restart" to restart the container.
+- `exit_codes` (Block List, Max: 1) Represents the exit codes to check on container exits. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--restart_policy_rules--exit_codes))
+
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--restart_policy_rules--exit_codes"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.restart_policy_rules.exit_codes`
+
+Optional:
+
+- `operator` (String) Represents the relationship between the container exit code(s) and the specified values. Possible values are: - In: the requirement is satisfied if the container exit code is in the
+  set of specified values.
+- NotIn: the requirement is satisfied if the container exit code is
+  not in the set of specified values.
+- `values` (List of Number) Specifies the set of values to check for container exit codes. At most 255 elements are allowed.
+
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--security_context"></a>
@@ -735,6 +883,7 @@ Optional:
 Optional:
 
 - `allow_privilege_escalation` (Boolean) AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN
+- `app_armor_profile` (Block List, Max: 1) appArmorProfile is the AppArmor options to use by this container. If set, this profile overrides the pod's appArmorProfile. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--security_context--app_armor_profile))
 - `capabilities` (Block List, Max: 1) The capabilities to add/drop when running containers. Defaults to the default set of capabilities granted by the container runtime. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--security_context--capabilities))
 - `privileged` (Boolean) Run container in privileged mode. Processes in privileged containers are essentially equivalent to root on the host. Defaults to false.
 - `proc_mount` (String) procMount denotes the type of proc mount to use for the containers. The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths. This requires the ProcMountType feature flag to be enabled.
@@ -745,6 +894,18 @@ Optional:
 - `se_linux_options` (Block List, Max: 1) The SELinux context to be applied to the container. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in PodSecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--security_context--se_linux_options))
 - `seccomp_profile` (Block List, Max: 1) The seccomp options to use by this container. If seccomp options are provided at both the pod & container level, the container options override the pod options. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--security_context--seccomp_profile))
 - `windows_options` (Block List, Max: 1) The Windows specific settings applied to all containers. If unspecified, the options from the PodSecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--security_context--windows_options))
+
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--security_context--app_armor_profile"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.security_context.app_armor_profile`
+
+Optional:
+
+- `localhost_profile` (String) localhostProfile indicates a profile loaded on the node that should be used. The profile must be preconfigured on the node to work. Must match the loaded name of the profile. Must be set if and only if type is "Localhost".
+- `type` (String) type indicates which kind of AppArmor profile will be applied. Valid options are:
+  Localhost - a profile pre-loaded on the node.
+  RuntimeDefault - the container runtime's default profile.
+  Unconfined - no AppArmor enforcement.
+
 
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--security_context--capabilities"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.containers.security_context.capabilities`
@@ -787,6 +948,7 @@ Optional:
 
 - `gmsa_credential_spec` (String) GMSACredentialSpec is where the GMSA admission webhook (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the GMSA credential spec named by the GMSACredentialSpecName field.
 - `gmsa_credential_spec_name` (String) GMSACredentialSpecName is the name of the GMSA credential spec to use.
+- `host_process` (Boolean) HostProcess determines if a container should be run as a 'Host Process' container. This field is alpha-level and will only be honored by components that enable the WindowsHostProcessContainers feature flag. Setting this field without the feature flag will result in errors when validating the Pod. All of a Pod's containers must have the same effective HostProcess value (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).  In addition, if HostProcess is true then HostNetwork must also be set to true.
 - `run_as_user_name` (String) The UserName in Windows to run the entrypoint of the container process. Defaults to the user specified in image metadata if unspecified. May also be set in PodSecurityContext. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
 
 
@@ -798,6 +960,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--startup_probe--exec))
 - `failure_threshold` (Number) Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1.
+- `grpc` (Block List, Max: 1) GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--startup_probe--grpc))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--containers--startup_probe--http_get))
 - `initial_delay_seconds` (Number) Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
 - `period_seconds` (Number) How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1.
@@ -812,6 +975,17 @@ Optional:
 Optional:
 
 - `command` (List of String) Command is the command line to execute inside the container, the working directory for the command  is root ('/') in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--containers--startup_probe--grpc"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.containers.startup_probe.grpc`
+
+Optional:
+
+- `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
+- `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+If this is not specified, the default behavior is defined by gRPC.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--containers--startup_probe--http_get"></a>
@@ -872,6 +1046,15 @@ Optional:
 
 - `mount_propagation` (String) mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10.
 - `read_only` (Boolean) Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false.
+- `recursive_read_only` (String) RecursiveReadOnly specifies whether read-only mounts should be handled recursively.
+
+If ReadOnly is false, this field has no meaning and must be unspecified.
+
+If ReadOnly is true, and this field is set to Disabled, the mount is not made recursively read-only.  If this field is set to IfPossible, the mount is made recursively read-only, if it is supported by the container runtime.  If this field is set to Enabled, the mount is made recursively read-only if it is supported by the container runtime, otherwise the pod will not be started and an error will be generated to indicate the reason.
+
+If this field is set to IfPossible or Enabled, MountPropagation must be set to None (or be unspecified, which defaults to None).
+
+If this field is not specified, it is treated as an equivalent of Disabled.
 - `sub_path` (String) Path within the volume from which the container's volume should be mounted. Defaults to "" (volume's root).
 - `sub_path_expr` (String) Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to "" (volume's root). SubPathExpr and SubPath are mutually exclusive.
 
@@ -1008,6 +1191,8 @@ Required:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector. Also, MatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector. Also, MismatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
 - `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--affinity--pod_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
 - `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"
 
@@ -1067,6 +1252,8 @@ Required:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector. Also, MatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector. Also, MismatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
 - `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--affinity--pod_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
 - `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"
 
@@ -1142,6 +1329,8 @@ Required:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector. Also, MatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector. Also, MismatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
 - `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--affinity--pod_anti_affinity--preferred_during_scheduling_ignored_during_execution--pod_affinity_term--namespace_selector))
 - `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"
 
@@ -1201,6 +1390,8 @@ Required:
 Optional:
 
 - `label_selector` (Block List, Max: 1) A label query over a set of resources, in this case pods. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector. Also, MatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+- `mismatch_label_keys` (List of String) MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `LabelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both MismatchLabelKeys and LabelSelector. Also, MismatchLabelKeys cannot be set when LabelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
 - `namespace_selector` (Block List, Max: 1) A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--affinity--pod_anti_affinity--required_during_scheduling_ignored_during_execution--namespace_selector))
 - `namespaces` (List of String) namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"
 
@@ -1266,7 +1457,7 @@ Optional:
 Optional:
 
 - `name` (String) Required.
-- `value` (String)
+- `value` (String) Value is this DNS resolver option's value.
 
 
 
@@ -1289,7 +1480,10 @@ Optional:
 - `liveness_probe` (Block List, Max: 1) Probes are not allowed for ephemeral containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--liveness_probe))
 - `ports` (Block List) Ports are not allowed for ephemeral containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--ports))
 - `readiness_probe` (Block List, Max: 1) Probes are not allowed for ephemeral containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--readiness_probe))
+- `resize_policy` (Block List) Resources resize policy for the container. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--resize_policy))
 - `resources` (Block List, Max: 1) Resources are not allowed for ephemeral containers. Ephemeral containers use spare resources already allocated to the pod. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--resources))
+- `restart_policy` (String) Restart policy for the container to manage the restart behavior of each container within a pod. This may only be set for init containers. You cannot set this field on ephemeral containers.
+- `restart_policy_rules` (Block List) Represents a list of rules to be checked to determine if the container should be restarted on exit. You cannot set this field on ephemeral containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--restart_policy_rules))
 - `security_context` (Block List, Max: 1) SecurityContext is not allowed for ephemeral containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--security_context))
 - `startup_probe` (Block List, Max: 1) Probes are not allowed for ephemeral containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--startup_probe))
 - `stdin` (Boolean) Whether this container should allocate a buffer for stdin in the container runtime. If this is not set, reads from stdin in the container will always result in EOF. Default is false.
@@ -1321,6 +1515,7 @@ Optional:
 
 - `config_map_key_ref` (Block List, Max: 1) Selects a key of a ConfigMap. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--env--value_from--config_map_key_ref))
 - `field_ref` (Block List, Max: 1) Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--env--value_from--field_ref))
+- `file_key_ref` (Block List, Max: 1) FileKeyRef selects a key of the env file. Requires the EnvFiles feature gate to be enabled. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--env--value_from--file_key_ref))
 - `resource_field_ref` (Block List, Max: 1) Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--env--value_from--resource_field_ref))
 - `secret_key_ref` (Block List, Max: 1) Selects a key of a secret in the pod's namespace (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--env--value_from--secret_key_ref))
 
@@ -1347,6 +1542,19 @@ Required:
 Optional:
 
 - `api_version` (String) Version of the schema the FieldPath is written in terms of, defaults to "v1".
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--env--value_from--file_key_ref"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.env.value_from.file_key_ref`
+
+Optional:
+
+- `key` (String) The key within the env file. An invalid key will prevent the pod from starting. The keys defined within a source may consist of any printable ASCII characters except '='. During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+- `optional` (Boolean) Specify whether the file or its key must be defined. If the file or key does not exist, then the env var is not published. If optional is set to true and the specified key does not exist, the environment variable will not be set in the Pod's containers.
+
+If optional is set to false and the specified key does not exist, an error will be returned during Pod creation.
+- `path` (String) The path within the volume from which to select the file. Must be relative and may not contain the '..' path or start with '..'.
+- `volume_name` (String) The name of the volume mount containing the env file.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--env--value_from--resource_field_ref"></a>
@@ -1412,6 +1620,7 @@ Optional:
 
 - `post_start` (Block List, Max: 1) PostStart is called immediately after a container is created. If the handler fails, the container is terminated and restarted according to its restart policy. Other management of the container blocks until the hook completes. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--post_start))
 - `pre_stop` (Block List, Max: 1) PreStop is called immediately before a container is terminated due to an API request or management event such as liveness/startup probe failure, preemption, resource contention, etc. The handler is not called if the container crashes or exits. The reason for termination is passed to the handler. The Pod's termination grace period countdown begins before the PreStop hooked is executed. Regardless of the outcome of the handler, the container will eventually terminate within the Pod's termination grace period. Other management of the container blocks until the hook completes or until the termination grace period is reached. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--pre_stop))
+- `stop_signal` (String) StopSignal defines which signal will be sent to a container when it is being stopped. If not specified, the default is defined by the container runtime in use. StopSignal can only be set for Pods with a non-empty .spec.os.name
 
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--post_start"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.lifecycle_.post_start`
@@ -1420,6 +1629,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--post_start--exec))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--post_start--http_get))
+- `sleep` (Block List, Max: 1) Sleep represents the duration that the container should sleep before being terminated. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--post_start--sleep))
 - `tcp_socket` (Block List, Max: 1) TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--post_start--tcp_socket))
 
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--post_start--exec"></a>
@@ -1454,6 +1664,14 @@ Required:
 
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--post_start--sleep"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.lifecycle_.post_start.sleep`
+
+Optional:
+
+- `seconds` (Number) Seconds is the number of seconds to sleep.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--post_start--tcp_socket"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.lifecycle_.post_start.tcp_socket`
 
@@ -1474,6 +1692,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--pre_stop--exec))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--pre_stop--http_get))
+- `sleep` (Block List, Max: 1) Sleep represents the duration that the container should sleep before being terminated. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--pre_stop--sleep))
 - `tcp_socket` (Block List, Max: 1) TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--pre_stop--tcp_socket))
 
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--pre_stop--exec"></a>
@@ -1508,6 +1727,14 @@ Required:
 
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--pre_stop--sleep"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.lifecycle_.pre_stop.sleep`
+
+Optional:
+
+- `seconds` (Number) Seconds is the number of seconds to sleep.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--lifecycle_--pre_stop--tcp_socket"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.lifecycle_.pre_stop.tcp_socket`
 
@@ -1529,6 +1756,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--liveness_probe--exec))
 - `failure_threshold` (Number) Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1.
+- `grpc` (Block List, Max: 1) GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--liveness_probe--grpc))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--liveness_probe--http_get))
 - `initial_delay_seconds` (Number) Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
 - `period_seconds` (Number) How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1.
@@ -1543,6 +1771,17 @@ Optional:
 Optional:
 
 - `command` (List of String) Command is the command line to execute inside the container, the working directory for the command  is root ('/') in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--liveness_probe--grpc"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.liveness_probe.grpc`
+
+Optional:
+
+- `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
+- `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+If this is not specified, the default behavior is defined by gRPC.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--liveness_probe--http_get"></a>
@@ -1604,6 +1843,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--readiness_probe--exec))
 - `failure_threshold` (Number) Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1.
+- `grpc` (Block List, Max: 1) GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--readiness_probe--grpc))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--readiness_probe--http_get))
 - `initial_delay_seconds` (Number) Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
 - `period_seconds` (Number) How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1.
@@ -1618,6 +1858,17 @@ Optional:
 Optional:
 
 - `command` (List of String) Command is the command line to execute inside the container, the working directory for the command  is root ('/') in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--readiness_probe--grpc"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.readiness_probe.grpc`
+
+Optional:
+
+- `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
+- `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+If this is not specified, the default behavior is defined by gRPC.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--readiness_probe--http_get"></a>
@@ -1657,13 +1908,57 @@ Optional:
 
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--resize_policy"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.resize_policy`
+
+Optional:
+
+- `resource_name` (String) Name of the resource to which this resource resize policy applies. Supported values: cpu, memory.
+- `restart_policy` (String) Restart policy to apply when specified resource is resized. If not specified, it defaults to NotRequired.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--resources"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.resources`
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+This field is immutable. It can only be set for containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--resources--claims"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+- `request` (String) Request is the name chosen for a request in the referenced claim. If empty, everything from the claim is made available, otherwise only the result of this request.
+
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--restart_policy_rules"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.restart_policy_rules`
+
+Optional:
+
+- `action` (String) Specifies the action taken on a container exit if the requirements are satisfied. The only possible value is "Restart" to restart the container.
+- `exit_codes` (Block List, Max: 1) Represents the exit codes to check on container exits. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--restart_policy_rules--exit_codes))
+
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--restart_policy_rules--exit_codes"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.restart_policy_rules.exit_codes`
+
+Optional:
+
+- `operator` (String) Represents the relationship between the container exit code(s) and the specified values. Possible values are: - In: the requirement is satisfied if the container exit code is in the
+  set of specified values.
+- NotIn: the requirement is satisfied if the container exit code is
+  not in the set of specified values.
+- `values` (List of Number) Specifies the set of values to check for container exit codes. At most 255 elements are allowed.
+
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--security_context"></a>
@@ -1672,6 +1967,7 @@ Optional:
 Optional:
 
 - `allow_privilege_escalation` (Boolean) AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN
+- `app_armor_profile` (Block List, Max: 1) appArmorProfile is the AppArmor options to use by this container. If set, this profile overrides the pod's appArmorProfile. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--security_context--app_armor_profile))
 - `capabilities` (Block List, Max: 1) The capabilities to add/drop when running containers. Defaults to the default set of capabilities granted by the container runtime. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--security_context--capabilities))
 - `privileged` (Boolean) Run container in privileged mode. Processes in privileged containers are essentially equivalent to root on the host. Defaults to false.
 - `proc_mount` (String) procMount denotes the type of proc mount to use for the containers. The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths. This requires the ProcMountType feature flag to be enabled.
@@ -1682,6 +1978,18 @@ Optional:
 - `se_linux_options` (Block List, Max: 1) The SELinux context to be applied to the container. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in PodSecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--security_context--se_linux_options))
 - `seccomp_profile` (Block List, Max: 1) The seccomp options to use by this container. If seccomp options are provided at both the pod & container level, the container options override the pod options. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--security_context--seccomp_profile))
 - `windows_options` (Block List, Max: 1) The Windows specific settings applied to all containers. If unspecified, the options from the PodSecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--security_context--windows_options))
+
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--security_context--app_armor_profile"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.security_context.app_armor_profile`
+
+Optional:
+
+- `localhost_profile` (String) localhostProfile indicates a profile loaded on the node that should be used. The profile must be preconfigured on the node to work. Must match the loaded name of the profile. Must be set if and only if type is "Localhost".
+- `type` (String) type indicates which kind of AppArmor profile will be applied. Valid options are:
+  Localhost - a profile pre-loaded on the node.
+  RuntimeDefault - the container runtime's default profile.
+  Unconfined - no AppArmor enforcement.
+
 
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--security_context--capabilities"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.security_context.capabilities`
@@ -1724,6 +2032,7 @@ Optional:
 
 - `gmsa_credential_spec` (String) GMSACredentialSpec is where the GMSA admission webhook (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the GMSA credential spec named by the GMSACredentialSpecName field.
 - `gmsa_credential_spec_name` (String) GMSACredentialSpecName is the name of the GMSA credential spec to use.
+- `host_process` (Boolean) HostProcess determines if a container should be run as a 'Host Process' container. This field is alpha-level and will only be honored by components that enable the WindowsHostProcessContainers feature flag. Setting this field without the feature flag will result in errors when validating the Pod. All of a Pod's containers must have the same effective HostProcess value (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).  In addition, if HostProcess is true then HostNetwork must also be set to true.
 - `run_as_user_name` (String) The UserName in Windows to run the entrypoint of the container process. Defaults to the user specified in image metadata if unspecified. May also be set in PodSecurityContext. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
 
 
@@ -1735,6 +2044,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--startup_probe--exec))
 - `failure_threshold` (Number) Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1.
+- `grpc` (Block List, Max: 1) GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--startup_probe--grpc))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--startup_probe--http_get))
 - `initial_delay_seconds` (Number) Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
 - `period_seconds` (Number) How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1.
@@ -1749,6 +2059,17 @@ Optional:
 Optional:
 
 - `command` (List of String) Command is the command line to execute inside the container, the working directory for the command  is root ('/') in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--startup_probe--grpc"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.ephemeral_containers.startup_probe.grpc`
+
+Optional:
+
+- `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
+- `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+If this is not specified, the default behavior is defined by gRPC.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--ephemeral_containers--startup_probe--http_get"></a>
@@ -1809,6 +2130,15 @@ Optional:
 
 - `mount_propagation` (String) mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10.
 - `read_only` (Boolean) Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false.
+- `recursive_read_only` (String) RecursiveReadOnly specifies whether read-only mounts should be handled recursively.
+
+If ReadOnly is false, this field has no meaning and must be unspecified.
+
+If ReadOnly is true, and this field is set to Disabled, the mount is not made recursively read-only.  If this field is set to IfPossible, the mount is made recursively read-only, if it is supported by the container runtime.  If this field is set to Enabled, the mount is made recursively read-only if it is supported by the container runtime, otherwise the pod will not be started and an error will be generated to indicate the reason.
+
+If this field is set to IfPossible or Enabled, MountPropagation must be set to None (or be unspecified, which defaults to None).
+
+If this field is not specified, it is treated as an equivalent of Disabled.
 - `sub_path` (String) Path within the volume from which the container's volume should be mounted. Defaults to "" (volume's root).
 - `sub_path_expr` (String) Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to "" (volume's root). SubPathExpr and SubPath are mutually exclusive.
 
@@ -1850,7 +2180,10 @@ Optional:
 - `liveness_probe` (Block List, Max: 1) Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--liveness_probe))
 - `ports` (Block List) List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--ports))
 - `readiness_probe` (Block List, Max: 1) Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--readiness_probe))
+- `resize_policy` (Block List) Resources resize policy for the container. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--resize_policy))
 - `resources` (Block List, Max: 1) Compute Resources required by this container. Cannot be updated. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--resources))
+- `restart_policy` (String) RestartPolicy defines the restart behavior of individual containers in a pod. This field may only be set for init containers, and the only allowed value is "Always". For non-init containers or when this field is not specified, the restart behavior is defined by the Pod's restart policy and the container type. Setting the RestartPolicy as "Always" for the init container will have the following effect: this init container will be continually restarted on exit until all regular containers have terminated. Once all regular containers have completed, all init containers with restartPolicy "Always" will be shut down. This lifecycle differs from normal init containers and is often referred to as a "sidecar" container. Although this init container still starts in the init container sequence, it does not wait for the container to complete before proceeding to the next init container. Instead, the next init container starts immediately after this init container is started, or after any startupProbe has successfully completed.
+- `restart_policy_rules` (Block List) Represents a list of rules to be checked to determine if the container should be restarted on exit. The rules are evaluated in order. Once a rule matches a container exit condition, the remaining rules are ignored. If no rule matches the container exit condition, the Container-level restart policy determines the whether the container is restarted or not. Constraints on the rules: - At most 20 rules are allowed. - Rules can have the same action. - Identical rules are not forbidden in validations. When rules are specified, container MUST set RestartPolicy explicitly even it if matches the Pod's RestartPolicy. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--restart_policy_rules))
 - `security_context` (Block List, Max: 1) Security options the pod should run with. More info: https://kubernetes.io/docs/concepts/policy/security-context/ More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--security_context))
 - `startup_probe` (Block List, Max: 1) StartupProbe indicates that the Pod has successfully initialized. If specified, no other probes are executed until this completes successfully. If this probe fails, the Pod will be restarted, just as if the livenessProbe failed. This can be used to provide different probe parameters at the beginning of a Pod's lifecycle, when it might take a long time to load data or warm a cache, than during steady-state operation. This cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--startup_probe))
 - `stdin` (Boolean) Whether this container should allocate a buffer for stdin in the container runtime. If this is not set, reads from stdin in the container will always result in EOF. Default is false.
@@ -1881,6 +2214,7 @@ Optional:
 
 - `config_map_key_ref` (Block List, Max: 1) Selects a key of a ConfigMap. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--env--value_from--config_map_key_ref))
 - `field_ref` (Block List, Max: 1) Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--env--value_from--field_ref))
+- `file_key_ref` (Block List, Max: 1) FileKeyRef selects a key of the env file. Requires the EnvFiles feature gate to be enabled. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--env--value_from--file_key_ref))
 - `resource_field_ref` (Block List, Max: 1) Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--env--value_from--resource_field_ref))
 - `secret_key_ref` (Block List, Max: 1) Selects a key of a secret in the pod's namespace (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--env--value_from--secret_key_ref))
 
@@ -1907,6 +2241,19 @@ Required:
 Optional:
 
 - `api_version` (String) Version of the schema the FieldPath is written in terms of, defaults to "v1".
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--env--value_from--file_key_ref"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.env.value_from.file_key_ref`
+
+Optional:
+
+- `key` (String) The key within the env file. An invalid key will prevent the pod from starting. The keys defined within a source may consist of any printable ASCII characters except '='. During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+- `optional` (Boolean) Specify whether the file or its key must be defined. If the file or key does not exist, then the env var is not published. If optional is set to true and the specified key does not exist, the environment variable will not be set in the Pod's containers.
+
+If optional is set to false and the specified key does not exist, an error will be returned during Pod creation.
+- `path` (String) The path within the volume from which to select the file. Must be relative and may not contain the '..' path or start with '..'.
+- `volume_name` (String) The name of the volume mount containing the env file.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--env--value_from--resource_field_ref"></a>
@@ -1972,6 +2319,7 @@ Optional:
 
 - `post_start` (Block List, Max: 1) PostStart is called immediately after a container is created. If the handler fails, the container is terminated and restarted according to its restart policy. Other management of the container blocks until the hook completes. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--post_start))
 - `pre_stop` (Block List, Max: 1) PreStop is called immediately before a container is terminated due to an API request or management event such as liveness/startup probe failure, preemption, resource contention, etc. The handler is not called if the container crashes or exits. The reason for termination is passed to the handler. The Pod's termination grace period countdown begins before the PreStop hooked is executed. Regardless of the outcome of the handler, the container will eventually terminate within the Pod's termination grace period. Other management of the container blocks until the hook completes or until the termination grace period is reached. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--pre_stop))
+- `stop_signal` (String) StopSignal defines which signal will be sent to a container when it is being stopped. If not specified, the default is defined by the container runtime in use. StopSignal can only be set for Pods with a non-empty .spec.os.name
 
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--post_start"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.init_containers.lifecycle_.post_start`
@@ -1980,6 +2328,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--post_start--exec))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--post_start--http_get))
+- `sleep` (Block List, Max: 1) Sleep represents the duration that the container should sleep before being terminated. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--post_start--sleep))
 - `tcp_socket` (Block List, Max: 1) TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--post_start--tcp_socket))
 
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--post_start--exec"></a>
@@ -2014,6 +2363,14 @@ Required:
 
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--post_start--sleep"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.lifecycle_.post_start.sleep`
+
+Optional:
+
+- `seconds` (Number) Seconds is the number of seconds to sleep.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--post_start--tcp_socket"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.init_containers.lifecycle_.post_start.tcp_socket`
 
@@ -2034,6 +2391,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--pre_stop--exec))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--pre_stop--http_get))
+- `sleep` (Block List, Max: 1) Sleep represents the duration that the container should sleep before being terminated. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--pre_stop--sleep))
 - `tcp_socket` (Block List, Max: 1) TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--pre_stop--tcp_socket))
 
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--pre_stop--exec"></a>
@@ -2068,6 +2426,14 @@ Required:
 
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--pre_stop--sleep"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.lifecycle_.pre_stop.sleep`
+
+Optional:
+
+- `seconds` (Number) Seconds is the number of seconds to sleep.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--lifecycle_--pre_stop--tcp_socket"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.init_containers.lifecycle_.pre_stop.tcp_socket`
 
@@ -2089,6 +2455,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--liveness_probe--exec))
 - `failure_threshold` (Number) Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1.
+- `grpc` (Block List, Max: 1) GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--liveness_probe--grpc))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--liveness_probe--http_get))
 - `initial_delay_seconds` (Number) Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
 - `period_seconds` (Number) How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1.
@@ -2103,6 +2470,17 @@ Optional:
 Optional:
 
 - `command` (List of String) Command is the command line to execute inside the container, the working directory for the command  is root ('/') in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--liveness_probe--grpc"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.liveness_probe.grpc`
+
+Optional:
+
+- `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
+- `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+If this is not specified, the default behavior is defined by gRPC.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--liveness_probe--http_get"></a>
@@ -2164,6 +2542,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--readiness_probe--exec))
 - `failure_threshold` (Number) Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1.
+- `grpc` (Block List, Max: 1) GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--readiness_probe--grpc))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--readiness_probe--http_get))
 - `initial_delay_seconds` (Number) Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
 - `period_seconds` (Number) How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1.
@@ -2178,6 +2557,17 @@ Optional:
 Optional:
 
 - `command` (List of String) Command is the command line to execute inside the container, the working directory for the command  is root ('/') in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--readiness_probe--grpc"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.readiness_probe.grpc`
+
+Optional:
+
+- `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
+- `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+If this is not specified, the default behavior is defined by gRPC.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--readiness_probe--http_get"></a>
@@ -2217,13 +2607,57 @@ Optional:
 
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--resize_policy"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.resize_policy`
+
+Optional:
+
+- `resource_name` (String) Name of the resource to which this resource resize policy applies. Supported values: cpu, memory.
+- `restart_policy` (String) Restart policy to apply when specified resource is resized. If not specified, it defaults to NotRequired.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--resources"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.init_containers.resources`
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+This field is immutable. It can only be set for containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--resources--claims"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+- `request` (String) Request is the name chosen for a request in the referenced claim. If empty, everything from the claim is made available, otherwise only the result of this request.
+
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--restart_policy_rules"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.restart_policy_rules`
+
+Optional:
+
+- `action` (String) Specifies the action taken on a container exit if the requirements are satisfied. The only possible value is "Restart" to restart the container.
+- `exit_codes` (Block List, Max: 1) Represents the exit codes to check on container exits. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--restart_policy_rules--exit_codes))
+
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--restart_policy_rules--exit_codes"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.restart_policy_rules.exit_codes`
+
+Optional:
+
+- `operator` (String) Represents the relationship between the container exit code(s) and the specified values. Possible values are: - In: the requirement is satisfied if the container exit code is in the
+  set of specified values.
+- NotIn: the requirement is satisfied if the container exit code is
+  not in the set of specified values.
+- `values` (List of Number) Specifies the set of values to check for container exit codes. At most 255 elements are allowed.
+
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--security_context"></a>
@@ -2232,6 +2666,7 @@ Optional:
 Optional:
 
 - `allow_privilege_escalation` (Boolean) AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN
+- `app_armor_profile` (Block List, Max: 1) appArmorProfile is the AppArmor options to use by this container. If set, this profile overrides the pod's appArmorProfile. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--security_context--app_armor_profile))
 - `capabilities` (Block List, Max: 1) The capabilities to add/drop when running containers. Defaults to the default set of capabilities granted by the container runtime. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--security_context--capabilities))
 - `privileged` (Boolean) Run container in privileged mode. Processes in privileged containers are essentially equivalent to root on the host. Defaults to false.
 - `proc_mount` (String) procMount denotes the type of proc mount to use for the containers. The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths. This requires the ProcMountType feature flag to be enabled.
@@ -2242,6 +2677,18 @@ Optional:
 - `se_linux_options` (Block List, Max: 1) The SELinux context to be applied to the container. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in PodSecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--security_context--se_linux_options))
 - `seccomp_profile` (Block List, Max: 1) The seccomp options to use by this container. If seccomp options are provided at both the pod & container level, the container options override the pod options. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--security_context--seccomp_profile))
 - `windows_options` (Block List, Max: 1) The Windows specific settings applied to all containers. If unspecified, the options from the PodSecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--security_context--windows_options))
+
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--security_context--app_armor_profile"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.security_context.app_armor_profile`
+
+Optional:
+
+- `localhost_profile` (String) localhostProfile indicates a profile loaded on the node that should be used. The profile must be preconfigured on the node to work. Must match the loaded name of the profile. Must be set if and only if type is "Localhost".
+- `type` (String) type indicates which kind of AppArmor profile will be applied. Valid options are:
+  Localhost - a profile pre-loaded on the node.
+  RuntimeDefault - the container runtime's default profile.
+  Unconfined - no AppArmor enforcement.
+
 
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--security_context--capabilities"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.init_containers.security_context.capabilities`
@@ -2284,6 +2731,7 @@ Optional:
 
 - `gmsa_credential_spec` (String) GMSACredentialSpec is where the GMSA admission webhook (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the GMSA credential spec named by the GMSACredentialSpecName field.
 - `gmsa_credential_spec_name` (String) GMSACredentialSpecName is the name of the GMSA credential spec to use.
+- `host_process` (Boolean) HostProcess determines if a container should be run as a 'Host Process' container. This field is alpha-level and will only be honored by components that enable the WindowsHostProcessContainers feature flag. Setting this field without the feature flag will result in errors when validating the Pod. All of a Pod's containers must have the same effective HostProcess value (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).  In addition, if HostProcess is true then HostNetwork must also be set to true.
 - `run_as_user_name` (String) The UserName in Windows to run the entrypoint of the container process. Defaults to the user specified in image metadata if unspecified. May also be set in PodSecurityContext. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
 
 
@@ -2295,6 +2743,7 @@ Optional:
 
 - `exec` (Block List, Max: 1) One and only one of the following should be specified. Exec specifies the action to take. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--startup_probe--exec))
 - `failure_threshold` (Number) Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1.
+- `grpc` (Block List, Max: 1) GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--startup_probe--grpc))
 - `http_get` (Block List, Max: 1) HTTPGet specifies the http request to perform. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--init_containers--startup_probe--http_get))
 - `initial_delay_seconds` (Number) Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
 - `period_seconds` (Number) How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1.
@@ -2309,6 +2758,17 @@ Optional:
 Optional:
 
 - `command` (List of String) Command is the command line to execute inside the container, the working directory for the command  is root ('/') in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--init_containers--startup_probe--grpc"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.init_containers.startup_probe.grpc`
+
+Optional:
+
+- `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
+- `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+If this is not specified, the default behavior is defined by gRPC.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--init_containers--startup_probe--http_get"></a>
@@ -2369,9 +2829,26 @@ Optional:
 
 - `mount_propagation` (String) mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10.
 - `read_only` (Boolean) Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false.
+- `recursive_read_only` (String) RecursiveReadOnly specifies whether read-only mounts should be handled recursively.
+
+If ReadOnly is false, this field has no meaning and must be unspecified.
+
+If ReadOnly is true, and this field is set to Disabled, the mount is not made recursively read-only.  If this field is set to IfPossible, the mount is made recursively read-only, if it is supported by the container runtime.  If this field is set to Enabled, the mount is made recursively read-only if it is supported by the container runtime, otherwise the pod will not be started and an error will be generated to indicate the reason.
+
+If this field is set to IfPossible or Enabled, MountPropagation must be set to None (or be unspecified, which defaults to None).
+
+If this field is not specified, it is treated as an equivalent of Disabled.
 - `sub_path` (String) Path within the volume from which the container's volume should be mounted. Defaults to "" (volume's root).
 - `sub_path_expr` (String) Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to "" (volume's root). SubPathExpr and SubPath are mutually exclusive.
 
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--os"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.os`
+
+Optional:
+
+- `name` (String) Name is the name of the operating system. The currently supported values are linux and windows. Additional value may be defined in future and can be one of: https://github.com/opencontainers/runtime-spec/blob/master/config.md#platform-specific-configuration Clients should expect to handle additional values and treat unrecognized values in this field as os: null
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--readiness_gates"></a>
@@ -2382,11 +2859,77 @@ Required:
 - `condition_type` (String) ConditionType refers to a condition in the pod's condition list with matching type.
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--resource_claims"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.resource_claims`
+
+Optional:
+
+- `name` (String) Name uniquely identifies this resource claim inside the pod. This must be a DNS_LABEL.
+- `resource_claim_name` (String) ResourceClaimName is the name of a ResourceClaim object in the same namespace as this pod.
+
+Exactly one of ResourceClaimName and ResourceClaimTemplateName must be set.
+- `resource_claim_template_name` (String) ResourceClaimTemplateName is the name of a ResourceClaimTemplate object in the same namespace as this pod.
+
+The template will be used to create a new ResourceClaim, which will be bound to this pod. When this pod is deleted, the ResourceClaim will also be deleted. The pod name and resource name, along with a generated component, will be used to form a unique name for the ResourceClaim, which will be recorded in pod.status.resourceClaimStatuses.
+
+This field is immutable and no changes will be made to the corresponding ResourceClaim by the control plane after creating the ResourceClaim.
+
+Exactly one of ResourceClaimName and ResourceClaimTemplateName must be set.
+- `source` (Block List, Max: 1) Source describes where to find the ResourceClaim. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--resource_claims--source))
+
+<a id="nestedblock--spec--job_template--spec--template--spec--resource_claims--source"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.resource_claims.source`
+
+Optional:
+
+- `resource_claim_name` (String) ResourceClaimName is the name of a ResourceClaim object in the same namespace as this pod.
+- `resource_claim_template_name` (String) ResourceClaimTemplateName is the name of a ResourceClaimTemplate object in the same namespace as this pod.
+
+The template will be used to create a new ResourceClaim, which will be bound to this pod. When this pod is deleted, the ResourceClaim will also be deleted. The name of the ResourceClaim will be <pod name>-<resource name>, where <resource name> is the PodResourceClaim.Name. Pod validation will reject the pod if the concatenated name is not valid for a ResourceClaim (e.g. too long).
+
+An existing ResourceClaim with that name that is not owned by the pod will not be used for the pod to avoid using an unrelated resource by mistake. Scheduling and pod startup are then blocked until the unrelated ResourceClaim is removed.
+
+This field is immutable and no changes will be made to the corresponding ResourceClaim by the control plane after creating the ResourceClaim.
+
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--resources"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.resources`
+
+Optional:
+
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+This field is immutable. It can only be set for containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--resources--claims))
+- `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+- `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--job_template--spec--template--spec--resources--claims"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+- `request` (String) Request is the name chosen for a request in the referenced claim. If empty, everything from the claim is made available, otherwise only the result of this request.
+
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--scheduling_gates"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.scheduling_gates`
+
+Optional:
+
+- `name` (String) Name of the scheduling gate. Each scheduling gate must have a unique name field.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--security_context"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.security_context`
 
 Optional:
 
+- `app_armor_profile` (Block List, Max: 1) appArmorProfile is the AppArmor options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--security_context--app_armor_profile))
 - `fs_group` (Number) A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod:
 
 1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw----
@@ -2396,11 +2939,35 @@ If unset, the Kubelet will not modify the ownership and permissions of any volum
 - `run_as_group` (Number) The GID to run the entrypoint of the container process. Uses runtime default if unset. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container.
 - `run_as_non_root` (Boolean) Indicates that the container must run as a non-root user. If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does. If unset or false, no such validation will be performed. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
 - `run_as_user` (Number) The UID to run the entrypoint of the container process. Defaults to user specified in image metadata if unspecified. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container.
+- `se_linux_change_policy` (String) seLinuxChangePolicy defines how the container's SELinux label is applied to all volumes used by the Pod. It has no effect on nodes that do not support SELinux or to volumes does not support SELinux. Valid values are "MountOption" and "Recursive".
+
+"Recursive" means relabeling of all files on all Pod volumes by the container runtime. This may be slow for large volumes, but allows mixing privileged and unprivileged Pods sharing the same volume on the same node.
+
+"MountOption" mounts all eligible Pod volumes with `-o context` mount option. This requires all Pods that share the same volume to use the same SELinux label. It is not possible to share the same volume among privileged and unprivileged Pods. Eligible volumes are in-tree FibreChannel and iSCSI volumes, and all CSI volumes whose CSI driver announces SELinux support by setting spec.seLinuxMount: true in their CSIDriver instance. Other volumes are always re-labelled recursively. "MountOption" value is allowed only when SELinuxMount feature gate is enabled.
+
+If not specified and SELinuxMount feature gate is enabled, "MountOption" is used. If not specified and SELinuxMount feature gate is disabled, "MountOption" is used for ReadWriteOncePod volumes and "Recursive" for all other volumes.
+
+This field affects only Pods that have SELinux label set, either in PodSecurityContext or in SecurityContext of all containers.
+
+All Pods that use the same volume should use the same seLinuxChangePolicy, otherwise some pods can get stuck in ContainerCreating state. Note that this field cannot be set when spec.os.name is windows.
 - `se_linux_options` (Block List, Max: 1) The SELinux context to be applied to all containers. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--security_context--se_linux_options))
 - `seccomp_profile` (Block List, Max: 1) The seccomp options to use by the containers in this pod. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--security_context--seccomp_profile))
 - `supplemental_groups` (List of Number) A list of groups applied to the first process run in each container, in addition to the container's primary GID.  If unspecified, no groups will be added to any container.
+- `supplemental_groups_policy` (String) Defines how supplemental groups of the first container processes are calculated. Valid values are "Merge" and "Strict". If not specified, "Merge" is used. (Alpha) Using the field requires the SupplementalGroupsPolicy feature gate to be enabled and the container runtime must implement support for this feature. Note that this field cannot be set when spec.os.name is windows.
 - `sysctls` (Block List) Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--security_context--sysctls))
 - `windows_options` (Block List, Max: 1) The Windows specific settings applied to all containers. If unspecified, the options within a container's SecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--security_context--windows_options))
+
+<a id="nestedblock--spec--job_template--spec--template--spec--security_context--app_armor_profile"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.security_context.app_armor_profile`
+
+Optional:
+
+- `localhost_profile` (String) localhostProfile indicates a profile loaded on the node that should be used. The profile must be preconfigured on the node to work. Must match the loaded name of the profile. Must be set if and only if type is "Localhost".
+- `type` (String) type indicates which kind of AppArmor profile will be applied. Valid options are:
+  Localhost - a profile pre-loaded on the node.
+  RuntimeDefault - the container runtime's default profile.
+  Unconfined - no AppArmor enforcement.
+
 
 <a id="nestedblock--spec--job_template--spec--template--spec--security_context--se_linux_options"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.security_context.se_linux_options`
@@ -2443,6 +3010,7 @@ Optional:
 
 - `gmsa_credential_spec` (String) GMSACredentialSpec is where the GMSA admission webhook (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the GMSA credential spec named by the GMSACredentialSpecName field.
 - `gmsa_credential_spec_name` (String) GMSACredentialSpecName is the name of the GMSA credential spec to use.
+- `host_process` (Boolean) HostProcess determines if a container should be run as a 'Host Process' container. This field is alpha-level and will only be honored by components that enable the WindowsHostProcessContainers feature flag. Setting this field without the feature flag will result in errors when validating the Pod. All of a Pod's containers must have the same effective HostProcess value (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).  In addition, if HostProcess is true then HostNetwork must also be set to true.
 - `run_as_user_name` (String) The UserName in Windows to run the entrypoint of the container process. Defaults to the user specified in image metadata if unspecified. May also be set in PodSecurityContext. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
 
 
@@ -2474,6 +3042,18 @@ A constraint is considered "Unsatisfiable" for an incoming pod if and only if ev
 Optional:
 
 - `label_selector` (Block List, Max: 1) LabelSelector is used to find matching pods. Pods that match this label selector are counted to determine the number of pods in their corresponding topology domain. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--topology_spread_constraints--label_selector))
+- `match_label_keys` (List of String) MatchLabelKeys is a set of pod label keys to select the pods over which spreading will be calculated. The keys are used to lookup values from the incoming pod labels, those key-value labels are ANDed with labelSelector to select the group of existing pods over which spreading will be calculated for the incoming pod. Keys that don't exist in the incoming pod labels will be ignored. A null or empty list means only match against labelSelector.
+- `min_domains` (Number) MinDomains indicates a minimum number of eligible domains. When the number of eligible domains with matching topology keys is less than minDomains, Pod Topology Spread treats "global minimum" as 0, and then the calculation of Skew is performed. And when the number of eligible domains with matching topology keys equals or greater than minDomains, this value has no effect on scheduling. As a result, when the number of eligible domains is less than minDomains, scheduler won't schedule more than maxSkew Pods to those domains. If value is nil, the constraint behaves as if MinDomains is equal to 1. Valid values are integers greater than 0. When value is not nil, WhenUnsatisfiable must be DoNotSchedule.
+
+For example, in a 3-zone cluster, MaxSkew is set to 2, MinDomains is set to 5 and pods with the same labelSelector spread as 2/2/2: | zone1 | zone2 | zone3 | |  P P  |  P P  |  P P  | The number of domains is less than 5(MinDomains), so "global minimum" is treated as 0. In this situation, new pod with the same labelSelector cannot be scheduled, because computed skew will be 3(3 - 0) if new Pod is scheduled to any of the three zones, it will violate MaxSkew.
+
+This is an alpha field and requires enabling MinDomainsInPodTopologySpread feature gate.
+- `node_affinity_policy` (String) NodeAffinityPolicy indicates how we will treat Pod's nodeAffinity/nodeSelector when calculating pod topology spread skew. Options are: - Honor: only nodes matching nodeAffinity/nodeSelector are included in the calculations. - Ignore: nodeAffinity/nodeSelector are ignored. All nodes are included in the calculations.
+
+If this value is nil, the behavior is equivalent to the Honor policy. This is a alpha-level feature enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
+- `node_taints_policy` (String) NodeTaintsPolicy indicates how we will treat node taints when calculating pod topology spread skew. Options are: - Honor: nodes without taints, along with tainted nodes for which the incoming pod has a toleration, are included. - Ignore: node taints are ignored. All nodes are included.
+
+If this value is nil, the behavior is equivalent to the Ignore policy. This is a alpha-level feature enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
 
 <a id="nestedblock--spec--job_template--spec--template--spec--topology_spread_constraints--label_selector"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.topology_spread_constraints.label_selector`
@@ -2539,6 +3119,11 @@ This is a beta feature and only available when the GenericEphemeralVolume featur
 - `git_repo` (Block List, Max: 1) GitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--git_repo))
 - `glusterfs` (Block List, Max: 1) Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--glusterfs))
 - `host_path` (Block List, Max: 1) HostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--host_path))
+- `image` (Block List, Max: 1) image represents an OCI object (a container image or artifact) pulled and mounted on the kubelet's host machine. The volume is resolved at pod startup depending on which PullPolicy value is provided:
+
+- Always: the kubelet always attempts to pull the reference. Container creation will fail If the pull fails. - Never: the kubelet never pulls the reference and only uses a local image or artifact. Container creation will fail if the reference isn't present. - IfNotPresent: the kubelet pulls if the reference isn't already present on disk. Container creation will fail if the reference isn't present and the pull fails.
+
+The volume gets re-resolved if the pod gets deleted and recreated, which means that new remote content will become available on pod recreation. A failure to resolve or pull the image during pod startup will block containers from starting and may add significant latency. Failures will be retried using normal volume backoff and will be reported on the pod reason and message. The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field. The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images. The volume will be mounted read-only (ro) and non-executable files (noexec). Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath). The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--image))
 - `iscsi` (Block List, Max: 1) ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--iscsi))
 - `nfs` (Block List, Max: 1) NFS represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--nfs))
 - `persistent_volume_claim` (Block List, Max: 1) PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--persistent_volume_claim))
@@ -2776,9 +3361,16 @@ Optional:
 
 - `access_modes` (List of String) AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1
 - `data_source` (Block List, Max: 1) This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) * An existing custom resource that implements data population (Alpha) In order to use custom resource types that implement data population, the AnyVolumeDataSource feature gate must be enabled. If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--ephemeral--volume_claim_template--spec--data_source))
+- `data_source_ref` (Block List, Max: 1) Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef
+  allows any non-core object, as well as PersistentVolumeClaim objects.
+* While DataSource ignores disallowed values (dropping them), DataSourceRef
+  preserves all values, and generates an error if a disallowed value is
+  specified.
+(Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--ephemeral--volume_claim_template--spec--data_source_ref))
 - `resources` (Block List, Max: 1) Resources represents the minimum resources the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--ephemeral--volume_claim_template--spec--resources))
 - `selector` (Block List, Max: 1) A label query over volumes to consider for binding. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--ephemeral--volume_claim_template--spec--selector))
 - `storage_class_name` (String) Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1
+- `volume_attributes_class_name` (String) volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim. If specified, the CSI driver will create or update the volume with the attributes defined in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName, it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass will be applied to the claim but it's not allowed to reset this field to empty string once it is set. If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass will be set by the persistentvolume controller if it exists. If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource exists. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#volumeattributesclass (Alpha) Using this field requires the VolumeAttributesClass feature gate to be enabled.
 - `volume_mode` (String) volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec.
 - `volume_name` (String) VolumeName is the binding reference to the PersistentVolume backing this claim.
 
@@ -2795,13 +3387,37 @@ Optional:
 - `api_group` (String) APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--volumes--ephemeral--volume_claim_template--spec--data_source_ref"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.volumes.ephemeral.volume_claim_template.spec.data_source_ref`
+
+Optional:
+
+- `api_group` (String) APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
+- `kind` (String) Kind is the type of resource being referenced
+- `name` (String) Name is the name of resource being referenced
+- `namespace` (String) Namespace is the namespace of resource being referenced Note that when a namespace is specified, a gateway.networking.k8s.io/ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details. (Alpha) This field requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--volumes--ephemeral--volume_claim_template--spec--resources"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.volumes.ephemeral.volume_claim_template.spec.resources`
 
 Optional:
 
+- `claims` (Block List) Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+This field is immutable. It can only be set for containers. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--ephemeral--volume_claim_template--spec--resources--claims))
 - `limits` (Map of String) Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 - `requests` (Map of String) Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+<a id="nestedblock--spec--job_template--spec--template--spec--volumes--ephemeral--volume_claim_template--spec--resources--claims"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.volumes.ephemeral.volume_claim_template.spec.resources.claims`
+
+Optional:
+
+- `name` (String) Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--volumes--ephemeral--volume_claim_template--spec--selector"></a>
@@ -2875,6 +3491,7 @@ Optional:
 - `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
@@ -2993,6 +3610,15 @@ Optional:
 - `type` (String) Type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--volumes--image"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.volumes.image`
+
+Optional:
+
+- `pull_policy` (String) Policy for pulling OCI objects. Possible values are: Always: the kubelet always attempts to pull the reference. Container creation will fail If the pull fails. Never: the kubelet never pulls the reference and only uses a local image or artifact. Container creation will fail if the reference isn't present. IfNotPresent: the kubelet pulls if the reference isn't already present on disk. Container creation will fail if the reference isn't present and the pull fails. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise.
+- `reference` (String) Required: Image or artifact reference to be used. Behaves in the same way as pod.spec.containers[*].image. Pull secrets will be assembled in the same way as for the container image by looking up node credentials, SA image pull secrets, and pod spec image pull secrets. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.
+
+
 <a id="nestedblock--spec--job_template--spec--template--spec--volumes--iscsi"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.volumes.iscsi`
 
@@ -3085,10 +3711,61 @@ Optional:
 
 Optional:
 
+- `cluster_trust_bundle` (Block List, Max: 1) ClusterTrustBundle allows a pod to access the `.spec.trustBundle` field of ClusterTrustBundle objects in an auto-updating file.
+
+Alpha, gated by the ClusterTrustBundleProjection feature gate.
+
+ClusterTrustBundle objects can either be selected by name, or by the combination of signer name and a label selector.
+
+Kubelet performs aggressive normalization of the PEM contents written into the pod filesystem.  Esoteric PEM features such as inter-block comments and block headers are stripped.  Certificates are deduplicated. The ordering of certificates within the file is arbitrary, and Kubelet may change the order over time. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--cluster_trust_bundle))
 - `config_map` (Block List, Max: 1) information about the configMap data to project (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--config_map))
 - `downward_api` (Block List, Max: 1) information about the downwardAPI data to project (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--downward_api))
+- `pod_certificate` (Block List, Max: 1) Projects an auto-rotating credential bundle (private key and certificate chain) that the pod can use either as a TLS client or server.
+
+Kubelet generates a private key and uses it to send a PodCertificateRequest to the named signer.  Once the signer approves the request and issues a certificate chain, Kubelet writes the key and certificate chain to the pod filesystem.  The pod does not start until certificates have been issued for each podCertificate projected volume source in its spec.
+
+Kubelet will begin trying to rotate the certificate at the time indicated by the signer using the PodCertificateRequest.Status.BeginRefreshAt timestamp.
+
+Kubelet can write a single file, indicated by the credentialBundlePath field, or separate files, indicated by the keyPath and certificateChainPath fields.
+
+The credential bundle is a single file in PEM format.  The first PEM entry is the private key (in PKCS#8 format), and the remaining PEM entries are the certificate chain issued by the signer (typically, signers will return their certificate chain in leaf-to-root order).
+
+Prefer using the credential bundle format, since your application code can read it atomically.  If you use keyPath and certificateChainPath, your application must make two separate file reads. If these coincide with a certificate rotation, it is possible that the private key and leaf certificate you read may not correspond to each other.  Your application will need to check for this condition, and re-read until they are consistent.
+
+The named signer controls chooses the format of the certificate it issues; consult the signer implementation's documentation to learn how to use the certificates it issues. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--pod_certificate))
 - `secret` (Block List, Max: 1) information about the secret data to project (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--secret))
 - `service_account_token` (Block List, Max: 1) information about the serviceAccountToken data to project (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--service_account_token))
+
+<a id="nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--cluster_trust_bundle"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.volumes.projected.sources.cluster_trust_bundle`
+
+Optional:
+
+- `label_selector` (Block List, Max: 1) Select all ClusterTrustBundles that match this label selector.  Only has effect if signerName is set.  Mutually-exclusive with name.  If unset, interpreted as "match nothing".  If set but empty, interpreted as "match everything". (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--cluster_trust_bundle--label_selector))
+- `name` (String) Select a single ClusterTrustBundle by object name.  Mutually-exclusive with signerName and labelSelector.
+- `optional` (Boolean) If true, don't block pod startup if the referenced ClusterTrustBundle(s) aren't available.  If using name, then the named ClusterTrustBundle is allowed not to exist.  If using signerName, then the combination of signerName and labelSelector is allowed to match zero ClusterTrustBundles.
+- `path` (String) Relative path from the volume root to write the bundle.
+- `signer_name` (String) Select all ClusterTrustBundles that match this signer name. Mutually-exclusive with name.  The contents of all selected ClusterTrustBundles will be unified and deduplicated.
+
+<a id="nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--cluster_trust_bundle--label_selector"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.volumes.projected.sources.cluster_trust_bundle.label_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--cluster_trust_bundle--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--cluster_trust_bundle--label_selector--match_expressions"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.volumes.projected.sources.cluster_trust_bundle.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
 
 <a id="nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--config_map"></a>
 ### Nested Schema for `spec.job_template.spec.template.spec.volumes.projected.sources.config_map`
@@ -3158,6 +3835,44 @@ Optional:
 - `divisor` (String) Specifies the output format of the exposed resources, defaults to "1"
 
 
+
+
+<a id="nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--pod_certificate"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.volumes.projected.sources.pod_certificate`
+
+Optional:
+
+- `certificate_chain_path` (String) Write the certificate chain at this path in the projected volume.
+
+Most applications should use credentialBundlePath.  When using keyPath and certificateChainPath, your application needs to check that the key and leaf certificate are consistent, because it is possible to read the files mid-rotation.
+- `credential_bundle_path` (String) Write the credential bundle at this path in the projected volume.
+
+The credential bundle is a single file that contains multiple PEM blocks. The first PEM block is a PRIVATE KEY block, containing a PKCS#8 private key.
+
+The remaining blocks are CERTIFICATE blocks, containing the issued certificate chain from the signer (leaf and any intermediates).
+
+Using credentialBundlePath lets your Pod's application code make a single atomic read that retrieves a consistent key and certificate chain.  If you project them to separate files, your application code will need to additionally check that the leaf certificate was issued to the key.
+- `key_path` (String) Write the key at this path in the projected volume.
+
+Most applications should use credentialBundlePath.  When using keyPath and certificateChainPath, your application needs to check that the key and leaf certificate are consistent, because it is possible to read the files mid-rotation.
+- `key_type` (String) The type of keypair Kubelet will generate for the pod.
+
+Valid values are "RSA3072", "RSA4096", "ECDSAP256", "ECDSAP384", "ECDSAP521", and "ED25519".
+- `max_expiration_seconds` (Number) maxExpirationSeconds is the maximum lifetime permitted for the certificate.
+
+Kubelet copies this value verbatim into the PodCertificateRequests it generates for this projection.
+
+If omitted, kube-apiserver will set it to 86400(24 hours). kube-apiserver will reject values shorter than 3600 (1 hour).  The maximum allowable value is 7862400 (91 days).
+
+The signer implementation is then free to issue a certificate with any lifetime *shorter* than MaxExpirationSeconds, but no shorter than 3600 seconds (1 hour).  This constraint is enforced by kube-apiserver. `kubernetes.io` signers will never issue certificates with a lifetime longer than 24 hours.
+- `signer_name` (String) Kubelet's generated CSRs will be addressed to this signer.
+- `user_annotations` (Map of String) userAnnotations allow pod authors to pass additional information to the signer implementation.  Kubernetes does not restrict or validate this metadata in any way.
+
+These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of the PodCertificateRequest objects that Kubelet creates.
+
+Entries are subject to the same validation as object metadata annotations, with the addition that all keys must be domain-prefixed. No restrictions are placed on values, except an overall size limitation on the entire field.
+
+Signers should document the keys and values they support. Signers should deny requests that contain keys they do not recognize.
 
 
 <a id="nestedblock--spec--job_template--spec--template--spec--volumes--projected--sources--secret"></a>
@@ -3327,6 +4042,65 @@ Optional:
 
 
 
+<a id="nestedblock--spec--job_template--spec--template--spec--workload_ref"></a>
+### Nested Schema for `spec.job_template.spec.template.spec.workload_ref`
+
+Optional:
+
+- `name` (String) Name defines the name of the Workload object this Pod belongs to. Workload must be in the same namespace as the Pod. If it doesn't match any existing Workload, the Pod will remain unschedulable until a Workload object is created and observed by the kube-scheduler. It must be a DNS subdomain.
+- `pod_group` (String) PodGroup is the name of the PodGroup within the Workload that this Pod belongs to. If it doesn't match any existing PodGroup within the Workload, the Pod will remain unschedulable until the Workload object is recreated and observed by the kube-scheduler. It must be a DNS label.
+- `pod_group_replica_key` (String) PodGroupReplicaKey specifies the replica key of the PodGroup to which this Pod belongs. It is used to distinguish pods belonging to different replicas of the same pod group. The pod group policy is applied separately to each replica. When set, it must be a DNS label.
+
+
+
+
+<a id="nestedblock--spec--job_template--spec--pod_failure_policy"></a>
+### Nested Schema for `spec.job_template.spec.pod_failure_policy`
+
+Optional:
+
+- `rules` (Block List) A list of pod failure policy rules. The rules are evaluated in order. Once a rule matches a Pod failure, the remaining of the rules are ignored. When no rule matches the Pod failure, the default handling applies - the counter of pod failures is incremented and it is checked against the backoffLimit. At most 20 elements are allowed. (see [below for nested schema](#nestedblock--spec--job_template--spec--pod_failure_policy--rules))
+
+<a id="nestedblock--spec--job_template--spec--pod_failure_policy--rules"></a>
+### Nested Schema for `spec.job_template.spec.pod_failure_policy.rules`
+
+Optional:
+
+- `action` (String) Specifies the action taken on a pod failure when the requirements are satisfied. Possible values are: - FailJob: indicates that the pod's job is marked as Failed and all
+  running pods are terminated.
+- Ignore: indicates that the counter towards the .backoffLimit is not
+  incremented and a replacement pod is created.
+- Count: indicates that the pod is handled in the default way - the
+  counter towards the .backoffLimit is incremented.
+Additional values are considered to be added in the future. Clients should react to an unknown action by skipping the rule.
+- `on_exit_codes` (Block List, Max: 1) Represents the requirement on the container exit codes. (see [below for nested schema](#nestedblock--spec--job_template--spec--pod_failure_policy--rules--on_exit_codes))
+- `on_pod_conditions` (Block List) Represents the requirement on the pod conditions. The requirement is represented as a list of pod condition patterns. The requirement is satisfied if at least one pattern matches an actual pod condition. At most 20 elements are allowed. (see [below for nested schema](#nestedblock--spec--job_template--spec--pod_failure_policy--rules--on_pod_conditions))
+
+<a id="nestedblock--spec--job_template--spec--pod_failure_policy--rules--on_exit_codes"></a>
+### Nested Schema for `spec.job_template.spec.pod_failure_policy.rules.on_exit_codes`
+
+Optional:
+
+- `container_name` (String) Restricts the check for exit codes to the container with the specified name. When null, the rule applies to all containers. When specified, it should match one the container or initContainer names in the pod template.
+- `operator` (String) Represents the relationship between the container exit code(s) and the specified values. Containers completed with success (exit code 0) are excluded from the requirement check. Possible values are: - In: the requirement is satisfied if at least one container exit code
+  (might be multiple if there are multiple containers not restricted
+  by the 'containerName' field) is in the set of specified values.
+- NotIn: the requirement is satisfied if at least one container exit code
+  (might be multiple if there are multiple containers not restricted
+  by the 'containerName' field) is not in the set of specified values.
+Additional values are considered to be added in the future. Clients should react to an unknown operator by assuming the requirement is not satisfied.
+- `values` (List of Number) Specifies the set of values. Each returned container exit code (might be multiple in case of multiple containers) is checked against this set of values with respect to the operator. The list of values must be ordered and must not contain duplicates. Value '0' cannot be used for the In operator. At least one element is required. At most 255 elements are allowed.
+
+
+<a id="nestedblock--spec--job_template--spec--pod_failure_policy--rules--on_pod_conditions"></a>
+### Nested Schema for `spec.job_template.spec.pod_failure_policy.rules.on_pod_conditions`
+
+Optional:
+
+- `status` (String) Specifies the required Pod condition status. To match a pod condition it is required that the specified status equals the pod condition status. Defaults to True.
+- `type` (String) Specifies the required Pod condition type. To match a pod condition it is required that specified type equals the pod condition type.
+
+
 
 
 <a id="nestedblock--spec--job_template--spec--selector"></a>
@@ -3348,6 +4122,23 @@ Required:
 Optional:
 
 - `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+<a id="nestedblock--spec--job_template--spec--success_policy"></a>
+### Nested Schema for `spec.job_template.spec.success_policy`
+
+Optional:
+
+- `rules` (Block List) rules represents the list of alternative rules for the declaring the Jobs as successful before `.status.succeeded >= .spec.completions`. Once any of the rules are met, the "SucceededCriteriaMet" condition is added, and the lingering pods are removed. The terminal state for such a Job has the "Complete" condition. Additionally, these rules are evaluated in order; Once the Job meets one of the rules, other rules are ignored. At most 20 elements are allowed. (see [below for nested schema](#nestedblock--spec--job_template--spec--success_policy--rules))
+
+<a id="nestedblock--spec--job_template--spec--success_policy--rules"></a>
+### Nested Schema for `spec.job_template.spec.success_policy.rules`
+
+Optional:
+
+- `succeeded_count` (Number) succeededCount specifies the minimal required size of the actual set of the succeeded indexes for the Job. When succeededCount is used along with succeededIndexes, the check is constrained only to the set of indexes specified by succeededIndexes. For example, given that succeededIndexes is "1-4", succeededCount is "3", and completed indexes are "1", "3", and "5", the Job isn't declared as succeeded because only "1" and "3" indexes are considered in that rules. When this field is null, this doesn't default to any value and is never evaluated at any time. When specified it needs to be a positive integer.
+- `succeeded_indexes` (String) succeededIndexes specifies the set of indexes which need to be contained in the actual set of the succeeded indexes for the Job. The list of indexes must be within 0 to ".spec.completions-1" and must not contain duplicates. At least one element is required. The indexes are represented as intervals separated by commas. The intervals can be a decimal integer or a pair of decimal integers separated by a hyphen. The number are listed in represented by the first and last element of the series, separated by a hyphen. For example, if the completed indexes are 1, 3, 4, 5 and 7, they are represented as "1,3-5,7". When this field is null, this field doesn't default to any value and is never evaluated at any time.
 
 
 

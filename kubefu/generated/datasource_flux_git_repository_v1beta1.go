@@ -56,6 +56,32 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta1() *schema.Resource 
 				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"access_from": {
+						Type:        schema.TypeList,
+						Description: "AccessFrom defines an Access Control List for allowing cross-namespace references to this object.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"namespace_selectors": {
+								Type:        schema.TypeList,
+								Description: "NamespaceSelectors is the list of namespace selectors to which this ACL applies. Items in this list are evaluated using a logical OR operation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"match_labels": {
+										Type:        schema.TypeMap,
+										Description: "MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
 					"git_implementation": {
 						Type:        schema.TypeString,
 						Description: "Determines which git client library to use. Defaults to go-git, valid values are ('go-git', 'libgit2').",
@@ -69,6 +95,46 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta1() *schema.Resource 
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"include": {
+						Type:        schema.TypeList,
+						Description: "Extra git repositories to map into the repository",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"from_path": {
+								Type:        schema.TypeString,
+								Description: "The path to copy contents from, defaults to the root directory.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"repository": {
+								Type:        schema.TypeList,
+								Description: "Reference to a GitRepository to include.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"to_path": {
+								Type:        schema.TypeString,
+								Description: "The path to copy contents to, defaults to the name of the source ref.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"interval": {
 						Type:        schema.TypeString,
@@ -300,6 +366,50 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta1() *schema.Resource 
 							},
 						}},
 					},
+					"included_artifacts": {
+						Type:        schema.TypeList,
+						Description: "IncludedArtifacts represents the included artifacts from the last successful repository sync.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"checksum": {
+								Type:        schema.TypeString,
+								Description: "Checksum is the SHA1 checksum of the artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"last_update_time": {
+								Type:        schema.TypeString,
+								Description: "LastUpdateTime is the timestamp corresponding to the last update of this artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"path": {
+								Type:        schema.TypeString,
+								Description: "Path is the relative file path of this artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"revision": {
+								Type:        schema.TypeString,
+								Description: "Revision is a human readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm index timestamp, a Helm chart version, etc.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"url": {
+								Type:        schema.TypeString,
+								Description: "URL is the HTTP address of this artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"last_handled_reconcile_at": {
 						Type:        schema.TypeString,
 						Description: "LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change can be detected.",
@@ -333,7 +443,7 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Beta1Read(_ context.Conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1beta1", "GitRepository", "source.toolkit.fluxcd.io/v1beta1/GitRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.include.repository", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -40,7 +40,7 @@ Optional:
 
 Populated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 - `deletion_grace_period_seconds` (Number) Number of seconds allowed for this object to gracefully terminate before it will be removed from the system. Only set when deletionTimestamp is also set. May only be shortened. Read-only.
-- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field, once the finalizers list is empty. As long as the finalizers list contains items, deletion is blocked. Once the deletionTimestamp is set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
+- `deletion_timestamp` (String) DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not reachable by name) after the time in this field. Once set, this value may not be unset or be set further into the future, although it may be shortened or the resource may be deleted prior to this time. For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react by sending a graceful termination signal to the containers in the pod. After that 30 seconds, the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup, remove the pod from the API. In the presence of network partitions, this object may still exist after this timestamp, until an administrator or automated process can determine the resource is fully terminated. If not set, graceful deletion of the object has not been requested.
 
 Populated by the system when a graceful deletion is requested. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 - `finalizers` (List of String) Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.
@@ -54,6 +54,9 @@ Applied only if Name is not specified. More info: https://git.k8s.io/community/c
 
 When an object is created, the system will populate this list with the current set of initializers. Only privileged users may set or modify this list. Once it is empty, it may not be modified further by any user. (see [below for nested schema](#nestedblock--metadata--initializers))
 - `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `managed_fields` (Block List) ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like "ci-cd". The set of fields is always in the version that the workflow used when modifying the object.
+
+This field is alpha and can be changed or removed without notice. (see [below for nested schema](#nestedblock--metadata--managed_fields))
 - `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
 - `namespace` (String) Namespace defines the space within each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
 
@@ -70,18 +73,15 @@ Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-gu
 <a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
-Required:
-
-- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
-
 Optional:
 
+- `pending` (Block List) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
 - `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
 <a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Required:
+Optional:
 
 - `name` (String) name of the process that is responsible for initializing this object.
 
@@ -109,7 +109,7 @@ Optional:
 - `group` (String) The group attribute of the resource associated with the status StatusReason.
 - `kind` (String) The kind attribute of the resource associated with the status StatusReason. On some operations may differ from the requested resource Kind. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
 - `name` (String) The name attribute of the resource associated with the status StatusReason (when there is a single name which can be described).
-- `retry_after_seconds` (Number) If specified, the time in seconds before the operation should be retried. Some errors may indicate the client must take an alternate action - for those errors this field may indicate how long to wait before taking the alternate action.
+- `retry_after_seconds` (Number) If specified, the time in seconds before the operation should be retried.
 - `uid` (String) UID of the resource. (when there is a single resource which can be described). More info: http://kubernetes.io/docs/user-guide/identifiers#uids
 
 <a id="nestedblock--metadata--initializers--result--details--causes"></a>
@@ -133,10 +133,28 @@ Examples:
 Optional:
 
 - `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response.
+- `remaining_item_count` (Number) remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.
+
+This field is alpha and can be changed or removed without notice.
 - `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
-- `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
+- `self_link` (String) SelfLink is a URL representing this object. Populated by the system. Read-only.
 
 
+
+
+<a id="nestedblock--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String) APIVersion defines the version of this resource that this field set applies to. The format is "group/version" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.
+- `fields` (Map of String) Fields identifies a set of fields.
+- `fields_type` (String) FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: "FieldsV1"
+- `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
+- `manager` (String) Manager is an identifier of the workflow managing these fields.
+- `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
+- `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
 <a id="nestedblock--metadata--owner_references"></a>
@@ -163,6 +181,7 @@ Optional:
 
 - `config_source` (Block List, Max: 1) If specified, the source to get node configuration from The DynamicKubeletConfig feature gate must be enabled for the Kubelet to use this field (see [below for nested schema](#nestedblock--spec--config_source))
 - `external_id` (String) External ID of the node assigned by some machine database (e.g. a cloud provider). Deprecated.
+- `pod_cid_rs` (List of String) podCIDRs represents the IP ranges assigned to the node for usage by Pods on that node. If this field is specified, the 0th entry must match the podCIDR field. It may contain at most 1 value for each of IPv4 and IPv6.
 - `pod_cidr` (String) PodCIDR represents the pod IP range assigned to the node.
 - `provider_id` (String) ID of the node assigned by the cloud provider in the format: <ProviderName>://<ProviderSpecificNodeID>
 - `taints` (Block List) If specified, the node's taints. (see [below for nested schema](#nestedblock--spec--taints))
@@ -174,8 +193,21 @@ Optional:
 Optional:
 
 - `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+- `config_map` (Block List, Max: 1) ConfigMap is a reference to a Node's ConfigMap (see [below for nested schema](#nestedblock--spec--config_source--config_map))
 - `config_map_ref` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--config_source--config_map_ref))
 - `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+
+<a id="nestedblock--spec--config_source--config_map"></a>
+### Nested Schema for `spec.config_source.config_map`
+
+Optional:
+
+- `kubelet_config_key` (String) KubeletConfigKey declares which key of the referenced ConfigMap corresponds to the KubeletConfiguration structure This field is required in all cases.
+- `name` (String) Name is the metadata.name of the referenced ConfigMap. This field is required in all cases.
+- `namespace` (String) Namespace is the metadata.namespace of the referenced ConfigMap. This field is required in all cases.
+- `resource_version` (String) ResourceVersion is the metadata.ResourceVersion of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status.
+- `uid` (String) UID is the metadata.UID of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status.
+
 
 <a id="nestedblock--spec--config_source--config_map_ref"></a>
 ### Nested Schema for `spec.config_source.config_map_ref`
@@ -216,10 +248,14 @@ Optional:
 - `allocatable` (Map of String) Allocatable represents the resources of a node that are available for scheduling. Defaults to Capacity.
 - `capacity` (Map of String) Capacity represents the total resources of a node. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity
 - `conditions` (Block List) Conditions is an array of current observed node conditions. More info: https://kubernetes.io/docs/concepts/nodes/node/#condition (see [below for nested schema](#nestedblock--status--conditions))
+- `config` (Block List, Max: 1) Status of the config assigned to the node via the dynamic Kubelet config feature. (see [below for nested schema](#nestedblock--status--config))
 - `daemon_endpoints` (Block List, Max: 1) Endpoints of daemons running on the Node. (see [below for nested schema](#nestedblock--status--daemon_endpoints))
+- `declared_features` (List of String) DeclaredFeatures represents the features related to feature gates that are declared by the node.
+- `features` (Block List, Max: 1) Features describes the set of features implemented by the CRI implementation. (see [below for nested schema](#nestedblock--status--features))
 - `images` (Block List) List of container images on this node (see [below for nested schema](#nestedblock--status--images))
 - `node_info` (Block List, Max: 1) Set of ids/uuids to uniquely identify the node. More info: https://kubernetes.io/docs/concepts/nodes/node/#info (see [below for nested schema](#nestedblock--status--node_info))
 - `phase` (String) NodePhase is the recently observed lifecycle phase of the node. More info: https://kubernetes.io/docs/concepts/nodes/node/#phase The field is never populated, and now is deprecated.
+- `runtime_handlers` (Block List) The available runtime handlers. (see [below for nested schema](#nestedblock--status--runtime_handlers))
 - `volumes_attached` (Block List) List of volumes that are attached to the node. (see [below for nested schema](#nestedblock--status--volumes_attached))
 - `volumes_in_use` (List of String) List of attachable volumes in use (mounted) by the node.
 
@@ -248,6 +284,77 @@ Optional:
 - `reason` (String) (brief) reason for the condition's last transition.
 
 
+<a id="nestedblock--status--config"></a>
+### Nested Schema for `status.config`
+
+Optional:
+
+- `active` (Block List, Max: 1) Active reports the checkpointed config the node is actively using. Active will represent either the current version of the Assigned config, or the current LastKnownGood config, depending on whether attempting to use the Assigned config results in an error. (see [below for nested schema](#nestedblock--status--config--active))
+- `assigned` (Block List, Max: 1) Assigned reports the checkpointed config the node will try to use. When Node.Spec.ConfigSource is updated, the node checkpoints the associated config payload to local disk, along with a record indicating intended config. The node refers to this record to choose its config checkpoint, and reports this record in Assigned. Assigned only updates in the status after the record has been checkpointed to disk. When the Kubelet is restarted, it tries to make the Assigned config the Active config by loading and validating the checkpointed payload identified by Assigned. (see [below for nested schema](#nestedblock--status--config--assigned))
+- `error` (String) Error describes any problems reconciling the Spec.ConfigSource to the Active config. Errors may occur, for example, attempting to checkpoint Spec.ConfigSource to the local Assigned record, attempting to checkpoint the payload associated with Spec.ConfigSource, attempting to load or validate the Assigned config, etc. Errors may occur at different points while syncing config. Earlier errors (e.g. download or checkpointing errors) will not result in a rollback to LastKnownGood, and may resolve across Kubelet retries. Later errors (e.g. loading or validating a checkpointed config) will result in a rollback to LastKnownGood. In the latter case, it is usually possible to resolve the error by fixing the config assigned in Spec.ConfigSource. You can find additional information for debugging by searching the error message in the Kubelet log. Error is a human-readable description of the error state; machines can check whether or not Error is empty, but should not rely on the stability of the Error text across Kubelet versions.
+- `last_known_good` (Block List, Max: 1) LastKnownGood reports the checkpointed config the node will fall back to when it encounters an error attempting to use the Assigned config. The Assigned config becomes the LastKnownGood config when the node determines that the Assigned config is stable and correct. This is currently implemented as a 10-minute soak period starting when the local record of Assigned config is updated. If the Assigned config is Active at the end of this period, it becomes the LastKnownGood. Note that if Spec.ConfigSource is reset to nil (use local defaults), the LastKnownGood is also immediately reset to nil, because the local default config is always assumed good. You should not make assumptions about the node's method of determining config stability and correctness, as this may change or become configurable in the future. (see [below for nested schema](#nestedblock--status--config--last_known_good))
+
+<a id="nestedblock--status--config--active"></a>
+### Nested Schema for `status.config.active`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap is a reference to a Node's ConfigMap (see [below for nested schema](#nestedblock--status--config--active--config_map))
+
+<a id="nestedblock--status--config--active--config_map"></a>
+### Nested Schema for `status.config.active.config_map`
+
+Optional:
+
+- `kubelet_config_key` (String) KubeletConfigKey declares which key of the referenced ConfigMap corresponds to the KubeletConfiguration structure This field is required in all cases.
+- `name` (String) Name is the metadata.name of the referenced ConfigMap. This field is required in all cases.
+- `namespace` (String) Namespace is the metadata.namespace of the referenced ConfigMap. This field is required in all cases.
+- `resource_version` (String) ResourceVersion is the metadata.ResourceVersion of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status.
+- `uid` (String) UID is the metadata.UID of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status.
+
+
+
+<a id="nestedblock--status--config--assigned"></a>
+### Nested Schema for `status.config.assigned`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap is a reference to a Node's ConfigMap (see [below for nested schema](#nestedblock--status--config--assigned--config_map))
+
+<a id="nestedblock--status--config--assigned--config_map"></a>
+### Nested Schema for `status.config.assigned.config_map`
+
+Optional:
+
+- `kubelet_config_key` (String) KubeletConfigKey declares which key of the referenced ConfigMap corresponds to the KubeletConfiguration structure This field is required in all cases.
+- `name` (String) Name is the metadata.name of the referenced ConfigMap. This field is required in all cases.
+- `namespace` (String) Namespace is the metadata.namespace of the referenced ConfigMap. This field is required in all cases.
+- `resource_version` (String) ResourceVersion is the metadata.ResourceVersion of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status.
+- `uid` (String) UID is the metadata.UID of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status.
+
+
+
+<a id="nestedblock--status--config--last_known_good"></a>
+### Nested Schema for `status.config.last_known_good`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap is a reference to a Node's ConfigMap (see [below for nested schema](#nestedblock--status--config--last_known_good--config_map))
+
+<a id="nestedblock--status--config--last_known_good--config_map"></a>
+### Nested Schema for `status.config.last_known_good.config_map`
+
+Optional:
+
+- `kubelet_config_key` (String) KubeletConfigKey declares which key of the referenced ConfigMap corresponds to the KubeletConfiguration structure This field is required in all cases.
+- `name` (String) Name is the metadata.name of the referenced ConfigMap. This field is required in all cases.
+- `namespace` (String) Namespace is the metadata.namespace of the referenced ConfigMap. This field is required in all cases.
+- `resource_version` (String) ResourceVersion is the metadata.ResourceVersion of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status.
+- `uid` (String) UID is the metadata.UID of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status.
+
+
+
+
 <a id="nestedblock--status--daemon_endpoints"></a>
 ### Nested Schema for `status.daemon_endpoints`
 
@@ -264,15 +371,20 @@ Required:
 
 
 
-<a id="nestedblock--status--images"></a>
-### Nested Schema for `status.images`
-
-Required:
-
-- `names` (List of String) Names by which this image is known. e.g. ["k8s.gcr.io/hyperkube:v1.0.7", "dockerhub.io/google_containers/hyperkube:v1.0.7"]
+<a id="nestedblock--status--features"></a>
+### Nested Schema for `status.features`
 
 Optional:
 
+- `supplemental_groups_policy` (Boolean) SupplementalGroupsPolicy is set to true if the runtime supports SupplementalGroupsPolicy and ContainerUser.
+
+
+<a id="nestedblock--status--images"></a>
+### Nested Schema for `status.images`
+
+Optional:
+
+- `names` (List of String) Names by which this image is known. e.g. ["gcr.io/google_containers/hyperkube:v1.0.7", "dockerhub.io/google_containers/hyperkube:v1.0.7"]
 - `size_bytes` (Number) The size of the image in bytes.
 
 
@@ -291,6 +403,36 @@ Required:
 - `operating_system` (String) The Operating System reported by the node
 - `os_image` (String) OS Image reported by the node from /etc/os-release (e.g. Debian GNU/Linux 7 (wheezy)).
 - `system_uuid` (String) SystemUUID reported by the node. For unique machine identification MachineID is preferred. This field is specific to Red Hat hosts https://access.redhat.com/documentation/en-US/Red_Hat_Subscription_Management/1/html/RHSM/getting-system-uuid.html
+
+Optional:
+
+- `swap` (Block List, Max: 1) Swap Info reported by the node. (see [below for nested schema](#nestedblock--status--node_info--swap))
+
+<a id="nestedblock--status--node_info--swap"></a>
+### Nested Schema for `status.node_info.swap`
+
+Optional:
+
+- `capacity` (Number) Total amount of swap memory in bytes.
+
+
+
+<a id="nestedblock--status--runtime_handlers"></a>
+### Nested Schema for `status.runtime_handlers`
+
+Optional:
+
+- `features` (Block List, Max: 1) Supported features. (see [below for nested schema](#nestedblock--status--runtime_handlers--features))
+- `name` (String) Runtime handler name. Empty for the default runtime handler.
+
+<a id="nestedblock--status--runtime_handlers--features"></a>
+### Nested Schema for `status.runtime_handlers.features`
+
+Optional:
+
+- `recursive_read_only_mounts` (Boolean) RecursiveReadOnlyMounts is set to true if the runtime handler supports RecursiveReadOnlyMounts.
+- `user_namespaces` (Boolean) UserNamespaces is set to true if the runtime handler supports UserNamespaces, including for volumes.
+
 
 
 <a id="nestedblock--status--volumes_attached"></a>

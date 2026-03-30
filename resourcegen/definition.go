@@ -101,33 +101,57 @@ func (d Definition) AsDataSource(pkgName, provider string) (FileData, error) {
 }
 
 func applyDefinitionSchemaOverrides(def Definition, schemaMap map[string]*schema.Schema) {
-	if !isHelmReleaseDefinition(def) {
-		return
+	if isHelmReleaseDefinition(def) {
+		specField, ok := schemaMap["spec"]
+		if !ok || specField == nil {
+			return
+		}
+		specElem, ok := specField.Elem.(*schema.Resource)
+		if !ok || specElem == nil || specElem.Schema == nil {
+			return
+		}
+		specSchema := specElem.Schema
+		if _, ok := specSchema["values"]; !ok {
+			return
+		}
+		delete(specSchema, "values")
+		specSchema["values_yaml"] = &schema.Schema{
+			Type:        schema.TypeString,
+			Description: "Values holds the values for this Helm release as YAML.",
+			Optional:    true,
+			Required:    false,
+			Computed:    true,
+		}
 	}
-	specField, ok := schemaMap["spec"]
-	if !ok || specField == nil {
-		return
-	}
-	specElem, ok := specField.Elem.(*schema.Resource)
-	if !ok || specElem == nil || specElem.Schema == nil {
-		return
-	}
-	specSchema := specElem.Schema
-	if _, ok := specSchema["values"]; !ok {
-		return
-	}
-	delete(specSchema, "values")
-	specSchema["values_yaml"] = &schema.Schema{
-		Type:        schema.TypeString,
-		Description: "Values holds the values for this Helm release as YAML.",
-		Optional:    true,
-		Required:    false,
-		Computed:    true,
+	if isKustomizationDefinition(def) {
+		if _, ok := schemaMap["namespace"]; !ok {
+			schemaMap["namespace"] = &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "Namespace to apply to resources in this kustomization.",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			}
+		}
+		if _, ok := schemaMap["resources"]; !ok {
+			schemaMap["resources"] = &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Relative paths to resource files or directories.",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			}
+		}
 	}
 }
 
 func isHelmReleaseDefinition(def Definition) bool {
 	return strings.EqualFold(def.Kind, "HelmRelease") && strings.EqualFold(def.Group, "helm.toolkit.fluxcd.io")
+}
+
+func isKustomizationDefinition(def Definition) bool {
+	return strings.EqualFold(def.Kind, "Kustomization") && strings.EqualFold(def.Group, "kustomize.config.k8s.io")
 }
 
 // AsSchemaResource turns the definition into a Terraform schema.Resource that can

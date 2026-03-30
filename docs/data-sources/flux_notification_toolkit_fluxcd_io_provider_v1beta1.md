@@ -35,11 +35,22 @@ Provider is the Schema for the providers API
 Optional:
 
 - `address` (String) HTTP/S webhook address of this provider
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef can be given the name of a secret containing a PEM-encoded CA certificate (`caFile`) (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
 - `channel` (String) Alert channel for this provider
 - `proxy` (String) HTTP/S address of the proxy
 - `secret_ref` (Block List, Max: 1) Secret reference containing the provider webhook URL using "address" as data key (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `suspend` (Boolean) This flag tells the controller to suspend subsequent events handling. Defaults to false.
+- `timeout` (String) Timeout for sending alerts to the provider.
 - `type` (String) Type of provider
 - `username` (String) Bot username for this provider
+
+<a id="nestedblock--spec--cert_secret_ref"></a>
+### Nested Schema for `spec.cert_secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent
+
 
 <a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
@@ -56,6 +67,7 @@ Optional:
 Optional:
 
 - `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
+- `observed_generation` (Number) ObservedGeneration is the last reconciled generation.
 
 <a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`

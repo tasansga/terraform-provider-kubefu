@@ -107,6 +107,8 @@ Optional:
 author of commits. (see [below for nested schema](#nestedblock--spec--git--commit--author))
 - `message_template` (String) MessageTemplate provides a template for the commit message,
 into which will be interpolated the details of the change made.
+- `message_template_values` (Map of String) MessageTemplateValues provides additional values to be available to the
+templating rendering.
 - `signing_key` (Block List, Max: 1) SigningKey provides the option to sign commits with a GPG key (see [below for nested schema](#nestedblock--spec--git--commit--signing_key))
 
 <a id="nestedblock--spec--git--commit--author"></a>

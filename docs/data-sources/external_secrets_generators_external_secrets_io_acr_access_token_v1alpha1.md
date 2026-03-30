@@ -3,26 +3,14 @@
 page_title: "kubefu_external_secrets_generators_external_secrets_io_acr_access_token_v1alpha1 Data Source - terraform-provider-kubefu"
 subcategory: ""
 description: |-
-  ACRAccessToken returns a Azure Container Registry token
-  that can be used for pushing/pulling images.
-  Note: by default it will return an ACR Refresh Token with full access
-  (depending on the identity).
-  This can be scoped down to the repository level using .spec.scope.
-  In case scope is defined it will return an ACR Access Token.
+  ACRAccessToken returns a Azure Container Registry token that can be used for pushing/pulling images. Note: by default it will return an ACR Refresh Token with full access (depending on the identity). This can be scoped down to the repository level using .spec.scope. In case scope is defined it will return an ACR Access Token.
   See docs: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md
 ---
 
 # kubefu_external_secrets_generators_external_secrets_io_acr_access_token_v1alpha1 (Data Source)
 
-ACRAccessToken returns a Azure Container Registry token
-that can be used for pushing/pulling images.
-Note: by default it will return an ACR Refresh Token with full access
-(depending on the identity).
-This can be scoped down to the repository level using .spec.scope.
-In case scope is defined it will return an ACR Access Token.
-
-
-See docs: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md
+ACRAccessToken returns a Azure Container Registry token that can be used for pushing/pulling images. Note: by default it will return an ACR Refresh Token with full access (depending on the identity). This can be scoped down to the repository level using .spec.scope. In case scope is defined it will return an ACR Access Token.
+ See docs: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md
 
 
 
@@ -32,22 +20,13 @@ See docs: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Block List, Max: 1) ACRAccessTokenSpec defines how to generate the access token
-e.g. how to authenticate and which registry to use.
-see: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md#overview (see [below for nested schema](#nestedblock--spec))
+- `spec` (Block List, Max: 1) ACRAccessTokenSpec defines how to generate the access token e.g. how to authenticate and which registry to use. see: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md#overview (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
-- `api_version` (String) APIVersion defines the versioned schema of this representation of an object.
-Servers should convert recognized schemas to the latest internal value, and
-may reject unrecognized values.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
 - `id` (String) The ID of this resource.
-- `kind` (String) Kind is a string value representing the REST resource this object represents.
-Servers may infer this from the endpoint the client submits requests to.
-Cannot be updated.
-In CamelCase.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
@@ -56,24 +35,12 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 
 Optional:
 
-- `auth` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--auth))
-- `environment_type` (String) EnvironmentType specifies the Azure cloud environment endpoints to use for
-connecting and authenticating with Azure. By default it points to the public cloud AAD endpoint.
-The following endpoints are available, also see here: https://github.com/Azure/go-autorest/blob/main/autorest/azure/environments.go#L152
-PublicCloud, USGovernmentCloud, ChinaCloud, GermanCloud
-- `registry` (String) the domain name of the ACR registry
-e.g. foobarexample.azurecr.io
-- `scope` (String) Define the scope for the access token, e.g. pull/push access for a repository.
-if not provided it will return a refresh token that has full scope.
-Note: you need to pin it down to the repository level, there is no wildcard available.
-
-
-examples:
-repository:my-repository:pull,push
-repository:my-repository:pull
-
-
-see docs for details: https://docs.docker.com/registry/spec/auth/scope/
+- `auth` (Block List, Max: 1) ACRAuth defines the authentication methods for Azure Container Registry. (see [below for nested schema](#nestedblock--spec--auth))
+- `environment_type` (String) EnvironmentType specifies the Azure cloud environment endpoints to use for connecting and authenticating with Azure. By default it points to the public cloud AAD endpoint. The following endpoints are available, also see here: https://github.com/Azure/go-autorest/blob/main/autorest/azure/environments.go#L152 PublicCloud, USGovernmentCloud, ChinaCloud, GermanCloud
+- `registry` (String) the domain name of the ACR registry e.g. foobarexample.azurecr.io
+- `scope` (String) Define the scope for the access token, e.g. pull/push access for a repository. if not provided it will return a refresh token that has full scope. Note: you need to pin it down to the repository level, there is no wildcard available.
+ examples: repository:my-repository:pull,push repository:my-repository:pull
+ see docs for details: https://docs.docker.com/registry/spec/auth/scope/
 - `tenant_id` (String) TenantID configures the Azure Tenant to send requests to. Required for ServicePrincipal auth type.
 
 <a id="nestedblock--spec--auth"></a>
@@ -98,8 +65,7 @@ Optional:
 
 Optional:
 
-- `secret_ref` (Block List, Max: 1) Configuration used to authenticate with Azure using static
-credentials stored in a Kind=Secret. (see [below for nested schema](#nestedblock--spec--auth--service_principal--secret_ref))
+- `secret_ref` (Block List, Max: 1) Configuration used to authenticate with Azure using static credentials stored in a Kind=Secret. (see [below for nested schema](#nestedblock--spec--auth--service_principal--secret_ref))
 
 <a id="nestedblock--spec--auth--service_principal--secret_ref"></a>
 ### Nested Schema for `spec.auth.service_principal.secret_ref`
@@ -114,11 +80,9 @@ Optional:
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 <a id="nestedblock--spec--auth--service_principal--secret_ref--client_secret"></a>
@@ -126,11 +90,9 @@ to the namespace of the referent.
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -140,17 +102,13 @@ to the namespace of the referent.
 
 Optional:
 
-- `service_account_ref` (Block List, Max: 1) ServiceAccountRef specified the service account
-that should be used when authenticating with WorkloadIdentity. (see [below for nested schema](#nestedblock--spec--auth--workload_identity--service_account_ref))
+- `service_account_ref` (Block List, Max: 1) ServiceAccountRef specified the service account that should be used when authenticating with WorkloadIdentity. (see [below for nested schema](#nestedblock--spec--auth--workload_identity--service_account_ref))
 
 <a id="nestedblock--spec--auth--workload_identity--service_account_ref"></a>
 ### Nested Schema for `spec.auth.workload_identity.service_account_ref`
 
 Optional:
 
-- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
-If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-then this audiences will be appended to the list
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list
 - `name` (String) The name of the ServiceAccount resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.

@@ -131,16 +131,16 @@ func dataSourceK8sSchedulingK8sIoPriorityClassV1() *schema.Resource {
 							"pending": {
 								Type:        schema.TypeList,
 								Description: "Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
 										Description: "name of the process that is responsible for initializing this object.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 								}},
 							},
@@ -270,6 +270,13 @@ func dataSourceK8sSchedulingK8sIoPriorityClassV1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"remaining_item_count": {
+												Type:        schema.TypeInt,
+												Description: "remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.\n\nThis field is alpha and can be changed or removed without notice.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_version": {
 												Type:        schema.TypeString,
 												Description: "String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency",
@@ -332,6 +339,20 @@ func dataSourceK8sSchedulingK8sIoPriorityClassV1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"fields_type": {
+								Type:        schema.TypeString,
+								Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_v1": {
+								Type:        schema.TypeMap,
+								Description: "FieldsV1 holds the first JSON version format as described in the \"FieldsV1\" type.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"manager": {
 								Type:        schema.TypeString,
 								Description: "Manager is an identifier of the workflow managing these fields.",
@@ -342,6 +363,13 @@ func dataSourceK8sSchedulingK8sIoPriorityClassV1() *schema.Resource {
 							"operation": {
 								Type:        schema.TypeString,
 								Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -443,6 +471,13 @@ func dataSourceK8sSchedulingK8sIoPriorityClassV1() *schema.Resource {
 					},
 				}},
 			},
+			"preemption_policy": {
+				Type:        schema.TypeString,
+				Description: "PreemptionPolicy is the Policy for preempting pods with lower priority. One of Never, PreemptLowerPriority. Defaults to PreemptLowerPriority if unset. This field is alpha-level and is only honored by servers that enable the NonPreemptingPriority feature.",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+			},
 			"value": {
 				Type:        schema.TypeInt,
 				Description: "The value of this priority class. This is the actual priority that pods receive when they have the name of this class in their pod spec.",
@@ -460,7 +495,7 @@ func dataSourceK8sSchedulingK8sIoPriorityClassV1Read(_ context.Context, d *schem
 	if err := manifestpkg.SetDataSourceDefaults(d, "scheduling.k8s.io/v1", "PriorityClass", "scheduling.k8s.io/v1/PriorityClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"description", "global_default", "metadata", "value"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"description", "global_default", "metadata", "preemption_policy", "value"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

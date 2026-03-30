@@ -78,6 +78,21 @@ func dataSourceCertManagerAcmeCertManagerIoOrderV1Alpha3() *schema.Resource {
 						Computed:    true,
 						Elem: &schema.Schema{Type: schema.TypeString},
 					},
+					"duration": {
+						Type:        schema.TypeString,
+						Description: "Duration is the duration for the not after date for the requested certificate. this is set on order creation as pe the ACME spec.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"ip_addresses": {
+						Type:        schema.TypeList,
+						Description: "IPAddresses is a list of IP addresses that should be included as part of the Order validation process. This field must match the corresponding field on the DER encoded CSR.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
 					"issuer_ref": {
 						Type:        schema.TypeList,
 						Description: "IssuerRef references a properly configured ACME-type Issuer which should be used to create this Order. If the Issuer does not exist, processing will be retried. If the Issuer is not an 'ACME' Issuer, an error will be returned and the Order will be marked as failed.",

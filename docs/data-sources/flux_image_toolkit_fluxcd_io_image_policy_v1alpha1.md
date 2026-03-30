@@ -97,7 +97,7 @@ Optional:
 
 - `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
 - `latest_image` (String) LatestImage gives the first in the list of images scanned by the image repository, when filtered and ordered according to the policy.
-- `observed_generation` (Number)
+- `observed_generation` (Number) ObservedGeneration is the last reconciled generation.
 
 <a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`

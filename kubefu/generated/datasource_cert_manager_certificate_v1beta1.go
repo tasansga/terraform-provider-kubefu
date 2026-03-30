@@ -87,6 +87,13 @@ func dataSourceCertManagerCertManagerIoCertificateV1Beta1() *schema.Resource {
 						Computed:    true,
 						Elem: &schema.Schema{Type: schema.TypeString},
 					},
+					"encode_usages_in_request": {
+						Type:        schema.TypeBool,
+						Description: "EncodeUsagesInRequest controls whether key usages should be present in the CertificateRequest",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"ip_addresses": {
 						Type:        schema.TypeList,
 						Description: "IPAddresses is a list of IP address subjectAltNames to be set on the Certificate.",
@@ -270,12 +277,43 @@ func dataSourceCertManagerCertManagerIoCertificateV1Beta1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"revision_history_limit": {
+						Type:        schema.TypeInt,
+						Description: "revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history. Each revision represents a single `CertificateRequest` created by this Certificate, either when it was created, renewed, or Spec was changed. Revisions will be removed by oldest first if the number of revisions exceeds this number. If set, revisionHistoryLimit must be a value of `1` or greater. If unset (`nil`), revisions will not be garbage collected. Default value is `nil`.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"secret_name": {
 						Type:        schema.TypeString,
 						Description: "SecretName is the name of the secret resource that will be automatically created and managed by this Certificate resource. It will be populated with a private key and certificate, signed by the denoted issuer.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"secret_template": {
+						Type:        schema.TypeList,
+						Description: "SecretTemplate defines annotations and labels to be propagated to the Kubernetes Secret when it is created or updated. Once created, labels and annotations are not yet removed from the Secret when they are removed from the template. See https://github.com/jetstack/cert-manager/issues/4292",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"annotations": {
+								Type:        schema.TypeMap,
+								Description: "Annotations is a key value map to be copied to the target Kubernetes Secret.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"labels": {
+								Type:        schema.TypeMap,
+								Description: "Labels is a key value map to be copied to the target Kubernetes Secret.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"subject": {
 						Type:        schema.TypeList,
@@ -397,6 +435,13 @@ func dataSourceCertManagerCertManagerIoCertificateV1Beta1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "If set, this represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.condition[x].observedGeneration is 9, the condition is out of date with respect to the current state of the Certificate.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"reason": {
 								Type:        schema.TypeString,
 								Description: "Reason is a brief machine readable explanation for the condition's last transition.",
@@ -474,7 +519,7 @@ func dataSourceCertManagerCertManagerIoCertificateV1Beta1Read(_ context.Context,
 	if err := manifestpkg.SetDataSourceDefaults(d, "cert-manager.io/v1beta1", "Certificate", "cert-manager.io/v1beta1/Certificate"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "spec.keystores", "spec.keystores.jks", "spec.keystores.jks.password_secret_ref", "spec.keystores.pkcs12", "spec.keystores.pkcs12.password_secret_ref", "spec.private_key", "spec.subject", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "spec.keystores", "spec.keystores.jks", "spec.keystores.jks.password_secret_ref", "spec.keystores.pkcs12", "spec.keystores.pkcs12.password_secret_ref", "spec.private_key", "spec.secret_template", "spec.subject", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

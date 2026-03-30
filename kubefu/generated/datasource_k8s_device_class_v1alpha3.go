@@ -331,9 +331,9 @@ func dataSourceK8sResourceK8sIoDeviceClassV1Alpha3() *schema.Resource {
 							"node_selector_terms": {
 								Type:        schema.TypeList,
 								Description: "Required. A list of node selector terms. The terms are ORed.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"match_expressions": {
 										Type:        schema.TypeList,
@@ -345,16 +345,16 @@ func dataSourceK8sResourceK8sIoDeviceClassV1Alpha3() *schema.Resource {
 											"key": {
 												Type:        schema.TypeString,
 												Description: "The label key that the selector applies to.",
-												Optional:    false,
-												Required:    true,
-												Computed:    false,
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"operator": {
 												Type:        schema.TypeString,
 												Description: "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-												Optional:    false,
-												Required:    true,
-												Computed:    false,
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"values": {
 												Type:        schema.TypeList,
@@ -376,16 +376,16 @@ func dataSourceK8sResourceK8sIoDeviceClassV1Alpha3() *schema.Resource {
 											"key": {
 												Type:        schema.TypeString,
 												Description: "The label key that the selector applies to.",
-												Optional:    false,
-												Required:    true,
-												Computed:    false,
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"operator": {
 												Type:        schema.TypeString,
 												Description: "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-												Optional:    false,
-												Required:    true,
-												Computed:    false,
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"values": {
 												Type:        schema.TypeList,

@@ -283,9 +283,46 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Beta1() *schema.Resource {
 								Computed:    true,
 								MaxItems:    1,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"all_nodes": {
+										Type:        schema.TypeBool,
+										Description: "AllNodes indicates that all nodes have access to the device.\n\nMust only be set if Spec.PerDeviceNodeSelection is set to true. At most one of NodeName, NodeSelector and AllNodes can be set.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"allow_multiple_allocations": {
+										Type:        schema.TypeBool,
+										Description: "AllowMultipleAllocations marks whether the device is allowed to be allocated to multiple DeviceRequests.\n\nIf AllowMultipleAllocations is set to true, the device can be allocated more than once, and all of its capacity is consumable, regardless of whether the requestPolicy is defined or not.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"attributes": {
 										Type:        schema.TypeMap,
 										Description: "Attributes defines the set of attributes for this device. The name of each attribute must be unique in that set.\n\nThe maximum number of attributes and capacities combined is 32.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"binding_conditions": {
+										Type:        schema.TypeList,
+										Description: "BindingConditions defines the conditions for proceeding with binding. All of these conditions must be set in the per-device status conditions with a value of True to proceed with binding the pod to the node while scheduling the pod.\n\nThe maximum number of binding conditions is 4.\n\nThe conditions must be a valid condition type string.\n\nThis is an alpha field and requires enabling the DRADeviceBindingConditions and DRAResourceClaimDeviceStatus feature gates.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"binding_failure_conditions": {
+										Type:        schema.TypeList,
+										Description: "BindingFailureConditions defines the conditions for binding failure. They may be set in the per-device status conditions. If any is true, a binding failure occurred.\n\nThe maximum number of binding failure conditions is 4.\n\nThe conditions must be a valid condition type string.\n\nThis is an alpha field and requires enabling the DRADeviceBindingConditions and DRAResourceClaimDeviceStatus feature gates.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"binds_to_node": {
+										Type:        schema.TypeBool,
+										Description: "BindsToNode indicates if the usage of an allocation involving this device has to be limited to exactly the node that was chosen when allocating the claim. If set to true, the scheduler will set the ResourceClaim.Status.Allocation.NodeSelector to match the node where the allocation was made.\n\nThis is an alpha field and requires enabling the DRADeviceBindingConditions and DRAResourceClaimDeviceStatus feature gates.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -296,6 +333,154 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Beta1() *schema.Resource {
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
+									},
+									"consumes_counters": {
+										Type:        schema.TypeList,
+										Description: "ConsumesCounters defines a list of references to sharedCounters and the set of counters that the device will consume from those counter sets.\n\nThere can only be a single entry per counterSet.\n\nThe total number of device counter consumption entries must be <= 32. In addition, the total number in the entire ResourceSlice must be <= 1024 (for example, 64 devices with 16 counters each).",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"counter_set": {
+												Type:        schema.TypeString,
+												Description: "CounterSet is the name of the set from which the counters defined will be consumed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"counters": {
+												Type:        schema.TypeMap,
+												Description: "Counters defines the counters that will be consumed by the device.\n\nThe maximum number counters in a device is 32. In addition, the maximum number of all counters in all devices is 1024 (for example, 64 devices with 16 counters each).",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"node_name": {
+										Type:        schema.TypeString,
+										Description: "NodeName identifies the node where the device is available.\n\nMust only be set if Spec.PerDeviceNodeSelection is set to true. At most one of NodeName, NodeSelector and AllNodes can be set.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"node_selector": {
+										Type:        schema.TypeList,
+										Description: "NodeSelector defines the nodes where the device is available.\n\nMust use exactly one term.\n\nMust only be set if Spec.PerDeviceNodeSelection is set to true. At most one of NodeName, NodeSelector and AllNodes can be set.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"node_selector_terms": {
+												Type:        schema.TypeList,
+												Description: "Required. A list of node selector terms. The terms are ORed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"match_expressions": {
+														Type:        schema.TypeList,
+														Description: "A list of node selector requirements by node's labels.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"key": {
+																Type:        schema.TypeString,
+																Description: "The label key that the selector applies to.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"operator": {
+																Type:        schema.TypeString,
+																Description: "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"values": {
+																Type:        schema.TypeList,
+																Description: "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+																Elem: &schema.Schema{Type: schema.TypeString},
+															},
+														}},
+													},
+													"match_fields": {
+														Type:        schema.TypeList,
+														Description: "A list of node selector requirements by node's fields.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"key": {
+																Type:        schema.TypeString,
+																Description: "The label key that the selector applies to.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"operator": {
+																Type:        schema.TypeString,
+																Description: "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"values": {
+																Type:        schema.TypeList,
+																Description: "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+																Elem: &schema.Schema{Type: schema.TypeString},
+															},
+														}},
+													},
+												}},
+											},
+										}},
+									},
+									"taints": {
+										Type:        schema.TypeList,
+										Description: "If specified, these are the driver-defined taints.\n\nThe maximum number of taints is 4.\n\nThis is an alpha field and requires enabling the DRADeviceTaints feature gate.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"effect": {
+												Type:        schema.TypeString,
+												Description: "The effect of the taint on claims that do not tolerate the taint and through such claims on the pods using them. Valid effects are NoSchedule and NoExecute. PreferNoSchedule as used for nodes is not valid here.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"key": {
+												Type:        schema.TypeString,
+												Description: "The taint key to be applied to a device. Must be a label name.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"time_added": {
+												Type:        schema.TypeString,
+												Description: "TimeAdded represents the time at which the taint was added. Added automatically during create or update if not set.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"value": {
+												Type:        schema.TypeString,
+												Description: "The taint value corresponding to the taint key. Must be a label value.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
 									},
 								}},
 							},
@@ -403,6 +588,13 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Beta1() *schema.Resource {
 							},
 						}},
 					},
+					"per_device_node_selection": {
+						Type:        schema.TypeBool,
+						Description: "PerDeviceNodeSelection defines whether the access from nodes to resources in the pool is set on the ResourceSlice level or on each device. If it is set to true, every device defined the ResourceSlice must specify this individually.\n\nExactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must be set.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"pool": {
 						Type:        schema.TypeList,
 						Description: "Pool describes the pool that this ResourceSlice belongs to.",
@@ -435,6 +627,29 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Beta1() *schema.Resource {
 							},
 						}},
 					},
+					"shared_counters": {
+						Type:        schema.TypeList,
+						Description: "SharedCounters defines a list of counter sets, each of which has a name and a list of counters available.\n\nThe names of the SharedCounters must be unique in the ResourceSlice.\n\nThe maximum number of SharedCounters is 32.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"counters": {
+								Type:        schema.TypeMap,
+								Description: "Counters defines the set of counters for this CounterSet The name of each counter must be unique in that set and must be a DNS label.\n\nThe maximum number of counters is 32.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name defines the name of the counter set. It must be a DNS label.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 				}},
 			},
 		},
@@ -447,7 +662,7 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Beta1Read(_ context.Context, d *sc
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1beta1", "ResourceSlice", "resource.k8s.io/v1beta1/ResourceSlice"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.devices.basic", "spec.node_selector", "spec.pool"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.devices.basic", "spec.devices.basic.node_selector", "spec.node_selector", "spec.pool"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -110,6 +110,30 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"provider_": {
+						Type:        schema.TypeString,
+						Description: "Provider used for authentication, can be 'azure', 'generic'.\nWhen not specified, defaults to 'generic'.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"proxy_secret_ref": {
+						Type:        schema.TypeList,
+						Description: "ProxySecretRef specifies the Secret containing the proxy configuration to use while communicating with the Git server.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"recurse_submodules": {
 						Type:        schema.TypeBool,
 						Description: "RecurseSubmodules enables the initialization of all submodules within the GitRepository as cloned from the URL, using their default settings.",
@@ -178,6 +202,21 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1() *schema.Resource {
 								Computed:    true,
 							},
 						}},
+					},
+					"service_account_name": {
+						Type:        schema.TypeString,
+						Description: "ServiceAccountName is the name of the Kubernetes ServiceAccount used to\nauthenticate to the GitRepository. This field is only supported for 'azure' provider.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"sparse_checkout": {
+						Type:        schema.TypeList,
+						Description: "SparseCheckout specifies a list of directories to checkout when cloning\nthe repository. If specified, only these directories are included in the\nArtifact produced for this GitRepository.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
 					},
 					"suspend": {
 						Type:        schema.TypeBool,
@@ -480,6 +519,21 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"observed_sparse_checkout": {
+						Type:        schema.TypeList,
+						Description: "ObservedSparseCheckout is the observed list of directories used to\nproduce the current Artifact.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
+					"source_verification_mode": {
+						Type:        schema.TypeString,
+						Description: "SourceVerificationMode is the last used verification mode indicating which Git object(s) have been verified.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 				}},
 			},
 		},
@@ -492,7 +546,7 @@ func dataSourceFluxSourceToolkitFluxcdIoGitRepositoryV1Read(_ context.Context, d
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1", "GitRepository", "source.toolkit.fluxcd.io/v1/GitRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.include.repository", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact", "status.observed_include.repository"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.include.repository", "spec.proxy_secret_ref", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact", "status.observed_include.repository"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

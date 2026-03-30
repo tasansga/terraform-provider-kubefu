@@ -114,6 +114,13 @@ func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Beta2() *schema.Resource
 						Required:    false,
 						Computed:    true,
 					},
+					"insecure": {
+						Type:        schema.TypeBool,
+						Description: "Insecure allows connecting to a non-TLS HTTP container registry.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"interval": {
 						Type:        schema.TypeString,
 						Description: "Interval is the length of time to wait between scans of the image repository.",
@@ -127,6 +134,23 @@ func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Beta2() *schema.Resource
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"proxy_secret_ref": {
+						Type:        schema.TypeList,
+						Description: "ProxySecretRef specifies the Secret containing the proxy configuration\nto use while communicating with the container registry.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"secret_ref": {
 						Type:        schema.TypeList,
@@ -251,22 +275,29 @@ func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Beta2() *schema.Resource
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"latest_tags": {
 								Type:        schema.TypeList,
-								Description: "",
+								Description: "LatestTags is a small sample of the tags found in the last scan.\nIt's the first 10 tags when sorting all the tags in descending\nalphabetical order.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Schema{Type: schema.TypeString},
 							},
+							"revision": {
+								Type:        schema.TypeString,
+								Description: "Revision is a stable hash of the scanned tags.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"scan_time": {
 								Type:        schema.TypeString,
-								Description: "",
+								Description: "ScanTime is the time when the last scan was performed.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
 							},
 							"tag_count": {
 								Type:        schema.TypeInt,
-								Description: "",
+								Description: "TagCount is the number of tags found in the last scan.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -300,7 +331,7 @@ func dataSourceFluxImageToolkitFluxcdIoImageRepositoryV1Beta2Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "image.toolkit.fluxcd.io/v1beta2", "ImageRepository", "image.toolkit.fluxcd.io/v1beta2/ImageRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.cert_secret_ref", "spec.secret_ref", "status", "status.last_scan_result"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.cert_secret_ref", "spec.proxy_secret_ref", "spec.secret_ref", "status", "status.last_scan_result"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

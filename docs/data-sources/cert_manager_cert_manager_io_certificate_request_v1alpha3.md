@@ -40,9 +40,13 @@ Optional:
 
 - `csr` (String) The PEM-encoded x509 certificate signing request to be submitted to the CA for signing.
 - `duration` (String) The requested 'duration' (i.e. lifetime) of the Certificate. This option may be ignored/overridden by some issuer types.
+- `extra` (Map of String) Extra contains extra attributes of the user that created the CertificateRequest. Populated by the cert-manager webhook on creation and immutable.
+- `groups` (List of String) Groups contains group membership of the user that created the CertificateRequest. Populated by the cert-manager webhook on creation and immutable.
 - `is_ca` (Boolean) IsCA will request to mark the certificate as valid for certificate signing when submitting to the issuer. This will automatically add the `cert sign` usage to the list of `usages`.
 - `issuer_ref` (Block List, Max: 1) IssuerRef is a reference to the issuer for this CertificateRequest.  If the 'kind' field is not set, or set to 'Issuer', an Issuer resource with the given name in the same namespace as the CertificateRequest will be used.  If the 'kind' field is set to 'ClusterIssuer', a ClusterIssuer with the provided name will be used. The 'name' field in this stanza is required at all times. The group field refers to the API group of the issuer which defaults to 'cert-manager.io' if empty. (see [below for nested schema](#nestedblock--spec--issuer_ref))
+- `uid` (String) UID contains the uid of the user that created the CertificateRequest. Populated by the cert-manager webhook on creation and immutable.
 - `usages` (List of String) Usages is the set of x509 usages that are requested for the certificate. Defaults to `digital signature` and `key encipherment` if not specified.
+- `username` (String) Username contains the name of the user that created the CertificateRequest. Populated by the cert-manager webhook on creation and immutable.
 
 <a id="nestedblock--spec--issuer_ref"></a>
 ### Nested Schema for `spec.issuer_ref`

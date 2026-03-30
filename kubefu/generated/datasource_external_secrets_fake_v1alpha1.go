@@ -11,18 +11,18 @@ import (
 func dataSourceExternalSecretsGeneratorsExternalSecretsIoFakeV1Alpha1() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceExternalSecretsGeneratorsExternalSecretsIoFakeV1Alpha1Read,
-		Description: "Fake generator is used for testing. It lets you define\na static set of credentials that is always returned.",
+		Description: "Fake generator is used for testing. It lets you define a static set of credentials that is always returned.",
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
-				Description: "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
 			},
 			"kind": {
 				Type:        schema.TypeString,
-				Description: "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
@@ -58,14 +58,14 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoFakeV1Alpha1() *schema.
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 					"controller": {
 						Type:        schema.TypeString,
-						Description: "Used to select the correct ESO controller (think: ingress.ingressClassName)\nThe ESO controller is instantiated with a specific controller name and filters VDS based on this property",
+						Description: "Used to select the correct ESO controller (think: ingress.ingressClassName) The ESO controller is instantiated with a specific controller name and filters VDS based on this property",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
 					},
 					"data": {
 						Type:        schema.TypeMap,
-						Description: "Data defines the static data returned\nby this generator.",
+						Description: "Data defines the static data returned by this generator.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,

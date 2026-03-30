@@ -22,6 +22,12 @@ PrometheusRule defines recording and alerting rules for a Prometheus instance
 ### Optional
 
 - `metadata` (Map of String)
+- `status` (Block List, Max: 1) status defines the status subresource. It is under active development and is updated only when the
+"StatusForConfigurationResources" feature gate is enabled.
+
+Most recent observed status of the PrometheusRule. Read-only.
+More info:
+https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -43,19 +49,67 @@ Optional:
 
 Optional:
 
-- `interval` (String)
-- `name` (String)
-- `partial_response_strategy` (String)
-- `rules` (Block List) (see [below for nested schema](#nestedblock--spec--groups--rules))
+- `interval` (String) Interval determines how often rules in the group are evaluated.
+- `labels` (Map of String) Labels to add or overwrite before storing the result for its rules.
+The labels defined at the rule level take precedence.
+
+It requires Prometheus >= 3.0.0.
+The field is ignored for Thanos Ruler.
+- `limit` (Number) Limit the number of alerts an alerting rule and series a recording rule can produce. Limit is supported starting with Prometheus >= 2.31 and Thanos Ruler >= 0.24.
+- `name` (String) Name of the rule group.
+- `partial_response_strategy` (String) PartialResponseStrategy is only used by ThanosRuler and will be ignored by Prometheus instances. More info: https://github.com/thanos-io/thanos/blob/main/docs/components/rule.md#partial-response
+- `query_offset` (String) Defines the offset the rule evaluation timestamp of this particular group by the specified duration into the past.
+
+It requires Prometheus >= v2.53.0.
+It is not supported for ThanosRuler.
+- `rules` (Block List) List of alerting and recording rules. (see [below for nested schema](#nestedblock--spec--groups--rules))
 
 <a id="nestedblock--spec--groups--rules"></a>
 ### Nested Schema for `spec.groups.rules`
 
 Optional:
 
-- `alert` (String)
-- `annotations` (Map of String)
-- `expr` (String)
-- `for` (String)
-- `labels` (Map of String)
-- `record` (String)
+- `alert` (String) Name of the alert. Must be a valid label value. Only one of `record` and `alert` must be set.
+- `annotations` (Map of String) Annotations to add to each alert. Only valid for alerting rules.
+- `expr` (String) PromQL expression to evaluate.
+- `for` (String) Alerts are considered firing once they have been returned for this long.
+- `keep_firing_for` (String) KeepFiringFor defines how long an alert will continue firing after the condition that triggered it has cleared.
+- `labels` (Map of String) Labels to add or overwrite.
+- `record` (String) Name of the time series to output to. Must be a valid metric name. Only one of `record` and `alert` must be set.
+
+
+
+
+<a id="nestedblock--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `bindings` (Block List) bindings defines the list of workload resources (Prometheus, PrometheusAgent, ThanosRuler or Alertmanager) which select the configuration resource. (see [below for nested schema](#nestedblock--status--bindings))
+
+<a id="nestedblock--status--bindings"></a>
+### Nested Schema for `status.bindings`
+
+Optional:
+
+- `conditions` (Block List) conditions defines the current state of the configuration resource when bound to the referenced Workload object. (see [below for nested schema](#nestedblock--status--bindings--conditions))
+- `group` (String) group defines the group of the referenced resource.
+- `name` (String) name defines the name of the referenced object.
+- `namespace` (String) namespace defines the namespace of the referenced object.
+- `resource` (String) resource defines the type of resource being referenced (e.g. Prometheus, PrometheusAgent, ThanosRuler or Alertmanager).
+
+<a id="nestedblock--status--bindings--conditions"></a>
+### Nested Schema for `status.bindings.conditions`
+
+Optional:
+
+- `last_transition_time` (String) lastTransitionTime defines the time of the last update to the current status property.
+- `message` (String) message defines the human-readable message indicating details for the condition's last transition.
+- `observed_generation` (Number) observedGeneration defines the .metadata.generation that the
+condition was set based upon. For instance, if `.metadata.generation` is
+currently 12, but the `.status.conditions[].observedGeneration` is 9, the
+condition is out of date with respect to the current state of the object.
+- `reason` (String) reason for the condition's last transition.
+- `status` (String) status of the condition.
+- `type` (String) type of the condition being reported.
+Currently, only "Accepted" is supported.

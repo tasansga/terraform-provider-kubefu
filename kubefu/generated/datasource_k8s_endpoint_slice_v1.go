@@ -88,6 +88,22 @@ func dataSourceK8sDiscoveryK8sIoEndpointSliceV1() *schema.Resource {
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"for_nodes": {
+								Type:        schema.TypeList,
+								Description: "forNodes indicates the node(s) this endpoint should be consumed by when using topology aware routing. May contain a maximum of 8 entries. This is an Alpha feature and is only used when the PreferSameTrafficDistribution feature gate is enabled.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "name represents the name of the node.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"for_zones": {
 								Type:        schema.TypeList,
 								Description: "forZones indicates the zone(s) this endpoint should be consumed by to enable topology aware routing.",
@@ -319,6 +335,13 @@ func dataSourceK8sDiscoveryK8sIoEndpointSliceV1() *schema.Resource {
 							"operation": {
 								Type:        schema.TypeString,
 								Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,

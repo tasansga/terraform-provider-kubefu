@@ -82,6 +82,30 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmRepositoryV1Beta2() *schema.Resource
 							},
 						}},
 					},
+					"cert_secret_ref": {
+						Type:        schema.TypeList,
+						Description: "CertSecretRef can be given the name of a Secret containing either or both of \n - a PEM-encoded client certificate (`tls.crt`) and private key (`tls.key`); - a PEM-encoded CA certificate (`ca.crt`) \n and whichever are supplied, will be used for connecting to the registry. The client cert and key are useful if you are authenticating with a certificate; the CA cert is useful if you are using a self-signed server certificate. The Secret must be of type `Opaque` or `kubernetes.io/tls`. \n It takes precedence over the values specified in the Secret referred to by `.spec.secretRef`.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"insecure": {
+						Type:        schema.TypeBool,
+						Description: "Insecure allows connecting to a non-TLS HTTP container registry. This field is only taken into account if the .spec.type field is set to 'oci'.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"interval": {
 						Type:        schema.TypeString,
 						Description: "Interval at which to check the URL for updates.",
@@ -92,6 +116,13 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmRepositoryV1Beta2() *schema.Resource
 					"pass_credentials": {
 						Type:        schema.TypeBool,
 						Description: "PassCredentials allows the credentials from the SecretRef to be passed on to a host that does not match the host as defined in URL. This may be required if the host of the advertised chart URLs in the index differ from the defined URL. Enabling this should be done with caution, as it can potentially result in credentials getting stolen in a MITM-attack.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"provider_": {
+						Type:        schema.TypeString,
+						Description: "Provider used for authentication, can be 'aws', 'azure', 'gcp' or 'generic'. This field is optional, and only taken into account if the .spec.type field is set to 'oci'. When not specified, defaults to 'generic'.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -123,6 +154,13 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmRepositoryV1Beta2() *schema.Resource
 					"timeout": {
 						Type:        schema.TypeString,
 						Description: "Timeout of the index fetch operation, defaults to 60s.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"type": {
+						Type:        schema.TypeString,
+						Description: "Type of the HelmRepository. When this field is set to  \"oci\", the URL field value must be prefixed with \"oci://\".",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -159,9 +197,23 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmRepositoryV1Beta2() *schema.Resource
 								Required:    false,
 								Computed:    true,
 							},
+							"digest": {
+								Type:        schema.TypeString,
+								Description: "Digest is the digest of the file in the form of '<algorithm>:<checksum>'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"last_update_time": {
 								Type:        schema.TypeString,
 								Description: "LastUpdateTime is the timestamp corresponding to the last update of the Artifact.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"metadata": {
+								Type:        schema.TypeMap,
+								Description: "Metadata holds upstream information such as OCI annotations.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -280,7 +332,7 @@ func dataSourceFluxSourceToolkitFluxcdIoHelmRepositoryV1Beta2Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1beta2", "HelmRepository", "source.toolkit.fluxcd.io/v1beta2/HelmRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.secret_ref", "status", "status.artifact"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.cert_secret_ref", "spec.secret_ref", "status", "status.artifact"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

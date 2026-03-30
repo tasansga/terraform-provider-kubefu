@@ -36,12 +36,15 @@ Optional:
 
 - `access_from` (Block List, Max: 1) AccessFrom specifies an Access Control List for allowing cross-namespace references to this object. NOTE: Not implemented, provisional as of https://github.com/fluxcd/flux2/pull/2092 (see [below for nested schema](#nestedblock--spec--access_from))
 - `chart` (String) Chart is the name or path the Helm chart is available at in the SourceRef.
+- `ignore_missing_values_files` (Boolean) IgnoreMissingValuesFiles controls whether to silently ignore missing values
+files rather than failing.
 - `interval` (String) Interval is the interval at which to check the Source for updates.
 - `reconcile_strategy` (String) ReconcileStrategy determines what enables the creation of a new artifact. Valid values are ('ChartVersion', 'Revision'). See the documentation of the values for an explanation on their behavior. Defaults to ChartVersion when omitted.
 - `source_ref` (Block List, Max: 1) SourceRef is the reference to the Source the chart is available at. (see [below for nested schema](#nestedblock--spec--source_ref))
 - `suspend` (Boolean) Suspend tells the controller to suspend the reconciliation of this source.
 - `values_file` (String) ValuesFile is an alternative values file to use as the default chart values, expected to be a relative path in the SourceRef. Deprecated in favor of ValuesFiles, for backwards compatibility the file specified here is merged before the ValuesFiles items. Ignored when omitted.
 - `values_files` (List of String) ValuesFiles is an alternative list of values files to use as the chart values (values.yaml is not included by default), expected to be a relative path in the SourceRef. Values files are merged in the order of this list with the last file overriding the first. Ignored when omitted.
+- `verify` (Block List, Max: 1) Verify contains the secret name containing the trusted public keys used to verify the signature and specifies which provider to use to check whether OCI image is authentic. This field is only supported when using HelmRepository source with spec.type 'oci'. Chart dependencies, which are not bundled in the umbrella chart artifact, are not verified. (see [below for nested schema](#nestedblock--spec--verify))
 - `version` (String) Version is the chart version semver expression, ignored for charts from GitRepository and Bucket sources. Defaults to latest when omitted.
 
 <a id="nestedblock--spec--access_from"></a>
@@ -70,6 +73,33 @@ Optional:
 - `name` (String) Name of the referent.
 
 
+<a id="nestedblock--spec--verify"></a>
+### Nested Schema for `spec.verify`
+
+Optional:
+
+- `match_oidc_identity` (Block List) MatchOIDCIdentity specifies the identity matching criteria to use while verifying an OCI artifact which was signed using Cosign keyless signing. The artifact's identity is deemed to be verified if any of the specified matchers match against the identity. (see [below for nested schema](#nestedblock--spec--verify--match_oidc_identity))
+- `provider_` (String) Provider specifies the technology used to sign the OCI Artifact.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Kubernetes Secret containing the trusted public keys. (see [below for nested schema](#nestedblock--spec--verify--secret_ref))
+
+<a id="nestedblock--spec--verify--match_oidc_identity"></a>
+### Nested Schema for `spec.verify.match_oidc_identity`
+
+Optional:
+
+- `issuer` (String) Issuer specifies the regex pattern to match against to verify the OIDC issuer in the Fulcio certificate. The pattern must be a valid Go regular expression.
+- `subject` (String) Subject specifies the regex pattern to match against to verify the identity subject in the Fulcio certificate. The pattern must be a valid Go regular expression.
+
+
+<a id="nestedblock--spec--verify--secret_ref"></a>
+### Nested Schema for `spec.verify.secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
+
+
 
 <a id="nestedblock--status"></a>
 ### Nested Schema for `status`
@@ -82,6 +112,9 @@ Optional:
 - `observed_chart_name` (String) ObservedChartName is the last observed chart name as specified by the resolved chart reference.
 - `observed_generation` (Number) ObservedGeneration is the last observed generation of the HelmChart object.
 - `observed_source_artifact_revision` (String) ObservedSourceArtifactRevision is the last observed Artifact.Revision of the HelmChartSpec.SourceRef.
+- `observed_values_files` (List of String) ObservedValuesFiles are the observed value files of the last successful
+reconciliation.
+It matches the chart in the last successfully reconciled artifact.
 - `url` (String) URL is the dynamic fetch link for the latest Artifact. It is provided on a "best effort" basis, and using the precise BucketStatus.Artifact data is recommended.
 
 <a id="nestedblock--status--artifact"></a>
@@ -90,7 +123,9 @@ Optional:
 Optional:
 
 - `checksum` (String) Checksum is the SHA256 checksum of the Artifact file.
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
 - `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the Artifact.
+- `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
 - `path` (String) Path is the relative file path of the Artifact. It can be used to locate the file in the root of the Artifact storage on the local file system of the controller managing the Source.
 - `revision` (String) Revision is a human-readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
 - `size` (Number) Size is the number of bytes in the file.

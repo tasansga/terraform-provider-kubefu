@@ -155,6 +155,13 @@ func dataSourceK8sFlowcontrolApiserverK8sIoFlowSchemaV1Beta1() *schema.Resource 
 								Required:    false,
 								Computed:    true,
 							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"time": {
 								Type:        schema.TypeString,
 								Description: "Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'",
@@ -391,7 +398,7 @@ func dataSourceK8sFlowcontrolApiserverK8sIoFlowSchemaV1Beta1() *schema.Resource 
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"group": {
 										Type:        schema.TypeList,
-										Description: "",
+										Description: "`group` matches based on user group name.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -415,7 +422,7 @@ func dataSourceK8sFlowcontrolApiserverK8sIoFlowSchemaV1Beta1() *schema.Resource 
 									},
 									"service_account": {
 										Type:        schema.TypeList,
-										Description: "",
+										Description: "`serviceAccount` matches ServiceAccounts.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -439,7 +446,7 @@ func dataSourceK8sFlowcontrolApiserverK8sIoFlowSchemaV1Beta1() *schema.Resource 
 									},
 									"user": {
 										Type:        schema.TypeList,
-										Description: "",
+										Description: "`user` matches based on username.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,

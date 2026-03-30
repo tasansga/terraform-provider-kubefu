@@ -36,6 +36,13 @@ Optional:
 
 - `events` (List of String) Events specifies the list of event types to handle, e.g. 'push' for GitHub or 'Push Hook' for GitLab.
 - `interval` (String) Interval at which to reconcile the Receiver with its Secret references.
+- `resource_filter` (String) ResourceFilter is a CEL expression expected to return a boolean that is
+evaluated for each resource referenced in the Resources field when a
+webhook is received. If the expression returns false then the controller
+will not request a reconciliation for the resource.
+When the expression is specified the controller will parse it and mark
+the object as terminally failed if the expression is invalid or does not
+return a boolean.
 - `resources` (Block List) A list of resources to be notified about changes. (see [below for nested schema](#nestedblock--spec--resources))
 - `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing the token used to validate the payload authenticity. (see [below for nested schema](#nestedblock--spec--secret_ref))
 - `suspend` (Boolean) Suspend tells the controller to suspend subsequent events handling for this receiver.

@@ -43,7 +43,9 @@ Required:
 Optional:
 
 - `conditions` (Block List, Max: 1) conditions contains information about the current status of the endpoint. (see [below for nested schema](#nestedblock--endpoints--conditions))
+- `hints` (Block List, Max: 1) hints contains information associated with how an endpoint should be consumed. (see [below for nested schema](#nestedblock--endpoints--hints))
 - `hostname` (String) hostname of this endpoint. This field may be used by consumers of endpoints to distinguish endpoints from each other (e.g. in DNS names). Multiple endpoints which use the same hostname should be considered fungible (e.g. multiple A values in DNS). Must pass DNS Label (RFC 1123) validation.
+- `node_name` (String) nodeName represents the name of the Node hosting this endpoint. This can be used to determine endpoints local to a Node. This field can be enabled with the EndpointSliceNodeName feature gate.
 - `target_ref` (Block List, Max: 1) targetRef is a reference to a Kubernetes object that represents this endpoint. (see [below for nested schema](#nestedblock--endpoints--target_ref))
 - `topology` (Map of String) topology contains arbitrary topology information associated with the endpoint. These key/value pairs must conform with the label format. https://kubernetes.io/docs/concepts/overview/working-with-objects/labels Topology may include a maximum of 16 key/value pairs. This includes, but is not limited to the following well known keys: * kubernetes.io/hostname: the value indicates the hostname of the node
   where the endpoint is located. This should match the corresponding
@@ -59,6 +61,24 @@ Optional:
 Optional:
 
 - `ready` (Boolean) ready indicates that this endpoint is prepared to receive traffic, according to whatever system is managing the endpoint. A nil value indicates an unknown state. In most cases consumers should interpret this unknown state as ready.
+- `serving` (Boolean) serving is identical to ready except that it is set regardless of the terminating state of endpoints. This condition should be set to true for a ready endpoint that is terminating. If nil, consumers should defer to the ready condition. This field can be enabled with the EndpointSliceTerminatingCondition feature gate.
+- `terminating` (Boolean) terminating indicates that this endpoint is terminating. A nil value indicates an unknown state. Consumers should interpret this unknown state to mean that the endpoint is not terminating. This field can be enabled with the EndpointSliceTerminatingCondition feature gate.
+
+
+<a id="nestedblock--endpoints--hints"></a>
+### Nested Schema for `endpoints.hints`
+
+Optional:
+
+- `for_zones` (Block List) forZones indicates the zone(s) this endpoint should be consumed by to enable topology aware routing. May contain a maximum of 8 entries. (see [below for nested schema](#nestedblock--endpoints--hints--for_zones))
+
+<a id="nestedblock--endpoints--hints--for_zones"></a>
+### Nested Schema for `endpoints.hints.for_zones`
+
+Optional:
+
+- `name` (String) name represents the name of the zone.
+
 
 
 <a id="nestedblock--endpoints--target_ref"></a>
@@ -124,6 +144,7 @@ Optional:
 - `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
 - `manager` (String) Manager is an identifier of the workflow managing these fields.
 - `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
 - `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 

@@ -50,7 +50,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoCloudsmithAccessTokenV1
 			},
 			"spec": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "CloudsmithAccessTokenSpec defines the configuration for generating a Cloudsmith access token using OIDC authentication.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,

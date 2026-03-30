@@ -63,6 +63,8 @@ Optional:
 
 - `branch` (String) The Git branch to checkout, defaults to master.
 - `commit` (String) The Git commit SHA to checkout, if specified Tag filters will be ignored.
+- `name` (String) Name of the reference to check out; takes precedence over Branch, Tag and SemVer.
+ It must be a valid Git reference: https://git-scm.com/docs/git-check-ref-format#_description Examples: "refs/heads/main", "refs/tags/v0.1.0", "refs/pull/420/head", "refs/merge-requests/1/head"
 - `semver` (String) The Git tag semver expression, takes precedence over Tag.
 - `tag` (String) The Git tag to checkout, takes precedence over Branch.
 
@@ -109,6 +111,8 @@ Optional:
 Optional:
 
 - `branch` (String) Branch specifies that commits should be pushed to the branch named. The branch is created using `.spec.checkout.branch` as the starting point, if it doesn't already exist.
+- `options` (Map of String) Options specifies the push options that are sent to the Git server when performing a push operation. For details, see: https://git-scm.com/docs/git-push#Documentation/git-push.txt---push-optionltoptiongt
+- `refspec` (String) Refspec specifies the Git Refspec to use for a push operation. If both Branch and Refspec are provided, then the commit is pushed to the branch and also using the specified refspec. For more details about Git Refspecs, see: https://git-scm.com/book/en/v2/Git-Internals-The-Refspec
 
 
 
@@ -120,6 +124,7 @@ Optional:
 - `api_version` (String) API version of the referent
 - `kind` (String) Kind of the referent
 - `name` (String) Name of the referent
+- `namespace` (String) Namespace of the referent, defaults to the namespace of the Kubernetes resource object that contains the reference.
 
 
 <a id="nestedblock--spec--update"></a>

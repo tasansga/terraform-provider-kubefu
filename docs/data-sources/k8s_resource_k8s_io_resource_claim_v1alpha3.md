@@ -96,11 +96,6 @@ Must include the domain qualifier.
 
 Required:
 
-- `device_class_name` (String) DeviceClassName references a specific DeviceClass, which can define additional configuration and selectors to be inherited by this request.
-
-A class is required. Which classes are available depends on the cluster.
-
-Administrators may use this to restrict which devices may get requested by only installing classes with selectors for permitted devices. If users are free to request anything without restrictions, then administrators can create an empty DeviceClass for users to reference.
 - `name` (String) Name can be used to reference this request in a pod.spec.containers[].resources.claims entry and in a constraint of the claim.
 
 Must be a DNS label.
@@ -122,7 +117,123 @@ If AlloctionMode is not specified, the default mode is ExactCount. If the mode i
 
 More modes may get added in the future. Clients must refuse to handle requests with unknown modes.
 - `count_` (Number) Count is used only when the count mode is "ExactCount". Must be greater than zero. If AllocationMode is ExactCount and this field is not specified, the default is one.
+- `device_class_name` (String) DeviceClassName references a specific DeviceClass, which can define additional configuration and selectors to be inherited by this request.
+
+A class is required. Which classes are available depends on the cluster.
+
+Administrators may use this to restrict which devices may get requested by only installing classes with selectors for permitted devices. If users are free to request anything without restrictions, then administrators can create an empty DeviceClass for users to reference.
+- `first_available` (Block List) FirstAvailable contains subrequests, of which exactly one will be satisfied by the scheduler to satisfy this request. It tries to satisfy them in the order in which they are listed here. So if there are two entries in the list, the scheduler will only check the second one if it determines that the first one cannot be used.
+
+This field may only be set in the entries of DeviceClaim.Requests.
+
+DRA does not yet implement scoring, so the scheduler will select the first set of devices that satisfies all the requests in the claim. And if the requirements can be satisfied on more than one node, other scheduling features will determine which node is chosen. This means that the set of devices allocated to a claim might not be the optimal set available to the cluster. Scoring will be implemented later. (see [below for nested schema](#nestedblock--spec--devices--requests--first_available))
 - `selectors` (Block List) Selectors define criteria which must be satisfied by a specific device in order for that device to be considered for this request. All selectors must be satisfied for a device to be considered. (see [below for nested schema](#nestedblock--spec--devices--requests--selectors))
+- `tolerations` (Block List) If specified, the request's tolerations.
+
+Tolerations for NoSchedule are required to allocate a device which has a taint with that effect. The same applies to NoExecute.
+
+In addition, should any of the allocated devices get tainted with NoExecute after allocation and that effect is not tolerated, then all pods consuming the ResourceClaim get deleted to evict them. The scheduler will not let new pods reserve the claim while it has these tainted devices. Once all pods are evicted, the claim will get deallocated.
+
+The maximum number of tolerations is 16.
+
+This field can only be set when deviceClassName is set and no subrequests are specified in the firstAvailable list.
+
+This is an alpha field and requires enabling the DRADeviceTaints feature gate. (see [below for nested schema](#nestedblock--spec--devices--requests--tolerations))
+
+<a id="nestedblock--spec--devices--requests--first_available"></a>
+### Nested Schema for `spec.devices.requests.first_available`
+
+Optional:
+
+- `allocation_mode` (String) AllocationMode and its related fields define how devices are allocated to satisfy this request. Supported values are:
+
+- ExactCount: This request is for a specific number of devices.
+  This is the default. The exact number is provided in the
+  count field.
+
+- All: This request is for all of the matching devices in a pool.
+  Allocation will fail if some devices are already allocated,
+  unless adminAccess is requested.
+
+If AllocationMode is not specified, the default mode is ExactCount. If the mode is ExactCount and count is not specified, the default count is one. Any other requests must specify this field.
+
+More modes may get added in the future. Clients must refuse to handle requests with unknown modes.
+- `count_` (Number) Count is used only when the count mode is "ExactCount". Must be greater than zero. If AllocationMode is ExactCount and this field is not specified, the default is one.
+- `device_class_name` (String) DeviceClassName references a specific DeviceClass, which can define additional configuration and selectors to be inherited by this subrequest.
+
+A class is required. Which classes are available depends on the cluster.
+
+Administrators may use this to restrict which devices may get requested by only installing classes with selectors for permitted devices. If users are free to request anything without restrictions, then administrators can create an empty DeviceClass for users to reference.
+- `name` (String) Name can be used to reference this subrequest in the list of constraints or the list of configurations for the claim. References must use the format <main request>/<subrequest>.
+
+Must be a DNS label.
+- `selectors` (Block List) Selectors define criteria which must be satisfied by a specific device in order for that device to be considered for this request. All selectors must be satisfied for a device to be considered. (see [below for nested schema](#nestedblock--spec--devices--requests--first_available--selectors))
+- `tolerations` (Block List) If specified, the request's tolerations.
+
+Tolerations for NoSchedule are required to allocate a device which has a taint with that effect. The same applies to NoExecute.
+
+In addition, should any of the allocated devices get tainted with NoExecute after allocation and that effect is not tolerated, then all pods consuming the ResourceClaim get deleted to evict them. The scheduler will not let new pods reserve the claim while it has these tainted devices. Once all pods are evicted, the claim will get deallocated.
+
+The maximum number of tolerations is 16.
+
+This is an alpha field and requires enabling the DRADeviceTaints feature gate. (see [below for nested schema](#nestedblock--spec--devices--requests--first_available--tolerations))
+
+<a id="nestedblock--spec--devices--requests--first_available--selectors"></a>
+### Nested Schema for `spec.devices.requests.first_available.selectors`
+
+Optional:
+
+- `cel` (Block List, Max: 1) CEL contains a CEL expression for selecting a device. (see [below for nested schema](#nestedblock--spec--devices--requests--first_available--selectors--cel))
+
+<a id="nestedblock--spec--devices--requests--first_available--selectors--cel"></a>
+### Nested Schema for `spec.devices.requests.first_available.selectors.cel`
+
+Optional:
+
+- `expression` (String) Expression is a CEL expression which evaluates a single device. It must evaluate to true when the device under consideration satisfies the desired criteria, and false when it does not. Any other result is an error and causes allocation of devices to abort.
+
+The expression's input is an object named "device", which carries the following properties:
+ - driver (string): the name of the driver which defines this device.
+ - attributes (map[string]object): the device's attributes, grouped by prefix
+   (e.g. device.attributes["dra.example.com"] evaluates to an object with all
+   of the attributes which were prefixed by "dra.example.com".
+ - capacity (map[string]object): the device's capacities, grouped by prefix.
+
+Example: Consider a device with driver="dra.example.com", which exposes two attributes named "model" and "ext.example.com/family" and which exposes one capacity named "modules". This input to this expression would have the following fields:
+
+    device.driver
+    device.attributes["dra.example.com"].model
+    device.attributes["ext.example.com"].family
+    device.capacity["dra.example.com"].modules
+
+The device.driver field can be used to check for a specific driver, either as a high-level precondition (i.e. you only want to consider devices from this driver) or as part of a multi-clause expression that is meant to consider devices from different drivers.
+
+The value type of each attribute is defined by the device definition, and users who write these expressions must consult the documentation for their specific drivers. The value type of each capacity is Quantity.
+
+If an unknown prefix is used as a lookup in either device.attributes or device.capacity, an empty map will be returned. Any reference to an unknown field will cause an evaluation error and allocation to abort.
+
+A robust expression should check for the existence of attributes before referencing them.
+
+For ease of use, the cel.bind() function is enabled, and can be used to simplify expressions that access multiple attributes with the same domain. For example:
+
+    cel.bind(dra, device.attributes["dra.example.com"], dra.someBool && dra.anotherBool)
+
+The length of the expression must be smaller or equal to 10 Ki. The cost of evaluating it is also limited based on the estimated number of logical steps.
+
+
+
+<a id="nestedblock--spec--devices--requests--first_available--tolerations"></a>
+### Nested Schema for `spec.devices.requests.first_available.tolerations`
+
+Optional:
+
+- `effect` (String) Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule and NoExecute.
+- `key` (String) Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys. Must be a label name.
+- `operator` (String) Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a ResourceClaim can tolerate all taints of a particular category.
+- `toleration_seconds` (Number) TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system. If larger than zero, the time when the pod needs to be evicted is calculated as <time when taint was adedd> + <toleration seconds>.
+- `value` (String) Value is the taint value the toleration matches to. If the operator is Exists, the value must be empty, otherwise just a regular string. Must be a label value.
+
+
 
 <a id="nestedblock--spec--devices--requests--selectors"></a>
 ### Nested Schema for `spec.devices.requests.selectors`
@@ -164,6 +275,18 @@ For ease of use, the cel.bind() function is enabled, and can be used to simplify
 
     cel.bind(dra, device.attributes["dra.example.com"], dra.someBool && dra.anotherBool)
 
+
+
+<a id="nestedblock--spec--devices--requests--tolerations"></a>
+### Nested Schema for `spec.devices.requests.tolerations`
+
+Optional:
+
+- `effect` (String) Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule and NoExecute.
+- `key` (String) Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys. Must be a label name.
+- `operator` (String) Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a ResourceClaim can tolerate all taints of a particular category.
+- `toleration_seconds` (Number) TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system. If larger than zero, the time when the pod needs to be evicted is calculated as <time when taint was adedd> + <toleration seconds>.
+- `value` (String) Value is the taint value the toleration matches to. If the operator is Exists, the value must be empty, otherwise just a regular string. Must be a label value.
 
 
 
@@ -246,6 +369,7 @@ Optional:
 This is only used if the claim needs to be deallocated by a DRA driver. That driver then must deallocate this claim and reset the field together with clearing the Allocation field.
 
 This is an alpha field and requires enabling the DRAControlPlaneController feature gate.
+- `devices` (Block List) Devices contains the status of each device allocated for this claim, as reported by the driver. This can include driver-specific information. Entries are owned by their respective drivers. (see [below for nested schema](#nestedblock--status--devices))
 - `reserved_for` (Block List) ReservedFor indicates which entities are currently allowed to use the claim. A Pod which references a ResourceClaim which is not reserved for that Pod will not be started. A claim that is in use or might be in use because it has been reserved must not get deallocated.
 
 In a cluster with multiple scheduler instances, two pods might get scheduled concurrently by different schedulers. When they reference the same ResourceClaim which already has reached its maximum number of consumers, only one pod can be scheduled.
@@ -317,6 +441,29 @@ Must be a DNS subdomain and should end with a DNS domain owned by the vendor of 
 Must not be longer than 253 characters and may contain one or more DNS sub-domains separated by slashes.
 - `request` (String) Request is the name of the request in the claim which caused this device to be allocated. Multiple devices may have been allocated per request.
 
+Optional:
+
+- `admin_access` (Boolean) AdminAccess indicates that this device was allocated for administrative access. See the corresponding request field for a definition of mode.
+
+This is an alpha field and requires enabling the DRAAdminAccess feature gate. Admin access is disabled if this field is unset or set to false, otherwise it is enabled.
+- `tolerations` (Block List) A copy of all tolerations specified in the request at the time when the device got allocated.
+
+The maximum number of tolerations is 16.
+
+This is an alpha field and requires enabling the DRADeviceTaints feature gate. (see [below for nested schema](#nestedblock--status--allocation--devices--results--tolerations))
+
+<a id="nestedblock--status--allocation--devices--results--tolerations"></a>
+### Nested Schema for `status.allocation.devices.results.tolerations`
+
+Optional:
+
+- `effect` (String) Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule and NoExecute.
+- `key` (String) Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys. Must be a label name.
+- `operator` (String) Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a ResourceClaim can tolerate all taints of a particular category.
+- `toleration_seconds` (Number) TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system. If larger than zero, the time when the pod needs to be evicted is calculated as <time when taint was adedd> + <toleration seconds>.
+- `value` (String) Value is the taint value the toleration matches to. If the operator is Exists, the value must be empty, otherwise just a regular string. Must be a label value.
+
+
 
 
 <a id="nestedblock--status--allocation--node_selector"></a>
@@ -360,6 +507,52 @@ Optional:
 - `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
 
 
+
+
+
+<a id="nestedblock--status--devices"></a>
+### Nested Schema for `status.devices`
+
+Optional:
+
+- `conditions` (Block List) Conditions contains the latest observation of the device's state. If the device has been configured according to the class and claim config references, the `Ready` condition should be True. (see [below for nested schema](#nestedblock--status--devices--conditions))
+- `data` (Map of String) Data contains arbitrary driver-specific data.
+
+The length of the raw data must be smaller or equal to 10 Ki.
+- `device` (String) Device references one device instance via its name in the driver's resource pool. It must be a DNS label.
+- `driver` (String) Driver specifies the name of the DRA driver whose kubelet plugin should be invoked to process the allocation once the claim is needed on a node.
+
+Must be a DNS subdomain and should end with a DNS domain owned by the vendor of the driver.
+- `network_data` (Block List, Max: 1) NetworkData contains network-related information specific to the device. (see [below for nested schema](#nestedblock--status--devices--network_data))
+- `pool` (String) This name together with the driver name and the device name field identify which device was allocated (`<driver name>/<pool name>/<device name>`).
+
+Must not be longer than 253 characters and may contain one or more DNS sub-domains separated by slashes.
+
+<a id="nestedblock--status--devices--conditions"></a>
+### Nested Schema for `status.devices.conditions`
+
+Optional:
+
+- `last_transition_time` (String) lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+- `message` (String) message is a human readable message indicating details about the transition. This may be an empty string.
+- `observed_generation` (Number) observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+- `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+- `status` (String) status of the condition, one of True, False, Unknown.
+- `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase.
+
+
+<a id="nestedblock--status--devices--network_data"></a>
+### Nested Schema for `status.devices.network_data`
+
+Optional:
+
+- `hardware_address` (String) HardwareAddress represents the hardware address (e.g. MAC Address) of the device's network interface.
+
+Must not be longer than 128 characters.
+- `interface_name` (String) InterfaceName specifies the name of the network interface associated with the allocated device. This might be the name of a physical or virtual network interface being configured in the pod.
+
+Must not be longer than 256 characters.
+- `ips` (List of String) IPs lists the network addresses assigned to the device's network interface. This can include both IPv4 and IPv6 addresses. The IPs are in the CIDR notation, which includes both the address and the associated subnet mask. e.g.: "192.0.2.5/24" for IPv4 and "2001:db8::5/64" for IPv6.
 
 
 

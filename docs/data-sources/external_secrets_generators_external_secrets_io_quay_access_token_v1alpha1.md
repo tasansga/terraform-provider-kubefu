@@ -18,7 +18,7 @@ QuayAccessToken generates Quay oauth token for pulling/pushing images
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
+- `spec` (Block List, Max: 1) QuayAccessTokenSpec defines the desired state to generate a Quay access token. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 

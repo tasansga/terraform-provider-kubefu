@@ -3,14 +3,12 @@
 page_title: "kubefu_external_secrets_generators_external_secrets_io_gcr_access_token_v1alpha1 Data Source - terraform-provider-kubefu"
 subcategory: ""
 description: |-
-  GCRAccessToken generates an GCP access token
-  that can be used to authenticate with GCR.
+  GCRAccessToken generates an GCP access token that can be used to authenticate with GCR.
 ---
 
 # kubefu_external_secrets_generators_external_secrets_io_gcr_access_token_v1alpha1 (Data Source)
 
-GCRAccessToken generates an GCP access token
-that can be used to authenticate with GCR.
+GCRAccessToken generates an GCP access token that can be used to authenticate with GCR.
 
 
 
@@ -20,20 +18,13 @@ that can be used to authenticate with GCR.
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
+- `spec` (Block List, Max: 1) GCRAccessTokenSpec defines the desired state to generate a Google Container Registry access token. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
-- `api_version` (String) APIVersion defines the versioned schema of this representation of an object.
-Servers should convert recognized schemas to the latest internal value, and
-may reject unrecognized values.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
 - `id` (String) The ID of this resource.
-- `kind` (String) Kind is a string value representing the REST resource this object represents.
-Servers may infer this from the endpoint the client submits requests to.
-Cannot be updated.
-In CamelCase.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
@@ -50,8 +41,9 @@ Optional:
 
 Optional:
 
-- `secret_ref` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--auth--secret_ref))
-- `workload_identity` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--auth--workload_identity))
+- `secret_ref` (Block List, Max: 1) GCPSMAuthSecretRef defines the reference to a secret containing Google Cloud Platform credentials. (see [below for nested schema](#nestedblock--spec--auth--secret_ref))
+- `workload_identity` (Block List, Max: 1) GCPWorkloadIdentity defines the configuration for using GCP Workload Identity authentication. (see [below for nested schema](#nestedblock--spec--auth--workload_identity))
+- `workload_identity_federation` (Block List, Max: 1) GCPWorkloadIdentityFederation holds the configurations required for generating federated access tokens. (see [below for nested schema](#nestedblock--spec--auth--workload_identity_federation))
 
 <a id="nestedblock--spec--auth--secret_ref"></a>
 ### Nested Schema for `spec.auth.secret_ref`
@@ -65,11 +57,9 @@ Optional:
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -88,9 +78,71 @@ Optional:
 
 Optional:
 
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--auth--workload_identity_federation"></a>
+### Nested Schema for `spec.auth.workload_identity_federation`
+
+Optional:
+
+- `audience` (String) audience is the Secure Token Service (STS) audience which contains the resource name for the workload identity pool and the provider identifier in that pool.
+If specified, Audience found in the external account credential config will be overridden with the configured value.
+audience must be provided when serviceAccountRef or awsSecurityCredentials is configured.
+- `aws_security_credentials` (Block List, Max: 1) awsSecurityCredentials is for configuring AWS region and credentials to use for obtaining the access token,
+when using the AWS metadata server is not an option. (see [below for nested schema](#nestedblock--spec--auth--workload_identity_federation--aws_security_credentials))
+- `cred_config` (Block List, Max: 1) credConfig holds the configmap reference containing the GCP external account credential configuration in JSON format and the key name containing the json data.
+For using Kubernetes cluster as the identity provider, use serviceAccountRef instead. Operators mounted serviceaccount token cannot be used as the token source, instead
+serviceAccountRef must be used by providing operators service account details. (see [below for nested schema](#nestedblock--spec--auth--workload_identity_federation--cred_config))
+- `external_token_endpoint` (String) externalTokenEndpoint is the endpoint explicitly set up to provide tokens, which will be matched against the
+credential_source.url in the provided credConfig. This field is merely to double-check the external token source
+URL is having the expected value.
+- `service_account_ref` (Block List, Max: 1) serviceAccountRef is the reference to the kubernetes ServiceAccount to be used for obtaining the tokens,
+when Kubernetes is configured as provider in workload identity pool. (see [below for nested schema](#nestedblock--spec--auth--workload_identity_federation--service_account_ref))
+
+<a id="nestedblock--spec--auth--workload_identity_federation--aws_security_credentials"></a>
+### Nested Schema for `spec.auth.workload_identity_federation.aws_security_credentials`
+
+Optional:
+
+- `aws_credentials_secret_ref` (Block List, Max: 1) awsCredentialsSecretRef is the reference to the secret which holds the AWS credentials.
+Secret should be created with below names for keys
+- aws_access_key_id: Access Key ID, which is the unique identifier for the AWS account or the IAM user.
+- aws_secret_access_key: Secret Access Key, which is used to authenticate requests made to AWS services.
+- aws_session_token: Session Token, is the short-lived token to authenticate requests made to AWS services. (see [below for nested schema](#nestedblock--spec--auth--workload_identity_federation--aws_security_credentials--aws_credentials_secret_ref))
+- `region` (String) region is for configuring the AWS region to be used.
+
+<a id="nestedblock--spec--auth--workload_identity_federation--aws_security_credentials--aws_credentials_secret_ref"></a>
+### Nested Schema for `spec.auth.workload_identity_federation.aws_security_credentials.aws_credentials_secret_ref`
+
+Optional:
+
+- `name` (String) name of the secret.
+- `namespace` (String) namespace in which the secret exists. If empty, secret will looked up in local namespace.
+
+
+
+<a id="nestedblock--spec--auth--workload_identity_federation--cred_config"></a>
+### Nested Schema for `spec.auth.workload_identity_federation.cred_config`
+
+Optional:
+
+- `key` (String) key name holding the external account credential config.
+- `name` (String) name of the configmap.
+- `namespace` (String) namespace in which the configmap exists. If empty, configmap will looked up in local namespace.
+
+
+<a id="nestedblock--spec--auth--workload_identity_federation--service_account_ref"></a>
+### Nested Schema for `spec.auth.workload_identity_federation.service_account_ref`
+
+Optional:
+
 - `audiences` (List of String) Audience specifies the `aud` claim for the service account token
 If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
 then this audiences will be appended to the list
 - `name` (String) The name of the ServiceAccount resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.

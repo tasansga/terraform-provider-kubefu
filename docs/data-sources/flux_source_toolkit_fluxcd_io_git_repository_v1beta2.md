@@ -90,6 +90,8 @@ Optional:
  When GitRepositorySpec.GitImplementation is set to 'go-git', a shallow clone of the specified branch is performed.
 - `commit` (String) Commit SHA to check out, takes precedence over all reference fields.
  When GitRepositorySpec.GitImplementation is set to 'go-git', this can be combined with Branch to shallow clone the branch, in which the commit is expected to exist.
+- `name` (String) Name of the reference to check out; takes precedence over Branch, Tag and SemVer.
+ It must be a valid Git reference: https://git-scm.com/docs/git-check-ref-format#_description Examples: "refs/heads/main", "refs/tags/v0.1.0", "refs/pull/420/head", "refs/merge-requests/1/head"
 - `semver` (String) SemVer tag expression to check out, takes precedence over Tag.
 - `tag` (String) Tag to check out, takes precedence over Branch.
 
@@ -127,9 +129,13 @@ Optional:
 
 - `artifact` (Block List, Max: 1) Artifact represents the last successful GitRepository reconciliation. (see [below for nested schema](#nestedblock--status--artifact))
 - `conditions` (Block List) Conditions holds the conditions for the GitRepository. (see [below for nested schema](#nestedblock--status--conditions))
+- `content_config_checksum` (String) ContentConfigChecksum is a checksum of all the configurations related to the content of the source artifact:  - .spec.ignore  - .spec.recurseSubmodules  - .spec.included and the checksum of the included artifacts observed in .status.observedGeneration version of the object. This can be used to determine if the content of the included repository has changed. It has the format of `<algo>:<checksum>`, for example: `sha256:<checksum>`.
 - `included_artifacts` (Block List) IncludedArtifacts contains a list of the last successfully included Artifacts as instructed by GitRepositorySpec.Include. (see [below for nested schema](#nestedblock--status--included_artifacts))
 - `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.
 - `observed_generation` (Number) ObservedGeneration is the last observed generation of the GitRepository object.
+- `observed_ignore` (String) ObservedIgnore is the observed exclusion patterns used for constructing the source artifact.
+- `observed_include` (Block List) ObservedInclude is the observed list of GitRepository resources used to to produce the current Artifact. (see [below for nested schema](#nestedblock--status--observed_include))
+- `observed_recurse_submodules` (Boolean) ObservedRecurseSubmodules is the observed resource submodules configuration used to produce the current Artifact.
 - `url` (String) URL is the dynamic fetch link for the latest Artifact. It is provided on a "best effort" basis, and using the precise GitRepositoryStatus.Artifact data is recommended.
 
 <a id="nestedblock--status--artifact"></a>
@@ -138,7 +144,9 @@ Optional:
 Optional:
 
 - `checksum` (String) Checksum is the SHA256 checksum of the Artifact file.
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
 - `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the Artifact.
+- `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
 - `path` (String) Path is the relative file path of the Artifact. It can be used to locate the file in the root of the Artifact storage on the local file system of the controller managing the Source.
 - `revision` (String) Revision is a human-readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
 - `size` (Number) Size is the number of bytes in the file.
@@ -164,8 +172,27 @@ Optional:
 Optional:
 
 - `checksum` (String) Checksum is the SHA256 checksum of the Artifact file.
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
 - `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the Artifact.
+- `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
 - `path` (String) Path is the relative file path of the Artifact. It can be used to locate the file in the root of the Artifact storage on the local file system of the controller managing the Source.
 - `revision` (String) Revision is a human-readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
 - `size` (Number) Size is the number of bytes in the file.
 - `url` (String) URL is the HTTP address of the Artifact as exposed by the controller managing the Source. It can be used to retrieve the Artifact for consumption, e.g. by another controller applying the Artifact contents.
+
+
+<a id="nestedblock--status--observed_include"></a>
+### Nested Schema for `status.observed_include`
+
+Optional:
+
+- `from_path` (String) FromPath specifies the path to copy contents from, defaults to the root of the Artifact.
+- `repository` (Block List, Max: 1) GitRepositoryRef specifies the GitRepository which Artifact contents must be included. (see [below for nested schema](#nestedblock--status--observed_include--repository))
+- `to_path` (String) ToPath specifies the path to copy contents to, defaults to the name of the GitRepositoryRef.
+
+<a id="nestedblock--status--observed_include--repository"></a>
+### Nested Schema for `status.observed_include.repository`
+
+Optional:
+
+- `name` (String) Name of the referent.

@@ -56,6 +56,38 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta2() *schema.Resour
 				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"common_metadata": {
+						Type:        schema.TypeList,
+						Description: "CommonMetadata specifies the common labels and annotations that are applied to all resources. Any existing label or annotation will be overridden if its key matches a common one.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"annotations": {
+								Type:        schema.TypeMap,
+								Description: "Annotations to be added to the object's metadata.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"labels": {
+								Type:        schema.TypeMap,
+								Description: "Labels to be added to the object's metadata.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"components": {
+						Type:        schema.TypeList,
+						Description: "Components specifies relative paths to specifications of other Components",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
 					"decryption": {
 						Type:        schema.TypeList,
 						Description: "Decrypt Kubernetes secrets before applying them on the cluster.",
@@ -209,6 +241,23 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta2() *schema.Resour
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"config_map_ref": {
+								Type:        schema.TypeList,
+								Description: "ConfigMapRef holds an optional name of a ConfigMap that contains\nthe following keys:\n\n- `provider`: the provider to use. One of `aws`, `azure`, `gcp`, or\n   `generic`. Required.\n- `cluster`: the fully qualified resource name of the Kubernetes\n   cluster in the cloud provider API. Not used by the `generic`\n   provider. Required when one of `address` or `ca.crt` is not set.\n- `address`: the address of the Kubernetes API server. Required\n   for `generic`. For the other providers, if not specified, the\n   first address in the cluster resource will be used, and if\n   specified, it must match one of the addresses in the cluster\n   resource.\n   If audiences is not set, will be used as the audience for the\n   `generic` provider.\n- `ca.crt`: the optional PEM-encoded CA certificate for the\n   Kubernetes API server. If not set, the controller will use the\n   CA certificate from the cluster resource.\n- `audiences`: the optional audiences as a list of\n   line-break-separated strings for the Kubernetes ServiceAccount\n   token. Defaults to the `address` for the `generic` provider, or\n   to specific values for the other providers depending on the\n   provider.\n-  `serviceAccountName`: the optional name of the Kubernetes\n   ServiceAccount in the same namespace that should be used\n   for authentication. If not specified, the controller\n   ServiceAccount will be used.\n\nMutually exclusive with SecretRef.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"secret_ref": {
 								Type:        schema.TypeList,
 								Description: "SecretRef holds the name to a secret that contains a 'value' key with the kubeconfig file as the value. It must be in the same namespace as the Kustomization. It is recommended that the kubeconfig is self-contained, and the secret is regularly updated if credentials such as a cloud-access-token expire. Cloud specific `cmd-path` auth helpers will not function without adding binaries and credentials to the Pod that is responsible for reconciling the Kustomization.",
@@ -217,6 +266,13 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta2() *schema.Resour
 								Computed:    true,
 								MaxItems:    1,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"key": {
+										Type:        schema.TypeString,
+										Description: "Key in the Secret, when not specified an implementation-specific default key is used.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"name": {
 										Type:        schema.TypeString,
 										Description: "Name of the referent",
@@ -319,28 +375,28 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta2() *schema.Resour
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"from": {
 										Type:        schema.TypeString,
-										Description: "",
+										Description: "From contains a JSON-pointer value that references a location within the target document where the operation is performed. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"op": {
 										Type:        schema.TypeString,
-										Description: "",
+										Description: "Op indicates the operation to perform. Its value MUST be one of \"add\", \"remove\", \"replace\", \"move\", \"copy\", or \"test\". https://datatracker.ietf.org/doc/html/rfc6902#section-4",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"path": {
 										Type:        schema.TypeString,
-										Description: "",
+										Description: "Path contains the JSON-pointer value that references a location within the target document where the operation is performed. The meaning of the value depends on the value of Op.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
 									},
 									"value": {
 										Type:        schema.TypeMap,
-										Description: "",
+										Description: "Value contains a valid JSON structure. The meaning of the value depends on the value of Op, and is NOT taken into account by all operations.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -455,6 +511,13 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta2() *schema.Resour
 									"name": {
 										Type:        schema.TypeString,
 										Description: "Name of the values referent. Should reside in the same namespace as the referring resource.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"optional": {
+										Type:        schema.TypeBool,
+										Description: "Optional indicates whether the referenced resource must exist, or whether to tolerate its absence. If true and the referenced resource is absent, proceed as if the resource was present but empty, without any variables defined.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -691,7 +754,7 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Beta2Read(_ context.Co
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.toolkit.fluxcd.io/v1beta2", "Kustomization", "kustomize.toolkit.fluxcd.io/v1beta2/Kustomization"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.decryption", "spec.decryption.secret_ref", "spec.kube_config", "spec.kube_config.secret_ref", "spec.patches.target", "spec.patches_json6902.target", "spec.post_build", "spec.source_ref", "status", "status.inventory"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "spec.decryption", "spec.decryption.secret_ref", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.patches.target", "spec.patches_json6902.target", "spec.post_build", "spec.source_ref", "status", "status.inventory"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

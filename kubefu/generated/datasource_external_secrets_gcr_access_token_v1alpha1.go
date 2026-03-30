@@ -11,18 +11,18 @@ import (
 func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1Read,
-		Description: "GCRAccessToken generates an GCP access token\nthat can be used to authenticate with GCR.",
+		Description: "GCRAccessToken generates an GCP access token that can be used to authenticate with GCR.",
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
-				Description: "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
 			},
 			"kind": {
 				Type:        schema.TypeString,
-				Description: "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
@@ -50,7 +50,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1(
 			},
 			"spec": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "GCRAccessTokenSpec defines the desired state to generate a Google Container Registry access token.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
@@ -66,7 +66,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1(
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"secret_ref": {
 								Type:        schema.TypeList,
-								Description: "",
+								Description: "GCPSMAuthSecretRef defines the reference to a secret containing Google Cloud Platform credentials.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -82,7 +82,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1(
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"key": {
 												Type:        schema.TypeString,
-												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -96,7 +96,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1(
 											},
 											"namespace": {
 												Type:        schema.TypeString,
-												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -107,7 +107,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1(
 							},
 							"workload_identity": {
 								Type:        schema.TypeList,
-								Description: "",
+								Description: "GCPWorkloadIdentity defines the configuration for using GCP Workload Identity authentication.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -144,6 +144,134 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1(
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"audiences": {
 												Type:        schema.TypeList,
+												Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Schema{Type: schema.TypeString},
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the ServiceAccount resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+							"workload_identity_federation": {
+								Type:        schema.TypeList,
+								Description: "GCPWorkloadIdentityFederation holds the configurations required for generating federated access tokens.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"audience": {
+										Type:        schema.TypeString,
+										Description: "audience is the Secure Token Service (STS) audience which contains the resource name for the workload identity pool and the provider identifier in that pool.\nIf specified, Audience found in the external account credential config will be overridden with the configured value.\naudience must be provided when serviceAccountRef or awsSecurityCredentials is configured.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"aws_security_credentials": {
+										Type:        schema.TypeList,
+										Description: "awsSecurityCredentials is for configuring AWS region and credentials to use for obtaining the access token,\nwhen using the AWS metadata server is not an option.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"aws_credentials_secret_ref": {
+												Type:        schema.TypeList,
+												Description: "awsCredentialsSecretRef is the reference to the secret which holds the AWS credentials.\nSecret should be created with below names for keys\n- aws_access_key_id: Access Key ID, which is the unique identifier for the AWS account or the IAM user.\n- aws_secret_access_key: Secret Access Key, which is used to authenticate requests made to AWS services.\n- aws_session_token: Session Token, is the short-lived token to authenticate requests made to AWS services.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"name": {
+														Type:        schema.TypeString,
+														Description: "name of the secret.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"namespace": {
+														Type:        schema.TypeString,
+														Description: "namespace in which the secret exists. If empty, secret will looked up in local namespace.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+											"region": {
+												Type:        schema.TypeString,
+												Description: "region is for configuring the AWS region to be used.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"cred_config": {
+										Type:        schema.TypeList,
+										Description: "credConfig holds the configmap reference containing the GCP external account credential configuration in JSON format and the key name containing the json data.\nFor using Kubernetes cluster as the identity provider, use serviceAccountRef instead. Operators mounted serviceaccount token cannot be used as the token source, instead\nserviceAccountRef must be used by providing operators service account details.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"key": {
+												Type:        schema.TypeString,
+												Description: "key name holding the external account credential config.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "name of the configmap.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "namespace in which the configmap exists. If empty, configmap will looked up in local namespace.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"external_token_endpoint": {
+										Type:        schema.TypeString,
+										Description: "externalTokenEndpoint is the endpoint explicitly set up to provide tokens, which will be matched against the\ncredential_source.url in the provided credConfig. This field is merely to double-check the external token source\nURL is having the expected value.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"service_account_ref": {
+										Type:        schema.TypeList,
+										Description: "serviceAccountRef is the reference to the kubernetes ServiceAccount to be used for obtaining the tokens,\nwhen Kubernetes is configured as provider in workload identity pool.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"audiences": {
+												Type:        schema.TypeList,
 												Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
 												Optional:    true,
 												Required:    false,
@@ -159,7 +287,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1(
 											},
 											"namespace": {
 												Type:        schema.TypeString,
-												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Description: "Namespace of the resource being referred to.\nIgnored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -189,7 +317,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1R
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "GCRAccessToken", "generators.external-secrets.io/v1alpha1/GCRAccessToken"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.secret_ref", "spec.auth.secret_ref.secret_access_key_secret_ref", "spec.auth.workload_identity", "spec.auth.workload_identity.service_account_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.secret_ref", "spec.auth.secret_ref.secret_access_key_secret_ref", "spec.auth.workload_identity", "spec.auth.workload_identity.service_account_ref", "spec.auth.workload_identity_federation", "spec.auth.workload_identity_federation.aws_security_credentials", "spec.auth.workload_identity_federation.aws_security_credentials.aws_credentials_secret_ref", "spec.auth.workload_identity_federation.cred_config", "spec.auth.workload_identity_federation.service_account_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

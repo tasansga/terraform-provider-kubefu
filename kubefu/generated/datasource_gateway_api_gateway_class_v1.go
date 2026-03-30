@@ -170,6 +170,22 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayClassV1() *schema.Resource
 							},
 						}},
 					},
+					"supported_features": {
+						Type:        schema.TypeList,
+						Description: "SupportedFeatures is the set of features the GatewayClass support.\nIt MUST be sorted in ascending alphabetical order by the Name key.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "FeatureName is used to describe distinct features that are covered by\nconformance tests.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 				}},
 			},
 		},

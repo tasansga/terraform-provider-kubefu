@@ -50,7 +50,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGithubAccessTokenV1Alph
 			},
 			"spec": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "GithubAccessTokenSpec defines the desired state to generate a GitHub access token.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
@@ -71,9 +71,50 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGithubAccessTokenV1Alph
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
-							"private_key": {
+							"privat_key": {
 								Type:        schema.TypeList,
 								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"secret_ref": {
+										Type:        schema.TypeList,
+										Description: "A reference to a specific 'key' within a Secret resource,\nIn some instances, `key` is a required field.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"key": {
+												Type:        schema.TypeString,
+												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "The name of the Secret resource being referred to.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+							"private_key": {
+								Type:        schema.TypeList,
+								Description: "GithubSecretRef references a secret containing GitHub credentials.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -121,6 +162,21 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGithubAccessTokenV1Alph
 						Required:    false,
 						Computed:    true,
 					},
+					"permissions": {
+						Type:        schema.TypeMap,
+						Description: "Map of permissions the token will have. If omitted, defaults to all permissions the GitHub App has.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"repositories": {
+						Type:        schema.TypeList,
+						Description: "List of repositories the token will have access to. If omitted, defaults to all repositories the GitHub App\nis installed to.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
 					"url": {
 						Type:        schema.TypeString,
 						Description: "URL configures the Github instance URL. Defaults to https://github.com/.",
@@ -140,7 +196,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGithubAccessTokenV1Alph
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "GithubAccessToken", "generators.external-secrets.io/v1alpha1/GithubAccessToken"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.private_key", "spec.auth.private_key.secret_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.privat_key", "spec.auth.privat_key.secret_ref", "spec.auth.private_key", "spec.auth.private_key.secret_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

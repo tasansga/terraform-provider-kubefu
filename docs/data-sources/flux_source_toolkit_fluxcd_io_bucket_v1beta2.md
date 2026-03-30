@@ -36,13 +36,35 @@ Optional:
 
 - `access_from` (Block List, Max: 1) AccessFrom specifies an Access Control List for allowing cross-namespace references to this object. NOTE: Not implemented, provisional as of https://github.com/fluxcd/flux2/pull/2092 (see [below for nested schema](#nestedblock--spec--access_from))
 - `bucket_name` (String) BucketName is the name of the object storage bucket.
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef can be given the name of a Secret containing
+either or both of
+
+- a PEM-encoded client certificate (`tls.crt`) and private
+key (`tls.key`);
+- a PEM-encoded CA certificate (`ca.crt`)
+
+and whichever are supplied, will be used for connecting to the
+bucket. The client cert and key are useful if you are
+authenticating with a certificate; the CA cert is useful if
+you are using a self-signed server certificate. The Secret must
+be of type `Opaque` or `kubernetes.io/tls`.
+
+This field is only supported for the `generic` provider. (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
 - `endpoint` (String) Endpoint is the object storage address the BucketName is located at.
 - `ignore` (String) Ignore overrides the set of excluded patterns in the .sourceignore format (which is the same as .gitignore). If not provided, a default will be used, consult the documentation for your version to find out what those are.
 - `insecure` (Boolean) Insecure allows connecting to a non-TLS HTTP Endpoint.
 - `interval` (String) Interval at which to check the Endpoint for updates.
+- `prefix` (String) Prefix to use for server-side filtering of files in the Bucket.
 - `provider_` (String) Provider of the object storage bucket. Defaults to 'generic', which expects an S3 (API) compatible object storage.
+- `proxy_secret_ref` (Block List, Max: 1) ProxySecretRef specifies the Secret containing the proxy configuration
+to use while communicating with the Bucket server. (see [below for nested schema](#nestedblock--spec--proxy_secret_ref))
 - `region` (String) Region of the Endpoint where the BucketName is located in.
 - `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing authentication credentials for the Bucket. (see [below for nested schema](#nestedblock--spec--secret_ref))
+- `sts` (Block List, Max: 1) STS specifies the required configuration to use a Security Token
+Service for fetching temporary credentials to authenticate in a
+Bucket provider.
+
+This field is only supported for the `aws` and `generic` providers. (see [below for nested schema](#nestedblock--spec--sts))
 - `suspend` (Boolean) Suspend tells the controller to suspend the reconciliation of this Bucket.
 - `timeout` (String) Timeout for fetch operations, defaults to 60s.
 
@@ -62,12 +84,71 @@ Optional:
 
 
 
+<a id="nestedblock--spec--cert_secret_ref"></a>
+### Nested Schema for `spec.cert_secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
+
+<a id="nestedblock--spec--proxy_secret_ref"></a>
+### Nested Schema for `spec.proxy_secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
+
 <a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`
 
 Optional:
 
 - `name` (String) Name of the referent.
+
+
+<a id="nestedblock--spec--sts"></a>
+### Nested Schema for `spec.sts`
+
+Optional:
+
+- `cert_secret_ref` (Block List, Max: 1) CertSecretRef can be given the name of a Secret containing
+either or both of
+
+- a PEM-encoded client certificate (`tls.crt`) and private
+key (`tls.key`);
+- a PEM-encoded CA certificate (`ca.crt`)
+
+and whichever are supplied, will be used for connecting to the
+STS endpoint. The client cert and key are useful if you are
+authenticating with a certificate; the CA cert is useful if
+you are using a self-signed server certificate. The Secret must
+be of type `Opaque` or `kubernetes.io/tls`.
+
+This field is only supported for the `ldap` provider. (see [below for nested schema](#nestedblock--spec--sts--cert_secret_ref))
+- `endpoint` (String) Endpoint is the HTTP/S endpoint of the Security Token Service from
+where temporary credentials will be fetched.
+- `provider_` (String) Provider of the Security Token Service.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Secret containing authentication credentials
+for the STS endpoint. This Secret must contain the fields `username`
+and `password` and is supported only for the `ldap` provider. (see [below for nested schema](#nestedblock--spec--sts--secret_ref))
+
+<a id="nestedblock--spec--sts--cert_secret_ref"></a>
+### Nested Schema for `spec.sts.cert_secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
+
+<a id="nestedblock--spec--sts--secret_ref"></a>
+### Nested Schema for `spec.sts.secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
 
 
 
@@ -80,6 +161,7 @@ Optional:
 - `conditions` (Block List) Conditions holds the conditions for the Bucket. (see [below for nested schema](#nestedblock--status--conditions))
 - `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.
 - `observed_generation` (Number) ObservedGeneration is the last observed generation of the Bucket object.
+- `observed_ignore` (String) ObservedIgnore is the observed exclusion patterns used for constructing the source artifact.
 - `url` (String) URL is the dynamic fetch link for the latest Artifact. It is provided on a "best effort" basis, and using the precise BucketStatus.Artifact data is recommended.
 
 <a id="nestedblock--status--artifact"></a>
@@ -88,7 +170,9 @@ Optional:
 Optional:
 
 - `checksum` (String) Checksum is the SHA256 checksum of the Artifact file.
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
 - `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the Artifact.
+- `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
 - `path` (String) Path is the relative file path of the Artifact. It can be used to locate the file in the root of the Artifact storage on the local file system of the controller managing the Source.
 - `revision` (String) Revision is a human-readable identifier traceable in the origin source system. It can be a Git commit SHA, Git tag, a Helm chart version, etc.
 - `size` (Number) Size is the number of bytes in the file.

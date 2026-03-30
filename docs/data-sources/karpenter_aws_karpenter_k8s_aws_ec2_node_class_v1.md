@@ -51,6 +51,8 @@ the AMIFamily() helper function
 - `ami_selector_terms` (Block List) AMISelectorTerms is a list of or ami selector terms. The terms are ORed. (see [below for nested schema](#nestedblock--spec--ami_selector_terms))
 - `associate_public_ip_address` (Boolean) AssociatePublicIPAddress controls if public IP addresses are assigned to instances that are launched with the nodeclass.
 - `block_device_mappings` (Block List) BlockDeviceMappings to be applied to provisioned nodes. (see [below for nested schema](#nestedblock--spec--block_device_mappings))
+- `capacity_reservation_selector_terms` (Block List) CapacityReservationSelectorTerms is a list of capacity reservation selector terms. Each term is ORed together to
+determine the set of eligible capacity reservations. (see [below for nested schema](#nestedblock--spec--capacity_reservation_selector_terms))
 - `context` (String) Context is a Reserved field in EC2 APIs
 https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateFleet.html
 - `detailed_monitoring` (Boolean) DetailedMonitoring controls if detailed monitoring is enabled for instances that are launched
@@ -59,6 +61,7 @@ This field is mutually exclusive from role.
 The instance profile should already have a role assigned to it that Karpenter
  has PassRole permission on for instance launch using this instanceProfile to succeed.
 - `instance_store_policy` (String) InstanceStorePolicy specifies how to handle instance-store disks.
+- `ip_prefix_count` (Number) IPPrefixCount sets the number of IPv4 prefixes to be automatically assigned to the network interface.
 - `kubelet` (Block List, Max: 1) Kubelet defines args to be used when configuring kubelet on provisioned nodes.
 They are a subset of the upstream types, recognizing not all options may be supported.
 Wherever possible, the types and names should reflect the upstream kubelet types. (see [below for nested schema](#nestedblock--spec--kubelet))
@@ -106,6 +109,7 @@ Note: The Windows families do **not** support version pinning, and only latest m
 This value is the name field, which is different from the name tag.
 - `owner` (String) Owner is the owner for the ami.
 You can specify a combination of AWS account IDs, "self", "amazon", and "aws-marketplace"
+- `ssm_parameter` (String) SSMParameter is the name (or ARN) of the SSM parameter containing the Image ID.
 - `tags` (Map of String) Tags is a map of key/value tags used to select subnets
 Specifying '*' for a value selects all values for a given tag key.
 
@@ -158,6 +162,11 @@ is not supported for gp2, st1, sc1, or standard volumes.
 - `snapshot_id` (String) SnapshotID is the ID of an EBS snapshot
 - `throughput` (Number) Throughput to provision for a gp3 volume, with a maximum of 1,000 MiB/s.
 Valid Range: Minimum value of 125. Maximum value of 1000.
+- `volume_initialization_rate` (Number) VolumeInitializationRate specifies the Amazon EBS Provisioned Rate for Volume Initialization,
+in MiB/s, at which to download the snapshot blocks from Amazon S3 to the volume. This is also known as volume
+initialization. Specifying a volume initialization rate ensures that the volume is initialized at a
+predictable and consistent rate after creation. Only allowed if SnapshotID is set.
+Valid Range: Minimum value of 100. Maximum value of 300.
 - `volume_size` (String) VolumeSize in `Gi`, `G`, `Ti`, or `T`. You must specify either a snapshot ID or
 a volume size. The following are the supported volumes sizes for each volume
 type:
@@ -177,6 +186,18 @@ type:
 For more information, see Amazon EBS volume types (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
 in the Amazon Elastic Compute Cloud User Guide.
 
+
+
+<a id="nestedblock--spec--capacity_reservation_selector_terms"></a>
+### Nested Schema for `spec.capacity_reservation_selector_terms`
+
+Optional:
+
+- `id` (String) ID is the capacity reservation id in EC2
+- `instance_match_criteria` (String) InstanceMatchCriteria specifies how instances are matched to capacity reservations.
+- `owner_id` (String) Owner is the owner id for the ami.
+- `tags` (Map of String) Tags is a map of key/value tags used to select capacity reservations.
+Specifying '*' for a value selects all values for a given tag key.
 
 
 <a id="nestedblock--spec--kubelet"></a>
@@ -278,6 +299,8 @@ Optional:
 
 - `amis` (Block List) AMI contains the current AMI values that are available to the
 cluster under the AMI selectors. (see [below for nested schema](#nestedblock--status--amis))
+- `capacity_reservations` (Block List) CapacityReservations contains the current capacity reservation values that are available to this NodeClass under the
+CapacityReservation selectors. (see [below for nested schema](#nestedblock--status--capacity_reservations))
 - `conditions` (Block List) Conditions contains signals for health and readiness (see [below for nested schema](#nestedblock--status--conditions))
 - `instance_profile` (String) InstanceProfile contains the resolved instance profile for the role
 - `security_groups` (Block List) SecurityGroups contains the current Security Groups values that are available to the
@@ -290,6 +313,7 @@ cluster under the subnet selectors. (see [below for nested schema](#nestedblock-
 
 Optional:
 
+- `deprecated` (Boolean) Deprecation status of the AMI
 - `id` (String) ID of the AMI
 - `name` (String) Name of the AMI
 - `requirements` (Block List) Requirements of the AMI to be utilized on an instance type (see [below for nested schema](#nestedblock--status--amis--requirements))
@@ -308,6 +332,23 @@ the values array must be empty. If the operator is Gt or Lt, the values
 array must have a single element, which will be interpreted as an integer.
 This array is replaced during a strategic merge patch.
 
+
+
+<a id="nestedblock--status--capacity_reservations"></a>
+### Nested Schema for `status.capacity_reservations`
+
+Optional:
+
+- `availability_zone` (String) The availability zone the capacity reservation is available in.
+- `end_time` (String) The time at which the capacity reservation expires. Once expired, the reserved capacity is released and Karpenter
+will no longer be able to launch instances into that reservation.
+- `id` (String) The id for the capacity reservation.
+- `instance_match_criteria` (String) Indicates the type of instance launches the capacity reservation accepts.
+- `instance_type` (String) The instance type for the capacity reservation.
+- `owner_id` (String) The ID of the AWS account that owns the capacity reservation.
+- `reservation_type` (String) The type of capacity reservation.
+- `state` (String) The state of the capacity reservation. A capacity reservation is considered to be expiring if it is within the EC2
+reclaimation window. Only capacity-block reservations may be in this state.
 
 
 <a id="nestedblock--status--conditions"></a>

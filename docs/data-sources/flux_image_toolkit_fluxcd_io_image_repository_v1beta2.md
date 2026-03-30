@@ -40,8 +40,11 @@ Optional:
  and whichever are supplied, will be used for connecting to the registry. The client cert and key are useful if you are authenticating with a certificate; the CA cert is useful if you are using a self-signed server certificate. (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
 - `exclusion_list` (List of String) ExclusionList is a list of regex strings used to exclude certain tags from being stored in the database.
 - `image` (String) Image is the name of the image repository
+- `insecure` (Boolean) Insecure allows connecting to a non-TLS HTTP container registry.
 - `interval` (String) Interval is the length of time to wait between scans of the image repository.
 - `provider_` (String) The provider used for authentication, can be 'aws', 'azure', 'gcp' or 'generic'. When not specified, defaults to 'generic'.
+- `proxy_secret_ref` (Block List, Max: 1) ProxySecretRef specifies the Secret containing the proxy configuration
+to use while communicating with the container registry. (see [below for nested schema](#nestedblock--spec--proxy_secret_ref))
 - `secret_ref` (Block List, Max: 1) SecretRef can be given the name of a secret containing credentials to use for the image registry. The secret should be created with `kubectl create secret docker-registry`, or the equivalent. (see [below for nested schema](#nestedblock--spec--secret_ref))
 - `service_account_name` (String) ServiceAccountName is the name of the Kubernetes ServiceAccount used to authenticate the image pull if the service account has attached pull secrets.
 - `suspend` (Boolean) This flag tells the controller to suspend subsequent image scans. It does not apply to already started scans. Defaults to false.
@@ -65,6 +68,14 @@ Optional:
 
 <a id="nestedblock--spec--cert_secret_ref"></a>
 ### Nested Schema for `spec.cert_secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
+
+<a id="nestedblock--spec--proxy_secret_ref"></a>
+### Nested Schema for `spec.proxy_secret_ref`
 
 Optional:
 
@@ -110,6 +121,9 @@ Optional:
 
 Optional:
 
-- `latest_tags` (List of String)
-- `scan_time` (String)
-- `tag_count` (Number)
+- `latest_tags` (List of String) LatestTags is a small sample of the tags found in the last scan.
+It's the first 10 tags when sorting all the tags in descending
+alphabetical order.
+- `revision` (String) Revision is a stable hash of the scanned tags.
+- `scan_time` (String) ScanTime is the time when the last scan was performed.
+- `tag_count` (Number) TagCount is the number of tags found in the last scan.

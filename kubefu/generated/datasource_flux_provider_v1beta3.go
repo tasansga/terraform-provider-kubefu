@@ -87,12 +87,43 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta3() *schema.Resource
 						Required:    false,
 						Computed:    true,
 					},
+					"commit_status_expr": {
+						Type:        schema.TypeString,
+						Description: "CommitStatusExpr is a CEL expression that evaluates to a string value\nthat can be used to generate a custom commit status message for use\nwith eligible Provider types (github, gitlab, gitea, bitbucketserver,\nbitbucket, azuredevops). Supported variables are: event, provider,\nand alert.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"interval": {
+						Type:        schema.TypeString,
+						Description: "Interval at which to reconcile the Provider with its Secret references. Deprecated and not used in v1beta3.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"proxy": {
 						Type:        schema.TypeString,
 						Description: "Proxy the HTTP/S address of the proxy server.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"proxy_secret_ref": {
+						Type:        schema.TypeList,
+						Description: "ProxySecretRef specifies the Secret containing the proxy configuration\nfor this Provider. The Secret should contain an 'address' key with the\nHTTP/S address of the proxy server. Optional 'username' and 'password'\nkeys can be provided for proxy authentication.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"secret_ref": {
 						Type:        schema.TypeList,
@@ -110,6 +141,13 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta3() *schema.Resource
 								Computed:    true,
 							},
 						}},
+					},
+					"service_account_name": {
+						Type:        schema.TypeString,
+						Description: "ServiceAccountName is the name of the service account used to\nauthenticate with services from cloud providers. An error is thrown if a\nstatic credential is also defined inside the Secret referenced by the\nSecretRef.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"suspend": {
 						Type:        schema.TypeBool,
@@ -151,7 +189,7 @@ func dataSourceFluxNotificationToolkitFluxcdIoProviderV1Beta3Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "notification.toolkit.fluxcd.io/v1beta3", "Provider", "notification.toolkit.fluxcd.io/v1beta3/Provider"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.cert_secret_ref", "spec.secret_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.cert_secret_ref", "spec.proxy_secret_ref", "spec.secret_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

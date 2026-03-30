@@ -23,16 +23,9 @@ ExternalSecret is the Schema for the external-secrets API.
 
 ### Read-Only
 
-- `api_version` (String) APIVersion defines the versioned schema of this representation of an object.
-Servers should convert recognized schemas to the latest internal value, and
-may reject unrecognized values.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
 - `id` (String) The ID of this resource.
-- `kind` (String) Kind is a string value representing the REST resource this object represents.
-Servers may infer this from the endpoint the client submits requests to.
-Cannot be updated.
-In CamelCase.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
@@ -42,14 +35,10 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 Optional:
 
 - `data` (Block List) Data defines the connection between the Kubernetes Secret keys and the Provider data (see [below for nested schema](#nestedblock--spec--data))
-- `data_from` (Block List) DataFrom is used to fetch all properties from a specific Provider data
-If multiple entries are specified, the Secret keys are merged in the specified order (see [below for nested schema](#nestedblock--spec--data_from))
-- `refresh_interval` (String) RefreshInterval is the amount of time before the values are read again from the SecretStore provider
-Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h"
-May be set to zero to fetch and create it once. Defaults to 1h.
+- `data_from` (Block List) DataFrom is used to fetch all properties from a specific Provider data If multiple entries are specified, the Secret keys are merged in the specified order (see [below for nested schema](#nestedblock--spec--data_from))
+- `refresh_interval` (String) RefreshInterval is the amount of time before the values are read again from the SecretStore provider Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h" May be set to zero to fetch and create it once. Defaults to 1h.
 - `secret_store_ref` (Block List, Max: 1) SecretStoreRef defines which SecretStore to fetch the ExternalSecret data. (see [below for nested schema](#nestedblock--spec--secret_store_ref))
-- `target` (Block List, Max: 1) ExternalSecretTarget defines the Kubernetes Secret to be created
-There can be only one target per ExternalSecret. (see [below for nested schema](#nestedblock--spec--target))
+- `target` (Block List, Max: 1) ExternalSecretTarget defines the Kubernetes Secret to be created There can be only one target per ExternalSecret. (see [below for nested schema](#nestedblock--spec--target))
 
 <a id="nestedblock--spec--data"></a>
 ### Nested Schema for `spec.data`
@@ -57,7 +46,7 @@ There can be only one target per ExternalSecret. (see [below for nested schema](
 Optional:
 
 - `remote_ref` (Block List, Max: 1) ExternalSecretDataRemoteRef defines Provider data location. (see [below for nested schema](#nestedblock--spec--data--remote_ref))
-- `secret_key` (String)
+- `secret_key` (String) The key in the Kubernetes Secret to store the value.
 
 <a id="nestedblock--spec--data--remote_ref"></a>
 ### Nested Schema for `spec.data.remote_ref`
@@ -87,8 +76,7 @@ Optional:
 
 Optional:
 
-- `kind` (String) Kind of the SecretStore resource (SecretStore or ClusterSecretStore)
-Defaults to `SecretStore`
+- `kind` (String) Kind of the SecretStore resource (SecretStore or ClusterSecretStore) Defaults to `SecretStore`
 - `name` (String) Name of the SecretStore resource
 
 
@@ -97,12 +85,9 @@ Defaults to `SecretStore`
 
 Optional:
 
-- `creation_policy` (String) CreationPolicy defines rules on how to create the resulting Secret
-Defaults to 'Owner'
+- `creation_policy` (String) CreationPolicy defines rules on how to create the resulting Secret Defaults to 'Owner'
 - `immutable` (Boolean) Immutable defines if the final secret will be immutable
-- `name` (String) Name defines the name of the Secret resource to be managed
-This field is immutable
-Defaults to the .metadata.name of the ExternalSecret resource
+- `name` (String) Name defines the name of the Secret resource to be managed This field is immutable Defaults to the .metadata.name of the ExternalSecret resource
 - `template` (Block List, Max: 1) Template defines a blueprint for the created Secret resource. (see [below for nested schema](#nestedblock--spec--target--template))
 
 <a id="nestedblock--spec--target--template"></a>
@@ -111,9 +96,7 @@ Defaults to the .metadata.name of the ExternalSecret resource
 Optional:
 
 - `data` (Map of String)
-- `engine_version` (String) EngineVersion specifies the template engine version
-that should be used to compile/execute the
-template specified in .data and .templateFrom[].
+- `engine_version` (String) EngineVersion specifies the template engine version that should be used to compile/execute the template specified in .data and .templateFrom[].
 - `metadata` (Block List, Max: 1) ExternalSecretTemplateMetadata defines metadata fields for the Secret blueprint. (see [below for nested schema](#nestedblock--spec--target--template--metadata))
 - `template_from` (Block List) (see [below for nested schema](#nestedblock--spec--target--template--template_from))
 - `type` (String)
@@ -140,15 +123,15 @@ Optional:
 
 Optional:
 
-- `items` (Block List) (see [below for nested schema](#nestedblock--spec--target--template--template_from--config_map--items))
-- `name` (String)
+- `items` (Block List) A list of keys in the ConfigMap/Secret to use as templates for Secret data (see [below for nested schema](#nestedblock--spec--target--template--template_from--config_map--items))
+- `name` (String) The name of the ConfigMap/Secret resource
 
 <a id="nestedblock--spec--target--template--template_from--config_map--items"></a>
 ### Nested Schema for `spec.target.template.template_from.config_map.items`
 
 Optional:
 
-- `key` (String)
+- `key` (String) A key in the ConfigMap/Secret
 
 
 
@@ -157,15 +140,15 @@ Optional:
 
 Optional:
 
-- `items` (Block List) (see [below for nested schema](#nestedblock--spec--target--template--template_from--secret--items))
-- `name` (String)
+- `items` (Block List) A list of keys in the ConfigMap/Secret to use as templates for Secret data (see [below for nested schema](#nestedblock--spec--target--template--template_from--secret--items))
+- `name` (String) The name of the ConfigMap/Secret resource
 
 <a id="nestedblock--spec--target--template--template_from--secret--items"></a>
 ### Nested Schema for `spec.target.template.template_from.secret.items`
 
 Optional:
 
-- `key` (String)
+- `key` (String) A key in the ConfigMap/Secret
 
 
 
@@ -180,8 +163,7 @@ Optional:
 
 - `binding` (Block List, Max: 1) Binding represents a servicebinding.io Provisioned Service reference to the secret (see [below for nested schema](#nestedblock--status--binding))
 - `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
-- `refresh_time` (String) refreshTime is the time and date the external secret was fetched and
-the target secret updated
+- `refresh_time` (String) refreshTime is the time and date the external secret was fetched and the target secret updated
 - `synced_resource_version` (String) SyncedResourceVersion keeps track of the last synced version
 
 <a id="nestedblock--status--binding"></a>
@@ -189,13 +171,7 @@ the target secret updated
 
 Optional:
 
-- `name` (String) Name of the referent.
-This field is effectively required, but due to backwards compatibility is
-allowed to be empty. Instances of this type with an empty value here are
-almost certainly wrong.
-TODO: Add other useful fields. apiVersion, kind, uid?
-More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
 
 
 <a id="nestedblock--status--conditions"></a>

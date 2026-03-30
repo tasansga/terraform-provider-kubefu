@@ -126,6 +126,13 @@ func dataSourceKarpenterAwsKarpenterShNodePoolV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"replicas": {
+						Type:        schema.TypeInt,
+						Description: "Replicas is the desired number of nodes for the NodePool. When specified, the NodePool will\nmaintain this fixed number of replicas rather than scaling based on pod demand.\nWhen replicas is set:\n  - The following fields are ignored:\n      * disruption.consolidationPolicy\n      * disruption.consolidateAfter\n  - Only limits.nodes is supported; other resource limits (e.g., CPU, memory) must not be specified.\n  - Weight is not supported.\nNote: This field is alpha.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"template": {
 						Type:        schema.TypeList,
 						Description: "Template contains the template of possibilities for the provisioning logic to launch a NodeClaim with.\nNodeClaims launched from this NodePool will often be further constrained than the template specifies.",
@@ -394,6 +401,20 @@ func dataSourceKarpenterAwsKarpenterShNodePoolV1() *schema.Resource {
 								Computed:    true,
 							},
 						}},
+					},
+					"node_class_observed_generation": {
+						Type:        schema.TypeInt,
+						Description: "NodeClassObservedGeneration represents the observed nodeClass generation for referenced nodeClass. If this does not match\nthe actual NodeClass Generation, NodeRegistrationHealthy status condition on the NodePool will be reset",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"nodes": {
+						Type:        schema.TypeInt,
+						Description: "Nodes is the count of nodes associated with this NodePool",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"resources": {
 						Type:        schema.TypeMap,

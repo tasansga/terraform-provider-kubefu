@@ -103,6 +103,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 									},
+									"ignore_missing_values_files": {
+										Type:        schema.TypeBool,
+										Description: "IgnoreMissingValuesFiles controls whether to silently ignore missing values files rather than failing.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"interval": {
 										Type:        schema.TypeString,
 										Description: "Interval at which to check the v1.Source for updates. Defaults to 'HelmReleaseSpec.Interval'.",
@@ -212,6 +219,44 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2() *schema.Resource {
 										Computed:    true,
 									},
 								}},
+							},
+						}},
+					},
+					"chart_ref": {
+						Type:        schema.TypeList,
+						Description: "ChartRef holds a reference to a source controller resource containing the\nHelm chart artifact.\n\n\nNote: this field is provisional to the v2 API, and not actively used\nby v2beta2 HelmReleases.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"api_version": {
+								Type:        schema.TypeString,
+								Description: "APIVersion of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kind": {
+								Type:        schema.TypeString,
+								Description: "Kind of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name of the referent.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "Namespace of the referent, defaults to the namespace of the Kubernetes\nresource object that contains the reference.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 							},
 						}},
 					},
@@ -450,6 +495,23 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2() *schema.Resource {
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"config_map_ref": {
+								Type:        schema.TypeList,
+								Description: "ConfigMapRef holds an optional name of a ConfigMap that contains\nthe following keys:\n\n- `provider`: the provider to use. One of `aws`, `azure`, `gcp`, or\n   `generic`. Required.\n- `cluster`: the fully qualified resource name of the Kubernetes\n   cluster in the cloud provider API. Not used by the `generic`\n   provider. Required when one of `address` or `ca.crt` is not set.\n- `address`: the address of the Kubernetes API server. Required\n   for `generic`. For the other providers, if not specified, the\n   first address in the cluster resource will be used, and if\n   specified, it must match one of the addresses in the cluster\n   resource.\n   If audiences is not set, will be used as the audience for the\n   `generic` provider.\n- `ca.crt`: the optional PEM-encoded CA certificate for the\n   Kubernetes API server. If not set, the controller will use the\n   CA certificate from the cluster resource.\n- `audiences`: the optional audiences as a list of\n   line-break-separated strings for the Kubernetes ServiceAccount\n   token. Defaults to the `address` for the `generic` provider, or\n   to specific values for the other providers depending on the\n   provider.\n-  `serviceAccountName`: the optional name of the Kubernetes\n   ServiceAccount in the same namespace that should be used\n   for authentication. If not specified, the controller\n   ServiceAccount will be used.\n\nMutually exclusive with SecretRef.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"secret_ref": {
 								Type:        schema.TypeList,
 								Description: "SecretRef holds the name of a secret that contains a key with the kubeconfig file as the value. If no key is set, the key will default to 'value'. It is recommended that the kubeconfig is self-contained, and the secret is regularly updated if credentials such as a cloud-access-token expire. Cloud specific `cmd-path` auth helpers will not function without adding binaries and credentials to the Pod that is responsible for reconciling Kubernetes resources.",
@@ -1185,6 +1247,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"app_version": {
+								Type:        schema.TypeString,
+								Description: "AppVersion is the chart app version of the release object in storage.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"chart_name": {
 								Type:        schema.TypeString,
 								Description: "ChartName is the chart name of the release object in storage.",
@@ -1244,6 +1313,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2() *schema.Resource {
 							"namespace": {
 								Type:        schema.TypeString,
 								Description: "Namespace is the namespace the release is deployed to.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"oci_digest": {
+								Type:        schema.TypeString,
+								Description: "OCIDigest is the digest of the OCI artifact associated with the release.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -1313,6 +1389,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"last_attempted_revision_digest": {
+						Type:        schema.TypeString,
+						Description: "LastAttemptedRevisionDigest is the digest of the last reconciliation attempt.\nThis is only set for OCIRepository sources.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"last_attempted_values_checksum": {
 						Type:        schema.TypeString,
 						Description: "LastAttemptedValuesChecksum is the SHA1 checksum for the values of the last reconciliation attempt. Deprecated: Use LastAttemptedConfigDigest instead.",
@@ -1355,6 +1438,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"observed_post_renderers_digest": {
+						Type:        schema.TypeString,
+						Description: "ObservedPostRenderersDigest is the digest for the post-renderers of\nthe last successful reconciliation attempt.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"storage_namespace": {
 						Type:        schema.TypeString,
 						Description: "StorageNamespace is the namespace of the Helm release storage for the current release.",
@@ -1381,7 +1471,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Beta2Read(_ context.Context, 
 	if err := manifestpkg.SetDataSourceDefaults(d, "helm.toolkit.fluxcd.io/v2beta2", "HelmRelease", "helm.toolkit.fluxcd.io/v2beta2/HelmRelease"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.chart", "spec.chart.metadata", "spec.chart.spec", "spec.chart.spec.source_ref", "spec.chart.spec.verify", "spec.chart.spec.verify.secret_ref", "spec.drift_detection", "spec.drift_detection.ignore.target", "spec.install", "spec.install.remediation", "spec.kube_config", "spec.kube_config.secret_ref", "spec.post_renderers.kustomize", "spec.post_renderers.kustomize.patches.target", "spec.post_renderers.kustomize.patches_json6902.target", "spec.rollback", "spec.test", "spec.uninstall", "spec.upgrade", "spec.upgrade.remediation", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.chart", "spec.chart.metadata", "spec.chart.spec", "spec.chart.spec.source_ref", "spec.chart.spec.verify", "spec.chart.spec.verify.secret_ref", "spec.chart_ref", "spec.drift_detection", "spec.drift_detection.ignore.target", "spec.install", "spec.install.remediation", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.post_renderers.kustomize", "spec.post_renderers.kustomize.patches.target", "spec.post_renderers.kustomize.patches_json6902.target", "spec.rollback", "spec.test", "spec.uninstall", "spec.upgrade", "spec.upgrade.remediation", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

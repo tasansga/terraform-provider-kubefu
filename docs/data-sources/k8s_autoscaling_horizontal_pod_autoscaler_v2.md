@@ -144,6 +144,11 @@ Optional:
 - `policies` (Block List) policies is a list of potential scaling polices which can be used during scaling. At least one policy must be specified, otherwise the HPAScalingRules will be discarded as invalid (see [below for nested schema](#nestedblock--spec--behavior--scale_down--policies))
 - `select_policy` (String) selectPolicy is used to specify which policy should be used. If not set, the default value Max is used.
 - `stabilization_window_seconds` (Number) StabilizationWindowSeconds is the number of seconds for which past recommendations should be considered while scaling up or scaling down. StabilizationWindowSeconds must be greater than or equal to zero and less than or equal to 3600 (one hour). If not set, use the default values: - For scale up: 0 (i.e. no stabilization is done). - For scale down: 300 (i.e. the stabilization window is 300 seconds long).
+- `tolerance` (String) tolerance is the tolerance on the ratio between the current and desired metric value under which no updates are made to the desired number of replicas (e.g. 0.01 for 1%). Must be greater than or equal to zero. If not set, the default cluster-wide tolerance is applied (by default 10%).
+
+For example, if autoscaling is configured with a memory consumption target of 100Mi, and scale-down and scale-up tolerances of 5% and 1% respectively, scaling will be triggered when the actual consumption falls below 95Mi or exceeds 101Mi.
+
+This is an alpha field and requires enabling the HPAConfigurableTolerance feature gate.
 
 <a id="nestedblock--spec--behavior--scale_down--policies"></a>
 ### Nested Schema for `spec.behavior.scale_down.policies`
@@ -164,6 +169,11 @@ Optional:
 - `policies` (Block List) policies is a list of potential scaling polices which can be used during scaling. At least one policy must be specified, otherwise the HPAScalingRules will be discarded as invalid (see [below for nested schema](#nestedblock--spec--behavior--scale_up--policies))
 - `select_policy` (String) selectPolicy is used to specify which policy should be used. If not set, the default value Max is used.
 - `stabilization_window_seconds` (Number) StabilizationWindowSeconds is the number of seconds for which past recommendations should be considered while scaling up or scaling down. StabilizationWindowSeconds must be greater than or equal to zero and less than or equal to 3600 (one hour). If not set, use the default values: - For scale up: 0 (i.e. no stabilization is done). - For scale down: 300 (i.e. the stabilization window is 300 seconds long).
+- `tolerance` (String) tolerance is the tolerance on the ratio between the current and desired metric value under which no updates are made to the desired number of replicas (e.g. 0.01 for 1%). Must be greater than or equal to zero. If not set, the default cluster-wide tolerance is applied (by default 10%).
+
+For example, if autoscaling is configured with a memory consumption target of 100Mi, and scale-down and scale-up tolerances of 5% and 1% respectively, scaling will be triggered when the actual consumption falls below 95Mi or exceeds 101Mi.
+
+This is an alpha field and requires enabling the HPAConfigurableTolerance feature gate.
 
 <a id="nestedblock--spec--behavior--scale_up--policies"></a>
 ### Nested Schema for `spec.behavior.scale_up.policies`

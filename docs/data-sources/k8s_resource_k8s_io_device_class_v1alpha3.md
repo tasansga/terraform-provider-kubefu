@@ -119,9 +119,9 @@ For ease of use, the cel.bind() function is enabled, and can be used to simplify
 <a id="nestedblock--spec--suitable_nodes"></a>
 ### Nested Schema for `spec.suitable_nodes`
 
-Required:
+Optional:
 
-- `node_selector_terms` (Block List, Min: 1) Required. A list of node selector terms. The terms are ORed. (see [below for nested schema](#nestedblock--spec--suitable_nodes--node_selector_terms))
+- `node_selector_terms` (Block List) Required. A list of node selector terms. The terms are ORed. (see [below for nested schema](#nestedblock--spec--suitable_nodes--node_selector_terms))
 
 <a id="nestedblock--spec--suitable_nodes--node_selector_terms"></a>
 ### Nested Schema for `spec.suitable_nodes.node_selector_terms`
@@ -134,26 +134,20 @@ Optional:
 <a id="nestedblock--spec--suitable_nodes--node_selector_terms--match_expressions"></a>
 ### Nested Schema for `spec.suitable_nodes.node_selector_terms.match_expressions`
 
-Required:
+Optional:
 
 - `key` (String) The label key that the selector applies to.
 - `operator` (String) Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
-
-Optional:
-
 - `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
 
 
 <a id="nestedblock--spec--suitable_nodes--node_selector_terms--match_fields"></a>
 ### Nested Schema for `spec.suitable_nodes.node_selector_terms.match_fields`
 
-Required:
+Optional:
 
 - `key` (String) The label key that the selector applies to.
 - `operator` (String) Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
-
-Optional:
-
 - `values` (List of String) An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
 
 

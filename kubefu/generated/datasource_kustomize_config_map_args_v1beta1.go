@@ -43,6 +43,13 @@ func dataSourceKustomizeKustomizeConfigK8sIoConfigMapArgsV1Beta1() *schema.Resou
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"env": {
+								Type:        schema.TypeString,
+								Description: "",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"envs": {
 								Type:        schema.TypeList,
 								Description: "",

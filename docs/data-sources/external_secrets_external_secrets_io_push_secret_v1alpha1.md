@@ -3,12 +3,12 @@
 page_title: "kubefu_external_secrets_external_secrets_io_push_secret_v1alpha1 Data Source - terraform-provider-kubefu"
 subcategory: ""
 description: |-
-  Generated data source for crd.external-secrets.io.v1alpha1.PushSecret
+  PushSecret is the Schema for the PushSecrets API that enables pushing Kubernetes secrets to external secret providers.
 ---
 
 # kubefu_external_secrets_external_secrets_io_push_secret_v1alpha1 (Data Source)
 
-Generated data source for crd.external-secrets.io.v1alpha1.PushSecret
+PushSecret is the Schema for the PushSecrets API that enables pushing Kubernetes secrets to external secret providers.
 
 
 
@@ -23,16 +23,9 @@ Generated data source for crd.external-secrets.io.v1alpha1.PushSecret
 
 ### Read-Only
 
-- `api_version` (String) APIVersion defines the versioned schema of this representation of an object.
-Servers should convert recognized schemas to the latest internal value, and
-may reject unrecognized values.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
 - `id` (String) The ID of this resource.
-- `kind` (String) Kind is a string value representing the REST resource this object represents.
-Servers may infer this from the endpoint the client submits requests to.
-Cannot be updated.
-In CamelCase.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
@@ -56,8 +49,7 @@ Optional:
 
 - `conversion_strategy` (String) Used to define a conversion Strategy for the secret keys
 - `match` (Block List, Max: 1) Match a given Secret Key to be pushed to the provider. (see [below for nested schema](#nestedblock--spec--data--match))
-- `metadata` (Map of String) Metadata is metadata attached to the secret.
-The structure of metadata is provider specific, please look it up in the provider documentation.
+- `metadata` (Map of String) Metadata is metadata attached to the secret. The structure of metadata is provider specific, please look it up in the provider documentation.
 
 <a id="nestedblock--spec--data--match"></a>
 ### Nested Schema for `spec.data.match`
@@ -83,8 +75,7 @@ Optional:
 
 Optional:
 
-- `kind` (String) Kind of the SecretStore resource (SecretStore or ClusterSecretStore)
-Defaults to `SecretStore`
+- `kind` (String) Kind of the SecretStore resource (SecretStore or ClusterSecretStore) Defaults to `SecretStore`
 - `label_selector` (Block List, Max: 1) Optionally, sync to secret stores with label selector (see [below for nested schema](#nestedblock--spec--secret_store_refs--label_selector))
 - `name` (String) Optionally, sync to the SecretStore of the given name
 
@@ -94,12 +85,58 @@ Defaults to `SecretStore`
 Optional:
 
 - `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--secret_store_refs--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--secret_store_refs--label_selector--match_expressions"></a>
+### Nested Schema for `spec.secret_store_refs.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+
+<a id="nestedblock--spec--selector"></a>
+### Nested Schema for `spec.selector`
+
+Optional:
+
+- `generator_ref` (Block List, Max: 1) Point to a generator to create a Secret. (see [below for nested schema](#nestedblock--spec--selector--generator_ref))
+- `secret` (Block List, Max: 1) Select a Secret to Push. (see [below for nested schema](#nestedblock--spec--selector--secret))
+
+<a id="nestedblock--spec--selector--generator_ref"></a>
+### Nested Schema for `spec.selector.generator_ref`
+
+Optional:
+
+- `api_version` (String) Specify the apiVersion of the generator resource
+- `kind` (String) Specify the Kind of the resource, e.g. Password, ACRAccessToken etc.
+- `name` (String) Specify the name of the generator resource
+
+
+<a id="nestedblock--spec--selector--secret"></a>
+### Nested Schema for `spec.selector.secret`
+
+Optional:
+
+- `name` (String) Name of the Secret. The Secret must exist in the same namespace as the PushSecret manifest.
+- `selector` (Block List, Max: 1) Selector chooses secrets using a labelSelector. (see [below for nested schema](#nestedblock--spec--selector--secret--selector))
+
+<a id="nestedblock--spec--selector--secret--selector"></a>
+### Nested Schema for `spec.selector.secret.selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--selector--secret--selector--match_expressions))
 - `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.
 
-<a id="nestedblock--spec--secret_store_refs--label_selector--match_expressions"></a>
-### Nested Schema for `spec.secret_store_refs.label_selector.match_expressions`
+<a id="nestedblock--spec--selector--secret--selector--match_expressions"></a>
+### Nested Schema for `spec.selector.secret.selector.match_expressions`
 
 Optional:
 
@@ -114,21 +151,6 @@ merge patch.
 
 
 
-<a id="nestedblock--spec--selector"></a>
-### Nested Schema for `spec.selector`
-
-Optional:
-
-- `secret` (Block List, Max: 1) Select a Secret to Push. (see [below for nested schema](#nestedblock--spec--selector--secret))
-
-<a id="nestedblock--spec--selector--secret"></a>
-### Nested Schema for `spec.selector.secret`
-
-Optional:
-
-- `name` (String) Name of the Secret. The Secret must exist in the same namespace as the PushSecret manifest.
-
-
 
 <a id="nestedblock--spec--template"></a>
 ### Nested Schema for `spec.template`
@@ -136,10 +158,8 @@ Optional:
 Optional:
 
 - `data` (Map of String)
-- `engine_version` (String) EngineVersion specifies the template engine version
-that should be used to compile/execute the
-template specified in .data and .templateFrom[].
-- `merge_policy` (String)
+- `engine_version` (String) EngineVersion specifies the template engine version that should be used to compile/execute the template specified in .data and .templateFrom[].
+- `merge_policy` (String) TemplateMergePolicy defines how the rendered template should be merged with the existing Secret data.
 - `metadata` (Block List, Max: 1) ExternalSecretTemplateMetadata defines metadata fields for the Secret blueprint. (see [below for nested schema](#nestedblock--spec--template--metadata))
 - `template_from` (Block List) (see [below for nested schema](#nestedblock--spec--template--template_from))
 - `type` (String)
@@ -150,6 +170,7 @@ template specified in .data and .templateFrom[].
 Optional:
 
 - `annotations` (Map of String)
+- `finalizers` (List of String)
 - `labels` (Map of String)
 
 
@@ -158,26 +179,26 @@ Optional:
 
 Optional:
 
-- `config_map` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--template--template_from--config_map))
+- `config_map` (Block List, Max: 1) TemplateRef specifies a reference to either a ConfigMap or a Secret resource. (see [below for nested schema](#nestedblock--spec--template--template_from--config_map))
 - `literal` (String)
-- `secret` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--template--template_from--secret))
-- `target` (String)
+- `secret` (Block List, Max: 1) TemplateRef specifies a reference to either a ConfigMap or a Secret resource. (see [below for nested schema](#nestedblock--spec--template--template_from--secret))
+- `target` (String) TemplateTarget specifies where the rendered templates should be applied.
 
 <a id="nestedblock--spec--template--template_from--config_map"></a>
 ### Nested Schema for `spec.template.template_from.config_map`
 
 Optional:
 
-- `items` (Block List) (see [below for nested schema](#nestedblock--spec--template--template_from--config_map--items))
-- `name` (String)
+- `items` (Block List) A list of keys in the ConfigMap/Secret to use as templates for Secret data (see [below for nested schema](#nestedblock--spec--template--template_from--config_map--items))
+- `name` (String) The name of the ConfigMap/Secret resource
 
 <a id="nestedblock--spec--template--template_from--config_map--items"></a>
 ### Nested Schema for `spec.template.template_from.config_map.items`
 
 Optional:
 
-- `key` (String)
-- `template_as` (String)
+- `key` (String) A key in the ConfigMap/Secret
+- `template_as` (String) TemplateScope specifies how the template keys should be interpreted.
 
 
 
@@ -186,16 +207,16 @@ Optional:
 
 Optional:
 
-- `items` (Block List) (see [below for nested schema](#nestedblock--spec--template--template_from--secret--items))
-- `name` (String)
+- `items` (Block List) A list of keys in the ConfigMap/Secret to use as templates for Secret data (see [below for nested schema](#nestedblock--spec--template--template_from--secret--items))
+- `name` (String) The name of the ConfigMap/Secret resource
 
 <a id="nestedblock--spec--template--template_from--secret--items"></a>
 ### Nested Schema for `spec.template.template_from.secret.items`
 
 Optional:
 
-- `key` (String)
-- `template_as` (String)
+- `key` (String) A key in the ConfigMap/Secret
+- `template_as` (String) TemplateScope specifies how the template keys should be interpreted.
 
 
 
@@ -208,10 +229,8 @@ Optional:
 Optional:
 
 - `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
-- `refresh_time` (String) refreshTime is the time and date the external secret was fetched and
-the target secret updated
-- `synced_push_secrets` (Map of String) Synced PushSecrets, including secrets that already exist in provider.
-Matches secret stores to PushSecretData that was stored to that secret store.
+- `refresh_time` (String) refreshTime is the time and date the external secret was fetched and the target secret updated
+- `synced_push_secrets` (Map of String) Synced Push Secrets for later deletion. Matches Secret Stores to PushSecretData that was stored to that secretStore.
 - `synced_resource_version` (String) SyncedResourceVersion keeps track of the last synced version.
 
 <a id="nestedblock--status--conditions"></a>

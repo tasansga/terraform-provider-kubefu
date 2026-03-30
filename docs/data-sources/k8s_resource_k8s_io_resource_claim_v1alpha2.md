@@ -210,6 +210,35 @@ Optional:
 
 The maximum size of this field is 16KiB. This may get increased in the future, but not reduced.
 - `driver_name` (String) DriverName specifies the name of the resource driver whose kubelet plugin should be invoked to process this ResourceHandle's data once it lands on a node. This may differ from the DriverName set in ResourceClaimStatus this ResourceHandle is embedded in.
+- `structured_data` (Block List, Max: 1) If StructuredData is set, then it needs to be used instead of Data. (see [below for nested schema](#nestedblock--status--allocation--resource_handles--structured_data))
+
+<a id="nestedblock--status--allocation--resource_handles--structured_data"></a>
+### Nested Schema for `status.allocation.resource_handles.structured_data`
+
+Optional:
+
+- `node_name` (String) NodeName is the name of the node providing the necessary resources if the resources are local to a node.
+- `results` (Block List) Results lists all allocated driver resources. (see [below for nested schema](#nestedblock--status--allocation--resource_handles--structured_data--results))
+- `vendor_claim_parameters` (Map of String) VendorClaimParameters are the per-claim configuration parameters from the resource claim parameters at the time that the claim was allocated.
+- `vendor_class_parameters` (Map of String) VendorClassParameters are the per-claim configuration parameters from the resource class at the time that the claim was allocated.
+
+<a id="nestedblock--status--allocation--resource_handles--structured_data--results"></a>
+### Nested Schema for `status.allocation.resource_handles.structured_data.results`
+
+Optional:
+
+- `named_resources` (Block List, Max: 1) NamedResources describes the allocation result when using the named resources model. (see [below for nested schema](#nestedblock--status--allocation--resource_handles--structured_data--results--named_resources))
+- `vendor_request_parameters` (Map of String) VendorRequestParameters are the per-request configuration parameters from the time that the claim was allocated.
+
+<a id="nestedblock--status--allocation--resource_handles--structured_data--results--named_resources"></a>
+### Nested Schema for `status.allocation.resource_handles.structured_data.results.named_resources`
+
+Optional:
+
+- `name` (String) Name is the name of the selected resource instance.
+
+
+
 
 
 

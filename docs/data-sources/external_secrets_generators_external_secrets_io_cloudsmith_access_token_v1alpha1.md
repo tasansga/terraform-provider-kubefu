@@ -18,7 +18,7 @@ CloudsmithAccessToken generates Cloudsmith access token using OIDC authenticatio
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
+- `spec` (Block List, Max: 1) CloudsmithAccessTokenSpec defines the configuration for generating a Cloudsmith access token using OIDC authentication. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 

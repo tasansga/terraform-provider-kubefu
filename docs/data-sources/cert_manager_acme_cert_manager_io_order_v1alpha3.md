@@ -40,6 +40,8 @@ Optional:
 - `common_name` (String) CommonName is the common name as specified on the DER encoded CSR. If specified, this value must also be present in `dnsNames`. This field must match the corresponding field on the DER encoded CSR.
 - `csr` (String) Certificate signing request bytes in DER encoding. This will be used when finalizing the order. This field must be set on the order.
 - `dns_names` (List of String) DNSNames is a list of DNS names that should be included as part of the Order validation process. This field must match the corresponding field on the DER encoded CSR.
+- `duration` (String) Duration is the duration for the not after date for the requested certificate. this is set on order creation as pe the ACME spec.
+- `ip_addresses` (List of String) IPAddresses is a list of IP addresses that should be included as part of the Order validation process. This field must match the corresponding field on the DER encoded CSR.
 - `issuer_ref` (Block List, Max: 1) IssuerRef references a properly configured ACME-type Issuer which should be used to create this Order. If the Issuer does not exist, processing will be retried. If the Issuer is not an 'ACME' Issuer, an error will be returned and the Order will be marked as failed. (see [below for nested schema](#nestedblock--spec--issuer_ref))
 
 <a id="nestedblock--spec--issuer_ref"></a>

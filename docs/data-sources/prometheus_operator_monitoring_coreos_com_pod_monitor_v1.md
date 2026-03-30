@@ -22,6 +22,12 @@ PodMonitor defines monitoring for a set of pods.
 ### Optional
 
 - `metadata` (Map of String)
+- `status` (Block List, Max: 1) status defines the status subresource. It is under active development and is updated only when the
+"StatusForConfigurationResources" feature gate is enabled.
+
+Most recent observed status of the PodMonitor. Read-only.
+More info:
+https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -36,16 +42,57 @@ PodMonitor defines monitoring for a set of pods.
 
 Optional:
 
+- `attach_metadata` (Block List, Max: 1) Attaches node metadata to discovered targets. Only valid for role: pod. Only valid in Prometheus versions 2.35.0 and newer. (see [below for nested schema](#nestedblock--spec--attach_metadata))
+- `body_size_limit` (String) When defined, bodySizeLimit specifies a job level limit on the size of uncompressed response body that will be accepted by Prometheus.
+ It requires Prometheus >= v2.28.0.
+- `convert_classic_histograms_to_nhcb` (Boolean) Whether to convert all scraped classic histograms into a native histogram with custom buckets.
+It requires Prometheus >= v3.0.0.
+- `fallback_scrape_protocol` (String) The protocol to use if a scrape returns blank, unparseable, or otherwise invalid Content-Type.
+
+It requires Prometheus >= v3.0.0.
 - `job_label` (String) The label to use to retrieve the job name from.
+- `keep_dropped_targets` (Number) Per-scrape limit on the number of targets dropped by relabeling that will be kept in memory. 0 means no limit.
+ It requires Prometheus >= v2.47.0.
 - `label_limit` (Number) Per-scrape limit on number of labels that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
 - `label_name_length_limit` (Number) Per-scrape limit on length of labels name that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
 - `label_value_length_limit` (Number) Per-scrape limit on length of labels value that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
 - `namespace_selector` (Block List, Max: 1) Selector to select which namespaces the Endpoints objects are discovered from. (see [below for nested schema](#nestedblock--spec--namespace_selector))
+- `native_histogram_bucket_limit` (Number) If there are more than this many buckets in a native histogram,
+buckets will be merged to stay within the limit.
+It requires Prometheus >= v2.45.0.
+- `native_histogram_min_bucket_factor` (String) If the growth factor of one bucket to the next is smaller than this,
+buckets will be merged to increase the factor sufficiently.
+It requires Prometheus >= v2.50.0.
 - `pod_metrics_endpoints` (Block List) A list of endpoints allowed as part of this PodMonitor. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints))
 - `pod_target_labels` (List of String) PodTargetLabels transfers labels on the Kubernetes Pod onto the target.
 - `sample_limit` (Number) SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
+- `scrape_class` (String) The scrape class to apply.
+- `scrape_classic_histograms` (Boolean) Whether to scrape a classic histogram that is also exposed as a native histogram.
+It requires Prometheus >= v2.45.0.
+- `scrape_fallback_protocol` (String) The protocol to use if a scrape returns blank, unparseable, or otherwise invalid Content-Type.
+
+It requires Prometheus >= v3.0.0.
+- `scrape_native_histograms` (Boolean) scrapeNativeHistograms defines whether to enable scraping of native histograms.
+It requires Prometheus >= v3.8.0.
+- `scrape_protocols` (List of String) `scrapeProtocols` defines the protocols to negotiate during a scrape. It tells clients the protocols supported by Prometheus in order of preference (from most to least preferred).
+ If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.49.0.
 - `selector` (Block List, Max: 1) Selector to select Pod objects. (see [below for nested schema](#nestedblock--spec--selector))
+- `selector_mechanism` (String) Mechanism used to select the endpoints to scrape.
+By default, the selection process relies on relabel configurations to filter the discovered targets.
+Alternatively, you can opt in for role selectors, which may offer better efficiency in large clusters.
+Which strategy is best for your use case needs to be carefully evaluated.
+
+It requires Prometheus >= v2.17.0.
 - `target_limit` (Number) TargetLimit defines a limit on the number of scraped targets that will be accepted.
+
+<a id="nestedblock--spec--attach_metadata"></a>
+### Nested Schema for `spec.attach_metadata`
+
+Optional:
+
+- `node` (Boolean) When set to true, Prometheus must have permissions to get Nodes.
+
 
 <a id="nestedblock--spec--namespace_selector"></a>
 ### Nested Schema for `spec.namespace_selector`
@@ -64,20 +111,38 @@ Optional:
 - `authorization` (Block List, Max: 1) Authorization section for this endpoint (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--authorization))
 - `basic_auth` (Block List, Max: 1) BasicAuth allow an endpoint to authenticate over basic authentication. More info: https://prometheus.io/docs/operating/configuration/#endpoint (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--basic_auth))
 - `bearer_token_secret` (Block List, Max: 1) Secret to mount to read bearer token for scraping targets. The secret needs to be in the same namespace as the pod monitor and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--bearer_token_secret))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `filter_running` (Boolean) Drop pods that are not running. (Failed, Succeeded). Enabled by default. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-phase
+- `follow_redirects` (Boolean) FollowRedirects configures whether scrape requests follow HTTP 3xx redirects.
 - `honor_labels` (Boolean) HonorLabels chooses the metric's labels on collisions with target labels.
 - `honor_timestamps` (Boolean) HonorTimestamps controls whether Prometheus respects the timestamps present in scraped data.
 - `interval` (String) Interval at which metrics should be scraped
 - `metric_relabelings` (Block List) MetricRelabelConfigs to apply to samples before ingestion. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--metric_relabelings))
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
 - `oauth2` (Block List, Max: 1) OAuth2 for the URL. Only valid in Prometheus versions 2.27.0 and newer. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2))
 - `params` (Map of String) Optional HTTP URL parameters
 - `path` (String) HTTP path to scrape for metrics.
 - `port` (String) Name of the pod port this endpoint refers to. Mutually exclusive with targetPort.
+- `port_number` (Number) The `Pod` port number which exposes the endpoint.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+
+It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
 - `proxy_url` (String) ProxyURL eg http://proxyserver:2195 Directs scrapes to proxy through this endpoint.
 - `relabelings` (Block List) RelabelConfigs to apply to samples before scraping. Prometheus Operator automatically adds relabelings for a few standard Kubernetes fields and replaces original scrape job name with __tmp_prometheus_job_name. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--relabelings))
 - `scheme` (String) HTTP scheme to use for scraping.
 - `scrape_timeout` (String) Timeout after which the scrape is ended
 - `target_port` (String) Deprecated: Use 'port' instead.
 - `tls_config` (Block List, Max: 1) TLS configuration to use when scraping the endpoint. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--tls_config))
+- `track_timestamps_staleness` (Boolean) `trackTimestampsStaleness` defines whether Prometheus tracks staleness of the metrics that have an explicit timestamp present in scraped data. Has no effect if `honorTimestamps` is false.
+ It requires Prometheus >= v2.48.0.
 
 <a id="nestedblock--spec--pod_metrics_endpoints--authorization"></a>
 ### Nested Schema for `spec.pod_metrics_endpoints.authorization`
@@ -159,7 +224,29 @@ Optional:
 - `client_id` (Block List, Max: 1) The secret or configmap containing the OAuth2 client id (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2--client_id))
 - `client_secret` (Block List, Max: 1) The secret containing the OAuth2 client secret (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2--client_secret))
 - `endpoint_params` (Map of String) Parameters to append to the token URL
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
 - `scopes` (List of String) OAuth2 scopes used for the token request
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config))
 - `token_url` (String) The URL to fetch the token from
 
 <a id="nestedblock--spec--pod_metrics_endpoints--oauth2--client_id"></a>
@@ -201,6 +288,124 @@ Optional:
 - `optional` (Boolean) Specify whether the Secret or its key must be defined
 
 
+<a id="nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--pod_metrics_endpoints--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.pod_metrics_endpoints.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
 
 <a id="nestedblock--spec--pod_metrics_endpoints--relabelings"></a>
 ### Nested Schema for `spec.pod_metrics_endpoints.relabelings`
@@ -225,6 +430,14 @@ Optional:
 - `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--tls_config--cert))
 - `insecure_skip_verify` (Boolean) Disable target certificate validation.
 - `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--pod_metrics_endpoints--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
 - `server_name` (String) Used to verify the hostname for the targets.
 
 <a id="nestedblock--spec--pod_metrics_endpoints--tls_config--ca"></a>
@@ -313,3 +526,40 @@ Optional:
 - `key` (String) key is the label key that the selector applies to.
 - `operator` (String) operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
 - `values` (List of String) values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+
+
+
+
+<a id="nestedblock--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `bindings` (Block List) bindings defines the list of workload resources (Prometheus, PrometheusAgent, ThanosRuler or Alertmanager) which select the configuration resource. (see [below for nested schema](#nestedblock--status--bindings))
+
+<a id="nestedblock--status--bindings"></a>
+### Nested Schema for `status.bindings`
+
+Optional:
+
+- `conditions` (Block List) conditions defines the current state of the configuration resource when bound to the referenced Workload object. (see [below for nested schema](#nestedblock--status--bindings--conditions))
+- `group` (String) group defines the group of the referenced resource.
+- `name` (String) name defines the name of the referenced object.
+- `namespace` (String) namespace defines the namespace of the referenced object.
+- `resource` (String) resource defines the type of resource being referenced (e.g. Prometheus, PrometheusAgent, ThanosRuler or Alertmanager).
+
+<a id="nestedblock--status--bindings--conditions"></a>
+### Nested Schema for `status.bindings.conditions`
+
+Optional:
+
+- `last_transition_time` (String) lastTransitionTime defines the time of the last update to the current status property.
+- `message` (String) message defines the human-readable message indicating details for the condition's last transition.
+- `observed_generation` (Number) observedGeneration defines the .metadata.generation that the
+condition was set based upon. For instance, if `.metadata.generation` is
+currently 12, but the `.status.conditions[].observedGeneration` is 9, the
+condition is out of date with respect to the current state of the object.
+- `reason` (String) reason for the condition's last transition.
+- `status` (String) status of the condition.
+- `type` (String) type of the condition being reported.
+Currently, only "Accepted" is supported.

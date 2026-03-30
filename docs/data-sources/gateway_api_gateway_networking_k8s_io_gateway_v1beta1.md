@@ -44,6 +44,9 @@ Optional:
  The implementation MUST bind all Listeners to every GatewayAddress that it assigns to the Gateway and add a corresponding entry in GatewayStatus.Addresses.
  Support: Extended (see [below for nested schema](#nestedblock--spec--addresses))
 - `gateway_class_name` (String) GatewayClassName used for this Gateway. This is the name of a GatewayClass resource.
+- `infrastructure` (Block List, Max: 1) Infrastructure defines infrastructure level attributes about this Gateway instance.
+
+Support: Extended (see [below for nested schema](#nestedblock--spec--infrastructure))
 - `listeners` (Block List) Listeners associated with this Gateway. Listeners define logical endpoints that are bound on this Gateway's addresses. At least one Listener MUST be specified.
  Each listener in a Gateway must have a unique combination of Hostname, Port, and Protocol.
  An implementation MAY group Listeners by Port and then collapse each group of Listeners into a single Listener if the implementation determines that the Listeners in the group are "compatible". An implementation MAY also group together and collapse compatible Listeners belonging to different Gateways.
@@ -63,6 +66,53 @@ Optional:
 - `type` (String) Type of the address.
 - `value` (String) Value of the address. The validity of the values will depend on the type and support by the controller.
  Examples: `1.2.3.4`, `128::1`, `my-ip-address`.
+
+
+<a id="nestedblock--spec--infrastructure"></a>
+### Nested Schema for `spec.infrastructure`
+
+Optional:
+
+- `annotations` (Map of String) Annotations that SHOULD be applied to any resources created in response to this Gateway.
+
+For implementations creating other Kubernetes objects, this should be the `metadata.annotations` field on resources.
+For other implementations, this refers to any relevant (implementation specific) "annotations" concepts.
+
+An implementation may chose to add additional implementation-specific annotations as they see fit.
+
+Support: Extended
+- `labels` (Map of String) Labels that SHOULD be applied to any resources created in response to this Gateway.
+
+For implementations creating other Kubernetes objects, this should be the `metadata.labels` field on resources.
+For other implementations, this refers to any relevant (implementation specific) "labels" concepts.
+
+An implementation may chose to add additional implementation-specific labels as they see fit.
+
+If an implementation maps these labels to Pods, or any other resource that would need to be recreated when labels
+change, it SHOULD clearly warn about this behavior in documentation.
+
+Support: Extended
+- `parameters_ref` (Block List, Max: 1) ParametersRef is a reference to a resource that contains the configuration
+parameters corresponding to the Gateway. This is optional if the
+controller does not require any additional configuration.
+
+This follows the same semantics as GatewayClass's `parametersRef`, but on a per-Gateway basis
+
+The Gateway's GatewayClass may provide its own `parametersRef`. When both are specified,
+the merging behavior is implementation specific.
+It is generally recommended that GatewayClass provides defaults that can be overridden by a Gateway.
+
+Support: Implementation-specific (see [below for nested schema](#nestedblock--spec--infrastructure--parameters_ref))
+
+<a id="nestedblock--spec--infrastructure--parameters_ref"></a>
+### Nested Schema for `spec.infrastructure.parameters_ref`
+
+Optional:
+
+- `group` (String) Group is the group of the referent.
+- `kind` (String) Kind is kind of the referent.
+- `name` (String) Name is the name of the referent.
+
 
 
 <a id="nestedblock--spec--listeners"></a>

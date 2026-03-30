@@ -51,12 +51,27 @@ func dataSourceCertManagerCertManagerIoCertificateV1() *schema.Resource {
 			"spec": {
 				Type:        schema.TypeList,
 				Description: "Desired state of the Certificate resource.",
-				Optional:    false,
-				Required:    true,
-				Computed:    false,
-				MinItems:    1,
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"additional_output_formats": {
+						Type:        schema.TypeList,
+						Description: "AdditionalOutputFormats defines extra output formats of the private key and signed certificate chain to be written to this Certificate's target Secret. This is an Alpha Feature and is only enabled with the `--feature-gates=AdditionalCertificateOutputFormats=true` option on both the controller and webhook components.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"type": {
+								Type:        schema.TypeString,
+								Description: "Type is the name of the format type that should be written to the Certificate's target Secret.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"common_name": {
 						Type:        schema.TypeString,
 						Description: "CommonName is a common name to be used on the Certificate. The CommonName should have a length of 64 characters or fewer to avoid generating invalid CSRs. This value is ignored by TLS clients when any subject alt name is set. This is x509 behaviour: https://tools.ietf.org/html/rfc6125#section-6.4.4",
@@ -86,6 +101,13 @@ func dataSourceCertManagerCertManagerIoCertificateV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 						Elem: &schema.Schema{Type: schema.TypeString},
+					},
+					"encode_usages_in_request": {
+						Type:        schema.TypeBool,
+						Description: "EncodeUsagesInRequest controls whether key usages should be present in the CertificateRequest",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"ip_addresses": {
 						Type:        schema.TypeList,
@@ -149,9 +171,23 @@ func dataSourceCertManagerCertManagerIoCertificateV1() *schema.Resource {
 								Computed:    true,
 								MaxItems:    1,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"alias": {
+										Type:        schema.TypeString,
+										Description: "Alias specifies the alias of the key in the keystore, required by the JKS format.\nIf not provided, the default alias `certificate` will be used.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"create": {
 										Type:        schema.TypeBool,
 										Description: "Create enables JKS keystore creation for the Certificate. If true, a file named `keystore.jks` will be created in the target Secret resource, encrypted using the password stored in `passwordSecretRef`. The keystore file will only be updated upon re-issuance.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"password": {
+										Type:        schema.TypeString,
+										Description: "Password provides a literal password used to encrypt the JKS keystore.\nMutually exclusive with passwordSecretRef.\nOne of password or passwordSecretRef must provide a password with a non-zero length.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -197,6 +233,13 @@ func dataSourceCertManagerCertManagerIoCertificateV1() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 									},
+									"password": {
+										Type:        schema.TypeString,
+										Description: "Password provides a literal password used to encrypt the PKCS#12 keystore.\nMutually exclusive with passwordSecretRef.\nOne of password or passwordSecretRef must provide a password with a non-zero length.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"password_secret_ref": {
 										Type:        schema.TypeList,
 										Description: "PasswordSecretRef is a reference to a key in a Secret resource containing the password used to encrypt the PKCS12 keystore.",
@@ -221,7 +264,145 @@ func dataSourceCertManagerCertManagerIoCertificateV1() *schema.Resource {
 											},
 										}},
 									},
+									"profile": {
+										Type:        schema.TypeString,
+										Description: "Profile specifies the key and certificate encryption algorithms and the HMAC algorithm used to create the PKCS12 keystore. Default value is `LegacyRC2` for backward compatibility. \n If provided, allowed values are: `LegacyRC2`: Deprecated. Not supported by default in OpenSSL 3 or Java 20. `LegacyDES`: Less secure algorithm. Use this option for maximal compatibility. `Modern2023`: Secure algorithm. Use this option in case you have to always use secure algorithms (eg. because of company policy). Please note that the security of the algorithm is not that important in reality, because the unencrypted certificate and private key are also stored in the Secret.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 								}},
+							},
+						}},
+					},
+					"literal_subject": {
+						Type:        schema.TypeString,
+						Description: "LiteralSubject is an LDAP formatted string that represents the [X.509 Subject field](https://datatracker.ietf.org/doc/html/rfc5280#section-4.1.2.6). Use this *instead* of the Subject field if you need to ensure the correct ordering of the RDN sequence, such as when issuing certs for LDAP authentication. See https://github.com/cert-manager/cert-manager/issues/3203, https://github.com/cert-manager/cert-manager/issues/4424. This field is alpha level and is only supported by cert-manager installations where LiteralCertificateSubject feature gate is enabled on both cert-manager controller and webhook.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"name_constraints": {
+						Type:        schema.TypeList,
+						Description: "x.509 certificate NameConstraint extension which MUST NOT be used in a non-CA certificate. More Info: https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.10 \n This is an Alpha Feature and is only enabled with the `--feature-gates=NameConstraints=true` option set on both the controller and webhook components.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"critical": {
+								Type:        schema.TypeBool,
+								Description: "if true then the name constraints are marked critical.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"excluded": {
+								Type:        schema.TypeList,
+								Description: "Excluded contains the constraints which must be disallowed. Any name matching a restriction in the excluded field is invalid regardless of information appearing in the permitted",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"dns_domains": {
+										Type:        schema.TypeList,
+										Description: "DNSDomains is a list of DNS domains that are permitted or excluded.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"email_addresses": {
+										Type:        schema.TypeList,
+										Description: "EmailAddresses is a list of Email Addresses that are permitted or excluded.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"ip_ranges": {
+										Type:        schema.TypeList,
+										Description: "IPRanges is a list of IP Ranges that are permitted or excluded. This should be a valid CIDR notation.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"uri_domains": {
+										Type:        schema.TypeList,
+										Description: "URIDomains is a list of URI domains that are permitted or excluded.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+								}},
+							},
+							"permitted": {
+								Type:        schema.TypeList,
+								Description: "Permitted contains the constraints in which the names must be located.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"dns_domains": {
+										Type:        schema.TypeList,
+										Description: "DNSDomains is a list of DNS domains that are permitted or excluded.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"email_addresses": {
+										Type:        schema.TypeList,
+										Description: "EmailAddresses is a list of Email Addresses that are permitted or excluded.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"ip_ranges": {
+										Type:        schema.TypeList,
+										Description: "IPRanges is a list of IP Ranges that are permitted or excluded. This should be a valid CIDR notation.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+									"uri_domains": {
+										Type:        schema.TypeList,
+										Description: "URIDomains is a list of URI domains that are permitted or excluded.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
+								}},
+							},
+						}},
+					},
+					"other_names": {
+						Type:        schema.TypeList,
+						Description: "`otherNames` is an escape hatch for SAN that allows any type. We currently restrict the support to string like otherNames, cf RFC 5280 p 37 Any UTF8 String valued otherName can be passed with by setting the keys oid: x.x.x.x and UTF8Value: somevalue for `otherName`. Most commonly this would be UPN set with oid: 1.3.6.1.4.1.311.20.2.3 You should ensure that any OID passed is valid for the UTF8String type as we do not explicitly validate this.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"oid": {
+								Type:        schema.TypeString,
+								Description: "OID is the object identifier for the otherName SAN. The object identifier must be expressed as a dotted string, for example, \"1.2.840.113556.1.4.221\".",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"utf8_value": {
+								Type:        schema.TypeString,
+								Description: "utf8Value is the string value of the otherName SAN. The utf8Value accepts any valid UTF8 string to set as value for the otherName SAN.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 							},
 						}},
 					},
@@ -270,9 +451,54 @@ func dataSourceCertManagerCertManagerIoCertificateV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"renew_before_percentage": {
+						Type:        schema.TypeInt,
+						Description: "`renewBeforePercentage` is like `renewBefore`, except it is a relative percentage\nrather than an absolute duration. For example, if a certificate is valid for 60\nminutes, and  `renewBeforePercentage=25`, cert-manager will begin to attempt to\nrenew the certificate 45 minutes after it was issued (i.e. when there are 15\nminutes (25%) remaining until the certificate is no longer valid).\n\nNOTE: The actual lifetime of the issued certificate is used to determine the\nrenewal time. If an issuer returns a certificate with a different lifetime than\nthe one requested, cert-manager will use the lifetime of the issued certificate.\n\nValue must be an integer in the range (0,100). The minimum effective\n`renewBefore` derived from the `renewBeforePercentage` and `duration` fields is 5\nminutes.\nCannot be set if the `renewBefore` field is set.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"revision_history_limit": {
+						Type:        schema.TypeInt,
+						Description: "revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history. Each revision represents a single `CertificateRequest` created by this Certificate, either when it was created, renewed, or Spec was changed. Revisions will be removed by oldest first if the number of revisions exceeds this number. If set, revisionHistoryLimit must be a value of `1` or greater. If unset (`nil`), revisions will not be garbage collected. Default value is `nil`.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"secret_name": {
 						Type:        schema.TypeString,
 						Description: "SecretName is the name of the secret resource that will be automatically created and managed by this Certificate resource. It will be populated with a private key and certificate, signed by the denoted issuer.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"secret_template": {
+						Type:        schema.TypeList,
+						Description: "SecretTemplate defines annotations and labels to be propagated to the Kubernetes Secret when it is created or updated. Once created, labels and annotations are not yet removed from the Secret when they are removed from the template. See https://github.com/jetstack/cert-manager/issues/4292",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"annotations": {
+								Type:        schema.TypeMap,
+								Description: "Annotations is a key value map to be copied to the target Kubernetes Secret.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"labels": {
+								Type:        schema.TypeMap,
+								Description: "Labels is a key value map to be copied to the target Kubernetes Secret.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"signature_algorithm": {
+						Type:        schema.TypeString,
+						Description: "Signature algorithm to use.\nAllowed values for RSA keys: SHA256WithRSA, SHA384WithRSA, SHA512WithRSA.\nAllowed values for ECDSA keys: ECDSAWithSHA256, ECDSAWithSHA384, ECDSAWithSHA512.\nAllowed values for Ed25519 keys: PureEd25519.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -397,6 +623,13 @@ func dataSourceCertManagerCertManagerIoCertificateV1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "If set, this represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.condition[x].observedGeneration is 9, the condition is out of date with respect to the current state of the Certificate.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"reason": {
 								Type:        schema.TypeString,
 								Description: "Reason is a brief machine readable explanation for the condition's last transition.",
@@ -419,6 +652,13 @@ func dataSourceCertManagerCertManagerIoCertificateV1() *schema.Resource {
 								Computed:    true,
 							},
 						}},
+					},
+					"failed_issuance_attempts": {
+						Type:        schema.TypeInt,
+						Description: "The number of continuous failed issuance attempts up till now. This field gets removed (if set) on a successful issuance and gets set to 1 if unset and an issuance has failed. If an issuance has failed, the delay till the next issuance will be calculated using formula time.Hour * 2 ^ (failedIssuanceAttempts - 1).",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"last_failure_time": {
 						Type:        schema.TypeString,
@@ -474,7 +714,7 @@ func dataSourceCertManagerCertManagerIoCertificateV1Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "cert-manager.io/v1", "Certificate", "cert-manager.io/v1/Certificate"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "spec.keystores", "spec.keystores.jks", "spec.keystores.jks.password_secret_ref", "spec.keystores.pkcs12", "spec.keystores.pkcs12.password_secret_ref", "spec.private_key", "spec.subject", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "spec.keystores", "spec.keystores.jks", "spec.keystores.jks.password_secret_ref", "spec.keystores.pkcs12", "spec.keystores.pkcs12.password_secret_ref", "spec.name_constraints", "spec.name_constraints.excluded", "spec.name_constraints.permitted", "spec.private_key", "spec.secret_template", "spec.subject", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

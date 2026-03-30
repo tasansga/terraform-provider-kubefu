@@ -53,6 +53,7 @@ Optional:
 Optional:
 
 - `name` (String) Name of the referent
+- `namespace` (String) Namespace of the referent, when not specified it acts as LocalObjectReference
 
 
 <a id="nestedblock--spec--policy"></a>

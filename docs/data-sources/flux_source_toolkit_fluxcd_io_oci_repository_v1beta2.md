@@ -38,17 +38,39 @@ Optional:
   - a PEM-encoded client certificate (`certFile`) and private  key (`keyFile`);  - a PEM-encoded CA certificate (`caFile`)
   and whichever are supplied, will be used for connecting to the  registry. The client cert and key are useful if you are  authenticating with a certificate; the CA cert is useful if  you are using a self-signed server certificate. (see [below for nested schema](#nestedblock--spec--cert_secret_ref))
 - `ignore` (String) Ignore overrides the set of excluded patterns in the .sourceignore format (which is the same as .gitignore). If not provided, a default will be used, consult the documentation for your version to find out what those are.
+- `insecure` (Boolean) Insecure allows connecting to a non-TLS HTTP container registry.
 - `interval` (String) The interval at which to check for image updates.
+- `layer_selector` (Block List, Max: 1) LayerSelector specifies which layer should be extracted from the OCI artifact. When not specified, the first layer found in the artifact is selected. (see [below for nested schema](#nestedblock--spec--layer_selector))
 - `provider_` (String) The provider used for authentication, can be 'aws', 'azure', 'gcp' or 'generic'. When not specified, defaults to 'generic'.
+- `proxy_secret_ref` (Block List, Max: 1) ProxySecretRef specifies the Secret containing the proxy configuration
+to use while communicating with the container registry. (see [below for nested schema](#nestedblock--spec--proxy_secret_ref))
 - `ref` (Block List, Max: 1) The OCI reference to pull and monitor for changes, defaults to the latest tag. (see [below for nested schema](#nestedblock--spec--ref))
 - `secret_ref` (Block List, Max: 1) SecretRef contains the secret name containing the registry login credentials to resolve image metadata. The secret must be of type kubernetes.io/dockerconfigjson. (see [below for nested schema](#nestedblock--spec--secret_ref))
 - `service_account_name` (String) ServiceAccountName is the name of the Kubernetes ServiceAccount used to authenticate the image pull if the service account has attached pull secrets. For more information: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account
 - `suspend` (Boolean) This flag tells the controller to suspend the reconciliation of this source.
 - `timeout` (String) The timeout for remote OCI Repository operations like pulling, defaults to 60s.
 - `url` (String) URL is a reference to an OCI artifact repository hosted on a remote container registry.
+- `verify` (Block List, Max: 1) Verify contains the secret name containing the trusted public keys used to verify the signature and specifies which provider to use to check whether OCI image is authentic. (see [below for nested schema](#nestedblock--spec--verify))
 
 <a id="nestedblock--spec--cert_secret_ref"></a>
 ### Nested Schema for `spec.cert_secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
+
+<a id="nestedblock--spec--layer_selector"></a>
+### Nested Schema for `spec.layer_selector`
+
+Optional:
+
+- `media_type` (String) MediaType specifies the OCI media type of the layer which should be extracted from the OCI Artifact. The first layer matching this type is selected.
+- `operation` (String) Operation specifies how the selected layer should be processed. By default, the layer compressed content is extracted to storage. When the operation is set to 'copy', the layer compressed content is persisted to storage as it is.
+
+
+<a id="nestedblock--spec--proxy_secret_ref"></a>
+### Nested Schema for `spec.proxy_secret_ref`
 
 Optional:
 
@@ -62,6 +84,7 @@ Optional:
 
 - `digest` (String) Digest is the image digest to pull, takes precedence over SemVer. The value should be in the format 'sha256:<HASH>'.
 - `semver` (String) SemVer is the range of tags to pull selecting the latest within the range, takes precedence over Tag.
+- `semver_filter` (String) SemverFilter is a regex pattern to filter the tags within the SemVer range.
 - `tag` (String) Tag is the image tag to pull, defaults to latest.
 
 
@@ -73,6 +96,33 @@ Optional:
 - `name` (String) Name of the referent.
 
 
+<a id="nestedblock--spec--verify"></a>
+### Nested Schema for `spec.verify`
+
+Optional:
+
+- `match_oidc_identity` (Block List) MatchOIDCIdentity specifies the identity matching criteria to use while verifying an OCI artifact which was signed using Cosign keyless signing. The artifact's identity is deemed to be verified if any of the specified matchers match against the identity. (see [below for nested schema](#nestedblock--spec--verify--match_oidc_identity))
+- `provider_` (String) Provider specifies the technology used to sign the OCI Artifact.
+- `secret_ref` (Block List, Max: 1) SecretRef specifies the Kubernetes Secret containing the trusted public keys. (see [below for nested schema](#nestedblock--spec--verify--secret_ref))
+
+<a id="nestedblock--spec--verify--match_oidc_identity"></a>
+### Nested Schema for `spec.verify.match_oidc_identity`
+
+Optional:
+
+- `issuer` (String) Issuer specifies the regex pattern to match against to verify the OIDC issuer in the Fulcio certificate. The pattern must be a valid Go regular expression.
+- `subject` (String) Subject specifies the regex pattern to match against to verify the identity subject in the Fulcio certificate. The pattern must be a valid Go regular expression.
+
+
+<a id="nestedblock--spec--verify--secret_ref"></a>
+### Nested Schema for `spec.verify.secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
+
+
 
 <a id="nestedblock--status"></a>
 ### Nested Schema for `status`
@@ -81,8 +131,11 @@ Optional:
 
 - `artifact` (Block List, Max: 1) Artifact represents the output of the last successful OCI Repository sync. (see [below for nested schema](#nestedblock--status--artifact))
 - `conditions` (Block List) Conditions holds the conditions for the OCIRepository. (see [below for nested schema](#nestedblock--status--conditions))
+- `content_config_checksum` (String) ContentConfigChecksum is a checksum of all the configurations related to the content of the source artifact: - .spec.ignore - .spec.layerSelector observed in .status.observedGeneration version of the object. This can be used to determine if the content configuration has changed and the artifact needs to be rebuilt. It has the format of `<algo>:<checksum>`, for example: `sha256:<checksum>`.
 - `last_handled_reconcile_at` (String) LastHandledReconcileAt holds the value of the most recent reconcile request value, so a change of the annotation value can be detected.
 - `observed_generation` (Number) ObservedGeneration is the last observed generation.
+- `observed_ignore` (String) ObservedIgnore is the observed exclusion patterns used for constructing the source artifact.
+- `observed_layer_selector` (Block List, Max: 1) ObservedLayerSelector is the observed layer selector used for constructing the source artifact. (see [below for nested schema](#nestedblock--status--observed_layer_selector))
 - `url` (String) URL is the download link for the artifact output of the last OCI Repository sync.
 
 <a id="nestedblock--status--artifact"></a>
@@ -91,6 +144,7 @@ Optional:
 Optional:
 
 - `checksum` (String) Checksum is the SHA256 checksum of the Artifact file.
+- `digest` (String) Digest is the digest of the file in the form of '<algorithm>:<checksum>'.
 - `last_update_time` (String) LastUpdateTime is the timestamp corresponding to the last update of the Artifact.
 - `metadata` (Map of String) Metadata holds upstream information such as OCI annotations.
 - `path` (String) Path is the relative file path of the Artifact. It can be used to locate the file in the root of the Artifact storage on the local file system of the controller managing the Source.
@@ -110,3 +164,12 @@ Optional:
 - `reason` (String) reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
 - `status` (String) status of the condition, one of True, False, Unknown.
 - `type` (String) type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+
+
+<a id="nestedblock--status--observed_layer_selector"></a>
+### Nested Schema for `status.observed_layer_selector`
+
+Optional:
+
+- `media_type` (String) MediaType specifies the OCI media type of the layer which should be extracted from the OCI Artifact. The first layer matching this type is selected.
+- `operation` (String) Operation specifies how the selected layer should be processed. By default, the layer compressed content is extracted to storage. When the operation is set to 'copy', the layer compressed content is persisted to storage as it is.

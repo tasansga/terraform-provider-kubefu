@@ -17,6 +17,7 @@ Generated data source for io.k8s.api.apps.v1.KvPairSources
 
 ### Optional
 
+- `env` (String)
 - `envs` (List of String)
 - `files` (List of String)
 - `literals` (List of String)

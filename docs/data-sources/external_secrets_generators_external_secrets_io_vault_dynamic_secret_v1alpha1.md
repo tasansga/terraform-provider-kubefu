@@ -3,12 +3,12 @@
 page_title: "kubefu_external_secrets_generators_external_secrets_io_vault_dynamic_secret_v1alpha1 Data Source - terraform-provider-kubefu"
 subcategory: ""
 description: |-
-  Generated data source for crd.generators.external-secrets.io.v1alpha1.VaultDynamicSecret
+  VaultDynamicSecret represents a generator that can create dynamic secrets from HashiCorp Vault.
 ---
 
 # kubefu_external_secrets_generators_external_secrets_io_vault_dynamic_secret_v1alpha1 (Data Source)
 
-Generated data source for crd.generators.external-secrets.io.v1alpha1.VaultDynamicSecret
+VaultDynamicSecret represents a generator that can create dynamic secrets from HashiCorp Vault.
 
 
 
@@ -18,20 +18,13 @@ Generated data source for crd.generators.external-secrets.io.v1alpha1.VaultDynam
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
+- `spec` (Block List, Max: 1) VaultDynamicSecretSpec defines the desired spec of VaultDynamicSecret. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
-- `api_version` (String) APIVersion defines the versioned schema of this representation of an object.
-Servers should convert recognized schemas to the latest internal value, and
-may reject unrecognized values.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
 - `id` (String) The ID of this resource.
-- `kind` (String) Kind is a string value representing the REST resource this object represents.
-Servers may infer this from the endpoint the client submits requests to.
-Cannot be updated.
-In CamelCase.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
@@ -40,17 +33,14 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 
 Optional:
 
-- `controller` (String) Used to select the correct ESO controller (think: ingress.ingressClassName)
-The ESO controller is instantiated with a specific controller name and filters VDS based on this property
+- `allow_empty_response` (Boolean) Do not fail if no secrets are found. Useful for requests where no data is expected.
+- `controller` (String) Used to select the correct ESO controller (think: ingress.ingressClassName) The ESO controller is instantiated with a specific controller name and filters VDS based on this property
 - `method` (String) Vault API method to use (GET/POST/other)
 - `parameters` (Map of String) Parameters to pass to Vault write (for non-GET methods)
 - `path` (String) Vault path to obtain the dynamic secret from
 - `provider_` (Block List, Max: 1) Vault provider common spec (see [below for nested schema](#nestedblock--spec--provider_))
-- `result_type` (String) Result type defines which data is returned from the generator.
-By default it is the "data" section of the Vault API response.
-When using e.g. /auth/token/create the "data" section is empty but
-the "auth" section contains the generated token.
-Please refer to the vault docs regarding the result data structure.
+- `result_type` (String) Result type defines which data is returned from the generator. By default it is the "data" section of the Vault API response. When using e.g. /auth/token/create the "data" section is empty but the "auth" section contains the generated token. Please refer to the vault docs regarding the result data structure.
+- `retry_settings` (Block List, Max: 1) Used to configure http retries if failed (see [below for nested schema](#nestedblock--spec--retry_settings))
 
 <a id="nestedblock--spec--provider_"></a>
 ### Nested Schema for `spec.provider_`
@@ -58,53 +48,37 @@ Please refer to the vault docs regarding the result data structure.
 Optional:
 
 - `auth` (Block List, Max: 1) Auth configures how secret-manager authenticates with the Vault server. (see [below for nested schema](#nestedblock--spec--provider_--auth))
-- `ca_bundle` (String) PEM encoded CA bundle used to validate Vault server certificate. Only used
-if the Server URL is using HTTPS protocol. This parameter is ignored for
-plain HTTP protocol connection. If not set the system root certificates
-are used to validate the TLS connection.
+- `ca_bundle` (String) PEM encoded CA bundle used to validate Vault server certificate. Only used if the Server URL is using HTTPS protocol. This parameter is ignored for plain HTTP protocol connection. If not set the system root certificates are used to validate the TLS connection.
 - `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate Vault server certificate. (see [below for nested schema](#nestedblock--spec--provider_--ca_provider))
-- `forward_inconsistent` (Boolean) ForwardInconsistent tells Vault to forward read-after-write requests to the Vault
-leader instead of simply retrying within a loop. This can increase performance if
-the option is enabled serverside.
-https://www.vaultproject.io/docs/configuration/replication#allow_forwarding_via_header
+- `check_and_set` (Block List, Max: 1) CheckAndSet defines the Check-And-Set (CAS) settings for PushSecret operations.
+Only applies to Vault KV v2 stores. When enabled, write operations must include
+the current version of the secret to prevent unintentional overwrites. (see [below for nested schema](#nestedblock--spec--provider_--check_and_set))
+- `forward_inconsistent` (Boolean) ForwardInconsistent tells Vault to forward read-after-write requests to the Vault leader instead of simply retrying within a loop. This can increase performance if the option is enabled serverside. https://www.vaultproject.io/docs/configuration/replication#allow_forwarding_via_header
 - `headers` (Map of String) Headers to be added in Vault request
-- `namespace` (String) Name of the vault namespace. Namespaces is a set of features within Vault Enterprise that allows
-Vault environments to support Secure Multi-tenancy. e.g: "ns1".
-More about namespaces can be found here https://www.vaultproject.io/docs/enterprise/namespaces
-- `path` (String) Path is the mount path of the Vault KV backend endpoint, e.g:
-"secret". The v2 KV secret engine version specific "/data" path suffix
-for fetching secrets from Vault is optional and will be appended
-if not present in specified path.
-- `read_your_writes` (Boolean) ReadYourWrites ensures isolated read-after-write semantics by
-providing discovered cluster replication states in each request.
-More information about eventual consistency in Vault can be found here
-https://www.vaultproject.io/docs/enterprise/consistency
+- `namespace` (String) Name of the vault namespace. Namespaces is a set of features within Vault Enterprise that allows Vault environments to support Secure Multi-tenancy. e.g: "ns1". More about namespaces can be found here https://www.vaultproject.io/docs/enterprise/namespaces
+- `path` (String) Path is the mount path of the Vault KV backend endpoint, e.g: "secret". The v2 KV secret engine version specific "/data" path suffix for fetching secrets from Vault is optional and will be appended if not present in specified path.
+- `read_your_writes` (Boolean) ReadYourWrites ensures isolated read-after-write semantics by providing discovered cluster replication states in each request. More information about eventual consistency in Vault can be found here https://www.vaultproject.io/docs/enterprise/consistency
 - `server` (String) Server is the connection address for the Vault server, e.g: "https://vault.example.com:8200".
 - `tls` (Block List, Max: 1) The configuration used for client side related TLS communication, when the Vault server
 requires mutual authentication. Only used if the Server URL is using HTTPS protocol.
 This parameter is ignored for plain HTTP protocol connection.
 It's worth noting this configuration is different from the "TLS certificates auth method",
 which is available under the `auth.cert` section. (see [below for nested schema](#nestedblock--spec--provider_--tls))
-- `version` (String) Version is the Vault KV secret engine version. This can be either "v1" or
-"v2". Version defaults to "v2".
+- `version` (String) Version is the Vault KV secret engine version. This can be either "v1" or "v2". Version defaults to "v2".
 
 <a id="nestedblock--spec--provider_--auth"></a>
 ### Nested Schema for `spec.provider_.auth`
 
 Optional:
 
-- `app_role` (Block List, Max: 1) AppRole authenticates with Vault using the App Role auth mechanism,
-with the role and secret stored in a Kubernetes Secret resource. (see [below for nested schema](#nestedblock--spec--provider_--auth--app_role))
-- `cert` (Block List, Max: 1) Cert authenticates with TLS Certificates by passing client certificate, private key and ca certificate
-Cert authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--cert))
-- `iam` (Block List, Max: 1) Iam authenticates with vault by passing a special AWS request signed with AWS IAM credentials
-AWS IAM authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--iam))
-- `jwt` (Block List, Max: 1) Jwt authenticates with Vault by passing role and JWT token using the
-JWT/OIDC authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--jwt))
-- `kubernetes` (Block List, Max: 1) Kubernetes authenticates with Vault by passing the ServiceAccount
-token stored in the named Secret resource to the Vault server. (see [below for nested schema](#nestedblock--spec--provider_--auth--kubernetes))
-- `ldap` (Block List, Max: 1) Ldap authenticates with Vault by passing username/password pair using
-the LDAP authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--ldap))
+- `app_role` (Block List, Max: 1) AppRole authenticates with Vault using the App Role auth mechanism, with the role and secret stored in a Kubernetes Secret resource. (see [below for nested schema](#nestedblock--spec--provider_--auth--app_role))
+- `cert` (Block List, Max: 1) Cert authenticates with TLS Certificates by passing client certificate, private key and ca certificate Cert authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--cert))
+- `gcp` (Block List, Max: 1) Gcp authenticates with Vault using Google Cloud Platform authentication method
+GCP authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--gcp))
+- `iam` (Block List, Max: 1) Iam authenticates with vault by passing a special AWS request signed with AWS IAM credentials AWS IAM authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--iam))
+- `jwt` (Block List, Max: 1) Jwt authenticates with Vault by passing role and JWT token using the JWT/OIDC authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--jwt))
+- `kubernetes` (Block List, Max: 1) Kubernetes authenticates with Vault by passing the ServiceAccount token stored in the named Secret resource to the Vault server. (see [below for nested schema](#nestedblock--spec--provider_--auth--kubernetes))
+- `ldap` (Block List, Max: 1) Ldap authenticates with Vault by passing username/password pair using the LDAP authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--ldap))
 - `namespace` (String) Name of the vault namespace to authenticate to. This can be different than the namespace your secret is in.
 Namespaces is a set of features within Vault Enterprise that allows
 Vault environments to support Secure Multi-tenancy. e.g: "ns1".
@@ -118,29 +92,19 @@ This will default to Vault.Namespace field if set, or empty otherwise
 
 Optional:
 
-- `path` (String) Path where the App Role authentication backend is mounted
-in Vault, e.g: "approle"
-- `role_id` (String) RoleID configured in the App Role authentication backend when setting
-up the authentication backend in Vault.
-- `role_ref` (Block List, Max: 1) Reference to a key in a Secret that contains the App Role ID used
-to authenticate with Vault.
-The `key` field must be specified and denotes which entry within the Secret
-resource is used as the app role id. (see [below for nested schema](#nestedblock--spec--provider_--auth--app_role--role_ref))
-- `secret_ref` (Block List, Max: 1) Reference to a key in a Secret that contains the App Role secret used
-to authenticate with Vault.
-The `key` field must be specified and denotes which entry within the Secret
-resource is used as the app role secret. (see [below for nested schema](#nestedblock--spec--provider_--auth--app_role--secret_ref))
+- `path` (String) Path where the App Role authentication backend is mounted in Vault, e.g: "approle"
+- `role_id` (String) RoleID configured in the App Role authentication backend when setting up the authentication backend in Vault.
+- `role_ref` (Block List, Max: 1) Reference to a key in a Secret that contains the App Role ID used to authenticate with Vault. The `key` field must be specified and denotes which entry within the Secret resource is used as the app role id. (see [below for nested schema](#nestedblock--spec--provider_--auth--app_role--role_ref))
+- `secret_ref` (Block List, Max: 1) Reference to a key in a Secret that contains the App Role secret used to authenticate with Vault. The `key` field must be specified and denotes which entry within the Secret resource is used as the app role secret. (see [below for nested schema](#nestedblock--spec--provider_--auth--app_role--secret_ref))
 
 <a id="nestedblock--spec--provider_--auth--app_role--role_ref"></a>
 ### Nested Schema for `spec.provider_.auth.app_role.role_ref`
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 <a id="nestedblock--spec--provider_--auth--app_role--secret_ref"></a>
@@ -148,11 +112,9 @@ to the namespace of the referent.
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -161,21 +123,19 @@ to the namespace of the referent.
 
 Optional:
 
-- `client_cert` (Block List, Max: 1) ClientCert is a certificate to authenticate using the Cert Vault
-authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--cert--client_cert))
-- `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing client private key to
-authenticate with Vault using the Cert authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--cert--secret_ref))
+- `client_cert` (Block List, Max: 1) ClientCert is a certificate to authenticate using the Cert Vault authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--cert--client_cert))
+- `path` (String) Path where the Certificate authentication backend is mounted
+in Vault, e.g: "cert"
+- `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing client private key to authenticate with Vault using the Cert authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--cert--secret_ref))
 
 <a id="nestedblock--spec--provider_--auth--cert--client_cert"></a>
 ### Nested Schema for `spec.provider_.auth.cert.client_cert`
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 <a id="nestedblock--spec--provider_--auth--cert--secret_ref"></a>
@@ -183,11 +143,83 @@ to the namespace of the referent.
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--auth--gcp"></a>
+### Nested Schema for `spec.provider_.auth.gcp`
+
+Optional:
+
+- `location` (String) Location optionally defines a location/region for the secret
+- `path` (String) Path where the GCP auth method is enabled in Vault, e.g: "gcp"
+- `project_id` (String) Project ID of the Google Cloud Platform project
+- `role` (String) Vault Role. In Vault, a role describes an identity with a set of permissions, groups, or policies you want to attach to a user of the secrets engine.
+- `secret_ref` (Block List, Max: 1) Specify credentials in a Secret object (see [below for nested schema](#nestedblock--spec--provider_--auth--gcp--secret_ref))
+- `service_account_ref` (Block List, Max: 1) ServiceAccountRef to a service account for impersonation (see [below for nested schema](#nestedblock--spec--provider_--auth--gcp--service_account_ref))
+- `workload_identity` (Block List, Max: 1) Specify a service account with Workload Identity (see [below for nested schema](#nestedblock--spec--provider_--auth--gcp--workload_identity))
+
+<a id="nestedblock--spec--provider_--auth--gcp--secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.gcp.secret_ref`
+
+Optional:
+
+- `secret_access_key_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--auth--gcp--secret_ref--secret_access_key_secret_ref))
+
+<a id="nestedblock--spec--provider_--auth--gcp--secret_ref--secret_access_key_secret_ref"></a>
+### Nested Schema for `spec.provider_.auth.gcp.secret_ref.secret_access_key_secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--auth--gcp--service_account_ref"></a>
+### Nested Schema for `spec.provider_.auth.gcp.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--auth--gcp--workload_identity"></a>
+### Nested Schema for `spec.provider_.auth.gcp.workload_identity`
+
+Optional:
+
+- `cluster_location` (String) ClusterLocation is the location of the cluster
+If not specified, it fetches information from the metadata server
+- `cluster_name` (String) ClusterName is the name of the cluster
+If not specified, it fetches information from the metadata server
+- `cluster_project_id` (String) ClusterProjectID is the project ID of the cluster
+If not specified, it fetches information from the metadata server
+- `service_account_ref` (Block List, Max: 1) ServiceAccountSelector is a reference to a ServiceAccount resource. (see [below for nested schema](#nestedblock--spec--provider_--auth--gcp--workload_identity--service_account_ref))
+
+<a id="nestedblock--spec--provider_--auth--gcp--workload_identity--service_account_ref"></a>
+### Nested Schema for `spec.provider_.auth.gcp.workload_identity.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
 
 
 
@@ -217,12 +249,9 @@ Optional:
 
 Optional:
 
-- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
-If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-then this audiences will be appended to the list
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list
 - `name` (String) The name of the ServiceAccount resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -233,20 +262,16 @@ Optional:
 
 - `access_key_id_secret_ref` (Block List, Max: 1) The AccessKeyID is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--auth--iam--secret_ref--access_key_id_secret_ref))
 - `secret_access_key_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication (see [below for nested schema](#nestedblock--spec--provider_--auth--iam--secret_ref--secret_access_key_secret_ref))
-- `session_token_secret_ref` (Block List, Max: 1) The SessionToken used for authentication
-This must be defined if AccessKeyID and SecretAccessKey are temporary credentials
-see: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html (see [below for nested schema](#nestedblock--spec--provider_--auth--iam--secret_ref--session_token_secret_ref))
+- `session_token_secret_ref` (Block List, Max: 1) The SessionToken used for authentication This must be defined if AccessKeyID and SecretAccessKey are temporary credentials see: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html (see [below for nested schema](#nestedblock--spec--provider_--auth--iam--secret_ref--session_token_secret_ref))
 
 <a id="nestedblock--spec--provider_--auth--iam--secret_ref--access_key_id_secret_ref"></a>
 ### Nested Schema for `spec.provider_.auth.iam.secret_ref.access_key_id_secret_ref`
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 <a id="nestedblock--spec--provider_--auth--iam--secret_ref--secret_access_key_secret_ref"></a>
@@ -254,11 +279,9 @@ to the namespace of the referent.
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 <a id="nestedblock--spec--provider_--auth--iam--secret_ref--session_token_secret_ref"></a>
@@ -266,11 +289,9 @@ to the namespace of the referent.
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -280,29 +301,18 @@ to the namespace of the referent.
 
 Optional:
 
-- `kubernetes_service_account_token` (Block List, Max: 1) Optional ServiceAccountToken specifies the Kubernetes service account for which to request
-a token for with the `TokenRequest` API. (see [below for nested schema](#nestedblock--spec--provider_--auth--jwt--kubernetes_service_account_token))
-- `path` (String) Path where the JWT authentication backend is mounted
-in Vault, e.g: "jwt"
-- `role` (String) Role is a JWT role to authenticate using the JWT/OIDC Vault
-authentication method
-- `secret_ref` (Block List, Max: 1) Optional SecretRef that refers to a key in a Secret resource containing JWT token to
-authenticate with Vault using the JWT/OIDC authentication method. (see [below for nested schema](#nestedblock--spec--provider_--auth--jwt--secret_ref))
+- `kubernetes_service_account_token` (Block List, Max: 1) Optional ServiceAccountToken specifies the Kubernetes service account for which to request a token for with the `TokenRequest` API. (see [below for nested schema](#nestedblock--spec--provider_--auth--jwt--kubernetes_service_account_token))
+- `path` (String) Path where the JWT authentication backend is mounted in Vault, e.g: "jwt"
+- `role` (String) Role is a JWT role to authenticate using the JWT/OIDC Vault authentication method
+- `secret_ref` (Block List, Max: 1) Optional SecretRef that refers to a key in a Secret resource containing JWT token to authenticate with Vault using the JWT/OIDC authentication method. (see [below for nested schema](#nestedblock--spec--provider_--auth--jwt--secret_ref))
 
 <a id="nestedblock--spec--provider_--auth--jwt--kubernetes_service_account_token"></a>
 ### Nested Schema for `spec.provider_.auth.jwt.kubernetes_service_account_token`
 
 Optional:
 
-- `audiences` (List of String) Optional audiences field that will be used to request a temporary Kubernetes service
-account token for the service account referenced by `serviceAccountRef`.
-Defaults to a single audience `vault` it not specified.
-Deprecated: use serviceAccountRef.Audiences instead
-- `expiration_seconds` (Number) Optional expiration time in seconds that will be used to request a temporary
-Kubernetes service account token for the service account referenced by
-`serviceAccountRef`.
-Deprecated: this will be removed in the future.
-Defaults to 10 minutes.
+- `audiences` (List of String) Optional audiences field that will be used to request a temporary Kubernetes service account token for the service account referenced by `serviceAccountRef`. Defaults to a single audience `vault` it not specified. Deprecated: use serviceAccountRef.Audiences instead
+- `expiration_seconds` (Number) Optional expiration time in seconds that will be used to request a temporary Kubernetes service account token for the service account referenced by `serviceAccountRef`. Deprecated: this will be removed in the future. Defaults to 10 minutes.
 - `service_account_ref` (Block List, Max: 1) Service account field containing the name of a kubernetes ServiceAccount. (see [below for nested schema](#nestedblock--spec--provider_--auth--jwt--kubernetes_service_account_token--service_account_ref))
 
 <a id="nestedblock--spec--provider_--auth--jwt--kubernetes_service_account_token--service_account_ref"></a>
@@ -310,12 +320,9 @@ Defaults to 10 minutes.
 
 Optional:
 
-- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
-If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-then this audiences will be appended to the list
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list
 - `name` (String) The name of the ServiceAccount resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -324,11 +331,9 @@ to the namespace of the referent.
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -337,29 +342,19 @@ to the namespace of the referent.
 
 Optional:
 
-- `mount_path` (String) Path where the Kubernetes authentication backend is mounted in Vault, e.g:
-"kubernetes"
-- `role` (String) A required field containing the Vault Role to assume. A Role binds a
-Kubernetes ServiceAccount with a set of Vault policies.
-- `secret_ref` (Block List, Max: 1) Optional secret field containing a Kubernetes ServiceAccount JWT used
-for authenticating with Vault. If a name is specified without a key,
-`token` is the default. If one is not specified, the one bound to
-the controller will be used. (see [below for nested schema](#nestedblock--spec--provider_--auth--kubernetes--secret_ref))
-- `service_account_ref` (Block List, Max: 1) Optional service account field containing the name of a kubernetes ServiceAccount.
-If the service account is specified, the service account secret token JWT will be used
-for authenticating with Vault. If the service account selector is not supplied,
-the secretRef will be used instead. (see [below for nested schema](#nestedblock--spec--provider_--auth--kubernetes--service_account_ref))
+- `mount_path` (String) Path where the Kubernetes authentication backend is mounted in Vault, e.g: "kubernetes"
+- `role` (String) A required field containing the Vault Role to assume. A Role binds a Kubernetes ServiceAccount with a set of Vault policies.
+- `secret_ref` (Block List, Max: 1) Optional secret field containing a Kubernetes ServiceAccount JWT used for authenticating with Vault. If a name is specified without a key, `token` is the default. If one is not specified, the one bound to the controller will be used. (see [below for nested schema](#nestedblock--spec--provider_--auth--kubernetes--secret_ref))
+- `service_account_ref` (Block List, Max: 1) Optional service account field containing the name of a kubernetes ServiceAccount. If the service account is specified, the service account secret token JWT will be used for authenticating with Vault. If the service account selector is not supplied, the secretRef will be used instead. (see [below for nested schema](#nestedblock--spec--provider_--auth--kubernetes--service_account_ref))
 
 <a id="nestedblock--spec--provider_--auth--kubernetes--secret_ref"></a>
 ### Nested Schema for `spec.provider_.auth.kubernetes.secret_ref`
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 <a id="nestedblock--spec--provider_--auth--kubernetes--service_account_ref"></a>
@@ -367,12 +362,9 @@ to the namespace of the referent.
 
 Optional:
 
-- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
-If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-then this audiences will be appended to the list
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list
 - `name` (String) The name of the ServiceAccount resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -381,24 +373,18 @@ to the namespace of the referent.
 
 Optional:
 
-- `path` (String) Path where the LDAP authentication backend is mounted
-in Vault, e.g: "ldap"
-- `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing password for the LDAP
-user used to authenticate with Vault using the LDAP authentication
-method (see [below for nested schema](#nestedblock--spec--provider_--auth--ldap--secret_ref))
-- `username` (String) Username is a LDAP user name used to authenticate using the LDAP Vault
-authentication method
+- `path` (String) Path where the LDAP authentication backend is mounted in Vault, e.g: "ldap"
+- `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing password for the LDAP user used to authenticate with Vault using the LDAP authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--ldap--secret_ref))
+- `username` (String) Username is a LDAP user name used to authenticate using the LDAP Vault authentication method
 
 <a id="nestedblock--spec--provider_--auth--ldap--secret_ref"></a>
 ### Nested Schema for `spec.provider_.auth.ldap.secret_ref`
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -407,11 +393,9 @@ to the namespace of the referent.
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 <a id="nestedblock--spec--provider_--auth--user_pass"></a>
@@ -419,24 +403,18 @@ to the namespace of the referent.
 
 Optional:
 
-- `path` (String) Path where the UserPassword authentication backend is mounted
-in Vault, e.g: "user"
-- `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing password for the
-user used to authenticate with Vault using the UserPass authentication
-method (see [below for nested schema](#nestedblock--spec--provider_--auth--user_pass--secret_ref))
-- `username` (String) Username is a user name used to authenticate using the UserPass Vault
-authentication method
+- `path` (String) Path where the UserPassword authentication backend is mounted in Vault, e.g: "user"
+- `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing password for the user used to authenticate with Vault using the UserPass authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--user_pass--secret_ref))
+- `username` (String) Username is a user name used to authenticate using the UserPass Vault authentication method
 
 <a id="nestedblock--spec--provider_--auth--user_pass--secret_ref"></a>
 ### Nested Schema for `spec.provider_.auth.user_pass.secret_ref`
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -448,9 +426,17 @@ Optional:
 
 - `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
 - `name` (String) The name of the object located at the provider type.
-- `namespace` (String) The namespace the Provider type is in.
-Can only be defined when used in a ClusterSecretStore.
+- `namespace` (String) The namespace the Provider type is in. Can only be defined when used in a ClusterSecretStore.
 - `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
+
+
+<a id="nestedblock--spec--provider_--check_and_set"></a>
+### Nested Schema for `spec.provider_.check_and_set`
+
+Optional:
+
+- `required` (Boolean) Required when true, all write operations must include a check-and-set parameter.
+This helps prevent unintentional overwrites of secrets.
 
 
 <a id="nestedblock--spec--provider_--tls"></a>
@@ -487,3 +473,14 @@ defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
 - `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
 to the namespace of the referent.
+
+
+
+
+<a id="nestedblock--spec--retry_settings"></a>
+### Nested Schema for `spec.retry_settings`
+
+Optional:
+
+- `max_retries` (Number)
+- `retry_interval` (String)

@@ -53,6 +53,9 @@ Applied only if Name is not specified. More info: https://git.k8s.io/community/c
 
 When an object is created, the system will populate this list with the current set of initializers. Only privileged users may set or modify this list. Once it is empty, it may not be modified further by any user. (see [below for nested schema](#nestedblock--metadata--initializers))
 - `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `managed_fields` (Block List) ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like "ci-cd". The set of fields is always in the version that the workflow used when modifying the object.
+
+This field is alpha and can be changed or removed without notice. (see [below for nested schema](#nestedblock--metadata--managed_fields))
 - `name` (String) Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
 - `namespace` (String) Namespace defines the space within each name must be unique. An empty namespace is equivalent to the "default" namespace, but "default" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.
 
@@ -69,18 +72,15 @@ Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-gu
 <a id="nestedblock--metadata--initializers"></a>
 ### Nested Schema for `metadata.initializers`
 
-Required:
-
-- `pending` (Block List, Min: 1) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
-
 Optional:
 
+- `pending` (Block List) Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients. (see [below for nested schema](#nestedblock--metadata--initializers--pending))
 - `result` (Block List, Max: 1) If result is set with the Failure field, the object will be persisted to storage and then deleted, ensuring that other clients can observe the deletion. (see [below for nested schema](#nestedblock--metadata--initializers--result))
 
 <a id="nestedblock--metadata--initializers--pending"></a>
 ### Nested Schema for `metadata.initializers.pending`
 
-Required:
+Optional:
 
 - `name` (String) name of the process that is responsible for initializing this object.
 
@@ -132,10 +132,28 @@ Examples:
 Optional:
 
 - `continue` (String) continue may be set if the user set a limit on the number of items returned, and indicates that the server has more data available. The value is opaque and may be used to issue another request to the endpoint that served this list to retrieve the next set of available objects. Continuing a list may not be possible if the server configuration has changed or more than a few minutes have passed. The resourceVersion field returned when using this continue value will be identical to the value in the first response.
+- `remaining_item_count` (Number) remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.
+
+This field is alpha and can be changed or removed without notice.
 - `resource_version` (String) String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
 - `self_link` (String) selfLink is a URL representing this object. Populated by the system. Read-only.
 
 
+
+
+<a id="nestedblock--metadata--managed_fields"></a>
+### Nested Schema for `metadata.managed_fields`
+
+Optional:
+
+- `api_version` (String) APIVersion defines the version of this resource that this field set applies to. The format is "group/version" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.
+- `fields` (Map of String) Fields identifies a set of fields.
+- `fields_type` (String) FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: "FieldsV1"
+- `fields_v1` (Map of String) FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
+- `manager` (String) Manager is an identifier of the workflow managing these fields.
+- `operation` (String) Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.
+- `subresource` (String) Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.
+- `time` (String) Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
 
 
 <a id="nestedblock--metadata--owner_references"></a>
@@ -169,10 +187,18 @@ Optional:
 
 - `allow_privilege_escalation` (Boolean) AllowPrivilegeEscalation determines if a pod can request to allow privilege escalation. If unspecified, defaults to true.
 - `allowed_capabilities` (List of String) AllowedCapabilities is a list of capabilities that can be requested to add to the container. Capabilities in this field may be added at the pod author's discretion. You must not list a capability in both AllowedCapabilities and RequiredDropCapabilities.
+- `allowed_csi_drivers` (Block List) AllowedCSIDrivers is a whitelist of inline CSI drivers that must be explicitly set to be embedded within a pod spec. An empty value means no CSI drivers can run inline within a pod spec. (see [below for nested schema](#nestedblock--spec--allowed_csi_drivers))
 - `allowed_flex_volumes` (Block List) AllowedFlexVolumes is a whitelist of allowed Flexvolumes.  Empty or nil indicates that all Flexvolumes may be used.  This parameter is effective only when the usage of the Flexvolumes is allowed in the "Volumes" field. (see [below for nested schema](#nestedblock--spec--allowed_flex_volumes))
 - `allowed_host_paths` (Block List) is a white list of allowed host paths. Empty indicates that all host paths may be used. (see [below for nested schema](#nestedblock--spec--allowed_host_paths))
+- `allowed_proc_mount_types` (List of String) AllowedProcMountTypes is a whitelist of allowed ProcMountTypes. Empty or nil indicates that only the DefaultProcMountType may be used. This requires the ProcMountType feature flag to be enabled.
+- `allowed_unsafe_sysctls` (List of String) allowedUnsafeSysctls is a list of explicitly allowed unsafe sysctls, defaults to none. Each entry is either a plain sysctl name or ends in "*" in which case it is considered as a prefix of allowed sysctls. Single * means all unsafe sysctls are allowed. Kubelet has to whitelist all allowed unsafe sysctls explicitly to avoid rejection.
+
+Examples: e.g. "foo/*" allows "foo/bar", "foo/baz", etc. e.g. "foo.*" allows "foo.bar", "foo.baz", etc.
 - `default_add_capabilities` (List of String) DefaultAddCapabilities is the default set of capabilities that will be added to the container unless the pod spec specifically drops the capability.  You may not list a capability in both DefaultAddCapabilities and RequiredDropCapabilities. Capabilities added here are implicitly allowed, and need not be included in the AllowedCapabilities list.
 - `default_allow_privilege_escalation` (Boolean) DefaultAllowPrivilegeEscalation controls the default setting for whether a process can gain more privileges than its parent process.
+- `forbidden_sysctls` (List of String) forbiddenSysctls is a list of explicitly forbidden sysctls, defaults to none. Each entry is either a plain sysctl name or ends in "*" in which case it is considered as a prefix of forbidden sysctls. Single * means all sysctls are forbidden.
+
+Examples: e.g. "foo/*" forbids "foo/bar", "foo/baz", etc. e.g. "foo.*" forbids "foo.bar", "foo.baz", etc.
 - `host_ipc` (Boolean) hostIPC determines if the policy allows the use of HostIPC in the pod spec.
 - `host_network` (Boolean) hostNetwork determines if the policy allows the use of HostNetwork in the pod spec.
 - `host_pid` (Boolean) hostPID determines if the policy allows the use of HostPID in the pod spec.
@@ -180,6 +206,8 @@ Optional:
 - `privileged` (Boolean) privileged determines if a pod can request to be run as privileged.
 - `read_only_root_filesystem` (Boolean) ReadOnlyRootFilesystem when set to true will force containers to run with a read only root file system.  If the container specifically requests to run with a non-read only root file system the PSP should deny the pod. If set to false the container may run with a read only root file system if it wishes but it will not be forced to.
 - `required_drop_capabilities` (List of String) RequiredDropCapabilities are the capabilities that will be dropped from the container.  These are required to be dropped and cannot be added.
+- `run_as_group` (Block List, Max: 1) RunAsGroup is the strategy that will dictate the allowable RunAsGroup values that may be set. If this field is omitted, the pod's RunAsGroup can take any value. This field requires the RunAsGroup feature gate to be enabled. (see [below for nested schema](#nestedblock--spec--run_as_group))
+- `runtime_class` (Block List, Max: 1) runtimeClass is the strategy that will dictate the allowable RuntimeClasses for a pod. If this field is omitted, the pod's runtimeClassName field is unrestricted. Enforcement of this field depends on the RuntimeClass feature gate being enabled. (see [below for nested schema](#nestedblock--spec--runtime_class))
 - `volumes` (List of String) volumes is a white list of allowed volume plugins.  Empty indicates that all plugins may be used.
 
 <a id="nestedblock--spec--fs_group"></a>
@@ -262,6 +290,14 @@ Required:
 
 
 
+<a id="nestedblock--spec--allowed_csi_drivers"></a>
+### Nested Schema for `spec.allowed_csi_drivers`
+
+Optional:
+
+- `name` (String) Name is the registered name of the CSI driver
+
+
 <a id="nestedblock--spec--allowed_flex_volumes"></a>
 ### Nested Schema for `spec.allowed_flex_volumes`
 
@@ -278,6 +314,7 @@ Optional:
 - `path_prefix` (String) is the path prefix that the host volume must match. It does not support `*`. Trailing slashes are trimmed when validating the path prefix with a host path.
 
 Examples: `/foo` would allow `/foo`, `/foo/` and `/foo/bar` `/foo` would not allow `/food` or `/etc/foo`
+- `read_only` (Boolean) when set to true, will allow host volumes matching the pathPrefix only if all volume mounts are readOnly.
 
 
 <a id="nestedblock--spec--host_ports"></a>
@@ -287,3 +324,30 @@ Required:
 
 - `max` (Number) max is the end of the range, inclusive.
 - `min` (Number) min is the start of the range, inclusive.
+
+
+<a id="nestedblock--spec--run_as_group"></a>
+### Nested Schema for `spec.run_as_group`
+
+Optional:
+
+- `ranges` (Block List) ranges are the allowed ranges of gids that may be used. If you would like to force a single gid then supply a single range with the same start and end. Required for MustRunAs. (see [below for nested schema](#nestedblock--spec--run_as_group--ranges))
+- `rule` (String) rule is the strategy that will dictate the allowable RunAsGroup values that may be set.
+
+<a id="nestedblock--spec--run_as_group--ranges"></a>
+### Nested Schema for `spec.run_as_group.ranges`
+
+Optional:
+
+- `max` (Number) max is the end of the range, inclusive.
+- `min` (Number) min is the start of the range, inclusive.
+
+
+
+<a id="nestedblock--spec--runtime_class"></a>
+### Nested Schema for `spec.runtime_class`
+
+Optional:
+
+- `allowed_runtime_class_names` (List of String) allowedRuntimeClassNames is a whitelist of RuntimeClass names that may be specified on a pod. A value of "*" means that any RuntimeClass name is allowed, and must be the only item in the list. An empty list requires the RuntimeClassName field to be unset.
+- `default_runtime_class_name` (String) defaultRuntimeClassName is the default RuntimeClassName to set on the pod. The default MUST be allowed by the allowedRuntimeClassNames list. A value of nil does not mutate the Pod.

@@ -46,6 +46,7 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 
 Optional:
 
+- `auth` (Block List, Max: 1) Auth specifies a authorization protocol. Only one protocol may be set. (see [below for nested schema](#nestedblock--spec--auth))
 - `body` (String) Body
 - `ca_bundle` (String) PEM encoded CA bundle used to validate webhook server certificate. Only used
 if the Server URL is using HTTPS protocol. This parameter is ignored for
@@ -59,6 +60,49 @@ are used to validate the TLS connection.
 These secrets will be passed to the templating function as key value pairs under the given name (see [below for nested schema](#nestedblock--spec--secrets))
 - `timeout` (String) Timeout
 - `url` (String) Webhook url to call
+
+<a id="nestedblock--spec--auth"></a>
+### Nested Schema for `spec.auth`
+
+Optional:
+
+- `ntlm` (Block List, Max: 1) NTLMProtocol configures the store to use NTLM for auth (see [below for nested schema](#nestedblock--spec--auth--ntlm))
+
+<a id="nestedblock--spec--auth--ntlm"></a>
+### Nested Schema for `spec.auth.ntlm`
+
+Optional:
+
+- `password_secret` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--auth--ntlm--password_secret))
+- `username_secret` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--auth--ntlm--username_secret))
+
+<a id="nestedblock--spec--auth--ntlm--password_secret"></a>
+### Nested Schema for `spec.auth.ntlm.password_secret`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--auth--ntlm--username_secret"></a>
+### Nested Schema for `spec.auth.ntlm.username_secret`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
 
 <a id="nestedblock--spec--ca_provider"></a>
 ### Nested Schema for `spec.ca_provider`

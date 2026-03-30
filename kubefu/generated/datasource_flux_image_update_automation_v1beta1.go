@@ -94,6 +94,13 @@ func dataSourceFluxImageToolkitFluxcdIoImageUpdateAutomationV1Beta1() *schema.Re
 												Required:    false,
 												Computed:    true,
 											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "Name of the reference to check out; takes precedence over Branch, Tag and SemVer. \n It must be a valid Git reference: https://git-scm.com/docs/git-check-ref-format#_description Examples: \"refs/heads/main\", \"refs/tags/v0.1.0\", \"refs/pull/420/head\", \"refs/merge-requests/1/head\"",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"semver": {
 												Type:        schema.TypeString,
 												Description: "The Git tag semver expression, takes precedence over Tag.",
@@ -195,6 +202,20 @@ func dataSourceFluxImageToolkitFluxcdIoImageUpdateAutomationV1Beta1() *schema.Re
 										Required:    false,
 										Computed:    true,
 									},
+									"options": {
+										Type:        schema.TypeMap,
+										Description: "Options specifies the push options that are sent to the Git server when performing a push operation. For details, see: https://git-scm.com/docs/git-push#Documentation/git-push.txt---push-optionltoptiongt",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"refspec": {
+										Type:        schema.TypeString,
+										Description: "Refspec specifies the Git Refspec to use for a push operation. If both Branch and Refspec are provided, then the commit is pushed to the branch and also using the specified refspec. For more details about Git Refspecs, see: https://git-scm.com/book/en/v2/Git-Internals-The-Refspec",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 								}},
 							},
 						}},
@@ -231,6 +252,13 @@ func dataSourceFluxImageToolkitFluxcdIoImageUpdateAutomationV1Beta1() *schema.Re
 							"name": {
 								Type:        schema.TypeString,
 								Description: "Name of the referent",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"namespace": {
+								Type:        schema.TypeString,
+								Description: "Namespace of the referent, defaults to the namespace of the Kubernetes resource object that contains the reference.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,

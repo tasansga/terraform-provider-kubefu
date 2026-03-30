@@ -38,6 +38,7 @@ Optional:
 - `dns_names` (List of String) DNSNames is a list of subject alt names to be used on the Certificate.
 - `duration` (String) Certificate default Duration
 - `email_sa_ns` (List of String) EmailSANs is a list of Email Subject Alternative Names to be set on this Certificate.
+- `encode_usages_in_request` (Boolean) EncodeUsagesInRequest controls whether key usages should be present in the CertificateRequest
 - `ip_addresses` (List of String) IPAddresses is a list of IP addresses to be used on the Certificate
 - `is_ca` (Boolean) IsCA will mark this Certificate as valid for signing. This implies that the 'cert sign' usage is set
 - `issuer_ref` (Block List, Max: 1) IssuerRef is a reference to the issuer for this certificate. If the 'kind' field is not set, or set to 'Issuer', an Issuer resource with the given name in the same namespace as the Certificate will be used. If the 'kind' field is set to 'ClusterIssuer', a ClusterIssuer with the provided name will be used. The 'name' field in this stanza is required at all times. (see [below for nested schema](#nestedblock--spec--issuer_ref))
@@ -47,7 +48,9 @@ Optional:
 - `keystores` (Block List, Max: 1) Keystores configures additional keystore output formats stored in the `secretName` Secret resource. (see [below for nested schema](#nestedblock--spec--keystores))
 - `private_key` (Block List, Max: 1) Options to control private keys used for the Certificate. (see [below for nested schema](#nestedblock--spec--private_key))
 - `renew_before` (String) Certificate renew before expiration duration
+- `revision_history_limit` (Number) revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history. Each revision represents a single `CertificateRequest` created by this Certificate, either when it was created, renewed, or Spec was changed. Revisions will be removed by oldest first if the number of revisions exceeds this number. If set, revisionHistoryLimit must be a value of `1` or greater. If unset (`nil`), revisions will not be garbage collected. Default value is `nil`.
 - `secret_name` (String) SecretName is the name of the secret resource to store this secret in
+- `secret_template` (Block List, Max: 1) SecretTemplate defines annotations and labels to be propagated to the Kubernetes Secret when it is created or updated. Once created, labels and annotations are not yet removed from the Secret when they are removed from the template. See https://github.com/jetstack/cert-manager/issues/4292 (see [below for nested schema](#nestedblock--spec--secret_template))
 - `subject` (Block List, Max: 1) Full X509 name specification (https://golang.org/pkg/crypto/x509/pkix/#Name). (see [below for nested schema](#nestedblock--spec--subject))
 - `uri_sa_ns` (List of String) URISANs is a list of URI Subject Alternative Names to be set on this Certificate.
 - `usages` (List of String) Usages is the set of x509 actions that are enabled for a given key. Defaults are ('digital signature', 'key encipherment') if empty
@@ -57,9 +60,9 @@ Optional:
 
 Optional:
 
-- `group` (String)
-- `kind` (String)
-- `name` (String)
+- `group` (String) Group of the resource being referred to.
+- `kind` (String) Kind of the resource being referred to.
+- `name` (String) Name of the resource being referred to.
 
 
 <a id="nestedblock--spec--keystores"></a>
@@ -115,6 +118,15 @@ Optional:
 - `rotation_policy` (String) RotationPolicy controls how private keys should be regenerated when a re-issuance is being processed. If set to Never, a private key will only be generated if one does not already exist in the target `spec.secretName`. If one does exists but it does not have the correct algorithm or size, a warning will be raised to await user intervention. If set to Always, a private key matching the specified requirements will be generated whenever a re-issuance occurs. Default is 'Never' for backward compatibility.
 
 
+<a id="nestedblock--spec--secret_template"></a>
+### Nested Schema for `spec.secret_template`
+
+Optional:
+
+- `annotations` (Map of String) Annotations is a key value map to be copied to the target Kubernetes Secret.
+- `labels` (Map of String) Labels is a key value map to be copied to the target Kubernetes Secret.
+
+
 <a id="nestedblock--spec--subject"></a>
 ### Nested Schema for `spec.subject`
 
@@ -136,10 +148,12 @@ Optional:
 
 Optional:
 
-- `conditions` (Block List) (see [below for nested schema](#nestedblock--status--conditions))
-- `last_failure_time` (String)
+- `conditions` (Block List) List of status conditions to indicate the status of certificates. Known condition types are `Ready` and `Issuing`. (see [below for nested schema](#nestedblock--status--conditions))
+- `last_failure_time` (String) LastFailureTime is the time as recorded by the Certificate controller of the most recent failure to complete a CertificateRequest for this Certificate resource. If set, cert-manager will not re-request another Certificate until 1 hour has elapsed from this time.
 - `next_private_key_secret_name` (String) The name of the Secret resource containing the private key to be used for the next certificate iteration. The keymanager controller will automatically set this field if the `Issuing` condition is set to `True`. It will automatically unset this field when the Issuing condition is not set or False.
 - `not_after` (String) The expiration time of the certificate stored in the secret named by this resource in spec.secretName.
+- `not_before` (String) The time after which the certificate stored in the secret named by this resource in spec.secretName is valid.
+- `renewal_time` (String) RenewalTime is the time at which the certificate will be next renewed. If not set, no upcoming renewal is scheduled.
 - `revision` (Number) The current 'revision' of the certificate as issued.
  When a CertificateRequest resource is created, it will have the `cert-manager.io/certificate-revision` set to one greater than the current value of this field.
  Upon issuance, this field will be set to the value of the annotation on the CertificateRequest resource used to issue the certificate.
@@ -152,6 +166,7 @@ Optional:
 
 - `last_transition_time` (String) LastTransitionTime is the timestamp corresponding to the last status change of this condition.
 - `message` (String) Message is a human readable description of the details of the last transition, complementing reason.
+- `observed_generation` (Number) If set, this represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.condition[x].observedGeneration is 9, the condition is out of date with respect to the current state of the Certificate.
 - `reason` (String) Reason is a brief machine readable explanation for the condition's last transition.
 - `status` (String) Status of the condition, one of ('True', 'False', 'Unknown').
 - `type` (String) Type of the condition, currently ('Ready').

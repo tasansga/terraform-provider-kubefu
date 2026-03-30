@@ -50,7 +50,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoSTSSessionTokenV1Alpha1
 			},
 			"spec": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "STSSessionTokenSpec defines the desired state to generate an AWS STS session token.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,

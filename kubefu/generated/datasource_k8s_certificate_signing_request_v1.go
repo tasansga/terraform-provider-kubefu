@@ -155,6 +155,13 @@ func dataSourceK8sCertificatesK8sIoCertificateSigningRequestV1() *schema.Resourc
 								Required:    false,
 								Computed:    true,
 							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"time": {
 								Type:        schema.TypeString,
 								Description: "Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'",
@@ -261,6 +268,13 @@ func dataSourceK8sCertificatesK8sIoCertificateSigningRequestV1() *schema.Resourc
 				MinItems:    1,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"expiration_seconds": {
+						Type:        schema.TypeInt,
+						Description: "expirationSeconds is the requested duration of validity of the issued certificate. The certificate signer may issue a certificate with a different validity duration so a client must check the delta between the notBefore and and notAfter fields in the issued certificate to determine the actual duration.\n\nThe v1.22+ in-tree implementations of the well-known Kubernetes signers will honor this field as long as the requested duration is not greater than the maximum duration they will honor per the --cluster-signing-duration CLI flag to the Kubernetes controller manager.\n\nCertificate signers may not honor this field for various reasons:\n\n  1. Old signer that is unaware of the field (such as the in-tree\n     implementations prior to v1.22)\n  2. Signer whose configured maximum is shorter than the requested duration\n  3. Signer whose configured minimum is longer than the requested duration\n\nThe minimum valid value for expirationSeconds is 600, i.e. 10 minutes.\n\nAs of v1.22, this field is beta and is controlled via the CSRDuration feature gate.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"extra": {
 						Type:        schema.TypeMap,
 						Description: "extra contains extra attributes of the user that created the CertificateSigningRequest. Populated by the API server on creation and immutable.",

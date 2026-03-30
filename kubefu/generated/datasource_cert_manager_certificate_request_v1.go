@@ -51,10 +51,9 @@ func dataSourceCertManagerCertManagerIoCertificateRequestV1() *schema.Resource {
 			"spec": {
 				Type:        schema.TypeList,
 				Description: "Desired state of the CertificateRequest resource.",
-				Optional:    false,
-				Required:    true,
-				Computed:    false,
-				MinItems:    1,
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 					"duration": {
@@ -63,6 +62,21 @@ func dataSourceCertManagerCertManagerIoCertificateRequestV1() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"extra": {
+						Type:        schema.TypeMap,
+						Description: "Extra contains extra attributes of the user that created the CertificateRequest. Populated by the cert-manager webhook on creation and immutable.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"groups": {
+						Type:        schema.TypeList,
+						Description: "Groups contains group membership of the user that created the CertificateRequest. Populated by the cert-manager webhook on creation and immutable.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
 					},
 					"is_ca": {
 						Type:        schema.TypeBool,
@@ -109,6 +123,13 @@ func dataSourceCertManagerCertManagerIoCertificateRequestV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"uid": {
+						Type:        schema.TypeString,
+						Description: "UID contains the uid of the user that created the CertificateRequest. Populated by the cert-manager webhook on creation and immutable.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"usages": {
 						Type:        schema.TypeList,
 						Description: "Usages is the set of x509 usages that are requested for the certificate. If usages are set they SHOULD be encoded inside the CSR spec Defaults to `digital signature` and `key encipherment` if not specified.",
@@ -116,6 +137,13 @@ func dataSourceCertManagerCertManagerIoCertificateRequestV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 						Elem: &schema.Schema{Type: schema.TypeString},
+					},
+					"username": {
+						Type:        schema.TypeString,
+						Description: "Username contains the name of the user that created the CertificateRequest. Populated by the cert-manager webhook on creation and immutable.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 				}},
 			},

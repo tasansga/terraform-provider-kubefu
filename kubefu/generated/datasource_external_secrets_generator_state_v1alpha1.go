@@ -11,7 +11,7 @@ import (
 func dataSourceExternalSecretsGeneratorsExternalSecretsIoGeneratorStateV1Alpha1() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceExternalSecretsGeneratorsExternalSecretsIoGeneratorStateV1Alpha1Read,
-		Description: "Generated data source for crd.generators.external-secrets.io.v1alpha1.GeneratorState",
+		Description: "GeneratorState represents the state created and managed by a generator resource.",
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
@@ -50,7 +50,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGeneratorStateV1Alpha1(
 			},
 			"spec": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "GeneratorStateSpec defines the desired state of a generator state resource.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
@@ -81,7 +81,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGeneratorStateV1Alpha1(
 			},
 			"status": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "GeneratorStateStatus defines the observed state of a generator state resource.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
@@ -124,7 +124,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGeneratorStateV1Alpha1(
 							},
 							"type": {
 								Type:        schema.TypeString,
-								Description: "",
+								Description: "GeneratorStateConditionType represents the type of condition for a generator state.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,

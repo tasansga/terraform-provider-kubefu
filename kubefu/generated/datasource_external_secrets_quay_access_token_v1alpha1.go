@@ -50,7 +50,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoQuayAccessTokenV1Alpha1
 			},
 			"spec": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "QuayAccessTokenSpec defines the desired state to generate a Quay access token.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,

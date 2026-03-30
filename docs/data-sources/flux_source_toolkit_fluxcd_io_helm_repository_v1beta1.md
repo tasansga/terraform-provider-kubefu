@@ -34,11 +34,29 @@ HelmRepository is the Schema for the helmrepositories API
 
 Optional:
 
+- `access_from` (Block List, Max: 1) AccessFrom defines an Access Control List for allowing cross-namespace references to this object. (see [below for nested schema](#nestedblock--spec--access_from))
 - `interval` (String) The interval at which to check the upstream for updates.
+- `pass_credentials` (Boolean) PassCredentials allows the credentials from the SecretRef to be passed on to a host that does not match the host as defined in URL. This may be required if the host of the advertised chart URLs in the index differ from the defined URL. Enabling this should be done with caution, as it can potentially result in credentials getting stolen in a MITM-attack.
 - `secret_ref` (Block List, Max: 1) The name of the secret containing authentication credentials for the Helm repository. For HTTP/S basic auth the secret must contain username and password fields. For TLS the secret must contain a certFile and keyFile, and/or caCert fields. (see [below for nested schema](#nestedblock--spec--secret_ref))
 - `suspend` (Boolean) This flag tells the controller to suspend the reconciliation of this source.
 - `timeout` (String) The timeout of index downloading, defaults to 60s.
 - `url` (String) The Helm repository URL, a valid URL contains at least a protocol and host.
+
+<a id="nestedblock--spec--access_from"></a>
+### Nested Schema for `spec.access_from`
+
+Optional:
+
+- `namespace_selectors` (Block List) NamespaceSelectors is the list of namespace selectors to which this ACL applies. Items in this list are evaluated using a logical OR operation. (see [below for nested schema](#nestedblock--spec--access_from--namespace_selectors))
+
+<a id="nestedblock--spec--access_from--namespace_selectors"></a>
+### Nested Schema for `spec.access_from.namespace_selectors`
+
+Optional:
+
+- `match_labels` (Map of String) MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+
 
 <a id="nestedblock--spec--secret_ref"></a>
 ### Nested Schema for `spec.secret_ref`

@@ -117,16 +117,16 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2() *schema.Resource {
 							"pending": {
 								Type:        schema.TypeList,
 								Description: "Pending is a list of initializers that must execute in order before this object is visible. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients.",
-								Optional:    false,
-								Required:    true,
-								Computed:    false,
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 									"name": {
 										Type:        schema.TypeString,
 										Description: "name of the process that is responsible for initializing this object.",
-										Optional:    false,
-										Required:    true,
-										Computed:    false,
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 								}},
 							},
@@ -256,6 +256,13 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"remaining_item_count": {
+												Type:        schema.TypeInt,
+												Description: "remainingItemCount is the number of subsequent items in the list which are not included in this list response. If the list request contained label or field selectors, then the number of remaining items is unknown and the field will be left unset and omitted during serialization. If the list is complete (either because it is not chunking or because this is the last chunk), then there are no more remaining items and this field will be left unset and omitted during serialization. Servers older than v1.15 do not set this field. The intended use of the remainingItemCount is *estimating* the size of a collection. Clients should not rely on the remainingItemCount to be set or to be exact.\n\nThis field is alpha and can be changed or removed without notice.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_version": {
 												Type:        schema.TypeString,
 												Description: "String that identifies the server's internal version of this object that can be used by clients to determine when objects have changed. Value must be treated as opaque by clients and passed unmodified back to the server. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency",
@@ -296,6 +303,71 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"managed_fields": {
+						Type:        schema.TypeList,
+						Description: "ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow. This is mostly for internal housekeeping, and users typically shouldn't need to set or understand this field. A workflow can be the user's name, a controller's name, or the name of a specific apply path like \"ci-cd\". The set of fields is always in the version that the workflow used when modifying the object.\n\nThis field is alpha and can be changed or removed without notice.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"api_version": {
+								Type:        schema.TypeString,
+								Description: "APIVersion defines the version of this resource that this field set applies to. The format is \"group/version\" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields": {
+								Type:        schema.TypeMap,
+								Description: "Fields identifies a set of fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_type": {
+								Type:        schema.TypeString,
+								Description: "FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \"FieldsV1\"",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"fields_v1": {
+								Type:        schema.TypeMap,
+								Description: "FieldsV1 holds the first JSON version format as described in the \"FieldsV1\" type.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"manager": {
+								Type:        schema.TypeString,
+								Description: "Manager is an identifier of the workflow managing these fields.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"operation": {
+								Type:        schema.TypeString,
+								Description: "Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"subresource": {
+								Type:        schema.TypeString,
+								Description: "Subresource is the name of the subresource used to update that object, or empty string if the object was updated through the main resource. The value of this field is used to distinguish between managers, even if they share the same name. For example, a status update will be distinct from a regular update using the same manager name. Note that the APIVersion field is not related to the Subresource field and it always corresponds to the version of the main resource.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"time": {
+								Type:        schema.TypeString,
+								Description: "Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"name": {
 						Type:        schema.TypeString,
@@ -393,6 +465,124 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2() *schema.Resource {
 				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"behavior": {
+						Type:        schema.TypeList,
+						Description: "behavior configures the scaling behavior of the target in both Up and Down directions (scaleUp and scaleDown fields respectively). If not set, the default HPAScalingRules for scale up and scale down are used.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"scale_down": {
+								Type:        schema.TypeList,
+								Description: "scaleDown is scaling policy for scaling Down. If not set, the default value is to allow to scale down to minReplicas pods, with a 300 second stabilization window (i.e., the highest recommendation for the last 300sec is used).",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"policies": {
+										Type:        schema.TypeList,
+										Description: "policies is a list of potential scaling polices which can be used during scaling. At least one policy must be specified, otherwise the HPAScalingRules will be discarded as invalid",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"period_seconds": {
+												Type:        schema.TypeInt,
+												Description: "PeriodSeconds specifies the window of time for which the policy should hold true. PeriodSeconds must be greater than zero and less than or equal to 1800 (30 min).",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"type": {
+												Type:        schema.TypeString,
+												Description: "Type is used to specify the scaling policy.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"value": {
+												Type:        schema.TypeInt,
+												Description: "Value contains the amount of change which is permitted by the policy. It must be greater than zero",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"select_policy": {
+										Type:        schema.TypeString,
+										Description: "selectPolicy is used to specify which policy should be used. If not set, the default value MaxPolicySelect is used.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"stabilization_window_seconds": {
+										Type:        schema.TypeInt,
+										Description: "StabilizationWindowSeconds is the number of seconds for which past recommendations should be considered while scaling up or scaling down. StabilizationWindowSeconds must be greater than or equal to zero and less than or equal to 3600 (one hour). If not set, use the default values: - For scale up: 0 (i.e. no stabilization is done). - For scale down: 300 (i.e. the stabilization window is 300 seconds long).",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"scale_up": {
+								Type:        schema.TypeList,
+								Description: "scaleUp is scaling policy for scaling Up. If not set, the default value is the higher of:\n  * increase no more than 4 pods per 60 seconds\n  * double the number of pods per 60 seconds\nNo stabilization is used.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"policies": {
+										Type:        schema.TypeList,
+										Description: "policies is a list of potential scaling polices which can be used during scaling. At least one policy must be specified, otherwise the HPAScalingRules will be discarded as invalid",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"period_seconds": {
+												Type:        schema.TypeInt,
+												Description: "PeriodSeconds specifies the window of time for which the policy should hold true. PeriodSeconds must be greater than zero and less than or equal to 1800 (30 min).",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"type": {
+												Type:        schema.TypeString,
+												Description: "Type is used to specify the scaling policy.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"value": {
+												Type:        schema.TypeInt,
+												Description: "Value contains the amount of change which is permitted by the policy. It must be greater than zero",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"select_policy": {
+										Type:        schema.TypeString,
+										Description: "selectPolicy is used to specify which policy should be used. If not set, the default value MaxPolicySelect is used.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"stabilization_window_seconds": {
+										Type:        schema.TypeInt,
+										Description: "StabilizationWindowSeconds is the number of seconds for which past recommendations should be considered while scaling up or scaling down. StabilizationWindowSeconds must be greater than or equal to zero and less than or equal to 3600 (one hour). If not set, use the default values: - For scale up: 0 (i.e. no stabilization is done). - For scale down: 300 (i.e. the stabilization window is 300 seconds long).",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
 					"max_replicas": {
 						Type:        schema.TypeInt,
 						Description: "maxReplicas is the upper limit for the number of replicas to which the autoscaler can scale up. It cannot be less that minReplicas.",
@@ -407,6 +597,69 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"container_resource": {
+								Type:        schema.TypeList,
+								Description: "container resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing a single container in each pod of the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the \"pods\" source. This is an alpha feature and can be enabled by the HPAContainerMetrics feature flag.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"container": {
+										Type:        schema.TypeString,
+										Description: "container is the name of the container in the pods of the scaling target",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"name": {
+										Type:        schema.TypeString,
+										Description: "name is the name of the resource in question.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"target": {
+										Type:        schema.TypeList,
+										Description: "target specifies the target value for the given metric",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MinItems:    1,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"average_utilization": {
+												Type:        schema.TypeInt,
+												Description: "averageUtilization is the target value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods. Currently only valid for Resource metric source type",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"average_value": {
+												Type:        schema.TypeString,
+												Description: "averageValue is the target value of the average of the metric across all relevant pods (as a quantity)",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"type": {
+												Type:        schema.TypeString,
+												Description: "type represents whether the metric type is Utilization, Value, or AverageValue",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"value": {
+												Type:        schema.TypeString,
+												Description: "value is the target value of the metric (as a quantity).",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
 							"external": {
 								Type:        schema.TypeList,
 								Description: "external refers to a global metric that is not associated with any Kubernetes object. It allows autoscaling based on information coming from components running outside of cluster (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster).",
@@ -901,9 +1154,9 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2() *schema.Resource {
 					"conditions": {
 						Type:        schema.TypeList,
 						Description: "conditions is the set of conditions required for this autoscaler to scale its target, and indicates whether or not those conditions are met.",
-						Optional:    false,
-						Required:    true,
-						Computed:    false,
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 							"last_transition_time": {
 								Type:        schema.TypeString,
@@ -949,6 +1202,62 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"container_resource": {
+								Type:        schema.TypeList,
+								Description: "container resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing a single container in each pod in the current scale target (e.g. CPU or memory). Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the \"pods\" source.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"container": {
+										Type:        schema.TypeString,
+										Description: "Container is the name of the container in the pods of the scaling target",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"current": {
+										Type:        schema.TypeList,
+										Description: "current contains the current value for the given metric",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MinItems:    1,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"average_utilization": {
+												Type:        schema.TypeInt,
+												Description: "currentAverageUtilization is the current value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"average_value": {
+												Type:        schema.TypeString,
+												Description: "averageValue is the current value of the average of the metric across all relevant pods (as a quantity)",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"value": {
+												Type:        schema.TypeString,
+												Description: "value is the current value of the metric (as a quantity).",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name is the name of the resource in question.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"external": {
 								Type:        schema.TypeList,
 								Description: "external refers to a global metric that is not associated with any Kubernetes object. It allows autoscaling based on information coming from components running outside of cluster (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster).",
@@ -1403,7 +1712,7 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2Beta2Read(_ context.Contex
 	if err := manifestpkg.SetDataSourceDefaults(d, "autoscaling/v2beta2", "HorizontalPodAutoscaler", "autoscaling/v2beta2/HorizontalPodAutoscaler"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.metrics.external", "spec.metrics.external.metric", "spec.metrics.external.metric.selector", "spec.metrics.external.target", "spec.metrics.object", "spec.metrics.object.described_object", "spec.metrics.object.metric", "spec.metrics.object.metric.selector", "spec.metrics.object.target", "spec.metrics.pods", "spec.metrics.pods.metric", "spec.metrics.pods.metric.selector", "spec.metrics.pods.target", "spec.metrics.resource", "spec.metrics.resource.target", "spec.scale_target_ref", "status", "status.current_metrics.external", "status.current_metrics.external.current", "status.current_metrics.external.metric", "status.current_metrics.external.metric.selector", "status.current_metrics.object", "status.current_metrics.object.current", "status.current_metrics.object.described_object", "status.current_metrics.object.metric", "status.current_metrics.object.metric.selector", "status.current_metrics.pods", "status.current_metrics.pods.current", "status.current_metrics.pods.metric", "status.current_metrics.pods.metric.selector", "status.current_metrics.resource", "status.current_metrics.resource.current"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.behavior", "spec.behavior.scale_down", "spec.behavior.scale_up", "spec.metrics.container_resource", "spec.metrics.container_resource.target", "spec.metrics.external", "spec.metrics.external.metric", "spec.metrics.external.metric.selector", "spec.metrics.external.target", "spec.metrics.object", "spec.metrics.object.described_object", "spec.metrics.object.metric", "spec.metrics.object.metric.selector", "spec.metrics.object.target", "spec.metrics.pods", "spec.metrics.pods.metric", "spec.metrics.pods.metric.selector", "spec.metrics.pods.target", "spec.metrics.resource", "spec.metrics.resource.target", "spec.scale_target_ref", "status", "status.current_metrics.container_resource", "status.current_metrics.container_resource.current", "status.current_metrics.external", "status.current_metrics.external.current", "status.current_metrics.external.metric", "status.current_metrics.external.metric.selector", "status.current_metrics.object", "status.current_metrics.object.current", "status.current_metrics.object.described_object", "status.current_metrics.object.metric", "status.current_metrics.object.metric.selector", "status.current_metrics.pods", "status.current_metrics.pods.current", "status.current_metrics.pods.metric", "status.current_metrics.pods.metric.selector", "status.current_metrics.resource", "status.current_metrics.resource.current"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -94,6 +94,13 @@ The length of the raw data must be smaller or equal to 10 Ki.
 
 Optional:
 
+- `distinct_attribute` (String) DistinctAttribute requires that all devices in question have this attribute and that its type and value are unique across those devices.
+
+This acts as the inverse of MatchAttribute.
+
+This constraint is used to avoid allocating multiple requests to the same device by ensuring attribute-level differentiation.
+
+This is useful for scenarios where resource requests must be fulfilled by separate physical devices. For example, a container requests two network interfaces that must be allocated from two different physical NICs.
 - `match_attribute` (String) MatchAttribute requires that all devices in question have this attribute and that its type and value are the same across those devices.
 
 For example, if you specified "dra.example.com/numa" (a hypothetical example!), then only devices in the same NUMA node will be chosen. A device which does not have that attribute will not be chosen. All devices should use a value of the same type for this attribute because that is part of its specification, but if one device doesn't, then it also will not be chosen.
@@ -154,6 +161,11 @@ This is an alpha field and requires enabling the DRAAdminAccess feature gate. Ad
 If AllocationMode is not specified, the default mode is ExactCount. If the mode is ExactCount and count is not specified, the default count is one. Any other requests must specify this field.
 
 More modes may get added in the future. Clients must refuse to handle requests with unknown modes.
+- `capacity` (Block List, Max: 1) Capacity define resource requirements against each capacity.
+
+If this field is unset and the device supports multiple allocations, the default value will be applied to each capacity according to requestPolicy. For the capacity that has no requestPolicy, default is the full capacity value.
+
+Applies to each device allocation. If Count > 1, the request fails if there aren't enough devices that meet the requirements. If AllocationMode is set to All, the request fails if there are devices that otherwise match the request, and have this capacity, with a value >= the requested amount, but which cannot be allocated to this request. (see [below for nested schema](#nestedblock--spec--spec--devices--requests--exactly--capacity))
 - `count_` (Number) Count is used only when the count mode is "ExactCount". Must be greater than zero. If AllocationMode is ExactCount and this field is not specified, the default is one.
 - `selectors` (Block List) Selectors define criteria which must be satisfied by a specific device in order for that device to be considered for this request. All selectors must be satisfied for a device to be considered. (see [below for nested schema](#nestedblock--spec--spec--devices--requests--exactly--selectors))
 - `tolerations` (Block List) If specified, the request's tolerations.
@@ -165,6 +177,24 @@ In addition, should any of the allocated devices get tainted with NoExecute afte
 The maximum number of tolerations is 16.
 
 This is an alpha field and requires enabling the DRADeviceTaints feature gate. (see [below for nested schema](#nestedblock--spec--spec--devices--requests--exactly--tolerations))
+
+<a id="nestedblock--spec--spec--devices--requests--exactly--capacity"></a>
+### Nested Schema for `spec.spec.devices.requests.exactly.capacity`
+
+Optional:
+
+- `requests` (Map of String) Requests represent individual device resource requests for distinct resources, all of which must be provided by the device.
+
+This value is used as an additional filtering condition against the available capacity on the device. This is semantically equivalent to a CEL selector with `device.capacity[<domain>].<name>.compareTo(quantity(<request quantity>)) >= 0`. For example, device.capacity['test-driver.cdi.k8s.io'].counters.compareTo(quantity('2')) >= 0.
+
+When a requestPolicy is defined, the requested amount is adjusted upward to the nearest valid value based on the policy. If the requested amount cannot be adjusted to a valid value—because it exceeds what the requestPolicy allows— the device is considered ineligible for allocation.
+
+For any capacity that is not explicitly requested: - If no requestPolicy is set, the default consumed capacity is equal to the full device capacity
+  (i.e., the whole device is claimed).
+- If a requestPolicy is set, the default consumed capacity is determined according to that policy.
+
+If the device allows multiple allocation, the aggregated amount across all requests must not exceed the capacity value. The consumed capacity, which may be adjusted based on the requestPolicy if defined, is recorded in the resource claim’s status.devices[*].consumedCapacity field.
+
 
 <a id="nestedblock--spec--spec--devices--requests--exactly--selectors"></a>
 ### Nested Schema for `spec.spec.devices.requests.exactly.selectors`
@@ -252,6 +282,11 @@ Optional:
 If AllocationMode is not specified, the default mode is ExactCount. If the mode is ExactCount and count is not specified, the default count is one. Any other subrequests must specify this field.
 
 More modes may get added in the future. Clients must refuse to handle requests with unknown modes.
+- `capacity` (Block List, Max: 1) Capacity define resource requirements against each capacity.
+
+If this field is unset and the device supports multiple allocations, the default value will be applied to each capacity according to requestPolicy. For the capacity that has no requestPolicy, default is the full capacity value.
+
+Applies to each device allocation. If Count > 1, the request fails if there aren't enough devices that meet the requirements. If AllocationMode is set to All, the request fails if there are devices that otherwise match the request, and have this capacity, with a value >= the requested amount, but which cannot be allocated to this request. (see [below for nested schema](#nestedblock--spec--spec--devices--requests--first_available--capacity))
 - `count_` (Number) Count is used only when the count mode is "ExactCount". Must be greater than zero. If AllocationMode is ExactCount and this field is not specified, the default is one.
 - `selectors` (Block List) Selectors define criteria which must be satisfied by a specific device in order for that device to be considered for this subrequest. All selectors must be satisfied for a device to be considered. (see [below for nested schema](#nestedblock--spec--spec--devices--requests--first_available--selectors))
 - `tolerations` (Block List) If specified, the request's tolerations.
@@ -263,6 +298,24 @@ In addition, should any of the allocated devices get tainted with NoExecute afte
 The maximum number of tolerations is 16.
 
 This is an alpha field and requires enabling the DRADeviceTaints feature gate. (see [below for nested schema](#nestedblock--spec--spec--devices--requests--first_available--tolerations))
+
+<a id="nestedblock--spec--spec--devices--requests--first_available--capacity"></a>
+### Nested Schema for `spec.spec.devices.requests.first_available.capacity`
+
+Optional:
+
+- `requests` (Map of String) Requests represent individual device resource requests for distinct resources, all of which must be provided by the device.
+
+This value is used as an additional filtering condition against the available capacity on the device. This is semantically equivalent to a CEL selector with `device.capacity[<domain>].<name>.compareTo(quantity(<request quantity>)) >= 0`. For example, device.capacity['test-driver.cdi.k8s.io'].counters.compareTo(quantity('2')) >= 0.
+
+When a requestPolicy is defined, the requested amount is adjusted upward to the nearest valid value based on the policy. If the requested amount cannot be adjusted to a valid value—because it exceeds what the requestPolicy allows— the device is considered ineligible for allocation.
+
+For any capacity that is not explicitly requested: - If no requestPolicy is set, the default consumed capacity is equal to the full device capacity
+  (i.e., the whole device is claimed).
+- If a requestPolicy is set, the default consumed capacity is determined according to that policy.
+
+If the device allows multiple allocation, the aggregated amount across all requests must not exceed the capacity value. The consumed capacity, which may be adjusted based on the requestPolicy if defined, is recorded in the resource claim’s status.devices[*].consumedCapacity field.
+
 
 <a id="nestedblock--spec--spec--devices--requests--first_available--selectors"></a>
 ### Nested Schema for `spec.spec.devices.requests.first_available.selectors`

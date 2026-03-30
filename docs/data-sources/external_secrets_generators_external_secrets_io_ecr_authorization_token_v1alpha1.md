@@ -3,22 +3,12 @@
 page_title: "kubefu_external_secrets_generators_external_secrets_io_ecr_authorization_token_v1alpha1 Data Source - terraform-provider-kubefu"
 subcategory: ""
 description: |-
-  ECRAuthorizationTokenSpec uses the GetAuthorizationToken API to retrieve an
-  authorization token.
-  The authorization token is valid for 12 hours.
-  The authorizationToken returned is a base64 encoded string that can be decoded
-  and used in a docker login command to authenticate to a registry.
-  For more information, see Registry authentication (https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth) in the Amazon Elastic Container Registry User Guide.
+  ECRAuthorizationTokenSpec uses the GetAuthorizationToken API to retrieve an authorization token. The authorization token is valid for 12 hours. The authorizationToken returned is a base64 encoded string that can be decoded and used in a docker login command to authenticate to a registry. For more information, see Registry authentication (https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth) in the Amazon Elastic Container Registry User Guide.
 ---
 
 # kubefu_external_secrets_generators_external_secrets_io_ecr_authorization_token_v1alpha1 (Data Source)
 
-ECRAuthorizationTokenSpec uses the GetAuthorizationToken API to retrieve an
-authorization token.
-The authorization token is valid for 12 hours.
-The authorizationToken returned is a base64 encoded string that can be decoded
-and used in a docker login command to authenticate to a registry.
-For more information, see Registry authentication (https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth) in the Amazon Elastic Container Registry User Guide.
+ECRAuthorizationTokenSpec uses the GetAuthorizationToken API to retrieve an authorization token. The authorization token is valid for 12 hours. The authorizationToken returned is a base64 encoded string that can be decoded and used in a docker login command to authenticate to a registry. For more information, see Registry authentication (https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth) in the Amazon Elastic Container Registry User Guide.
 
 
 
@@ -28,20 +18,13 @@ For more information, see Registry authentication (https://docs.aws.amazon.com/A
 ### Optional
 
 - `metadata` (Map of String)
-- `spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec))
+- `spec` (Block List, Max: 1) ECRAuthorizationTokenSpec defines the desired state to generate an AWS ECR authorization token. (see [below for nested schema](#nestedblock--spec))
 
 ### Read-Only
 
-- `api_version` (String) APIVersion defines the versioned schema of this representation of an object.
-Servers should convert recognized schemas to the latest internal value, and
-may reject unrecognized values.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+- `api_version` (String) APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
 - `id` (String) The ID of this resource.
-- `kind` (String) Kind is a string value representing the REST resource this object represents.
-Servers may infer this from the endpoint the client submits requests to.
-Cannot be updated.
-In CamelCase.
-More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+- `kind` (String) Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
 
@@ -52,8 +35,9 @@ Optional:
 
 - `auth` (Block List, Max: 1) Auth defines how to authenticate with AWS (see [below for nested schema](#nestedblock--spec--auth))
 - `region` (String) Region specifies the region to operate in.
-- `role` (String) You can assume a role before making calls to the
-desired AWS service.
+- `role` (String) You can assume a role before making calls to the desired AWS service.
+- `scope` (String) Scope specifies the ECR service scope.
+Valid options are private and public.
 
 <a id="nestedblock--spec--auth"></a>
 ### Nested Schema for `spec.auth`
@@ -61,8 +45,7 @@ desired AWS service.
 Optional:
 
 - `jwt` (Block List, Max: 1) Authenticate against AWS using service account tokens. (see [below for nested schema](#nestedblock--spec--auth--jwt))
-- `secret_ref` (Block List, Max: 1) AWSAuthSecretRef holds secret references for AWS credentials
-both AccessKeyID and SecretAccessKey must be defined in order to properly authenticate. (see [below for nested schema](#nestedblock--spec--auth--secret_ref))
+- `secret_ref` (Block List, Max: 1) AWSAuthSecretRef holds secret references for AWS credentials both AccessKeyID and SecretAccessKey must be defined in order to properly authenticate. (see [below for nested schema](#nestedblock--spec--auth--secret_ref))
 
 <a id="nestedblock--spec--auth--jwt"></a>
 ### Nested Schema for `spec.auth.jwt`
@@ -76,12 +59,9 @@ Optional:
 
 Optional:
 
-- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
-If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-then this audiences will be appended to the list
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list
 - `name` (String) The name of the ServiceAccount resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 
@@ -92,20 +72,16 @@ Optional:
 
 - `access_key_id_secret_ref` (Block List, Max: 1) The AccessKeyID is used for authentication (see [below for nested schema](#nestedblock--spec--auth--secret_ref--access_key_id_secret_ref))
 - `secret_access_key_secret_ref` (Block List, Max: 1) The SecretAccessKey is used for authentication (see [below for nested schema](#nestedblock--spec--auth--secret_ref--secret_access_key_secret_ref))
-- `session_token_secret_ref` (Block List, Max: 1) The SessionToken used for authentication
-This must be defined if AccessKeyID and SecretAccessKey are temporary credentials
-see: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html (see [below for nested schema](#nestedblock--spec--auth--secret_ref--session_token_secret_ref))
+- `session_token_secret_ref` (Block List, Max: 1) The SessionToken used for authentication This must be defined if AccessKeyID and SecretAccessKey are temporary credentials see: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html (see [below for nested schema](#nestedblock--spec--auth--secret_ref--session_token_secret_ref))
 
 <a id="nestedblock--spec--auth--secret_ref--access_key_id_secret_ref"></a>
 ### Nested Schema for `spec.auth.secret_ref.access_key_id_secret_ref`
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 <a id="nestedblock--spec--auth--secret_ref--secret_access_key_secret_ref"></a>
@@ -113,11 +89,9 @@ to the namespace of the referent.
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.
 
 
 <a id="nestedblock--spec--auth--secret_ref--session_token_secret_ref"></a>
@@ -125,8 +99,6 @@ to the namespace of the referent.
 
 Optional:
 
-- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be
-defaulted, in others it may be required.
+- `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
-- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults
-to the namespace of the referent.
+- `namespace` (String) Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.

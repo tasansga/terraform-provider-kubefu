@@ -144,3 +144,28 @@ func TestDefinitionAsDataSourceDoesNotMutateInputSchema(t *testing.T) {
 		t.Fatalf("expected original schema not to gain spec.values_yaml")
 	}
 }
+
+func TestDefinitionAsDataSourceKustomizationAddsNamespaceAndResources(t *testing.T) {
+	def := Definition{
+		Kind:    "Kustomization",
+		Group:   "kustomize.config.k8s.io",
+		Version: "v1beta1",
+		Schema: map[string]*schema.Schema{
+			"config_map_generator": {
+				Type:     schema.TypeList,
+				Optional: true,
+			},
+		},
+	}
+	result, err := def.AsDataSource("generated", "kustomize")
+	if err != nil {
+		t.Fatalf("AsDataSource() error: %v", err)
+	}
+	content := string(result.Content)
+	if !strings.Contains(content, `"namespace": {`) {
+		t.Fatalf("generated data source missing namespace field: %s", content)
+	}
+	if !strings.Contains(content, `"resources": {`) {
+		t.Fatalf("generated data source missing resources field: %s", content)
+	}
+}

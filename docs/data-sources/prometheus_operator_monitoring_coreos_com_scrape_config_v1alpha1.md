@@ -22,6 +22,12 @@ ScrapeConfig defines a namespaced Prometheus scrape_config to be aggregated acro
 ### Optional
 
 - `metadata` (Map of String)
+- `status` (Block List, Max: 1) status defines the status subresource. It is under active development and is updated only when the
+"StatusForConfigurationResources" feature gate is enabled.
+
+Most recent observed status of the ScrapeConfig. Read-only.
+More info:
+https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -36,13 +42,2609 @@ ScrapeConfig defines a namespaced Prometheus scrape_config to be aggregated acro
 
 Optional:
 
+- `authorization` (Block List, Max: 1) Authorization header to use on every scrape request. (see [below for nested schema](#nestedblock--spec--authorization))
+- `azure_sd_configs` (Block List) AzureSDConfigs defines a list of Azure service discovery configurations. (see [below for nested schema](#nestedblock--spec--azure_sd_configs))
+- `basic_auth` (Block List, Max: 1) BasicAuth information to use on every scrape request. (see [below for nested schema](#nestedblock--spec--basic_auth))
+- `body_size_limit` (String) bodySizeLimit defines a per-scrape limit on the size of the uncompressed
+response body that will be accepted by Prometheus. Targets responding with
+a body larger than this many bytes will cause the scrape to fail.
+
+It requires Prometheus >= v2.28.0.
+- `consul_sd_configs` (Block List) ConsulSDConfigs defines a list of Consul service discovery configurations. (see [below for nested schema](#nestedblock--spec--consul_sd_configs))
+- `convert_classic_histograms_to_nhcb` (Boolean) Whether to convert all scraped classic histograms into a native histogram with custom buckets.
+It requires Prometheus >= v3.0.0.
+- `digital_ocean_sd_configs` (Block List) DigitalOceanSDConfigs defines a list of DigitalOcean service discovery configurations. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs))
+- `dns_sd_configs` (Block List) DNSSDConfigs defines a list of DNS service discovery configurations. (see [below for nested schema](#nestedblock--spec--dns_sd_configs))
+- `docker_sd_configs` (Block List) DockerSDConfigs defines a list of Docker service discovery configurations. (see [below for nested schema](#nestedblock--spec--docker_sd_configs))
+- `docker_swarm_sd_configs` (Block List) DockerswarmSDConfigs defines a list of Dockerswarm service discovery configurations. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs))
+- `ec2sd_configs` (Block List) EC2SDConfigs defines a list of EC2 service discovery configurations. (see [below for nested schema](#nestedblock--spec--ec2sd_configs))
+- `enable_compression` (Boolean) When false, Prometheus will request uncompressed response from the scraped target.
+ It requires Prometheus >= v2.49.0.
+ If unset, Prometheus uses true by default.
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `eureka_sd_configs` (Block List) EurekaSDConfigs defines a list of Eureka service discovery configurations. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs))
+- `fallback_scrape_protocol` (String) The protocol to use if a scrape returns blank, unparseable, or otherwise invalid Content-Type.
+
+It requires Prometheus >= v3.0.0.
 - `file_sd_configs` (Block List) FileSDConfigs defines a list of file service discovery configurations. (see [below for nested schema](#nestedblock--spec--file_sd_configs))
+- `gce_sd_configs` (Block List) GCESDConfigs defines a list of GCE service discovery configurations. (see [below for nested schema](#nestedblock--spec--gce_sd_configs))
+- `hetzner_sd_configs` (Block List) HetznerSDConfigs defines a list of Hetzner service discovery configurations. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs))
 - `honor_labels` (Boolean) HonorLabels chooses the metric's labels on collisions with target labels.
 - `honor_timestamps` (Boolean) HonorTimestamps controls whether Prometheus respects the timestamps present in scraped data.
 - `http_sd_configs` (Block List) HTTPSDConfigs defines a list of HTTP service discovery configurations. (see [below for nested schema](#nestedblock--spec--http_sd_configs))
+- `ionos_sd_configs` (Block List) IonosSDConfigs defines a list of IONOS service discovery configurations. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs))
+- `job_name` (String) The value of the `job` label assigned to the scraped metrics by default.
+
+
+The `job_name` field in the rendered scrape configuration is always controlled by the
+operator to prevent duplicate job names, which Prometheus does not allow. Instead the
+`job` label is set by means of relabeling configs.
+- `keep_dropped_targets` (Number) Per-scrape limit on the number of targets dropped by relabeling that will be kept in memory. 0 means no limit.
+ It requires Prometheus >= v2.47.0.
+- `kubernetes_sd_configs` (Block List) KubernetesSDConfigs defines a list of Kubernetes service discovery configurations. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs))
+- `kuma_sd_configs` (Block List) KumaSDConfigs defines a list of Kuma service discovery configurations. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs))
+- `label_limit` (Number) Per-scrape limit on number of labels that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
+- `label_name_length_limit` (Number) Per-scrape limit on length of labels name that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
+- `label_value_length_limit` (Number) Per-scrape limit on length of labels value that will be accepted for a sample. Only valid in Prometheus versions 2.27.0 and newer.
+- `light_sail_sd_configs` (Block List) LightsailSDConfigs defines a list of Lightsail service discovery configurations. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs))
+- `linode_sd_configs` (Block List) LinodeSDConfigs defines a list of Linode service discovery configurations. (see [below for nested schema](#nestedblock--spec--linode_sd_configs))
+- `metric_relabelings` (Block List) MetricRelabelConfigs to apply to samples before ingestion. (see [below for nested schema](#nestedblock--spec--metric_relabelings))
 - `metrics_path` (String) MetricsPath HTTP path to scrape for metrics. If empty, Prometheus uses the default value (e.g. /metrics).
+- `name_escaping_scheme` (String) Metric name escaping mode to request through content negotiation.
+
+It requires Prometheus >= v3.4.0.
+- `name_validation_scheme` (String) Specifies the validation scheme for metric and label names.
+
+It requires Prometheus >= v3.0.0.
+- `native_histogram_bucket_limit` (Number) If there are more than this many buckets in a native histogram,
+buckets will be merged to stay within the limit.
+It requires Prometheus >= v2.45.0.
+- `native_histogram_min_bucket_factor` (String) If the growth factor of one bucket to the next is smaller than this,
+buckets will be merged to increase the factor sufficiently.
+It requires Prometheus >= v2.50.0.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names that should be excluded from proxying. IP and domain names can contain port numbers.
+ It requires Prometheus >= v2.43.0.
+- `nomad_sd_configs` (Block List) NomadSDConfigs defines a list of Nomad service discovery configurations. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs))
+- `oauth2` (Block List, Max: 1) OAuth2 client credentials used to fetch a token for the targets. (see [below for nested schema](#nestedblock--spec--oauth2))
+- `openstack_sd_configs` (Block List) OpenStackSDConfigs defines a list of OpenStack service discovery configurations. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs))
+- `ovhcloud_sd_configs` (Block List) OVHCloudSDConfigs defines a list of OVHcloud service discovery configurations. (see [below for nested schema](#nestedblock--spec--ovhcloud_sd_configs))
+- `params` (Map of String) Optional HTTP URL parameters
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to proxies during CONNECT requests.
+ It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY). If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+ It requires Prometheus >= v2.43.0.
+- `puppet_dbsd_configs` (Block List) PuppetDBSDConfigs defines a list of PuppetDB service discovery configurations. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs))
 - `relabelings` (Block List) RelabelConfigs defines how to rewrite the target's labels before scraping. Prometheus Operator automatically adds relabelings for a few standard Kubernetes fields. The original scrape job's name is available via the `__tmp_prometheus_job_name` label. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config (see [below for nested schema](#nestedblock--spec--relabelings))
+- `sample_limit` (Number) SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
+- `scaleway_sd_configs` (Block List) ScalewaySDConfigs defines a list of Scaleway instances and baremetal service discovery configurations. (see [below for nested schema](#nestedblock--spec--scaleway_sd_configs))
+- `scheme` (String) Configures the protocol scheme used for requests. If empty, Prometheus uses HTTP by default.
+- `scrape_class` (String) The scrape class to apply.
+- `scrape_classic_histograms` (Boolean) Whether to scrape a classic histogram that is also exposed as a native histogram.
+It requires Prometheus >= v2.45.0.
+- `scrape_fallback_protocol` (String) The protocol to use if a scrape returns blank, unparseable, or otherwise invalid Content-Type.
+
+It requires Prometheus >= v3.0.0.
+- `scrape_interval` (String) ScrapeInterval is the interval between consecutive scrapes.
+- `scrape_native_histograms` (Boolean) scrapeNativeHistograms defines whether to enable scraping of native histograms.
+It requires Prometheus >= v3.8.0.
+- `scrape_protocols` (List of String) The protocols to negotiate during a scrape. It tells clients the protocols supported by Prometheus in order of preference (from most to least preferred).
+ If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.49.0.
+- `scrape_timeout` (String) ScrapeTimeout is the number of seconds to wait until a scrape request times out.
 - `static_configs` (Block List) StaticConfigs defines a list of static targets with a common label set. (see [below for nested schema](#nestedblock--spec--static_configs))
+- `target_limit` (Number) TargetLimit defines a limit on the number of scraped targets that will be accepted.
+- `tls_config` (Block List, Max: 1) TLS configuration to use on every scrape request (see [below for nested schema](#nestedblock--spec--tls_config))
+- `track_timestamps_staleness` (Boolean) TrackTimestampsStaleness whether Prometheus tracks staleness of the metrics that have an explicit timestamp present in scraped data. Has no effect if `honorTimestamps` is false. It requires Prometheus >= v2.48.0.
+
+<a id="nestedblock--spec--authorization"></a>
+### Nested Schema for `spec.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
+
+<a id="nestedblock--spec--authorization--credentials"></a>
+### Nested Schema for `spec.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--azure_sd_configs"></a>
+### Nested Schema for `spec.azure_sd_configs`
+
+Optional:
+
+- `authentication_method` (String) # The authentication method, either OAuth or ManagedIdentity. See https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
+- `authorization` (Block List, Max: 1) Authorization header configuration to authenticate against the target HTTP endpoint.
+Cannot be set at the same time as `oAuth2`, or `basicAuth`. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth information to authenticate against the target HTTP endpoint.
+More info: https://prometheus.io/docs/operating/configuration/#endpoints
+Cannot be set at the same time as `authorization`, or `oAuth2`. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--basic_auth))
+- `client_id` (String) Optional client ID. Only required with the OAuth authentication method.
+- `client_secret` (Block List, Max: 1) Optional client secret. Only required with the OAuth authentication method. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--client_secret))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `environment` (String) The Azure environment.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration to authenticate against the target HTTP endpoint.
+Cannot be set at the same time as `authorization`, or `basicAuth`. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2))
+- `port` (Number) The port to scrape metrics from. If using the public IP address, this must instead be specified in the relabeling rule.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+- `refresh_interval` (String) RefreshInterval configures the refresh interval at which Prometheus will re-read the instance list.
+- `resource_group` (String) Optional resource group name. Limits discovery to this resource group.
+- `subscription_id` (String) The subscription ID. Always required.
+- `tenant_id` (String) Optional tenant ID. Only required with the OAuth authentication method.
+- `tls_config` (Block List, Max: 1) TLS configuration applying to the target HTTP endpoint. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--tls_config))
+
+<a id="nestedblock--spec--azure_sd_configs--authorization"></a>
+### Nested Schema for `spec.azure_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+
+"Basic" is not a supported value.
+
+Default: "Bearer"
+
+<a id="nestedblock--spec--azure_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.azure_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--azure_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.azure_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for
+authentication. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for
+authentication. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--azure_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.azure_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--azure_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.azure_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--azure_sd_configs--client_secret"></a>
+### Nested Schema for `spec.azure_sd_configs.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the
+OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2
+client's secret. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token
+URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--azure_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.azure_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--azure_sd_configs--tls_config"></a>
+### Nested Schema for `spec.azure_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--azure_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.azure_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--azure_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.azure_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--azure_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.azure_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--azure_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.azure_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--azure_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--azure_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.azure_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--azure_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.azure_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--azure_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.azure_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--basic_auth"></a>
+### Nested Schema for `spec.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--basic_auth--username))
+
+<a id="nestedblock--spec--basic_auth--password"></a>
+### Nested Schema for `spec.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--basic_auth--username"></a>
+### Nested Schema for `spec.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--consul_sd_configs"></a>
+### Nested Schema for `spec.consul_sd_configs`
+
+Optional:
+
+- `allow_stale` (Boolean) Allow stale Consul results (see https://www.consul.io/api/features/consistency.html). Will reduce load on Consul. If unset, Prometheus uses its default value.
+- `authorization` (Block List, Max: 1) Authorization header configuration to authenticate against the Consul Server. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth information to authenticate against the Consul Server. More info: https://prometheus.io/docs/operating/configuration/#endpoints (see [below for nested schema](#nestedblock--spec--consul_sd_configs--basic_auth))
+- `datacenter` (String) Consul Datacenter name, if not provided it will use the local Consul Agent Datacenter.
+- `enable_http2` (Boolean) Whether to enable HTTP2. If unset, Prometheus uses its default value.
+- `filter` (String) Filter expression used to filter the catalog results.
+See https://www.consul.io/api-docs/catalog#list-services
+It requires Prometheus >= 3.0.0.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects. If unset, Prometheus uses its default value.
+- `namespace` (String) Namespaces are only supported in Consul Enterprise.
+- `no_proxy` (String) Comma-separated string that can contain IPs, CIDR notation, domain names that should be excluded from proxying. IP and domain names can contain port numbers.
+- `node_meta` (Map of String) Node metadata key/value pairs to filter nodes for a given service.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2))
+- `partition` (String) Admin Partitions are only supported in Consul Enterprise.
+- `path_prefix` (String) Prefix for URIs for when consul is behind an API gateway (reverse proxy).
+
+It requires Prometheus >= 2.45.0.
+- `proxy_connect_header` (Map of String) Specifies headers to send to proxies during CONNECT requests.
+- `proxy_from_environment` (Boolean) Use proxy URL indicated by environment variables (HTTP_PROXY, https_proxy, HTTPs_PROXY, https_proxy, and no_proxy) If unset, Prometheus uses its default value.
+- `proxy_url` (String) Optional proxy URL.
+- `refresh_interval` (String) The time after which the provided names are refreshed. On large setup it might be a good idea to increase this value because the catalog will change all the time. If unset, Prometheus uses its default value.
+- `scheme` (String) HTTP Scheme default "http"
+- `server` (String) A valid string consisting of a hostname or IP followed by an optional port number.
+- `services` (List of String) A list of services for which targets are retrieved. If omitted, all services are scraped.
+- `tag_separator` (String) The string by which Consul tags are joined into the tag label. If unset, Prometheus uses its default value.
+- `tags` (List of String) An optional list of tags used to filter nodes for a given service. Services must contain all tags in the list.
+- `tls_config` (Block List, Max: 1) TLS Config (see [below for nested schema](#nestedblock--spec--consul_sd_configs--tls_config))
+- `token_ref` (Block List, Max: 1) Consul ACL TokenRef, if not provided it will use the ACL from the local Consul Agent. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--token_ref))
+
+<a id="nestedblock--spec--consul_sd_configs--authorization"></a>
+### Nested Schema for `spec.consul_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+ "Basic" is not a supported value.
+ Default: "Bearer"
+
+<a id="nestedblock--spec--consul_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.consul_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--consul_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.consul_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--consul_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.consul_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--consul_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.consul_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) The secret or configmap containing the OAuth2 client id (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) The secret containing the OAuth2 client secret (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) Parameters to append to the token URL
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) OAuth2 scopes used for the token request
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--tls_config))
+- `token_url` (String) The URL to fetch the token from
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--consul_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.consul_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--consul_sd_configs--tls_config"></a>
+### Nested Schema for `spec.consul_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--consul_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.consul_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--consul_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.consul_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--consul_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.consul_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--consul_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.consul_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--consul_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--consul_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.consul_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--consul_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.consul_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--consul_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.consul_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--consul_sd_configs--token_ref"></a>
+### Nested Schema for `spec.consul_sd_configs.token_ref`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs`
+
+Optional:
+
+- `authorization` (Block List, Max: 1) Authorization header configuration to authenticate against the DigitalOcean API. Cannot be set at the same time as `oauth2`. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--authorization))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names that should be excluded from proxying. IP and domain names can contain port numbers.
+ It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration. Cannot be set at the same time as `authorization`. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2))
+- `port` (Number) The port to scrape metrics from.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to proxies during CONNECT requests.
+ It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY). If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+ It requires Prometheus >= v2.43.0.
+- `refresh_interval` (String) Refresh interval to re-read the instance list.
+- `tls_config` (Block List, Max: 1) TLS configuration applying to the target HTTP endpoint. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--tls_config))
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--authorization"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+ "Basic" is not a supported value.
+ Default: "Bearer"
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2 client's secret. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--tls_config"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--digital_ocean_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--digital_ocean_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.digital_ocean_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--dns_sd_configs"></a>
+### Nested Schema for `spec.dns_sd_configs`
+
+Optional:
+
+- `names` (List of String) A list of DNS domain names to be queried.
+- `port` (Number) The port number used if the query type is not SRV Ignored for SRV records
+- `refresh_interval` (String) RefreshInterval configures the time after which the provided names are refreshed. If not set, Prometheus uses its default value.
+- `type` (String) The type of DNS query to perform. One of SRV, A, AAAA or MX. If not set, Prometheus uses its default value.
+
+
+<a id="nestedblock--spec--docker_sd_configs"></a>
+### Nested Schema for `spec.docker_sd_configs`
+
+Optional:
+
+- `authorization` (Block List, Max: 1) Authorization header configuration to authenticate against the Docker API. Cannot be set at the same time as `oauth2`. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth information to use on every scrape request. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--basic_auth))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `filters` (Block List) Optional filters to limit the discovery process to a subset of the available resources. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--filters))
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `host` (String) Address of the docker daemon
+- `host_networking_host` (String) The host to use if the container is in host networking mode.
+- `match_first_network` (Boolean) Configure whether to match the first network if the container has multiple networks defined.
+If unset, Prometheus uses true by default.
+It requires Prometheus >= v2.54.1.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names that should be excluded from proxying. IP and domain names can contain port numbers.
+ It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration. Cannot be set at the same time as `authorization`. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2))
+- `port` (Number) The port to scrape metrics from.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to proxies during CONNECT requests.
+ It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY). If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+ It requires Prometheus >= v2.43.0.
+- `refresh_interval` (String) Time after which the container is refreshed.
+- `tls_config` (Block List, Max: 1) TLS configuration applying to the target HTTP endpoint. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--tls_config))
+
+<a id="nestedblock--spec--docker_sd_configs--authorization"></a>
+### Nested Schema for `spec.docker_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+ "Basic" is not a supported value.
+ Default: "Bearer"
+
+<a id="nestedblock--spec--docker_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.docker_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.docker_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for authentication. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for authentication. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--docker_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.docker_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--docker_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.docker_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_sd_configs--filters"></a>
+### Nested Schema for `spec.docker_sd_configs.filters`
+
+Optional:
+
+- `name` (String) Name of the Filter.
+- `values` (List of String) Value to filter on.
+
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2 client's secret. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.docker_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--docker_sd_configs--tls_config"></a>
+### Nested Schema for `spec.docker_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--docker_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.docker_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--docker_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.docker_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--docker_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.docker_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.docker_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--docker_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.docker_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--docker_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.docker_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.docker_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs`
+
+Optional:
+
+- `authorization` (Block List, Max: 1) Authorization header configuration to authenticate against the target HTTP endpoint. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) Optional HTTP basic authentication information. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--basic_auth))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `filters` (Block List) Optional filters to limit the discovery process to a subset of available
+resources.
+The available filters are listed in the upstream documentation:
+Services: https://docs.docker.com/engine/api/v1.40/#operation/ServiceList
+Tasks: https://docs.docker.com/engine/api/v1.40/#operation/TaskList
+Nodes: https://docs.docker.com/engine/api/v1.40/#operation/NodeList (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--filters))
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `host` (String) Address of the Docker daemon
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration.
+Cannot be set at the same time as `authorization`, or `basicAuth`. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2))
+- `port` (Number) The port to scrape metrics from, when `role` is nodes, and for discovered
+tasks and services that don't have published ports.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `refresh_interval` (String) The time after which the service discovery data is refreshed.
+- `role` (String) Role of the targets to retrieve. Must be `Services`, `Tasks`, or `Nodes`.
+- `tls_config` (Block List, Max: 1) TLS configuration to use on every scrape request (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--tls_config))
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--authorization"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+
+
+"Basic" is not a supported value.
+
+
+Default: "Bearer"
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for
+authentication. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for
+authentication. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--filters"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.filters`
+
+Optional:
+
+- `name` (String) Name is the key of the field to check against.
+- `values` (List of String) Values is the value or set of values to check for a match.
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the
+OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2
+client's secret. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token
+URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--tls_config"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--docker_swarm_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--docker_swarm_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.docker_swarm_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--ec2sd_configs"></a>
+### Nested Schema for `spec.ec2sd_configs`
+
+Optional:
+
+- `access_key` (Block List, Max: 1) AccessKey is the AWS API key. (see [below for nested schema](#nestedblock--spec--ec2sd_configs--access_key))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+It requires Prometheus >= v2.41.0
+- `filters` (Block List) Filters can be used optionally to filter the instance list by other criteria. Available filter criteria can be found here: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html Filter API documentation: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html (see [below for nested schema](#nestedblock--spec--ec2sd_configs--filters))
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+It requires Prometheus >= v2.41.0
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `port` (Number) The port to scrape metrics from. If using the public IP address, this must instead be specified in the relabeling rule.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+- `refresh_interval` (String) RefreshInterval configures the refresh interval at which Prometheus will re-read the instance list.
+- `region` (String) The AWS region
+- `role_arn` (String) AWS Role ARN, an alternative to using AWS API keys.
+- `secret_key` (Block List, Max: 1) SecretKey is the AWS API secret. (see [below for nested schema](#nestedblock--spec--ec2sd_configs--secret_key))
+- `tls_config` (Block List, Max: 1) TLS configuration to connect to the AWS EC2 API.
+It requires Prometheus >= v2.41.0 (see [below for nested schema](#nestedblock--spec--ec2sd_configs--tls_config))
+
+<a id="nestedblock--spec--ec2sd_configs--access_key"></a>
+### Nested Schema for `spec.ec2sd_configs.access_key`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--ec2sd_configs--filters"></a>
+### Nested Schema for `spec.ec2sd_configs.filters`
+
+Optional:
+
+- `name` (String) Name of the Filter.
+- `values` (List of String) Value to filter on.
+
+
+<a id="nestedblock--spec--ec2sd_configs--secret_key"></a>
+### Nested Schema for `spec.ec2sd_configs.secret_key`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--ec2sd_configs--tls_config"></a>
+### Nested Schema for `spec.ec2sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--ec2sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--ec2sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--ec2sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--ec2sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.ec2sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ec2sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ec2sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--ec2sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.ec2sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--ec2sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.ec2sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--ec2sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.ec2sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ec2sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ec2sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--ec2sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.ec2sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--ec2sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.ec2sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--ec2sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.ec2sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--eureka_sd_configs"></a>
+### Nested Schema for `spec.eureka_sd_configs`
+
+Optional:
+
+- `authorization` (Block List, Max: 1) Authorization header to use on every scrape request. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth information to use on every scrape request. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--basic_auth))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names that should be excluded from proxying. IP and domain names can contain port numbers.
+ It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration. Cannot be set at the same time as `authorization` or `basic_auth`. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2))
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to proxies during CONNECT requests.
+ It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY). If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+ It requires Prometheus >= v2.43.0.
+- `refresh_interval` (String) Refresh interval to re-read the instance list.
+- `server` (String) The URL to connect to the Eureka server.
+- `tls_config` (Block List, Max: 1) TLS configuration applying to the target HTTP endpoint. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--tls_config))
+
+<a id="nestedblock--spec--eureka_sd_configs--authorization"></a>
+### Nested Schema for `spec.eureka_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+ "Basic" is not a supported value.
+ Default: "Bearer"
+
+<a id="nestedblock--spec--eureka_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.eureka_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--eureka_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.eureka_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for authentication. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for authentication. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--eureka_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.eureka_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--eureka_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.eureka_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2 client's secret. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--eureka_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.eureka_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--eureka_sd_configs--tls_config"></a>
+### Nested Schema for `spec.eureka_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--eureka_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.eureka_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--eureka_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.eureka_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--eureka_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.eureka_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--eureka_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.eureka_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--eureka_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--eureka_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.eureka_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--eureka_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.eureka_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--eureka_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.eureka_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
 
 <a id="nestedblock--spec--file_sd_configs"></a>
 ### Nested Schema for `spec.file_sd_configs`
@@ -53,13 +2655,3948 @@ Optional:
 - `refresh_interval` (String) RefreshInterval configures the refresh interval at which Prometheus will reload the content of the files.
 
 
+<a id="nestedblock--spec--gce_sd_configs"></a>
+### Nested Schema for `spec.gce_sd_configs`
+
+Optional:
+
+- `filter` (String) Filter can be used optionally to filter the instance list by other criteria Syntax of this filter is described in the filter query parameter section: https://cloud.google.com/compute/docs/reference/latest/instances/list
+- `port` (Number) The port to scrape metrics from. If using the public IP address, this must instead be specified in the relabeling rule.
+- `project` (String) The Google Cloud Project ID
+- `refresh_interval` (String) RefreshInterval configures the refresh interval at which Prometheus will re-read the instance list.
+- `tag_separator` (String) The tag separator is used to separate the tags on concatenation
+- `zone` (String) The zone of the scrape targets. If you need multiple zones use multiple GCESDConfigs.
+
+
+<a id="nestedblock--spec--hetzner_sd_configs"></a>
+### Nested Schema for `spec.hetzner_sd_configs`
+
+Optional:
+
+- `authorization` (Block List, Max: 1) Authorization header configuration, required when role is hcloud. Role robot does not support bearer token authentication. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth information to use on every scrape request, required when role is robot. Role hcloud does not support basic auth. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--basic_auth))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `label_selector` (String) Label selector used to filter the servers when fetching them from the API.
+It requires Prometheus >= v3.5.0.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names that should be excluded from proxying. IP and domain names can contain port numbers.
+ It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration. Cannot be used at the same time as `basic_auth` or `authorization`. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2))
+- `port` (Number) The port to scrape metrics from.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to proxies during CONNECT requests.
+ It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY). If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+ It requires Prometheus >= v2.43.0.
+- `refresh_interval` (String) The time after which the servers are refreshed.
+- `role` (String) The Hetzner role of entities that should be discovered.
+- `tls_config` (Block List, Max: 1) TLS configuration to use on every scrape request. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--tls_config))
+
+<a id="nestedblock--spec--hetzner_sd_configs--authorization"></a>
+### Nested Schema for `spec.hetzner_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+ "Basic" is not a supported value.
+ Default: "Bearer"
+
+<a id="nestedblock--spec--hetzner_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.hetzner_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.hetzner_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for authentication. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for authentication. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--hetzner_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.hetzner_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.hetzner_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2 client's secret. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.hetzner_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--tls_config"></a>
+### Nested Schema for `spec.hetzner_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--hetzner_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.hetzner_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--hetzner_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.hetzner_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.hetzner_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.hetzner_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--hetzner_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--hetzner_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.hetzner_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.hetzner_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--hetzner_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.hetzner_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
 <a id="nestedblock--spec--http_sd_configs"></a>
 ### Nested Schema for `spec.http_sd_configs`
 
 Optional:
 
+- `authorization` (Block List, Max: 1) Authorization header configuration to authenticate against the target HTTP endpoint. (see [below for nested schema](#nestedblock--spec--http_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth information to authenticate against the target HTTP endpoint. More info: https://prometheus.io/docs/operating/configuration/#endpoints (see [below for nested schema](#nestedblock--spec--http_sd_configs--basic_auth))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names that should be excluded from proxying. IP and domain names can contain port numbers.
+ It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration to authenticate against the target HTTP endpoint.
+Cannot be set at the same time as `authorization`, or `basicAuth`. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2))
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to proxies during CONNECT requests.
+ It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY). If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+ It requires Prometheus >= v2.43.0.
 - `refresh_interval` (String) RefreshInterval configures the refresh interval at which Prometheus will re-query the endpoint to update the target list.
+- `tls_config` (Block List, Max: 1) TLS configuration applying to the target HTTP endpoint. (see [below for nested schema](#nestedblock--spec--http_sd_configs--tls_config))
 - `url` (String) URL from which the targets are fetched.
+
+<a id="nestedblock--spec--http_sd_configs--authorization"></a>
+### Nested Schema for `spec.http_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) The secret's key that contains the credentials of the request (see [below for nested schema](#nestedblock--spec--http_sd_configs--authorization--credentials))
+- `type` (String) Set the authentication type. Defaults to Bearer, Basic will cause an error
+
+<a id="nestedblock--spec--http_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.http_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--http_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.http_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) The secret in the service monitor namespace that contains the password for authentication. (see [below for nested schema](#nestedblock--spec--http_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) The secret in the service monitor namespace that contains the username for authentication. (see [below for nested schema](#nestedblock--spec--http_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--http_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.http_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--http_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.http_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--http_sd_configs--oauth2"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the
+OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2
+client's secret. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token
+URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--http_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.http_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--http_sd_configs--tls_config"></a>
+### Nested Schema for `spec.http_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--http_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--http_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--http_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.http_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--http_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.http_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--http_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.http_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--http_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.http_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--http_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--http_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.http_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--http_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.http_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--http_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.http_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--ionos_sd_configs"></a>
+### Nested Schema for `spec.ionos_sd_configs`
+
+Optional:
+
+- `authorization` (Block List, Max: 1) Authorization` header configuration, required when using IONOS. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--authorization))
+- `datacenter_id` (String) The unique ID of the IONOS data center.
+- `enable_http2` (Boolean) Configure whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether the HTTP requests should follow HTTP 3xx redirects.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `oauth2` (Block List, Max: 1) Configure whether to enable OAuth2. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2))
+- `port` (Number) Port to scrape the metrics from.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+- `refresh_interval` (String) Refresh interval to re-read the list of resources.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the IONOS API. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--tls_config))
+
+<a id="nestedblock--spec--ionos_sd_configs--authorization"></a>
+### Nested Schema for `spec.ionos_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+
+"Basic" is not a supported value.
+
+Default: "Bearer"
+
+<a id="nestedblock--spec--ionos_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.ionos_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the
+OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2
+client's secret. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token
+URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+
+It requires Prometheus >= v2.43.0 or Alertmanager >= 0.25.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--ionos_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.ionos_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--ionos_sd_configs--tls_config"></a>
+### Nested Schema for `spec.ionos_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--ionos_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.ionos_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--ionos_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.ionos_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--ionos_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.ionos_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--ionos_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.ionos_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--ionos_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--ionos_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.ionos_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--ionos_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.ionos_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--ionos_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.ionos_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs"></a>
+### Nested Schema for `spec.kubernetes_sd_configs`
+
+Optional:
+
+- `api_server` (String) The API server address consisting of a hostname or IP address followed by an optional port number. If left empty, Prometheus is assumed to run inside of the cluster. It will discover API servers automatically and use the pod's CA certificate and bearer token file at /var/run/secrets/kubernetes.io/serviceaccount/.
+- `attach_metadata` (Block List, Max: 1) Optional metadata to attach to discovered targets. It requires Prometheus >= v2.35.0 for `pod` role and Prometheus >= v2.37.0 for `endpoints` and `endpointslice` roles. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--attach_metadata))
+- `authorization` (Block List, Max: 1) Authorization header to use on every scrape request. Cannot be set at the same time as `basicAuth`, or `oauth2`. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth information to use on every scrape request. Cannot be set at the same time as `authorization`, or `oauth2`. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--basic_auth))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `namespaces` (Block List, Max: 1) Optional namespace discovery. If omitted, Prometheus discovers targets across all namespaces. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--namespaces))
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names that should be excluded from proxying. IP and domain names can contain port numbers.
+ It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration. Cannot be set at the same time as `authorization`, or `basicAuth`. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2))
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to proxies during CONNECT requests.
+ It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY). If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+ It requires Prometheus >= v2.43.0.
+- `role` (String) Role of the Kubernetes entities that should be discovered. Currently the only supported role is "Node".
+- `selectors` (Block List) Selector to select objects. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--selectors))
+- `tls_config` (Block List, Max: 1) TLS configuration to use on every scrape request. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--tls_config))
+
+<a id="nestedblock--spec--kubernetes_sd_configs--attach_metadata"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.attach_metadata`
+
+Optional:
+
+- `node` (Boolean) Attaches node metadata to discovered targets. When set to true, Prometheus must have the `get` permission on the `Nodes` objects. Only valid for Pod, Endpoint and Endpointslice roles.
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--authorization"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+ "Basic" is not a supported value.
+ Default: "Bearer"
+
+<a id="nestedblock--spec--kubernetes_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for authentication. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for authentication. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--kubernetes_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--namespaces"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.namespaces`
+
+Optional:
+
+- `names` (List of String) List of namespaces where to watch for resources. If empty and `ownNamespace` isn't true, Prometheus watches for resources in all namespaces.
+- `own_namespace` (Boolean) Includes the namespace in which the Prometheus pod exists to the list of watched namesapces.
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2 client's secret. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--selectors"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.selectors`
+
+Optional:
+
+- `field` (String) An optional field selector to limit the service discovery to resources which have fields with specific values.
+e.g: `metadata.name=foobar`
+- `label` (String) An optional label selector to limit the service discovery to resources with specific labels and label values.
+e.g: `node.kubernetes.io/instance-type=master`
+- `role` (String) K8SRole is role of the service in Kubernetes. Currently the only supported role is "Node".
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--tls_config"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--kubernetes_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--kubernetes_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kubernetes_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--kubernetes_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kubernetes_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.kubernetes_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--kuma_sd_configs"></a>
+### Nested Schema for `spec.kuma_sd_configs`
+
+Optional:
+
+- `authorization` (Block List, Max: 1) Authorization header to use on every scrape request. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth information to use on every scrape request. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--basic_auth))
+- `client_id` (String) Client id is used by Kuma Control Plane to compute Monitoring Assignment for specific Prometheus backend.
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `fetch_timeout` (String) The time after which the monitoring assignments are refreshed.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names that should be excluded from proxying. IP and domain names can contain port numbers.
+ It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration. Cannot be set at the same time as `authorization`, or `basicAuth`. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2))
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to proxies during CONNECT requests.
+ It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY). If unset, Prometheus uses its default value.
+ It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+ It requires Prometheus >= v2.43.0.
+- `refresh_interval` (String) The time to wait between polling update requests.
+- `server` (String) Address of the Kuma Control Plane's MADS xDS server.
+- `tls_config` (Block List, Max: 1) TLS configuration to use on every scrape request (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--tls_config))
+
+<a id="nestedblock--spec--kuma_sd_configs--authorization"></a>
+### Nested Schema for `spec.kuma_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+ "Basic" is not a supported value.
+ Default: "Bearer"
+
+<a id="nestedblock--spec--kuma_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.kuma_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kuma_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.kuma_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for authentication. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for authentication. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--kuma_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.kuma_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--kuma_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.kuma_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2 client's secret. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kuma_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.kuma_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--kuma_sd_configs--tls_config"></a>
+### Nested Schema for `spec.kuma_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--kuma_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.kuma_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--kuma_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.kuma_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--kuma_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.kuma_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kuma_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.kuma_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--kuma_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--kuma_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.kuma_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--kuma_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.kuma_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--kuma_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.kuma_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--light_sail_sd_configs"></a>
+### Nested Schema for `spec.light_sail_sd_configs`
+
+Optional:
+
+- `access_key` (Block List, Max: 1) AccessKey is the AWS API key. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--access_key))
+- `authorization` (Block List, Max: 1) Optional `authorization` HTTP header configuration.
+Cannot be set at the same time as `basicAuth`, or `oauth2`. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) Optional HTTP basic authentication information.
+Cannot be set at the same time as `authorization`, or `oauth2`. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--basic_auth))
+- `enable_http2` (Boolean) Configure whether to enable HTTP2.
+- `endpoint` (String) Custom endpoint to be used.
+- `follow_redirects` (Boolean) Configure whether the HTTP requests should follow HTTP 3xx redirects.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth2.0 configuration.
+Cannot be set at the same time as `basicAuth`, or `authorization`. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2))
+- `port` (Number) Port to scrape the metrics from.
+If using the public IP address, this must instead be specified in the relabeling rule.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `refresh_interval` (String) Refresh interval to re-read the list of instances.
+- `region` (String) The AWS region.
+- `role_arn` (String) AWS Role ARN, an alternative to using AWS API keys.
+- `secret_key` (Block List, Max: 1) SecretKey is the AWS API secret. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--secret_key))
+- `tls_config` (Block List, Max: 1) TLS configuration to connect to the Puppet DB. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--tls_config))
+
+<a id="nestedblock--spec--light_sail_sd_configs--access_key"></a>
+### Nested Schema for `spec.light_sail_sd_configs.access_key`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--authorization"></a>
+### Nested Schema for `spec.light_sail_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+
+
+"Basic" is not a supported value.
+
+
+Default: "Bearer"
+
+<a id="nestedblock--spec--light_sail_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.light_sail_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.light_sail_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for
+authentication. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for
+authentication. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--light_sail_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.light_sail_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.light_sail_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the
+OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2
+client's secret. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token
+URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.light_sail_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--secret_key"></a>
+### Nested Schema for `spec.light_sail_sd_configs.secret_key`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--tls_config"></a>
+### Nested Schema for `spec.light_sail_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--light_sail_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.light_sail_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--light_sail_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.light_sail_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.light_sail_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.light_sail_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--light_sail_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--light_sail_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.light_sail_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.light_sail_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--light_sail_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.light_sail_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--linode_sd_configs"></a>
+### Nested Schema for `spec.linode_sd_configs`
+
+Optional:
+
+- `authorization` (Block List, Max: 1) Authorization header configuration. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--authorization))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration.
+Cannot be used at the same time as `authorization`. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2))
+- `port` (Number) Default port to scrape metrics from.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `refresh_interval` (String) Time after which the linode instances are refreshed.
+- `region` (String) Optional region to filter on.
+- `tag_separator` (String) The string by which Linode Instance tags are joined into the tag label.
+- `tls_config` (Block List, Max: 1) TLS configuration applying to the target HTTP endpoint. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--tls_config))
+
+<a id="nestedblock--spec--linode_sd_configs--authorization"></a>
+### Nested Schema for `spec.linode_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+
+
+"Basic" is not a supported value.
+
+
+Default: "Bearer"
+
+<a id="nestedblock--spec--linode_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.linode_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the
+OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2
+client's secret. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token
+URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--linode_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.linode_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--linode_sd_configs--tls_config"></a>
+### Nested Schema for `spec.linode_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--linode_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.linode_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--linode_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.linode_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--linode_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.linode_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--linode_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.linode_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--linode_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--linode_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.linode_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--linode_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.linode_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--linode_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.linode_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--metric_relabelings"></a>
+### Nested Schema for `spec.metric_relabelings`
+
+Optional:
+
+- `action` (String) Action to perform based on the regex matching.
+ `Uppercase` and `Lowercase` actions require Prometheus >= v2.36.0. `DropEqual` and `KeepEqual` actions require Prometheus >= v2.41.0.
+ Default: "Replace"
+- `modulus` (Number) Modulus to take of the hash of the source label values.
+ Only applicable when the action is `HashMod`.
+- `regex` (String) Regular expression against which the extracted value is matched.
+- `replacement` (String) Replacement value against which a Replace action is performed if the regular expression matches.
+ Regex capture groups are available.
+- `separator` (String) Separator is the string between concatenated SourceLabels.
+- `source_labels` (List of String) The source labels select values from existing labels. Their content is concatenated using the configured Separator and matched against the configured regular expression.
+- `target_label` (String) Label to which the resulting string is written in a replacement.
+ It is mandatory for `Replace`, `HashMod`, `Lowercase`, `Uppercase`, `KeepEqual` and `DropEqual` actions.
+ Regex capture groups are available.
+
+
+<a id="nestedblock--spec--nomad_sd_configs"></a>
+### Nested Schema for `spec.nomad_sd_configs`
+
+Optional:
+
+- `allow_stale` (Boolean) The information to access the Nomad API. It is to be defined
+as the Nomad documentation requires.
+- `authorization` (Block List, Max: 1) Authorization header to use on every scrape request. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) BasicAuth information to use on every scrape request. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--basic_auth))
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `namespace` (String) namespace defines the Nomad namespace to query for service discovery.
+When specified, only resources within this namespace will be discovered.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth 2.0 configuration.
+Cannot be set at the same time as `authorization` or `basic_auth`. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2))
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `refresh_interval` (String) Duration is a valid time duration that can be parsed by Prometheus model.ParseDuration() function.
+Supported units: y, w, d, h, m, s, ms
+Examples: `30s`, `1m`, `1h20m15s`, `15d`
+- `region` (String) region defines the Nomad region to query for service discovery.
+When specified, only resources within this region will be discovered.
+- `server` (String) server defines the Nomad server address to connect to for service discovery.
+This should be the full URL including protocol (e.g., "https://nomad.example.com:4646").
+- `tag_separator` (String) tagSeparator defines the separator used to join multiple tags.
+This determines how Nomad service tags are concatenated into Prometheus labels.
+- `tls_config` (Block List, Max: 1) TLS configuration applying to the target HTTP endpoint. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--tls_config))
+
+<a id="nestedblock--spec--nomad_sd_configs--authorization"></a>
+### Nested Schema for `spec.nomad_sd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+
+
+"Basic" is not a supported value.
+
+
+Default: "Bearer"
+
+<a id="nestedblock--spec--nomad_sd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.nomad_sd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--nomad_sd_configs--basic_auth"></a>
+### Nested Schema for `spec.nomad_sd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for
+authentication. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for
+authentication. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--nomad_sd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.nomad_sd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--nomad_sd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.nomad_sd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the
+OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2
+client's secret. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token
+URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--nomad_sd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.nomad_sd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--nomad_sd_configs--tls_config"></a>
+### Nested Schema for `spec.nomad_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--nomad_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.nomad_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--nomad_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.nomad_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--nomad_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.nomad_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--nomad_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.nomad_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--nomad_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--nomad_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.nomad_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--nomad_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.nomad_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--nomad_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.nomad_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--oauth2"></a>
+### Nested Schema for `spec.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the
+OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2
+client's secret. (see [below for nested schema](#nestedblock--spec--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token
+URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--oauth2--client_id"></a>
+### Nested Schema for `spec.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--oauth2--client_secret"></a>
+### Nested Schema for `spec.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--oauth2--tls_config"></a>
+### Nested Schema for `spec.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--openstack_sd_configs"></a>
+### Nested Schema for `spec.openstack_sd_configs`
+
+Optional:
+
+- `all_tenants` (Boolean) Whether the service discovery should list all instances for all projects. It is only relevant for the 'instance' role and usually requires admin permissions.
+- `application_credential_id` (String) ApplicationCredentialID
+- `application_credential_name` (String) The ApplicationCredentialID or ApplicationCredentialName fields are required if using an application credential to authenticate. Some providers allow you to create an application credential to authenticate rather than a password.
+- `application_credential_secret` (Block List, Max: 1) The applicationCredentialSecret field is required if using an application credential to authenticate. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs--application_credential_secret))
+- `availability` (String) Availability of the endpoint to connect to.
+- `domain_id` (String) DomainID
+- `domain_name` (String) At most one of domainId and domainName must be provided if using username with Identity V3. Otherwise, either are optional.
+- `identity_endpoint` (String) IdentityEndpoint specifies the HTTP endpoint that is required to work with the Identity API of the appropriate version.
+- `password` (Block List, Max: 1) Password for the Identity V2 and V3 APIs. Consult with your provider's control panel to discover your account's preferred method of authentication. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs--password))
+- `port` (Number) The port to scrape metrics from. If using the public IP address, this must instead be specified in the relabeling rule.
+- `project_id` (String) ProjectID
+- `project_name` (String) The ProjectId and ProjectName fields are optional for the Identity V2 API. Some providers allow you to specify a ProjectName instead of the ProjectId. Some require both. Your provider's authentication policies will determine how these fields influence authentication.
+- `refresh_interval` (String) Refresh interval to re-read the instance list.
+- `region` (String) The OpenStack Region.
+- `role` (String) The OpenStack role of entities that should be discovered.
+- `tls_config` (Block List, Max: 1) TLS configuration applying to the target HTTP endpoint. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs--tls_config))
+- `userid` (String) UserID
+- `username` (String) Username is required if using Identity V2 API. Consult with your provider's control panel to discover your account's username. In Identity V3, either userid or a combination of username and domainId or domainName are needed
+
+<a id="nestedblock--spec--openstack_sd_configs--application_credential_secret"></a>
+### Nested Schema for `spec.openstack_sd_configs.application_credential_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--openstack_sd_configs--password"></a>
+### Nested Schema for `spec.openstack_sd_configs.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--openstack_sd_configs--tls_config"></a>
+### Nested Schema for `spec.openstack_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--openstack_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.openstack_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--openstack_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.openstack_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--openstack_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.openstack_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--openstack_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.openstack_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--openstack_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--openstack_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.openstack_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--openstack_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.openstack_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--openstack_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.openstack_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--ovhcloud_sd_configs"></a>
+### Nested Schema for `spec.ovhcloud_sd_configs`
+
+Optional:
+
+- `application_key` (String) Access key to use. https://api.ovh.com.
+- `application_secret` (Block List, Max: 1) SecretKeySelector selects a key of a Secret. (see [below for nested schema](#nestedblock--spec--ovhcloud_sd_configs--application_secret))
+- `consumer_key` (Block List, Max: 1) SecretKeySelector selects a key of a Secret. (see [below for nested schema](#nestedblock--spec--ovhcloud_sd_configs--consumer_key))
+- `endpoint` (String) Custom endpoint to be used.
+- `refresh_interval` (String) Refresh interval to re-read the resources list.
+- `service` (String) Service of the targets to retrieve. Must be `VPS` or `DedicatedServer`.
+
+<a id="nestedblock--spec--ovhcloud_sd_configs--application_secret"></a>
+### Nested Schema for `spec.ovhcloud_sd_configs.application_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--ovhcloud_sd_configs--consumer_key"></a>
+### Nested Schema for `spec.ovhcloud_sd_configs.consumer_key`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs"></a>
+### Nested Schema for `spec.puppet_dbsd_configs`
+
+Optional:
+
+- `authorization` (Block List, Max: 1) Optional `authorization` HTTP header configuration.
+Cannot be set at the same time as `basicAuth`, or `oauth2`. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--authorization))
+- `basic_auth` (Block List, Max: 1) Optional HTTP basic authentication information.
+Cannot be set at the same time as `authorization`, or `oauth2`. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--basic_auth))
+- `enable_http2` (Boolean) Configure whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether the HTTP requests should follow HTTP 3xx redirects.
+- `include_parameters` (Boolean) Whether to include the parameters as meta labels.
+Note: Enabling this exposes parameters in the Prometheus UI and API. Make sure
+that you don't have secrets exposed as parameters if you enable this.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `oauth2` (Block List, Max: 1) Optional OAuth2.0 configuration.
+Cannot be set at the same time as `basicAuth`, or `authorization`. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2))
+- `port` (Number) Port to scrape the metrics from.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `query` (String) Puppet Query Language (PQL) query. Only resources are supported.
+https://puppet.com/docs/puppetdb/latest/api/query/v4/pql.html
+- `refresh_interval` (String) Refresh interval to re-read the list of resources.
+- `tls_config` (Block List, Max: 1) TLS configuration to connect to the Puppet DB. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--tls_config))
+- `url` (String) The URL of the PuppetDB root query endpoint.
+
+<a id="nestedblock--spec--puppet_dbsd_configs--authorization"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.authorization`
+
+Optional:
+
+- `credentials` (Block List, Max: 1) Selects a key of a Secret in the namespace that contains the credentials for authentication. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--authorization--credentials))
+- `type` (String) Defines the authentication type. The value is case-insensitive.
+
+
+"Basic" is not a supported value.
+
+
+Default: "Bearer"
+
+<a id="nestedblock--spec--puppet_dbsd_configs--authorization--credentials"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.authorization.credentials`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--basic_auth"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.basic_auth`
+
+Optional:
+
+- `password` (Block List, Max: 1) `password` specifies a key of a Secret containing the password for
+authentication. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--basic_auth--password))
+- `username` (Block List, Max: 1) `username` specifies a key of a Secret containing the username for
+authentication. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--basic_auth--username))
+
+<a id="nestedblock--spec--puppet_dbsd_configs--basic_auth--password"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.basic_auth.password`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--basic_auth--username"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.basic_auth.username`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2`
+
+Optional:
+
+- `client_id` (Block List, Max: 1) `clientId` specifies a key of a Secret or ConfigMap containing the
+OAuth2 client's ID. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--client_id))
+- `client_secret` (Block List, Max: 1) `clientSecret` specifies a key of a Secret containing the OAuth2
+client's secret. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--client_secret))
+- `endpoint_params` (Map of String) `endpointParams` configures the HTTP parameters to append to the token
+URL.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `scopes` (List of String) `scopes` defines the OAuth2 scopes used for the token request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use when connecting to the OAuth2 server.
+It requires Prometheus >= v2.43.0. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config))
+- `token_url` (String) `tokenURL` configures the URL to fetch the token from.
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--client_id"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.client_id`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--client_id--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--client_id--secret))
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--client_id--config_map"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.client_id.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--client_id--secret"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.client_id.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--client_secret"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.client_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--ca"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--ca--secret))
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--ca--secret"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--cert"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--cert--secret))
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--cert--secret"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--oauth2--tls_config--key_secret"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.oauth2.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--tls_config"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--puppet_dbsd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--puppet_dbsd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--puppet_dbsd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--puppet_dbsd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--puppet_dbsd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.puppet_dbsd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
 
 
 <a id="nestedblock--spec--relabelings"></a>
@@ -76,6 +6613,180 @@ Optional:
 - `target_label` (String) Label to which the resulting value is written in a replace action. It is mandatory for replace actions. Regex capture groups are available.
 
 
+<a id="nestedblock--spec--scaleway_sd_configs"></a>
+### Nested Schema for `spec.scaleway_sd_configs`
+
+Optional:
+
+- `access_key` (String) Access key to use. https://console.scaleway.com/project/credentials
+- `api_url` (String) API URL to use when doing the server listing requests.
+- `enable_http2` (Boolean) Whether to enable HTTP2.
+- `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects.
+- `name_filter` (String) NameFilter specify a name filter (works as a LIKE) to apply on the server listing request.
+- `no_proxy` (String) `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+that should be excluded from proxying. IP and domain names can
+contain port numbers.
+
+
+It requires Prometheus >= v2.43.0.
+- `port` (Number) The port to scrape metrics from.
+- `project_id` (String) Project ID of the targets.
+- `proxy_connect_header` (Map of String) ProxyConnectHeader optionally specifies headers to send to
+proxies during CONNECT requests.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+If unset, Prometheus uses its default value.
+
+
+It requires Prometheus >= v2.43.0.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+
+
+It requires Prometheus >= v2.43.0.
+- `refresh_interval` (String) Refresh interval to re-read the list of instances.
+- `role` (String) Service of the targets to retrieve. Must be `Instance` or `Baremetal`.
+- `secret_key` (Block List, Max: 1) Secret key to use when listing targets. (see [below for nested schema](#nestedblock--spec--scaleway_sd_configs--secret_key))
+- `tags_filter` (List of String) TagsFilter specify a tag filter (a server needs to have all defined tags to be listed) to apply on the server listing request.
+- `tls_config` (Block List, Max: 1) TLS configuration to use on every scrape request (see [below for nested schema](#nestedblock--spec--scaleway_sd_configs--tls_config))
+- `zone` (String) Zone is the availability zone of your targets (e.g. fr-par-1).
+
+<a id="nestedblock--spec--scaleway_sd_configs--secret_key"></a>
+### Nested Schema for `spec.scaleway_sd_configs.secret_key`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+<a id="nestedblock--spec--scaleway_sd_configs--tls_config"></a>
+### Nested Schema for `spec.scaleway_sd_configs.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--scaleway_sd_configs--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--scaleway_sd_configs--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--scaleway_sd_configs--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--scaleway_sd_configs--tls_config--ca"></a>
+### Nested Schema for `spec.scaleway_sd_configs.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--scaleway_sd_configs--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--scaleway_sd_configs--tls_config--ca--secret))
+
+<a id="nestedblock--spec--scaleway_sd_configs--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.scaleway_sd_configs.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--scaleway_sd_configs--tls_config--ca--secret"></a>
+### Nested Schema for `spec.scaleway_sd_configs.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--scaleway_sd_configs--tls_config--cert"></a>
+### Nested Schema for `spec.scaleway_sd_configs.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--scaleway_sd_configs--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--scaleway_sd_configs--tls_config--cert--secret))
+
+<a id="nestedblock--spec--scaleway_sd_configs--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.scaleway_sd_configs.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--scaleway_sd_configs--tls_config--cert--secret"></a>
+### Nested Schema for `spec.scaleway_sd_configs.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--scaleway_sd_configs--tls_config--key_secret"></a>
+### Nested Schema for `spec.scaleway_sd_configs.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+TODO: Add other useful fields. apiVersion, kind, uid?
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
 <a id="nestedblock--spec--static_configs"></a>
 ### Nested Schema for `spec.static_configs`
 
@@ -83,3 +6794,127 @@ Optional:
 
 - `labels` (Map of String) Labels assigned to all metrics scraped from the targets.
 - `targets` (List of String) List of targets for this static configuration.
+
+
+<a id="nestedblock--spec--tls_config"></a>
+### Nested Schema for `spec.tls_config`
+
+Optional:
+
+- `ca` (Block List, Max: 1) Certificate authority used when verifying server certificates. (see [below for nested schema](#nestedblock--spec--tls_config--ca))
+- `cert` (Block List, Max: 1) Client certificate to present when doing client-authentication. (see [below for nested schema](#nestedblock--spec--tls_config--cert))
+- `insecure_skip_verify` (Boolean) Disable target certificate validation.
+- `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--key_secret))
+- `max_version` (String) Maximum acceptable TLS version.
+
+
+It requires Prometheus >= v2.41.0.
+- `min_version` (String) Minimum acceptable TLS version.
+
+
+It requires Prometheus >= v2.35.0.
+- `server_name` (String) Used to verify the hostname for the targets.
+
+<a id="nestedblock--spec--tls_config--ca"></a>
+### Nested Schema for `spec.tls_config.ca`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--ca--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--ca--secret))
+
+<a id="nestedblock--spec--tls_config--ca--config_map"></a>
+### Nested Schema for `spec.tls_config.ca.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--tls_config--ca--secret"></a>
+### Nested Schema for `spec.tls_config.ca.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--tls_config--cert"></a>
+### Nested Schema for `spec.tls_config.cert`
+
+Optional:
+
+- `config_map` (Block List, Max: 1) ConfigMap containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--cert--config_map))
+- `secret` (Block List, Max: 1) Secret containing data to use for the targets. (see [below for nested schema](#nestedblock--spec--tls_config--cert--secret))
+
+<a id="nestedblock--spec--tls_config--cert--config_map"></a>
+### Nested Schema for `spec.tls_config.cert.config_map`
+
+Optional:
+
+- `key` (String) The key to select.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the ConfigMap or its key must be defined
+
+
+<a id="nestedblock--spec--tls_config--cert--secret"></a>
+### Nested Schema for `spec.tls_config.cert.secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+<a id="nestedblock--spec--tls_config--key_secret"></a>
+### Nested Schema for `spec.tls_config.key_secret`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
+
+
+
+<a id="nestedblock--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `bindings` (Block List) bindings defines the list of workload resources (Prometheus, PrometheusAgent, ThanosRuler or Alertmanager) which select the configuration resource. (see [below for nested schema](#nestedblock--status--bindings))
+
+<a id="nestedblock--status--bindings"></a>
+### Nested Schema for `status.bindings`
+
+Optional:
+
+- `conditions` (Block List) conditions defines the current state of the configuration resource when bound to the referenced Workload object. (see [below for nested schema](#nestedblock--status--bindings--conditions))
+- `group` (String) group defines the group of the referenced resource.
+- `name` (String) name defines the name of the referenced object.
+- `namespace` (String) namespace defines the namespace of the referenced object.
+- `resource` (String) resource defines the type of resource being referenced (e.g. Prometheus, PrometheusAgent, ThanosRuler or Alertmanager).
+
+<a id="nestedblock--status--bindings--conditions"></a>
+### Nested Schema for `status.bindings.conditions`
+
+Optional:
+
+- `last_transition_time` (String) lastTransitionTime defines the time of the last update to the current status property.
+- `message` (String) message defines the human-readable message indicating details for the condition's last transition.
+- `observed_generation` (Number) observedGeneration defines the .metadata.generation that the
+condition was set based upon. For instance, if `.metadata.generation` is
+currently 12, but the `.status.conditions[].observedGeneration` is 9, the
+condition is out of date with respect to the current state of the object.
+- `reason` (String) reason for the condition's last transition.
+- `status` (String) status of the condition.
+- `type` (String) type of the condition being reported.
+Currently, only "Accepted" is supported.

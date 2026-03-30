@@ -11,18 +11,18 @@ import (
 func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1Alpha1() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1Alpha1Read,
-		Description: "ECRAuthorizationTokenSpec uses the GetAuthorizationToken API to retrieve an\nauthorization token.\nThe authorization token is valid for 12 hours.\nThe authorizationToken returned is a base64 encoded string that can be decoded\nand used in a docker login command to authenticate to a registry.\nFor more information, see Registry authentication (https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth) in the Amazon Elastic Container Registry User Guide.",
+		Description: "ECRAuthorizationTokenSpec uses the GetAuthorizationToken API to retrieve an authorization token. The authorization token is valid for 12 hours. The authorizationToken returned is a base64 encoded string that can be decoded and used in a docker login command to authenticate to a registry. For more information, see Registry authentication (https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth) in the Amazon Elastic Container Registry User Guide.",
 		Schema: map[string]*schema.Schema{
 			"api_version": {
 				Type:        schema.TypeString,
-				Description: "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+				Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
 			},
 			"kind": {
 				Type:        schema.TypeString,
-				Description: "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+				Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
 				Optional:    false,
 				Required:    false,
 				Computed:    true,
@@ -50,7 +50,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 			},
 			"spec": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "ECRAuthorizationTokenSpec defines the desired state to generate an AWS ECR authorization token.",
 				Optional:    true,
 				Required:    false,
 				Computed:    true,
@@ -82,7 +82,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"audiences": {
 												Type:        schema.TypeList,
-												Description: "Audience specifies the `aud` claim for the service account token\nIf the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity\nthen this audiences will be appended to the list",
+												Description: "Audience specifies the `aud` claim for the service account token If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity then this audiences will be appended to the list",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -97,7 +97,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 											},
 											"namespace": {
 												Type:        schema.TypeString,
-												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -108,7 +108,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 							},
 							"secret_ref": {
 								Type:        schema.TypeList,
-								Description: "AWSAuthSecretRef holds secret references for AWS credentials\nboth AccessKeyID and SecretAccessKey must be defined in order to properly authenticate.",
+								Description: "AWSAuthSecretRef holds secret references for AWS credentials both AccessKeyID and SecretAccessKey must be defined in order to properly authenticate.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -124,7 +124,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"key": {
 												Type:        schema.TypeString,
-												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -138,7 +138,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 											},
 											"namespace": {
 												Type:        schema.TypeString,
-												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -155,7 +155,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"key": {
 												Type:        schema.TypeString,
-												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -169,7 +169,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 											},
 											"namespace": {
 												Type:        schema.TypeString,
-												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -178,7 +178,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 									},
 									"session_token_secret_ref": {
 										Type:        schema.TypeList,
-										Description: "The SessionToken used for authentication\nThis must be defined if AccessKeyID and SecretAccessKey are temporary credentials\nsee: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html",
+										Description: "The SessionToken used for authentication This must be defined if AccessKeyID and SecretAccessKey are temporary credentials see: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -186,7 +186,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 											"key": {
 												Type:        schema.TypeString,
-												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be\ndefaulted, in others it may be required.",
+												Description: "The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -200,7 +200,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 											},
 											"namespace": {
 												Type:        schema.TypeString,
-												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults\nto the namespace of the referent.",
+												Description: "Namespace of the resource being referred to. Ignored if referent is not cluster-scoped. cluster-scoped defaults to the namespace of the referent.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -220,7 +220,14 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoECRAuthorizationTokenV1
 					},
 					"role": {
 						Type:        schema.TypeString,
-						Description: "You can assume a role before making calls to the\ndesired AWS service.",
+						Description: "You can assume a role before making calls to the desired AWS service.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"scope": {
+						Type:        schema.TypeString,
+						Description: "Scope specifies the ECR service scope.\nValid options are private and public.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
