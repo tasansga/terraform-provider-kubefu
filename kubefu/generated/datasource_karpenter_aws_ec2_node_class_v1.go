@@ -609,6 +609,13 @@ func dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"interruptible": {
+								Type:        schema.TypeBool,
+								Description: "Indicates whether this capacity reservation is interruptible",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"owner_id": {
 								Type:        schema.TypeString,
 								Description: "The ID of the AWS account that owns the capacity reservation.",
@@ -835,4 +842,5 @@ var dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1CompatibleVersions = []st
 	"v1.8.5",
 	"v1.8.6",
 	"v1.9.0",
+	"v1.10.0",
 }

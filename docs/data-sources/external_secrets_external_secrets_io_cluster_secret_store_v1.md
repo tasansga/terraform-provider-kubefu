@@ -112,6 +112,7 @@ https://docs.delinea.com/online-help/products/devops-secrets-vault/current (see 
 - `infisical` (Block List, Max: 1) Infisical configures this store to sync secrets using the Infisical provider (see [below for nested schema](#nestedblock--spec--provider_--infisical))
 - `keepersecurity` (Block List, Max: 1) KeeperSecurity configures this store to sync secrets using the KeeperSecurity provider (see [below for nested schema](#nestedblock--spec--provider_--keepersecurity))
 - `kubernetes` (Block List, Max: 1) Kubernetes configures this store to sync secrets using a Kubernetes cluster provider (see [below for nested schema](#nestedblock--spec--provider_--kubernetes))
+- `nebiusmysterybox` (Block List, Max: 1) NebiusMysterybox configures this store to sync secrets using NebiusMysterybox provider (see [below for nested schema](#nestedblock--spec--provider_--nebiusmysterybox))
 - `ngrok` (Block List, Max: 1) Ngrok configures this store to sync secrets using the ngrok provider. (see [below for nested schema](#nestedblock--spec--provider_--ngrok))
 - `onboardbase` (Block List, Max: 1) Onboardbase configures this store to sync secrets using the Onboardbase provider (see [below for nested schema](#nestedblock--spec--provider_--onboardbase))
 - `onepassword` (Block List, Max: 1) OnePassword configures this store to sync secrets using the 1Password Cloud provider (see [below for nested schema](#nestedblock--spec--provider_--onepassword))
@@ -2143,6 +2144,82 @@ Optional:
 - `namespace` (String) The namespace the Provider type is in.
 Can only be defined when used in a ClusterSecretStore.
 - `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
+
+
+
+
+<a id="nestedblock--spec--provider_--nebiusmysterybox"></a>
+### Nested Schema for `spec.provider_.nebiusmysterybox`
+
+Optional:
+
+- `api_domain` (String) NebiusMysterybox API endpoint
+- `auth` (Block List, Max: 1) Auth defines parameters to authenticate in MysteryBox (see [below for nested schema](#nestedblock--spec--provider_--nebiusmysterybox--auth))
+- `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate NebiusMysterybox server certificate. (see [below for nested schema](#nestedblock--spec--provider_--nebiusmysterybox--ca_provider))
+
+<a id="nestedblock--spec--provider_--nebiusmysterybox--auth"></a>
+### Nested Schema for `spec.provider_.nebiusmysterybox.auth`
+
+Optional:
+
+- `service_account_creds_secret_ref` (Block List, Max: 1) ServiceAccountCreds references a Kubernetes Secret key that contains a JSON
+document with service account credentials used to get an IAM token.
+
+Expected JSON structure:
+{
+  "subject-credentials": {
+    "alg": "RS256",
+    "private-key": "-----BEGIN PRIVATE KEY-----\n<private-key>\n-----END PRIVATE KEY-----\n",
+    "kid": "<public-key-id>",
+    "iss": "<issuer-service-account-id>",
+    "sub": "<subject-service-account-id>"
+  }
+} (see [below for nested schema](#nestedblock--spec--provider_--nebiusmysterybox--auth--service_account_creds_secret_ref))
+- `token_secret_ref` (Block List, Max: 1) Token authenticates with Nebius Mysterybox by presenting a token. (see [below for nested schema](#nestedblock--spec--provider_--nebiusmysterybox--auth--token_secret_ref))
+
+<a id="nestedblock--spec--provider_--nebiusmysterybox--auth--service_account_creds_secret_ref"></a>
+### Nested Schema for `spec.provider_.nebiusmysterybox.auth.service_account_creds_secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--nebiusmysterybox--auth--token_secret_ref"></a>
+### Nested Schema for `spec.provider_.nebiusmysterybox.auth.token_secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--nebiusmysterybox--ca_provider"></a>
+### Nested Schema for `spec.provider_.nebiusmysterybox.ca_provider`
+
+Optional:
+
+- `cert_secret_ref` (Block List, Max: 1) SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--nebiusmysterybox--ca_provider--cert_secret_ref))
+
+<a id="nestedblock--spec--provider_--nebiusmysterybox--ca_provider--cert_secret_ref"></a>
+### Nested Schema for `spec.provider_.nebiusmysterybox.ca_provider.cert_secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
 

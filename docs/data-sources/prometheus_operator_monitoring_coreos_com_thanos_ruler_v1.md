@@ -119,6 +119,7 @@ It requires Thanos >= v0.30.0.
 - `rule_query_offset` (String) The default rule group's query offset duration to use.
 It requires Thanos >= v0.38.0.
 - `rule_selector` (Block List, Max: 1) A label selector to select which PrometheusRules to mount for alerting and recording. (see [below for nested schema](#nestedblock--spec--rule_selector))
+- `scheduler_name` (String) schedulerName defines the scheduler to use for Pod scheduling. If not specified, the default scheduler is used.
 - `security_context` (Block List, Max: 1) SecurityContext holds pod-level security attributes and common container settings. This defaults to the default PodSecurityContext. (see [below for nested schema](#nestedblock--spec--security_context))
 - `service_account_name` (String) ServiceAccountName is the name of the ServiceAccount to use to run the Thanos Ruler Pods.
 - `service_name` (String) The name of the service name used by the underlying StatefulSet(s) as the governing service.
@@ -3878,6 +3879,19 @@ seconds (1 hour).  This constraint is enforced by kube-apiserver.
 `kubernetes.io` signers will never issue certificates with a lifetime
 longer than 24 hours.
 - `signer_name` (String) Kubelet's generated CSRs will be addressed to this signer.
+- `user_annotations` (Map of String) userAnnotations allow pod authors to pass additional information to
+the signer implementation.  Kubernetes does not restrict or validate this
+metadata in any way.
+
+These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+the PodCertificateRequest objects that Kubelet creates.
+
+Entries are subject to the same validation as object metadata annotations,
+with the addition that all keys must be domain-prefixed. No restrictions
+are placed on values, except an overall size limitation on the entire field.
+
+Signers should document the keys and values they support. Signers should
+deny requests that contain keys they do not recognize.
 
 
 <a id="nestedblock--spec--volumes--projected--sources--secret"></a>

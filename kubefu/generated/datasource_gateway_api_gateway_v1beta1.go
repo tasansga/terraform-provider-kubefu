@@ -80,6 +80,81 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayV1Beta1() *schema.Resource
 							},
 						}},
 					},
+					"allowed_listeners": {
+						Type:        schema.TypeList,
+						Description: "AllowedListeners defines which ListenerSets can be attached to this Gateway.\nThe default value is to allow no ListenerSets.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"namespaces": {
+								Type:        schema.TypeList,
+								Description: "Namespaces defines which namespaces ListenerSets can be attached to this Gateway.\nThe default value is to allow no ListenerSets.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"from": {
+										Type:        schema.TypeString,
+										Description: "From indicates where ListenerSets can attach to this Gateway. Possible\nvalues are:\n\n* Same: Only ListenerSets in the same namespace may be attached to this Gateway.\n* Selector: ListenerSets in namespaces selected by the selector may be attached to this Gateway.\n* All: ListenerSets in all namespaces may be attached to this Gateway.\n* None: Only listeners defined in the Gateway's spec are allowed\n\nThe default value None",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"selector": {
+										Type:        schema.TypeList,
+										Description: "Selector must be specified when From is set to \"Selector\". In that case,\nonly ListenerSets in Namespaces matching this Selector will be selected by this\nGateway. This field is ignored for other values of \"From\".",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"match_expressions": {
+												Type:        schema.TypeList,
+												Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"key": {
+														Type:        schema.TypeString,
+														Description: "key is the label key that the selector applies to.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"operator": {
+														Type:        schema.TypeString,
+														Description: "operator represents a key's relationship to a set of values.\nValid operators are In, NotIn, Exists and DoesNotExist.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"values": {
+														Type:        schema.TypeList,
+														Description: "values is an array of string values. If the operator is In or NotIn,\nthe values array must be non-empty. If the operator is Exists or DoesNotExist,\nthe values array must be empty. This array is replaced during a strategic\nmerge patch.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
+												}},
+											},
+											"match_labels": {
+												Type:        schema.TypeMap,
+												Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels\nmap is equivalent to an element of matchExpressions, whose key field is \"key\", the\noperator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+						}},
+					},
 					"gateway_class_name": {
 						Type:        schema.TypeString,
 						Description: "GatewayClassName used for this Gateway. This is the name of a GatewayClass resource.",
@@ -338,6 +413,218 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayV1Beta1() *schema.Resource
 							},
 						}},
 					},
+					"tls": {
+						Type:        schema.TypeList,
+						Description: "TLS specifies frontend and backend tls configuration for entire gateway.\n\nSupport: Extended",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"backend": {
+								Type:        schema.TypeList,
+								Description: "Backend describes TLS configuration for gateway when connecting\nto backends.\n\nNote that this contains only details for the Gateway as a TLS client,\nand does _not_ imply behavior about how to choose which backend should\nget a TLS connection. That is determined by the presence of a BackendTLSPolicy.\n\nSupport: Core",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"client_certificate_ref": {
+										Type:        schema.TypeList,
+										Description: "ClientCertificateRef references an object that contains a client certificate\nand its associated private key. It can reference standard Kubernetes resources,\ni.e., Secret, or implementation-specific custom resources.\n\nA ClientCertificateRef is considered invalid if:\n\n* It refers to a resource that cannot be resolved (e.g., the referenced resource\n  does not exist) or is misconfigured (e.g., a Secret does not contain the keys\n  named `tls.crt` and `tls.key`). In this case, the `ResolvedRefs` condition\n  on the Gateway MUST be set to False with the Reason `InvalidClientCertificateRef`\n  and the Message of the Condition MUST indicate why the reference is invalid.\n\n* It refers to a resource in another namespace UNLESS there is a ReferenceGrant\n  in the target namespace that allows the certificate to be attached.\n  If a ReferenceGrant does not allow this reference, the `ResolvedRefs` condition\n  on the Gateway MUST be set to False with the Reason `RefNotPermitted`.\n\nImplementations MAY choose to perform further validation of the certificate\ncontent (e.g., checking expiry or enforcing specific formats). In such cases,\nan implementation-specific Reason and Message MUST be set.\n\nSupport: Core - Reference to a Kubernetes TLS Secret (with the type `kubernetes.io/tls`).\nSupport: Implementation-specific - Other resource kinds or Secrets with a\ndifferent type (e.g., `Opaque`).",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"group": {
+												Type:        schema.TypeString,
+												Description: "Group is the group of the referent. For example, \"gateway.networking.k8s.io\".\nWhen unspecified or empty string, core API group is inferred.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"kind": {
+												Type:        schema.TypeString,
+												Description: "Kind is kind of the referent. For example \"Secret\".",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "Name is the name of the referent.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"namespace": {
+												Type:        schema.TypeString,
+												Description: "Namespace is the namespace of the referenced object. When unspecified, the local\nnamespace is inferred.\n\nNote that when a namespace different than the local namespace is specified,\na ReferenceGrant object is required in the referent namespace to allow that\nnamespace's owner to accept the reference. See the ReferenceGrant\ndocumentation for details.\n\nSupport: Core",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+							"frontend": {
+								Type:        schema.TypeList,
+								Description: "Frontend describes TLS config when client connects to Gateway.\nSupport: Core",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"default": {
+										Type:        schema.TypeList,
+										Description: "Default specifies the default client certificate validation configuration\nfor all Listeners handling HTTPS traffic, unless a per-port configuration\nis defined.\n\nsupport: Core",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"validation": {
+												Type:        schema.TypeList,
+												Description: "Validation holds configuration information for validating the frontend (client).\nSetting this field will result in mutual authentication when connecting to the gateway.\nIn browsers this may result in a dialog appearing\nthat requests a user to specify the client certificate.\nThe maximum depth of a certificate chain accepted in verification is Implementation specific.\n\nSupport: Core",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"ca_certificate_refs": {
+														Type:        schema.TypeList,
+														Description: "CACertificateRefs contains one or more references to Kubernetes\nobjects that contain a PEM-encoded TLS CA certificate bundle, which\nis used as a trust anchor to validate the certificates presented by\nthe client.\n\nA CACertificateRef is invalid if:\n\n* It refers to a resource that cannot be resolved (e.g., the\n  referenced resource does not exist) or is misconfigured (e.g., a\n  ConfigMap does not contain a key named `ca.crt`). In this case, the\n  Reason on all matching HTTPS listeners must be set to `InvalidCACertificateRef`\n  and the Message of the Condition must indicate which reference is invalid and why.\n\n* It refers to an unknown or unsupported kind of resource. In this\n  case, the Reason on all matching HTTPS listeners must be set to\n  `InvalidCACertificateKind` and the Message of the Condition must explain\n  which kind of resource is unknown or unsupported.\n\n* It refers to a resource in another namespace UNLESS there is a\n  ReferenceGrant in the target namespace that allows the CA\n  certificate to be attached. If a ReferenceGrant does not allow this\n  reference, the `ResolvedRefs` on all matching HTTPS listeners condition\n  MUST be set with the Reason `RefNotPermitted`.\n\nImplementations MAY choose to perform further validation of the\ncertificate content (e.g., checking expiry or enforcing specific formats).\nIn such cases, an implementation-specific Reason and Message MUST be set.\n\nIn all cases, the implementation MUST ensure that the `ResolvedRefs`\ncondition is set to `status: False` on all targeted listeners (i.e.,\nlisteners serving HTTPS on a matching port). The condition MUST\ninclude a Reason and Message that indicate the cause of the error. If\nALL CACertificateRefs are invalid, the implementation MUST also ensure\nthe `Accepted` condition on the listener is set to `status: False`, with\nthe Reason `NoValidCACertificate`.\nImplementations MAY choose to support attaching multiple CA certificates\nto a listener, but this behavior is implementation-specific.\n\nSupport: Core - A single reference to a Kubernetes ConfigMap, with the\nCA certificate in a key named `ca.crt`.\n\nSupport: Implementation-specific - More than one reference, other kinds\nof resources, or a single reference that includes multiple certificates.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"group": {
+																Type:        schema.TypeString,
+																Description: "Group is the group of the referent. For example, \"gateway.networking.k8s.io\".\nWhen set to the empty string, core API group is inferred.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"kind": {
+																Type:        schema.TypeString,
+																Description: "Kind is kind of the referent. For example \"ConfigMap\" or \"Service\".",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"name": {
+																Type:        schema.TypeString,
+																Description: "Name is the name of the referent.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"namespace": {
+																Type:        schema.TypeString,
+																Description: "Namespace is the namespace of the referenced object. When unspecified, the local\nnamespace is inferred.\n\nNote that when a namespace different than the local namespace is specified,\na ReferenceGrant object is required in the referent namespace to allow that\nnamespace's owner to accept the reference. See the ReferenceGrant\ndocumentation for details.\n\nSupport: Core",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+														}},
+													},
+													"mode": {
+														Type:        schema.TypeString,
+														Description: "FrontendValidationMode defines the mode for validating the client certificate.\nThere are two possible modes:\n\n- AllowValidOnly: In this mode, the gateway will accept connections only if\n  the client presents a valid certificate. This certificate must successfully\n  pass validation against the CA certificates specified in `CACertificateRefs`.\n- AllowInsecureFallback: In this mode, the gateway will accept connections\n  even if the client certificate is not presented or fails verification.\n\n  This approach delegates client authorization to the backend and introduce\n  a significant security risk. It should be used in testing environments or\n  on a temporary basis in non-testing environments.\n\nDefaults to AllowValidOnly.\n\nSupport: Core",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+										}},
+									},
+									"per_port": {
+										Type:        schema.TypeList,
+										Description: "PerPort specifies tls configuration assigned per port.\nPer port configuration is optional. Once set this configuration overrides\nthe default configuration for all Listeners handling HTTPS traffic\nthat match this port.\nEach override port requires a unique TLS configuration.\n\nsupport: Core",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"port": {
+												Type:        schema.TypeInt,
+												Description: "The Port indicates the Port Number to which the TLS configuration will be\napplied. This configuration will be applied to all Listeners handling HTTPS\ntraffic that match this port.\n\nSupport: Core",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"tls": {
+												Type:        schema.TypeList,
+												Description: "TLS store the configuration that will be applied to all Listeners handling\nHTTPS traffic and matching given port.\n\nSupport: Core",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"validation": {
+														Type:        schema.TypeList,
+														Description: "Validation holds configuration information for validating the frontend (client).\nSetting this field will result in mutual authentication when connecting to the gateway.\nIn browsers this may result in a dialog appearing\nthat requests a user to specify the client certificate.\nThe maximum depth of a certificate chain accepted in verification is Implementation specific.\n\nSupport: Core",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														MaxItems:    1,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"ca_certificate_refs": {
+																Type:        schema.TypeList,
+																Description: "CACertificateRefs contains one or more references to Kubernetes\nobjects that contain a PEM-encoded TLS CA certificate bundle, which\nis used as a trust anchor to validate the certificates presented by\nthe client.\n\nA CACertificateRef is invalid if:\n\n* It refers to a resource that cannot be resolved (e.g., the\n  referenced resource does not exist) or is misconfigured (e.g., a\n  ConfigMap does not contain a key named `ca.crt`). In this case, the\n  Reason on all matching HTTPS listeners must be set to `InvalidCACertificateRef`\n  and the Message of the Condition must indicate which reference is invalid and why.\n\n* It refers to an unknown or unsupported kind of resource. In this\n  case, the Reason on all matching HTTPS listeners must be set to\n  `InvalidCACertificateKind` and the Message of the Condition must explain\n  which kind of resource is unknown or unsupported.\n\n* It refers to a resource in another namespace UNLESS there is a\n  ReferenceGrant in the target namespace that allows the CA\n  certificate to be attached. If a ReferenceGrant does not allow this\n  reference, the `ResolvedRefs` on all matching HTTPS listeners condition\n  MUST be set with the Reason `RefNotPermitted`.\n\nImplementations MAY choose to perform further validation of the\ncertificate content (e.g., checking expiry or enforcing specific formats).\nIn such cases, an implementation-specific Reason and Message MUST be set.\n\nIn all cases, the implementation MUST ensure that the `ResolvedRefs`\ncondition is set to `status: False` on all targeted listeners (i.e.,\nlisteners serving HTTPS on a matching port). The condition MUST\ninclude a Reason and Message that indicate the cause of the error. If\nALL CACertificateRefs are invalid, the implementation MUST also ensure\nthe `Accepted` condition on the listener is set to `status: False`, with\nthe Reason `NoValidCACertificate`.\nImplementations MAY choose to support attaching multiple CA certificates\nto a listener, but this behavior is implementation-specific.\n\nSupport: Core - A single reference to a Kubernetes ConfigMap, with the\nCA certificate in a key named `ca.crt`.\n\nSupport: Implementation-specific - More than one reference, other kinds\nof resources, or a single reference that includes multiple certificates.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+																Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+																	"group": {
+																		Type:        schema.TypeString,
+																		Description: "Group is the group of the referent. For example, \"gateway.networking.k8s.io\".\nWhen set to the empty string, core API group is inferred.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
+																	"kind": {
+																		Type:        schema.TypeString,
+																		Description: "Kind is kind of the referent. For example \"ConfigMap\" or \"Service\".",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
+																	"name": {
+																		Type:        schema.TypeString,
+																		Description: "Name is the name of the referent.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
+																	"namespace": {
+																		Type:        schema.TypeString,
+																		Description: "Namespace is the namespace of the referenced object. When unspecified, the local\nnamespace is inferred.\n\nNote that when a namespace different than the local namespace is specified,\na ReferenceGrant object is required in the referent namespace to allow that\nnamespace's owner to accept the reference. See the ReferenceGrant\ndocumentation for details.\n\nSupport: Core",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
+																}},
+															},
+															"mode": {
+																Type:        schema.TypeString,
+																Description: "FrontendValidationMode defines the mode for validating the client certificate.\nThere are two possible modes:\n\n- AllowValidOnly: In this mode, the gateway will accept connections only if\n  the client presents a valid certificate. This certificate must successfully\n  pass validation against the CA certificates specified in `CACertificateRefs`.\n- AllowInsecureFallback: In this mode, the gateway will accept connections\n  even if the client certificate is not presented or fails verification.\n\n  This approach delegates client authorization to the backend and introduce\n  a significant security risk. It should be used in testing environments or\n  on a temporary basis in non-testing environments.\n\nDefaults to AllowValidOnly.\n\nSupport: Core",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+														}},
+													},
+												}},
+											},
+										}},
+									},
+								}},
+							},
+						}},
+					},
 				}},
 			},
 			"status": {
@@ -370,6 +657,13 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayV1Beta1() *schema.Resource
 								Computed:    true,
 							},
 						}},
+					},
+					"attached_listener_sets": {
+						Type:        schema.TypeInt,
+						Description: "AttachedListenerSets represents the total number of ListenerSets that have been\nsuccessfully attached to this Gateway.\n\nA ListenerSet is successfully attached to a Gateway when all the following conditions are met:\n- The ListenerSet is selected by the Gateway's AllowedListeners field\n- The ListenerSet has a valid ParentRef selecting the Gateway\n- The ListenerSet's status has the condition \"Accepted: true\"\n\nUses for this field include troubleshooting AttachedListenerSets attachment and\nmeasuring blast radius/impact of changes to a Gateway.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"conditions": {
 						Type:        schema.TypeList,
@@ -531,7 +825,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayV1Beta1Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1beta1", "Gateway", "gateway.networking.k8s.io/v1beta1/Gateway"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.infrastructure", "spec.infrastructure.parameters_ref", "spec.listeners.allowed_routes", "spec.listeners.allowed_routes.namespaces", "spec.listeners.allowed_routes.namespaces.selector", "spec.listeners.tls", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.allowed_listeners", "spec.allowed_listeners.namespaces", "spec.allowed_listeners.namespaces.selector", "spec.infrastructure", "spec.infrastructure.parameters_ref", "spec.listeners.allowed_routes", "spec.listeners.allowed_routes.namespaces", "spec.listeners.allowed_routes.namespaces.selector", "spec.listeners.tls", "spec.tls", "spec.tls.backend", "spec.tls.backend.client_certificate_ref", "spec.tls.frontend", "spec.tls.frontend.default", "spec.tls.frontend.default.validation", "spec.tls.frontend.per_port.tls", "spec.tls.frontend.per_port.tls.validation", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -554,4 +848,6 @@ var dataSourceGatewayApiGatewayNetworkingK8sIoGatewayV1Beta1CompatibleVersions =
 	"v1.3.0",
 	"v1.4.0",
 	"v1.4.1",
+	"v1.5.0",
+	"v1.5.1",
 }

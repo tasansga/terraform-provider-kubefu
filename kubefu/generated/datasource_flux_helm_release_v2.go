@@ -400,6 +400,50 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 							},
 						}},
 					},
+					"health_check_exprs": {
+						Type:        schema.TypeList,
+						Description: "HealthCheckExprs is a list of healthcheck expressions for evaluating the\nhealth of custom resources using Common Expression Language (CEL).\nThe expressions are evaluated only when the specific Helm action\ntaking place has wait enabled, i.e. DisableWait is false, and the\n'poller' WaitStrategy is used.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"api_version": {
+								Type:        schema.TypeString,
+								Description: "APIVersion of the custom resource under evaluation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"current": {
+								Type:        schema.TypeString,
+								Description: "Current is the CEL expression that determines if the status\nof the custom resource has reached the desired state.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"failed": {
+								Type:        schema.TypeString,
+								Description: "Failed is the CEL expression that determines if the status\nof the custom resource has failed to reach the desired state.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"in_progress": {
+								Type:        schema.TypeString,
+								Description: "InProgress is the CEL expression that determines if the status\nof the custom resource has not yet reached the desired state.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"kind": {
+								Type:        schema.TypeString,
+								Description: "Kind of the custom resource under evaluation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"install": {
 						Type:        schema.TypeList,
 						Description: "Install holds the configuration for Helm install actions for this HelmRelease.",
@@ -498,6 +542,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 							"replace": {
 								Type:        schema.TypeBool,
 								Description: "Replace tells the Helm install action to re-use the 'ReleaseName', but only\nif that name is a deleted release which remains in the history.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"server_side_apply": {
+								Type:        schema.TypeBool,
+								Description: "ServerSideApply enables server-side apply for resources during install.\nDefaults to true (or false when UseHelm3Defaults feature gate is enabled).",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -802,6 +853,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"server_side_apply": {
+								Type:        schema.TypeString,
+								Description: "ServerSideApply enables server-side apply for resources during rollback.\nCan be \"enabled\", \"disabled\", or \"auto\".\nWhen \"auto\", server-side apply usage will be based on the release's previous usage.\nDefaults to \"auto\".",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"timeout": {
 								Type:        schema.TypeString,
 								Description: "Timeout is the time to wait for any individual Kubernetes operation (like\nJobs for hooks) during the performance of a Helm rollback action. Defaults to\n'HelmReleaseSpec.Timeout'.",
@@ -1061,6 +1119,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 									},
 								}},
 							},
+							"server_side_apply": {
+								Type:        schema.TypeString,
+								Description: "ServerSideApply enables server-side apply for resources during upgrade.\nCan be \"enabled\", \"disabled\", or \"auto\".\nWhen \"auto\", server-side apply usage will be based on the release's previous usage.\nDefaults to \"auto\".",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"strategy": {
 								Type:        schema.TypeList,
 								Description: "Strategy defines the upgrade strategy to use for this HelmRelease.\nDefaults to 'RemediateOnFailure'.",
@@ -1145,6 +1210,23 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"wait_strategy": {
+						Type:        schema.TypeList,
+						Description: "WaitStrategy defines Helm's wait strategy for waiting for applied\nresources to become ready.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "Name is Helm's wait strategy for waiting for applied resources to\nbecome ready. One of 'poller' or 'legacy'. The 'poller' strategy uses\nkstatus to poll resource statuses, while the 'legacy' strategy uses\nHelm v3's waiting logic.\nDefaults to 'poller', or to 'legacy' when UseHelm3Defaults feature\ngate is enabled.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 				}},
 			},
 			"status": {
@@ -1227,6 +1309,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"action": {
+								Type:        schema.TypeString,
+								Description: "Action is the action that resulted in this snapshot being created.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"api_version": {
 								Type:        schema.TypeString,
 								Description: "APIVersion is the API version of the Snapshot.\nProvisional: when the calculation method of the Digest field is changed,\nthis field will be used to distinguish between the old and new methods.",
@@ -1340,6 +1429,39 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"inventory": {
+						Type:        schema.TypeList,
+						Description: "Inventory contains the list of Kubernetes resource object references\nthat have been applied for this release.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"entries": {
+								Type:        schema.TypeList,
+								Description: "Entries of Kubernetes resource object references.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"id": {
+										Type:        schema.TypeString,
+										Description: "ID is the string representation of the Kubernetes resource object's metadata,\nin the format '<namespace>_<name>_<group>_<kind>'.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"v": {
+										Type:        schema.TypeString,
+										Description: "Version is the API version of the Kubernetes resource object's kind.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
 					},
 					"last_attempted_config_digest": {
 						Type:        schema.TypeString,
@@ -1465,7 +1587,7 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2Read(_ context.Context, d *sc
 	if err := manifestpkg.SetDataSourceDefaults(d, "helm.toolkit.fluxcd.io/v2", "HelmRelease", "helm.toolkit.fluxcd.io/v2/HelmRelease"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.chart", "spec.chart.metadata", "spec.chart.spec", "spec.chart.spec.source_ref", "spec.chart.spec.verify", "spec.chart.spec.verify.secret_ref", "spec.chart_ref", "spec.common_metadata", "spec.drift_detection", "spec.drift_detection.ignore.target", "spec.install", "spec.install.remediation", "spec.install.strategy", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.post_renderers.kustomize", "spec.post_renderers.kustomize.patches.target", "spec.rollback", "spec.test", "spec.uninstall", "spec.upgrade", "spec.upgrade.remediation", "spec.upgrade.strategy", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.chart", "spec.chart.metadata", "spec.chart.spec", "spec.chart.spec.source_ref", "spec.chart.spec.verify", "spec.chart.spec.verify.secret_ref", "spec.chart_ref", "spec.common_metadata", "spec.drift_detection", "spec.drift_detection.ignore.target", "spec.install", "spec.install.remediation", "spec.install.strategy", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.post_renderers.kustomize", "spec.post_renderers.kustomize.patches.target", "spec.rollback", "spec.test", "spec.uninstall", "spec.upgrade", "spec.upgrade.remediation", "spec.upgrade.strategy", "spec.wait_strategy", "status", "status.inventory"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -1486,4 +1608,8 @@ var dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2CompatibleVersions = []string{
 	"v2.7.3",
 	"v2.7.4",
 	"v2.7.5",
+	"v2.8.0",
+	"v2.8.1",
+	"v2.8.2",
+	"v2.8.3",
 }

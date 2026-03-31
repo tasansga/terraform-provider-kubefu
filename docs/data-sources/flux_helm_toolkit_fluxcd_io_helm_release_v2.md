@@ -54,6 +54,11 @@ can be reconciled. (see [below for nested schema](#nestedblock--spec--depends_on
 - `drift_detection` (Block List, Max: 1) DriftDetection holds the configuration for detecting and handling
 differences between the manifest in the Helm storage and the resources
 currently existing in the cluster. (see [below for nested schema](#nestedblock--spec--drift_detection))
+- `health_check_exprs` (Block List) HealthCheckExprs is a list of healthcheck expressions for evaluating the
+health of custom resources using Common Expression Language (CEL).
+The expressions are evaluated only when the specific Helm action
+taking place has wait enabled, i.e. DisableWait is false, and the
+'poller' WaitStrategy is used. (see [below for nested schema](#nestedblock--spec--health_check_exprs))
 - `install` (Block List, Max: 1) Install holds the configuration for Helm install actions for this HelmRelease. (see [below for nested schema](#nestedblock--spec--install))
 - `interval` (String) Interval at which to reconcile the Helm release.
 - `kube_config` (Block List, Max: 1) KubeConfig for reconciling the HelmRelease on a remote cluster.
@@ -99,6 +104,8 @@ for hooks) during the performance of a Helm action. Defaults to '5m0s'.
 - `values_from` (Block List) ValuesFrom holds references to resources containing Helm values for this HelmRelease,
 and information about how they should be merged. (see [below for nested schema](#nestedblock--spec--values_from))
 - `values_yaml` (String) Values holds the values for this Helm release as YAML.
+- `wait_strategy` (Block List, Max: 1) WaitStrategy defines Helm's wait strategy for waiting for applied
+resources to become ready. (see [below for nested schema](#nestedblock--spec--wait_strategy))
 
 <a id="nestedblock--spec--chart"></a>
 ### Nested Schema for `spec.chart`
@@ -265,6 +272,21 @@ https://github.com/kubernetes/community/blob/master/contributors/design-proposal
 
 
 
+<a id="nestedblock--spec--health_check_exprs"></a>
+### Nested Schema for `spec.health_check_exprs`
+
+Optional:
+
+- `api_version` (String) APIVersion of the custom resource under evaluation.
+- `current` (String) Current is the CEL expression that determines if the status
+of the custom resource has reached the desired state.
+- `failed` (String) Failed is the CEL expression that determines if the status
+of the custom resource has failed to reach the desired state.
+- `in_progress` (String) InProgress is the CEL expression that determines if the status
+of the custom resource has not yet reached the desired state.
+- `kind` (String) Kind of the custom resource under evaluation.
+
+
 <a id="nestedblock--spec--install"></a>
 ### Nested Schema for `spec.install`
 
@@ -308,6 +330,8 @@ install has been performed.
 action for the HelmRelease fails. The default is to not perform any action. (see [below for nested schema](#nestedblock--spec--install--remediation))
 - `replace` (Boolean) Replace tells the Helm install action to re-use the 'ReleaseName', but only
 if that name is a deleted release which remains in the history.
+- `server_side_apply` (Boolean) ServerSideApply enables server-side apply for resources during install.
+Defaults to true (or false when UseHelm3Defaults feature gate is enabled).
 - `skip_cr_ds` (Boolean) SkipCRDs tells the Helm install action to not install any CRDs. By default,
 CRDs are installed if not already present.
 
@@ -488,6 +512,10 @@ rollback has been performed.
 rollback has been performed.
 - `force` (Boolean) Force forces resource updates through a replacement strategy.
 - `recreate` (Boolean) Recreate performs pod restarts for the resource if applicable.
+- `server_side_apply` (String) ServerSideApply enables server-side apply for resources during rollback.
+Can be "enabled", "disabled", or "auto".
+When "auto", server-side apply usage will be based on the release's previous usage.
+Defaults to "auto".
 - `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like
 Jobs for hooks) during the performance of a Helm rollback action. Defaults to
 'HelmReleaseSpec.Timeout'.
@@ -577,6 +605,10 @@ overrides from 'Values'. Setting this flag makes the HelmRelease
 non-declarative.
 - `remediation` (Block List, Max: 1) Remediation holds the remediation configuration for when the Helm upgrade
 action for the HelmRelease fails. The default is to not perform any action. (see [below for nested schema](#nestedblock--spec--upgrade--remediation))
+- `server_side_apply` (String) ServerSideApply enables server-side apply for resources during upgrade.
+Can be "enabled", "disabled", or "auto".
+When "auto", server-side apply usage will be based on the release's previous usage.
+Defaults to "auto".
 - `strategy` (Block List, Max: 1) Strategy defines the upgrade strategy to use for this HelmRelease.
 Defaults to 'RemediateOnFailure'. (see [below for nested schema](#nestedblock--spec--upgrade--strategy))
 - `timeout` (String) Timeout is the time to wait for any individual Kubernetes operation (like
@@ -629,6 +661,19 @@ which results in the values getting merged at the root.
 found at. Defaults to 'values.yaml'.
 
 
+<a id="nestedblock--spec--wait_strategy"></a>
+### Nested Schema for `spec.wait_strategy`
+
+Optional:
+
+- `name` (String) Name is Helm's wait strategy for waiting for applied resources to
+become ready. One of 'poller' or 'legacy'. The 'poller' strategy uses
+kstatus to poll resource statuses, while the 'legacy' strategy uses
+Helm v3's waiting logic.
+Defaults to 'poller', or to 'legacy' when UseHelm3Defaults feature
+gate is enabled.
+
+
 
 <a id="nestedblock--status"></a>
 ### Nested Schema for `status`
@@ -644,6 +689,8 @@ the controller for the HelmRelease.
 up to the last successfully completed release. (see [below for nested schema](#nestedblock--status--history))
 - `install_failures` (Number) InstallFailures is the install failure count against the latest desired
 state. It is reset after a successful reconciliation.
+- `inventory` (Block List, Max: 1) Inventory contains the list of Kubernetes resource object references
+that have been applied for this release. (see [below for nested schema](#nestedblock--status--inventory))
 - `last_attempted_config_digest` (String) LastAttemptedConfigDigest is the digest for the config (better known as
 "values") of the last reconciliation attempt.
 - `last_attempted_generation` (Number) LastAttemptedGeneration is the last generation the controller attempted
@@ -709,6 +756,7 @@ The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
 
 Optional:
 
+- `action` (String) Action is the action that resulted in this snapshot being created.
 - `api_version` (String) APIVersion is the API version of the Snapshot.
 Provisional: when the calculation method of the Digest field is changed,
 this field will be used to distinguish between the old and new methods.
@@ -731,3 +779,20 @@ It has the format of `<algo>:<checksum>`.
 - `test_hooks` (Map of String) TestHooks is the list of test hooks for the release as observed to be
 run by the controller.
 - `version` (Number) Version is the version of the release object in storage.
+
+
+<a id="nestedblock--status--inventory"></a>
+### Nested Schema for `status.inventory`
+
+Optional:
+
+- `entries` (Block List) Entries of Kubernetes resource object references. (see [below for nested schema](#nestedblock--status--inventory--entries))
+
+<a id="nestedblock--status--inventory--entries"></a>
+### Nested Schema for `status.inventory.entries`
+
+Optional:
+
+- `id` (String) ID is the string representation of the Kubernetes resource object's metadata,
+in the format '<namespace>_<name>_<group>_<kind>'.
+- `v` (String) Version is the API version of the Kubernetes resource object's kind.

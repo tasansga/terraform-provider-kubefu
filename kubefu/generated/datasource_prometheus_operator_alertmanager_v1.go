@@ -2083,6 +2083,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerV1() *schema.Res
 												Required:    false,
 												Computed:    true,
 											},
+											"force_implicit_tls": {
+												Type:        schema.TypeBool,
+												Description: "forceImplicitTLS defines whether to force use of implicit TLS (direct TLS connection) for better security.\ntrue: force use of implicit TLS (direct TLS connection on any port)\nfalse: force disable implicit TLS (use explicit TLS/STARTTLS if required)\nnil (default): auto-detect based on port (465=implicit, other=explicit) for backward compatibility\nIt requires Alertmanager >= v0.31.0.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"from": {
 												Type:        schema.TypeString,
 												Description: "The default SMTP From header field.",
@@ -6674,6 +6681,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerV1() *schema.Res
 						Required:    false,
 						Computed:    true,
 					},
+					"scheduler_name": {
+						Type:        schema.TypeString,
+						Description: "schedulerName defines the scheduler to use for Pod scheduling. If not specified, the default scheduler is used.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"secrets": {
 						Type:        schema.TypeList,
 						Description: "Secrets is a list of Secrets in the same namespace as the Alertmanager object, which shall be mounted into the Alertmanager Pods. The Secrets are mounted into /etc/alertmanager/secrets/<secret-name>.",
@@ -9338,6 +9352,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerV1() *schema.Res
 														Required:    false,
 														Computed:    true,
 													},
+													"user_annotations": {
+														Type:        schema.TypeMap,
+														Description: "userAnnotations allow pod authors to pass additional information to\nthe signer implementation.  Kubernetes does not restrict or validate this\nmetadata in any way.\n\nThese values are copied verbatim into the `spec.unverifiedUserAnnotations` field of\nthe PodCertificateRequest objects that Kubelet creates.\n\nEntries are subject to the same validation as object metadata annotations,\nwith the addition that all keys must be domain-prefixed. No restrictions\nare placed on values, except an overall size limitation on the entire field.\n\nSigners should document the keys and values they support. Signers should\ndeny requests that contain keys they do not recognize.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 												}},
 											},
 											"secret": {
@@ -10333,4 +10354,6 @@ var dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerV1CompatibleVersi
 	"v0.88.0",
 	"v0.88.1",
 	"v0.89.0",
+	"v0.90.0",
+	"v0.90.1",
 }

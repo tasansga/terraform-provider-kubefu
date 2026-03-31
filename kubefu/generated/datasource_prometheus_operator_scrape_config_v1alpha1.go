@@ -14558,4 +14558,6 @@ var dataSourcePrometheusOperatorMonitoringCoreosComScrapeConfigV1Alpha1Compatibl
 	"v0.88.0",
 	"v0.88.1",
 	"v0.89.0",
+	"v0.90.0",
+	"v0.90.1",
 }

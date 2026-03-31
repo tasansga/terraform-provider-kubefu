@@ -740,4 +740,5 @@ var dataSourceCertManagerCertManagerIoCertificateV1CompatibleVersions = []string
 	"v1.17.0",
 	"v1.18.0",
 	"v1.19.0",
+	"v1.20.0",
 }

@@ -21,7 +21,7 @@ type Versions struct {
 }
 
 func DataSources(versions Versions) map[string]*schema.Resource {
-	result := make(map[string]*schema.Resource, 331)
+	result := make(map[string]*schema.Resource, 336)
 	{
 		ds := dataSourceCertManagerAcmeCertManagerIoChallengeV1()
 		warnings := make([]string, 0, 2)
@@ -2396,6 +2396,48 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_gateway_api_gateway_networking_k8s_io_http_route_v1beta1"] = ds
 	}
 	{
+		ds := dataSourceGatewayApiGatewayNetworkingK8sIoListenerSetV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceGatewayApiGatewayNetworkingK8sIoListenerSetV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_gateway_api_gateway_networking_k8s_io_listener_set_v1",
+					"gateway_api",
+					strings.Join(dataSourceGatewayApiGatewayNetworkingK8sIoListenerSetV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_gateway_api_gateway_networking_k8s_io_listener_set_v1"] = ds
+	}
+	{
+		ds := dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_gateway_api_gateway_networking_k8s_io_reference_grant_v1",
+					"gateway_api",
+					strings.Join(dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_gateway_api_gateway_networking_k8s_io_reference_grant_v1"] = ds
+	}
+	{
 		ds := dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1Alpha2()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
@@ -2436,6 +2478,69 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 			ds.DeprecationMessage = strings.Join(warnings, " ")
 		}
 		result["kubefu_gateway_api_gateway_networking_k8s_io_reference_grant_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_gateway_api_gateway_networking_k8s_io_tls_route_v1",
+					"gateway_api",
+					strings.Join(dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_gateway_api_gateway_networking_k8s_io_tls_route_v1"] = ds
+	}
+	{
+		ds := dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1Alpha2()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1Alpha2CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_gateway_api_gateway_networking_k8s_io_tls_route_v1alpha2",
+					"gateway_api",
+					strings.Join(dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1Alpha2CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_gateway_api_gateway_networking_k8s_io_tls_route_v1alpha2"] = ds
+	}
+	{
+		ds := dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1Alpha3()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1Alpha3CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_gateway_api_gateway_networking_k8s_io_tls_route_v1alpha3",
+					"gateway_api",
+					strings.Join(dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1Alpha3CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_gateway_api_gateway_networking_k8s_io_tls_route_v1alpha3"] = ds
 	}
 	{
 		ds := dataSourceK8sAdmissionregistrationK8sIoExternalAdmissionHookConfigurationV1Alpha1()

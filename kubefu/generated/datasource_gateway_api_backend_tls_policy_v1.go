@@ -334,4 +334,6 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoBackendTLSPolicyV1Read(_ context.
 var dataSourceGatewayApiGatewayNetworkingK8sIoBackendTLSPolicyV1CompatibleVersions = []string{
 	"v1.4.0",
 	"v1.4.1",
+	"v1.5.0",
+	"v1.5.1",
 }

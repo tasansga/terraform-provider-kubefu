@@ -426,4 +426,5 @@ var dataSourceKarpenterAwsKarpenterShNodeClaimV1CompatibleVersions = []string{
 	"v1.8.5",
 	"v1.8.6",
 	"v1.9.0",
+	"v1.10.0",
 }

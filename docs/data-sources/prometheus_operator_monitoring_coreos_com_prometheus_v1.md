@@ -165,6 +165,7 @@ It requires Prometheus >= v2.53.0.
 - `rules` (Block List, Max: 1) /--rules.*/ command-line arguments. (see [below for nested schema](#nestedblock--spec--rules))
 - `runtime` (Block List, Max: 1) RuntimeConfig configures the values for the Prometheus process behavior (see [below for nested schema](#nestedblock--spec--runtime))
 - `sample_limit` (Number) SampleLimit defines per-scrape limit on number of scraped samples that will be accepted. Only valid in Prometheus versions 2.45.0 and newer.
+- `scheduler_name` (String) schedulerName defines the scheduler to use for Pod scheduling. If not specified, the default scheduler is used.
 - `scrape_classes` (Block List) EXPERIMENTAL List of scrape classes to expose to monitors and other scrape configs. This is experimental feature and might change in the future. (see [below for nested schema](#nestedblock--spec--scrape_classes))
 - `scrape_classic_histograms` (Boolean) Whether to scrape a classic histogram that is also exposed as a native histogram.
 It requires Prometheus >= v3.5.0.
@@ -5405,6 +5406,19 @@ seconds (1 hour).  This constraint is enforced by kube-apiserver.
 `kubernetes.io` signers will never issue certificates with a lifetime
 longer than 24 hours.
 - `signer_name` (String) Kubelet's generated CSRs will be addressed to this signer.
+- `user_annotations` (Map of String) userAnnotations allow pod authors to pass additional information to
+the signer implementation.  Kubernetes does not restrict or validate this
+metadata in any way.
+
+These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+the PodCertificateRequest objects that Kubelet creates.
+
+Entries are subject to the same validation as object metadata annotations,
+with the addition that all keys must be domain-prefixed. No restrictions
+are placed on values, except an overall size limitation on the entire field.
+
+Signers should document the keys and values they support. Signers should
+deny requests that contain keys they do not recognize.
 
 
 <a id="nestedblock--spec--volumes--projected--sources--secret"></a>

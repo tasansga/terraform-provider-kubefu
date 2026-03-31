@@ -114,6 +114,7 @@ which incurs a service outage.
 - `resources` (Block List, Max: 1) Define resources requests and limits for single Pods. (see [below for nested schema](#nestedblock--spec--resources))
 - `retention` (String) Time duration Alertmanager shall retain data for. Default is '120h', and must match the regular expression `[0-9]+(ms|s|m|h)` (milliseconds seconds minutes hours).
 - `route_prefix` (String) The route prefix Alertmanager registers HTTP handlers for. This is useful, if using ExternalURL and a proxy is rewriting HTTP routes of a request, and the actual ExternalURL is still true, but the server serves requests under a different route prefix. For example for use with `kubectl proxy`.
+- `scheduler_name` (String) schedulerName defines the scheduler to use for Pod scheduling. If not specified, the default scheduler is used.
 - `secrets` (List of String) Secrets is a list of Secrets in the same namespace as the Alertmanager object, which shall be mounted into the Alertmanager Pods. The Secrets are mounted into /etc/alertmanager/secrets/<secret-name>.
 - `security_context` (Block List, Max: 1) SecurityContext holds pod-level security attributes and common container settings. This defaults to the default PodSecurityContext. (see [below for nested schema](#nestedblock--spec--security_context))
 - `service_account_name` (String) ServiceAccountName is the name of the ServiceAccount to use to run the Prometheus Pods.
@@ -1016,6 +1017,11 @@ Optional:
 - `auth_password` (Block List, Max: 1) SMTP Auth using LOGIN and PLAIN. (see [below for nested schema](#nestedblock--spec--alertmanager_configuration--global--smtp--auth_password))
 - `auth_secret` (Block List, Max: 1) SMTP Auth using CRAM-MD5. (see [below for nested schema](#nestedblock--spec--alertmanager_configuration--global--smtp--auth_secret))
 - `auth_username` (String) SMTP Auth using CRAM-MD5, LOGIN and PLAIN. If empty, Alertmanager doesn't authenticate to the SMTP server.
+- `force_implicit_tls` (Boolean) forceImplicitTLS defines whether to force use of implicit TLS (direct TLS connection) for better security.
+true: force use of implicit TLS (direct TLS connection on any port)
+false: force disable implicit TLS (use explicit TLS/STARTTLS if required)
+nil (default): auto-detect based on port (465=implicit, other=explicit) for backward compatibility
+It requires Alertmanager >= v0.31.0.
 - `from` (String) The default SMTP From header field.
 - `hello` (String) The default hostname to identify to the SMTP server.
 - `require_tls` (Boolean) The default SMTP TLS requirement. Note that Go does not support unencrypted connections to remote SMTP endpoints.
@@ -4088,6 +4094,19 @@ seconds (1 hour).  This constraint is enforced by kube-apiserver.
 `kubernetes.io` signers will never issue certificates with a lifetime
 longer than 24 hours.
 - `signer_name` (String) Kubelet's generated CSRs will be addressed to this signer.
+- `user_annotations` (Map of String) userAnnotations allow pod authors to pass additional information to
+the signer implementation.  Kubernetes does not restrict or validate this
+metadata in any way.
+
+These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+the PodCertificateRequest objects that Kubelet creates.
+
+Entries are subject to the same validation as object metadata annotations,
+with the addition that all keys must be domain-prefixed. No restrictions
+are placed on values, except an overall size limitation on the entire field.
+
+Signers should document the keys and values they support. Signers should
+deny requests that contain keys they do not recognize.
 
 
 <a id="nestedblock--spec--volumes--projected--sources--secret"></a>

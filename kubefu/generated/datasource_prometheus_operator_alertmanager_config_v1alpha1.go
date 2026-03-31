@@ -1207,6 +1207,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerConfigV1Alpha1()
 										Required:    false,
 										Computed:    true,
 									},
+									"force_implicit_tls": {
+										Type:        schema.TypeBool,
+										Description: "forceImplicitTLS defines whether to force use of implicit TLS (direct TLS connection) for better security.\ntrue: force use of implicit TLS (direct TLS connection on any port)\nfalse: force disable implicit TLS (use explicit TLS/STARTTLS if required)\nnil (default): auto-detect based on port (465=implicit, other=explicit) for backward compatibility\nIt requires Alertmanager >= v0.31.0.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"from": {
 										Type:        schema.TypeString,
 										Description: "The sender address.",
@@ -6841,7 +6848,7 @@ func dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerConfigV1Alpha1()
 											},
 											"proxy_url": {
 												Type:        schema.TypeString,
-												Description: "`proxyURL` defines the HTTP proxy server to use.",
+												Description: "Optional proxy URL.\n\nIf defined, this field takes precedence over `proxyUrl`.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -8196,6 +8203,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerConfigV1Alpha1()
 									"link_names": {
 										Type:        schema.TypeBool,
 										Description: "linkNames enables automatic linking of channel names and usernames in the message.\nWhen true, @channel and @username will be converted to clickable links.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"message_text": {
+										Type:        schema.TypeString,
+										Description: "messageText defines text content of the Slack message.\nIf set, this is sent as the top-level 'text' field in the Slack payload.\nIt requires Alertmanager >= v0.31.0.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -13910,4 +13924,6 @@ var dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerConfigV1Alpha1Com
 	"v0.88.0",
 	"v0.88.1",
 	"v0.89.0",
+	"v0.90.0",
+	"v0.90.1",
 }

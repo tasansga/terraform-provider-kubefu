@@ -277,4 +277,8 @@ var dataSourceFluxNotificationToolkitFluxcdIoReceiverV1CompatibleVersions = []st
 	"v2.7.3",
 	"v2.7.4",
 	"v2.7.5",
+	"v2.8.0",
+	"v2.8.1",
+	"v2.8.2",
+	"v2.8.3",
 }

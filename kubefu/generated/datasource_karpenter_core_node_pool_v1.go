@@ -489,4 +489,5 @@ var dataSourceKarpenterCoreKarpenterShNodePoolV1CompatibleVersions = []string{
 	"v1.8.1",
 	"v1.8.2",
 	"v1.9.0",
+	"v1.10.0",
 }

@@ -443,6 +443,13 @@ func dataSourceCertManagerCertManagerIoClusterIssuerV1() *schema.Resource {
 														Required:    false,
 														Computed:    true,
 													},
+													"zone_type": {
+														Type:        schema.TypeString,
+														Description: "ZoneType determines which type of Azure DNS zone to use.\n\nValid values are:\n  - AzurePublicZone  (default): Use a public Azure DNS zone.\n  - AzurePrivateZone: Use an Azure Private DNS zone.\n\nIf not specified, AzurePublicZone is used.\n\nSupport for Azure Private DNS zones is currently\nexperimental and may change in future releases.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 												}},
 											},
 											"cloud_dns": {
@@ -3782,4 +3789,5 @@ var dataSourceCertManagerCertManagerIoClusterIssuerV1CompatibleVersions = []stri
 	"v1.17.0",
 	"v1.18.0",
 	"v1.19.0",
+	"v1.20.0",
 }

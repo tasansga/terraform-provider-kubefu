@@ -345,6 +345,7 @@ will no longer be able to launch instances into that reservation.
 - `id` (String) The id for the capacity reservation.
 - `instance_match_criteria` (String) Indicates the type of instance launches the capacity reservation accepts.
 - `instance_type` (String) The instance type for the capacity reservation.
+- `interruptible` (Boolean) Indicates whether this capacity reservation is interruptible
 - `owner_id` (String) The ID of the AWS account that owns the capacity reservation.
 - `reservation_type` (String) The type of capacity reservation.
 - `state` (String) The state of the capacity reservation. A capacity reservation is considered to be expiring if it is within the EC2

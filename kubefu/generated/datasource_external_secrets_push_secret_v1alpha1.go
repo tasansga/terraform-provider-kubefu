@@ -668,4 +668,7 @@ var dataSourceExternalSecretsExternalSecretsIoPushSecretV1Alpha1CompatibleVersio
 	"v1.3.1",
 	"v1.3.2",
 	"v2.0.0",
+	"v2.0.1",
+	"v2.1.0",
+	"v2.2.0",
 }

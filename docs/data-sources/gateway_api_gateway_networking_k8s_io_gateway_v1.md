@@ -42,6 +42,8 @@ Optional:
  If no Addresses are specified, the implementation MAY schedule the Gateway in an implementation-specific manner, assigning an appropriate set of Addresses.
  The implementation MUST bind all Listeners to every GatewayAddress that it assigns to the Gateway and add a corresponding entry in GatewayStatus.Addresses.
  Support: Extended (see [below for nested schema](#nestedblock--spec--addresses))
+- `allowed_listeners` (Block List, Max: 1) AllowedListeners defines which ListenerSets can be attached to this Gateway.
+The default value is to allow no ListenerSets. (see [below for nested schema](#nestedblock--spec--allowed_listeners))
 - `gateway_class_name` (String) GatewayClassName used for this Gateway. This is the name of a GatewayClass resource.
 - `infrastructure` (Block List, Max: 1) Infrastructure defines infrastructure level attributes about this Gateway instance.
 
@@ -74,6 +76,9 @@ Support: Extended (see [below for nested schema](#nestedblock--spec--infrastruct
  Note that requests SHOULD match at most one Listener. For example, if Listeners are defined for "foo.example.com" and "*.example.com", a request to "foo.example.com" SHOULD only be routed using routes attached to the "foo.example.com" Listener (and not the "*.example.com" Listener). This concept is known as "Listener Isolation". Implementations that do not support Listener Isolation MUST clearly document this.
  Implementations MAY merge separate Gateways onto a single set of Addresses if all Listeners across all Gateways are compatible.
  Support: Core (see [below for nested schema](#nestedblock--spec--listeners))
+- `tls` (Block List, Max: 1) TLS specifies frontend and backend tls configuration for entire gateway.
+
+Support: Extended (see [below for nested schema](#nestedblock--spec--tls))
 
 <a id="nestedblock--spec--addresses"></a>
 ### Nested Schema for `spec.addresses`
@@ -83,6 +88,59 @@ Optional:
 - `type` (String) Type of the address.
 - `value` (String) Value of the address. The validity of the values will depend on the type and support by the controller.
  Examples: `1.2.3.4`, `128::1`, `my-ip-address`.
+
+
+<a id="nestedblock--spec--allowed_listeners"></a>
+### Nested Schema for `spec.allowed_listeners`
+
+Optional:
+
+- `namespaces` (Block List, Max: 1) Namespaces defines which namespaces ListenerSets can be attached to this Gateway.
+The default value is to allow no ListenerSets. (see [below for nested schema](#nestedblock--spec--allowed_listeners--namespaces))
+
+<a id="nestedblock--spec--allowed_listeners--namespaces"></a>
+### Nested Schema for `spec.allowed_listeners.namespaces`
+
+Optional:
+
+- `from` (String) From indicates where ListenerSets can attach to this Gateway. Possible
+values are:
+
+* Same: Only ListenerSets in the same namespace may be attached to this Gateway.
+* Selector: ListenerSets in namespaces selected by the selector may be attached to this Gateway.
+* All: ListenerSets in all namespaces may be attached to this Gateway.
+* None: Only listeners defined in the Gateway's spec are allowed
+
+The default value None
+- `selector` (Block List, Max: 1) Selector must be specified when From is set to "Selector". In that case,
+only ListenerSets in Namespaces matching this Selector will be selected by this
+Gateway. This field is ignored for other values of "From". (see [below for nested schema](#nestedblock--spec--allowed_listeners--namespaces--selector))
+
+<a id="nestedblock--spec--allowed_listeners--namespaces--selector"></a>
+### Nested Schema for `spec.allowed_listeners.namespaces.selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--allowed_listeners--namespaces--selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--allowed_listeners--namespaces--selector--match_expressions"></a>
+### Nested Schema for `spec.allowed_listeners.namespaces.selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
+
+
+
 
 
 <a id="nestedblock--spec--infrastructure"></a>
@@ -245,6 +303,309 @@ Optional:
 
 
 
+<a id="nestedblock--spec--tls"></a>
+### Nested Schema for `spec.tls`
+
+Optional:
+
+- `backend` (Block List, Max: 1) Backend describes TLS configuration for gateway when connecting
+to backends.
+
+Note that this contains only details for the Gateway as a TLS client,
+and does _not_ imply behavior about how to choose which backend should
+get a TLS connection. That is determined by the presence of a BackendTLSPolicy.
+
+Support: Core (see [below for nested schema](#nestedblock--spec--tls--backend))
+- `frontend` (Block List, Max: 1) Frontend describes TLS config when client connects to Gateway.
+Support: Core (see [below for nested schema](#nestedblock--spec--tls--frontend))
+
+<a id="nestedblock--spec--tls--backend"></a>
+### Nested Schema for `spec.tls.backend`
+
+Optional:
+
+- `client_certificate_ref` (Block List, Max: 1) ClientCertificateRef references an object that contains a client certificate
+and its associated private key. It can reference standard Kubernetes resources,
+i.e., Secret, or implementation-specific custom resources.
+
+A ClientCertificateRef is considered invalid if:
+
+* It refers to a resource that cannot be resolved (e.g., the referenced resource
+  does not exist) or is misconfigured (e.g., a Secret does not contain the keys
+  named `tls.crt` and `tls.key`). In this case, the `ResolvedRefs` condition
+  on the Gateway MUST be set to False with the Reason `InvalidClientCertificateRef`
+  and the Message of the Condition MUST indicate why the reference is invalid.
+
+* It refers to a resource in another namespace UNLESS there is a ReferenceGrant
+  in the target namespace that allows the certificate to be attached.
+  If a ReferenceGrant does not allow this reference, the `ResolvedRefs` condition
+  on the Gateway MUST be set to False with the Reason `RefNotPermitted`.
+
+Implementations MAY choose to perform further validation of the certificate
+content (e.g., checking expiry or enforcing specific formats). In such cases,
+an implementation-specific Reason and Message MUST be set.
+
+Support: Core - Reference to a Kubernetes TLS Secret (with the type `kubernetes.io/tls`).
+Support: Implementation-specific - Other resource kinds or Secrets with a
+different type (e.g., `Opaque`). (see [below for nested schema](#nestedblock--spec--tls--backend--client_certificate_ref))
+
+<a id="nestedblock--spec--tls--backend--client_certificate_ref"></a>
+### Nested Schema for `spec.tls.backend.client_certificate_ref`
+
+Optional:
+
+- `group` (String) Group is the group of the referent. For example, "gateway.networking.k8s.io".
+When unspecified or empty string, core API group is inferred.
+- `kind` (String) Kind is kind of the referent. For example "Secret".
+- `name` (String) Name is the name of the referent.
+- `namespace` (String) Namespace is the namespace of the referenced object. When unspecified, the local
+namespace is inferred.
+
+Note that when a namespace different than the local namespace is specified,
+a ReferenceGrant object is required in the referent namespace to allow that
+namespace's owner to accept the reference. See the ReferenceGrant
+documentation for details.
+
+Support: Core
+
+
+
+<a id="nestedblock--spec--tls--frontend"></a>
+### Nested Schema for `spec.tls.frontend`
+
+Optional:
+
+- `default` (Block List, Max: 1) Default specifies the default client certificate validation configuration
+for all Listeners handling HTTPS traffic, unless a per-port configuration
+is defined.
+
+support: Core (see [below for nested schema](#nestedblock--spec--tls--frontend--default))
+- `per_port` (Block List) PerPort specifies tls configuration assigned per port.
+Per port configuration is optional. Once set this configuration overrides
+the default configuration for all Listeners handling HTTPS traffic
+that match this port.
+Each override port requires a unique TLS configuration.
+
+support: Core (see [below for nested schema](#nestedblock--spec--tls--frontend--per_port))
+
+<a id="nestedblock--spec--tls--frontend--default"></a>
+### Nested Schema for `spec.tls.frontend.default`
+
+Optional:
+
+- `validation` (Block List, Max: 1) Validation holds configuration information for validating the frontend (client).
+Setting this field will result in mutual authentication when connecting to the gateway.
+In browsers this may result in a dialog appearing
+that requests a user to specify the client certificate.
+The maximum depth of a certificate chain accepted in verification is Implementation specific.
+
+Support: Core (see [below for nested schema](#nestedblock--spec--tls--frontend--default--validation))
+
+<a id="nestedblock--spec--tls--frontend--default--validation"></a>
+### Nested Schema for `spec.tls.frontend.default.validation`
+
+Optional:
+
+- `ca_certificate_refs` (Block List) CACertificateRefs contains one or more references to Kubernetes
+objects that contain a PEM-encoded TLS CA certificate bundle, which
+is used as a trust anchor to validate the certificates presented by
+the client.
+
+A CACertificateRef is invalid if:
+
+* It refers to a resource that cannot be resolved (e.g., the
+  referenced resource does not exist) or is misconfigured (e.g., a
+  ConfigMap does not contain a key named `ca.crt`). In this case, the
+  Reason on all matching HTTPS listeners must be set to `InvalidCACertificateRef`
+  and the Message of the Condition must indicate which reference is invalid and why.
+
+* It refers to an unknown or unsupported kind of resource. In this
+  case, the Reason on all matching HTTPS listeners must be set to
+  `InvalidCACertificateKind` and the Message of the Condition must explain
+  which kind of resource is unknown or unsupported.
+
+* It refers to a resource in another namespace UNLESS there is a
+  ReferenceGrant in the target namespace that allows the CA
+  certificate to be attached. If a ReferenceGrant does not allow this
+  reference, the `ResolvedRefs` on all matching HTTPS listeners condition
+  MUST be set with the Reason `RefNotPermitted`.
+
+Implementations MAY choose to perform further validation of the
+certificate content (e.g., checking expiry or enforcing specific formats).
+In such cases, an implementation-specific Reason and Message MUST be set.
+
+In all cases, the implementation MUST ensure that the `ResolvedRefs`
+condition is set to `status: False` on all targeted listeners (i.e.,
+listeners serving HTTPS on a matching port). The condition MUST
+include a Reason and Message that indicate the cause of the error. If
+ALL CACertificateRefs are invalid, the implementation MUST also ensure
+the `Accepted` condition on the listener is set to `status: False`, with
+the Reason `NoValidCACertificate`.
+Implementations MAY choose to support attaching multiple CA certificates
+to a listener, but this behavior is implementation-specific.
+
+Support: Core - A single reference to a Kubernetes ConfigMap, with the
+CA certificate in a key named `ca.crt`.
+
+Support: Implementation-specific - More than one reference, other kinds
+of resources, or a single reference that includes multiple certificates. (see [below for nested schema](#nestedblock--spec--tls--frontend--default--validation--ca_certificate_refs))
+- `mode` (String) FrontendValidationMode defines the mode for validating the client certificate.
+There are two possible modes:
+
+- AllowValidOnly: In this mode, the gateway will accept connections only if
+  the client presents a valid certificate. This certificate must successfully
+  pass validation against the CA certificates specified in `CACertificateRefs`.
+- AllowInsecureFallback: In this mode, the gateway will accept connections
+  even if the client certificate is not presented or fails verification.
+
+  This approach delegates client authorization to the backend and introduce
+  a significant security risk. It should be used in testing environments or
+  on a temporary basis in non-testing environments.
+
+Defaults to AllowValidOnly.
+
+Support: Core
+
+<a id="nestedblock--spec--tls--frontend--default--validation--ca_certificate_refs"></a>
+### Nested Schema for `spec.tls.frontend.default.validation.ca_certificate_refs`
+
+Optional:
+
+- `group` (String) Group is the group of the referent. For example, "gateway.networking.k8s.io".
+When set to the empty string, core API group is inferred.
+- `kind` (String) Kind is kind of the referent. For example "ConfigMap" or "Service".
+- `name` (String) Name is the name of the referent.
+- `namespace` (String) Namespace is the namespace of the referenced object. When unspecified, the local
+namespace is inferred.
+
+Note that when a namespace different than the local namespace is specified,
+a ReferenceGrant object is required in the referent namespace to allow that
+namespace's owner to accept the reference. See the ReferenceGrant
+documentation for details.
+
+Support: Core
+
+
+
+
+<a id="nestedblock--spec--tls--frontend--per_port"></a>
+### Nested Schema for `spec.tls.frontend.per_port`
+
+Optional:
+
+- `port` (Number) The Port indicates the Port Number to which the TLS configuration will be
+applied. This configuration will be applied to all Listeners handling HTTPS
+traffic that match this port.
+
+Support: Core
+- `tls` (Block List, Max: 1) TLS store the configuration that will be applied to all Listeners handling
+HTTPS traffic and matching given port.
+
+Support: Core (see [below for nested schema](#nestedblock--spec--tls--frontend--per_port--tls))
+
+<a id="nestedblock--spec--tls--frontend--per_port--tls"></a>
+### Nested Schema for `spec.tls.frontend.per_port.tls`
+
+Optional:
+
+- `validation` (Block List, Max: 1) Validation holds configuration information for validating the frontend (client).
+Setting this field will result in mutual authentication when connecting to the gateway.
+In browsers this may result in a dialog appearing
+that requests a user to specify the client certificate.
+The maximum depth of a certificate chain accepted in verification is Implementation specific.
+
+Support: Core (see [below for nested schema](#nestedblock--spec--tls--frontend--per_port--tls--validation))
+
+<a id="nestedblock--spec--tls--frontend--per_port--tls--validation"></a>
+### Nested Schema for `spec.tls.frontend.per_port.tls.validation`
+
+Optional:
+
+- `ca_certificate_refs` (Block List) CACertificateRefs contains one or more references to Kubernetes
+objects that contain a PEM-encoded TLS CA certificate bundle, which
+is used as a trust anchor to validate the certificates presented by
+the client.
+
+A CACertificateRef is invalid if:
+
+* It refers to a resource that cannot be resolved (e.g., the
+  referenced resource does not exist) or is misconfigured (e.g., a
+  ConfigMap does not contain a key named `ca.crt`). In this case, the
+  Reason on all matching HTTPS listeners must be set to `InvalidCACertificateRef`
+  and the Message of the Condition must indicate which reference is invalid and why.
+
+* It refers to an unknown or unsupported kind of resource. In this
+  case, the Reason on all matching HTTPS listeners must be set to
+  `InvalidCACertificateKind` and the Message of the Condition must explain
+  which kind of resource is unknown or unsupported.
+
+* It refers to a resource in another namespace UNLESS there is a
+  ReferenceGrant in the target namespace that allows the CA
+  certificate to be attached. If a ReferenceGrant does not allow this
+  reference, the `ResolvedRefs` on all matching HTTPS listeners condition
+  MUST be set with the Reason `RefNotPermitted`.
+
+Implementations MAY choose to perform further validation of the
+certificate content (e.g., checking expiry or enforcing specific formats).
+In such cases, an implementation-specific Reason and Message MUST be set.
+
+In all cases, the implementation MUST ensure that the `ResolvedRefs`
+condition is set to `status: False` on all targeted listeners (i.e.,
+listeners serving HTTPS on a matching port). The condition MUST
+include a Reason and Message that indicate the cause of the error. If
+ALL CACertificateRefs are invalid, the implementation MUST also ensure
+the `Accepted` condition on the listener is set to `status: False`, with
+the Reason `NoValidCACertificate`.
+Implementations MAY choose to support attaching multiple CA certificates
+to a listener, but this behavior is implementation-specific.
+
+Support: Core - A single reference to a Kubernetes ConfigMap, with the
+CA certificate in a key named `ca.crt`.
+
+Support: Implementation-specific - More than one reference, other kinds
+of resources, or a single reference that includes multiple certificates. (see [below for nested schema](#nestedblock--spec--tls--frontend--per_port--tls--validation--ca_certificate_refs))
+- `mode` (String) FrontendValidationMode defines the mode for validating the client certificate.
+There are two possible modes:
+
+- AllowValidOnly: In this mode, the gateway will accept connections only if
+  the client presents a valid certificate. This certificate must successfully
+  pass validation against the CA certificates specified in `CACertificateRefs`.
+- AllowInsecureFallback: In this mode, the gateway will accept connections
+  even if the client certificate is not presented or fails verification.
+
+  This approach delegates client authorization to the backend and introduce
+  a significant security risk. It should be used in testing environments or
+  on a temporary basis in non-testing environments.
+
+Defaults to AllowValidOnly.
+
+Support: Core
+
+<a id="nestedblock--spec--tls--frontend--per_port--tls--validation--ca_certificate_refs"></a>
+### Nested Schema for `spec.tls.frontend.per_port.tls.validation.ca_certificate_refs`
+
+Optional:
+
+- `group` (String) Group is the group of the referent. For example, "gateway.networking.k8s.io".
+When set to the empty string, core API group is inferred.
+- `kind` (String) Kind is kind of the referent. For example "ConfigMap" or "Service".
+- `name` (String) Name is the name of the referent.
+- `namespace` (String) Namespace is the namespace of the referenced object. When unspecified, the local
+namespace is inferred.
+
+Note that when a namespace different than the local namespace is specified,
+a ReferenceGrant object is required in the referent namespace to allow that
+namespace's owner to accept the reference. See the ReferenceGrant
+documentation for details.
+
+Support: Core
+
+
+
+
+
+
+
 
 <a id="nestedblock--status"></a>
 ### Nested Schema for `status`
@@ -254,6 +615,16 @@ Optional:
 - `addresses` (Block List) Addresses lists the network addresses that have been bound to the Gateway.
  This list may differ from the addresses provided in the spec under some conditions:
  * no addresses are specified, all addresses are dynamically assigned * a combination of specified and dynamic addresses are assigned * a specified address was unusable (e.g. already in use) (see [below for nested schema](#nestedblock--status--addresses))
+- `attached_listener_sets` (Number) AttachedListenerSets represents the total number of ListenerSets that have been
+successfully attached to this Gateway.
+
+A ListenerSet is successfully attached to a Gateway when all the following conditions are met:
+- The ListenerSet is selected by the Gateway's AllowedListeners field
+- The ListenerSet has a valid ParentRef selecting the Gateway
+- The ListenerSet's status has the condition "Accepted: true"
+
+Uses for this field include troubleshooting AttachedListenerSets attachment and
+measuring blast radius/impact of changes to a Gateway.
 - `conditions` (Block List) Conditions describe the current conditions of the Gateway.
  Implementations should prefer to express Gateway conditions using the `GatewayConditionType` and `GatewayConditionReason` constants so that operators and tools can converge on a common vocabulary to describe Gateway state.
  Known condition types are:

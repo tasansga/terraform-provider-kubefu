@@ -8530,6 +8530,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 						Required:    false,
 						Computed:    true,
 					},
+					"scheduler_name": {
+						Type:        schema.TypeString,
+						Description: "schedulerName defines the scheduler to use for Pod scheduling. If not specified, the default scheduler is used.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"scrape_classes": {
 						Type:        schema.TypeList,
 						Description: "EXPERIMENTAL List of scrape classes to expose to monitors and other scrape configs. This is experimental feature and might change in the future.",
@@ -12815,6 +12822,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 														Required:    false,
 														Computed:    true,
 													},
+													"user_annotations": {
+														Type:        schema.TypeMap,
+														Description: "userAnnotations allow pod authors to pass additional information to\nthe signer implementation.  Kubernetes does not restrict or validate this\nmetadata in any way.\n\nThese values are copied verbatim into the `spec.unverifiedUserAnnotations` field of\nthe PodCertificateRequest objects that Kubelet creates.\n\nEntries are subject to the same validation as object metadata annotations,\nwith the addition that all keys must be domain-prefixed. No restrictions\nare placed on values, except an overall size limitation on the entire field.\n\nSigners should document the keys and values they support. Signers should\ndeny requests that contain keys they do not recognize.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 												}},
 											},
 											"secret": {
@@ -13868,4 +13882,6 @@ var dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1CompatibleVersion
 	"v0.88.0",
 	"v0.88.1",
 	"v0.89.0",
+	"v0.90.0",
+	"v0.90.1",
 }

@@ -151,6 +151,16 @@ Optional:
 - `resource_group_name` (String) resource group the DNS zone is located in
 - `subscription_id` (String) ID of the Azure subscription
 - `tenant_id` (String) when specifying ClientID and ClientSecret then this field is also needed
+- `zone_type` (String) ZoneType determines which type of Azure DNS zone to use.
+
+Valid values are:
+  - AzurePublicZone  (default): Use a public Azure DNS zone.
+  - AzurePrivateZone: Use an Azure Private DNS zone.
+
+If not specified, AzurePublicZone is used.
+
+Support for Azure Private DNS zones is currently
+experimental and may change in future releases.
 
 <a id="nestedblock--spec--solver--dns01--azure_dns--client_secret_secret_ref"></a>
 ### Nested Schema for `spec.solver.dns01.azure_dns.client_secret_secret_ref`

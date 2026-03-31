@@ -542,6 +542,11 @@ Optional:
 - `auth_password` (Block List, Max: 1) The secret's key that contains the password to use for authentication. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--auth_password))
 - `auth_secret` (Block List, Max: 1) The secret's key that contains the CRAM-MD5 secret. The secret needs to be in the same namespace as the AlertmanagerConfig object and accessible by the Prometheus Operator. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--auth_secret))
 - `auth_username` (String) The username to use for authentication.
+- `force_implicit_tls` (Boolean) forceImplicitTLS defines whether to force use of implicit TLS (direct TLS connection) for better security.
+true: force use of implicit TLS (direct TLS connection on any port)
+false: force disable implicit TLS (use explicit TLS/STARTTLS if required)
+nil (default): auto-detect based on port (465=implicit, other=explicit) for backward compatibility
+It requires Alertmanager >= v0.31.0.
 - `from` (String) The sender address.
 - `headers` (Block List) Further headers email header key/value pairs. Overrides any headers previously set by the notification implementation. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--headers))
 - `hello` (String) The hostname to identify to the SMTP server.
@@ -2827,7 +2832,9 @@ It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
 - `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
 
 It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
-- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+- `proxy_url` (String) Optional proxy URL.
+
+If defined, this field takes precedence over `proxyUrl`.
 - `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--rocketchat_configs--http_config--tls_config))
 
 <a id="nestedblock--spec--receivers--rocketchat_configs--http_config--authorization"></a>
@@ -3253,6 +3260,9 @@ Can be a hex color code (e.g., "#ff0000") or a predefined color name.
 - `image_url` (String) imageURL defines the URL to an image file that will be displayed inside the message attachment.
 - `link_names` (Boolean) linkNames enables automatic linking of channel names and usernames in the message.
 When true, @channel and @username will be converted to clickable links.
+- `message_text` (String) messageText defines text content of the Slack message.
+If set, this is sent as the top-level 'text' field in the Slack payload.
+It requires Alertmanager >= v0.31.0.
 - `mrkdwn_in` (List of String) mrkdwnIn defines which fields should be parsed as Slack markdown.
 Valid values include "pretext", "text", and "fields".
 - `pretext` (String) pretext defines optional text that appears above the message attachment block.
