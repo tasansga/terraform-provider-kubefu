@@ -6848,7 +6848,7 @@ func dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerConfigV1Alpha1()
 											},
 											"proxy_url": {
 												Type:        schema.TypeString,
-												Description: "Optional proxy URL.\n\nIf defined, this field takes precedence over `proxyUrl`.",
+												Description: "`proxyURL` defines the HTTP proxy server to use.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,

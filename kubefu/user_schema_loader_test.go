@@ -43,7 +43,7 @@ spec:
 
 func TestLoadUserSchemasFromCRD(t *testing.T) {
 	dir := t.TempDir()
-	path := filepath.Join(dir, "ktopic.yaml")
+	path := filepath.Join(dir, "foo.yaml")
 	if err := os.WriteFile(path, []byte(sampleCRD), 0o644); err != nil {
 		t.Fatalf("write CRD: %v", err)
 	}

@@ -612,10 +612,10 @@ func TestSetDataSourceManifestWithObjectPathsFlattensKustomizationGeneratorWrapp
 				"generator_args": []interface{}{
 					map[string]interface{}{
 						"name":      "network-config",
-						"namespace": "wg2-messaging",
+						"namespace": "foo-messaging",
 						"kv_pair_sources": []interface{}{
 							map[string]interface{}{
-								"files": []interface{}{"loltel.prototext"},
+								"files": []interface{}{"bar.prototext"},
 							},
 						},
 					},
@@ -648,12 +648,12 @@ func TestSetDataSourceManifestWithObjectPathsFlattensKustomizationGeneratorWrapp
 	if entry["name"] != "network-config" {
 		t.Fatalf("expected name=network-config, got %v", entry["name"])
 	}
-	if entry["namespace"] != "wg2-messaging" {
-		t.Fatalf("expected namespace=wg2-messaging, got %v", entry["namespace"])
+	if entry["namespace"] != "foo-messaging" {
+		t.Fatalf("expected namespace=foo-messaging, got %v", entry["namespace"])
 	}
 	files, ok := entry["files"].([]interface{})
-	if !ok || len(files) != 1 || files[0] != "loltel.prototext" {
-		t.Fatalf("expected files=[loltel.prototext], got %v", entry["files"])
+	if !ok || len(files) != 1 || files[0] != "bar.prototext" {
+		t.Fatalf("expected files=[bar.prototext], got %v", entry["files"])
 	}
 	if _, ok := entry["generator_args"]; ok {
 		t.Fatalf("unexpected generator_args key in rendered output")
@@ -709,7 +709,7 @@ func TestSetDataSourceManifestWithObjectPathsFlattensConfigMapArgsWrappers(t *te
 				"name": "network-config",
 				"kv_pair_sources": []interface{}{
 					map[string]interface{}{
-						"files": []interface{}{"loltel.prototext"},
+						"files": []interface{}{"bar.prototext"},
 					},
 				},
 			},
@@ -733,8 +733,8 @@ func TestSetDataSourceManifestWithObjectPathsFlattensConfigMapArgsWrappers(t *te
 		t.Fatalf("expected name=network-config, got %v", manifest["name"])
 	}
 	files, ok := manifest["files"].([]interface{})
-	if !ok || len(files) != 1 || files[0] != "loltel.prototext" {
-		t.Fatalf("expected files=[loltel.prototext], got %v", manifest["files"])
+	if !ok || len(files) != 1 || files[0] != "bar.prototext" {
+		t.Fatalf("expected files=[bar.prototext], got %v", manifest["files"])
 	}
 	if _, ok := manifest["generator_args"]; ok {
 		t.Fatalf("unexpected generator_args key in rendered output")

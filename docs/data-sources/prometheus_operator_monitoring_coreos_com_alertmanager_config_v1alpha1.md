@@ -2832,9 +2832,7 @@ It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
 - `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
 
 It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
-- `proxy_url` (String) Optional proxy URL.
-
-If defined, this field takes precedence over `proxyUrl`.
+- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
 - `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--rocketchat_configs--http_config--tls_config))
 
 <a id="nestedblock--spec--receivers--rocketchat_configs--http_config--authorization"></a>

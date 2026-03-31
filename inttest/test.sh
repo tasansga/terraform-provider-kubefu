@@ -52,7 +52,7 @@ case "$GOOS" in
   windows) PATHSEP=";" ;;
   *) PATHSEP=":" ;;
 esac
-export KUBEFU_SCHEMA_PATHS="$TF_DIR/schemas/ktopic.yaml${PATHSEP}$TF_DIR/schemas/kwidget.yaml"
+export KUBEFU_SCHEMA_PATHS="$TF_DIR/schemas/foo.yaml${PATHSEP}$TF_DIR/schemas/bar.yaml"
 
 TF_BIN="${TF_BIN:-$(command -v terraform || command -v tofu || true)}"
 if [[ -z "$TF_BIN" ]]; then

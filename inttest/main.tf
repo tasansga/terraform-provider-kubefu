@@ -9,8 +9,8 @@ terraform {
 
 provider "kubefu" {
   schema_paths = [
-    abspath("${path.module}/schemas/ktopic.yaml"),
-    abspath("${path.module}/schemas/kwidget.yaml"),
+    abspath("${path.module}/schemas/foo.yaml"),
+    abspath("${path.module}/schemas/bar.yaml"),
   ]
 }
 
@@ -44,7 +44,7 @@ data "kubefu_flux_kustomize_toolkit_fluxcd_io_kustomization_v1" "inttest" {
 
   spec {
     interval = "10m"
-    path     = "./workloads/cisco-msp-golden-config/wg2-messaging/variables"
+    path     = "./workloads/cisco-msp-golden-config/foo-messaging/variables"
     prune    = true
 
     source_ref {
@@ -63,7 +63,7 @@ data "kubefu_flux_kustomize_toolkit_fluxcd_io_kustomization_v1" "inttest_explici
 
   spec {
     interval = "10m"
-    path     = "./workloads/cisco-msp-golden-config/wg2-messaging/variables"
+    path     = "./workloads/cisco-msp-golden-config/foo-messaging/variables"
     prune    = true
 
     common_metadata {
