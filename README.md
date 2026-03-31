@@ -156,6 +156,20 @@ resource "kubefu_manifest" "message_core" {
 }
 ```
 
+## Example: List registered user schema data sources
+
+```hcl
+provider "kubefu" {
+  schema_paths = ["./crds"]
+}
+
+data "kubefu_registered_user_schemas" "user" {}
+
+output "user_schema_data_sources" {
+  value = data.kubefu_registered_user_schemas.user.names
+}
+```
+
 
 ## Development
 

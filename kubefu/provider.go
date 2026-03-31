@@ -127,6 +127,7 @@ func Provider() *schema.Provider {
 	}
 
 	dataSources := generated.DataSources(generated.Versions{})
+	registeredUserDataSourceNames := make([]string, 0, len(userDataSources))
 	for key, resource := range userDataSources {
 		if _, exists := dataSources[key]; exists {
 			userInitDiags = append(userInitDiags, diag.Diagnostic{
@@ -137,7 +138,12 @@ func Provider() *schema.Provider {
 			continue
 		}
 		dataSources[key] = resource
+		registeredUserDataSourceNames = append(registeredUserDataSourceNames, key)
 	}
+	if ds := userSchemasRegisteredDiagnostic(registeredUserDataSourceNames); ds != nil {
+		userInitDiags = append(userInitDiags, *ds)
+	}
+	dataSources[registeredUserSchemasDataSourceName] = dataSourceRegisteredUserSchemas(registeredUserDataSourceNames)
 	p.DataSourcesMap = dataSources
 	p.ConfigureContextFunc = func(ctx context.Context, d *schema.ResourceData) (any, diag.Diagnostics) {
 		configSchemaPaths := getStringList(d, "schema_paths")
@@ -186,6 +192,7 @@ func Provider() *schema.Provider {
 			}
 			versioned[key] = resource
 		}
+		versioned[registeredUserSchemasDataSourceName] = dataSourceRegisteredUserSchemas(registeredUserDataSourceNames)
 		p.DataSourcesMap = versioned
 		diags := append(userInitDiags, warnIfClusterVersionMismatch(ctx, cfg)...)
 		return cfg, diags
