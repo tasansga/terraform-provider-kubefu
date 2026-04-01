@@ -19,6 +19,7 @@ Generated data source for io.k8s.api.apps.v1.GeneratorArgs
 
 - `behavior` (String)
 - `kv_pair_sources` (Block List, Max: 1) (see [below for nested schema](#nestedblock--kv_pair_sources))
+- `metadata` (Block List, Max: 1) Standard object's metadata. (see [below for nested schema](#nestedblock--metadata))
 - `name` (String)
 - `namespace` (String)
 
@@ -39,3 +40,14 @@ Optional:
 - `envs` (List of String)
 - `files` (List of String)
 - `literals` (List of String)
+
+
+<a id="nestedblock--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String) Map of string keys and values for storing arbitrary metadata.
+- `labels` (Map of String) Map of string keys and values for organizing resources.
+- `name` (String) Name of the resource.
+- `namespace` (String) Namespace for namespaced resources.

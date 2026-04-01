@@ -89,6 +89,44 @@ func dataSourceKustomizeKustomizeConfigK8sIoGeneratorArgsV1Beta1() *schema.Resou
 					},
 				}},
 			},
+			"metadata": {
+				Type:        schema.TypeList,
+				Description: "Standard object's metadata.",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"annotations": {
+						Type:        schema.TypeMap,
+						Description: "Map of string keys and values for storing arbitrary metadata.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"labels": {
+						Type:        schema.TypeMap,
+						Description: "Map of string keys and values for organizing resources.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"name": {
+						Type:        schema.TypeString,
+						Description: "Name of the resource.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"namespace": {
+						Type:        schema.TypeString,
+						Description: "Namespace for namespaced resources.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
+			},
 			"name": {
 				Type:        schema.TypeString,
 				Description: "",
@@ -113,7 +151,7 @@ func dataSourceKustomizeKustomizeConfigK8sIoGeneratorArgsV1Beta1Read(_ context.C
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.config.k8s.io/v1beta1", "GeneratorArgs", "kustomize.config.k8s.io/v1beta1/GeneratorArgs"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"behavior", "kv_pair_sources", "name", "namespace"}, []string{"kv_pair_sources"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"behavior", "kv_pair_sources", "metadata", "name", "namespace"}, []string{"kv_pair_sources", "metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

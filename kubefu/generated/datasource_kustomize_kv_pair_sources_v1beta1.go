@@ -72,6 +72,44 @@ func dataSourceKustomizeKustomizeConfigK8sIoKvPairSourcesV1Beta1() *schema.Resou
 				Computed:    true,
 				Elem: &schema.Schema{Type: schema.TypeString},
 			},
+			"metadata": {
+				Type:        schema.TypeList,
+				Description: "Standard object's metadata.",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"annotations": {
+						Type:        schema.TypeMap,
+						Description: "Map of string keys and values for storing arbitrary metadata.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"labels": {
+						Type:        schema.TypeMap,
+						Description: "Map of string keys and values for organizing resources.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"name": {
+						Type:        schema.TypeString,
+						Description: "Name of the resource.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"namespace": {
+						Type:        schema.TypeString,
+						Description: "Namespace for namespaced resources.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
+			},
 		},
 	}
 }
@@ -82,7 +120,7 @@ func dataSourceKustomizeKustomizeConfigK8sIoKvPairSourcesV1Beta1Read(_ context.C
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.config.k8s.io/v1beta1", "KvPairSources", "kustomize.config.k8s.io/v1beta1/KvPairSources"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"env", "envs", "files", "literals"}, []string{}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"env", "envs", "files", "literals", "metadata"}, []string{"metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

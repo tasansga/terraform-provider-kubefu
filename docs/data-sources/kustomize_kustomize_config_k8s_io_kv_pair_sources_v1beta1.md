@@ -21,6 +21,7 @@ Generated data source for io.k8s.api.apps.v1.KvPairSources
 - `envs` (List of String)
 - `files` (List of String)
 - `literals` (List of String)
+- `metadata` (Block List, Max: 1) Standard object's metadata. (see [below for nested schema](#nestedblock--metadata))
 
 ### Read-Only
 
@@ -29,3 +30,13 @@ Generated data source for io.k8s.api.apps.v1.KvPairSources
 - `kind` (String) Kind is a string value representing the REST resource this object represents.
 - `kubefu_manifest_json` (String) Rendered manifest (canonical JSON) for this data source.
 - `kubefu_manifest_yaml` (String) Rendered manifest (canonical YAML) for this data source.
+
+<a id="nestedblock--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String) Map of string keys and values for storing arbitrary metadata.
+- `labels` (Map of String) Map of string keys and values for organizing resources.
+- `name` (String) Name of the resource.
+- `namespace` (String) Namespace for namespaced resources.

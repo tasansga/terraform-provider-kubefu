@@ -18,6 +18,7 @@ Generated data source for io.k8s.api.apps.v1.ConfigMapArgs
 ### Optional
 
 - `generator_args` (Block List, Max: 1) (see [below for nested schema](#nestedblock--generator_args))
+- `metadata` (Block List, Max: 1) Standard object's metadata. (see [below for nested schema](#nestedblock--metadata))
 
 ### Read-Only
 
@@ -46,3 +47,15 @@ Optional:
 - `envs` (List of String)
 - `files` (List of String)
 - `literals` (List of String)
+
+
+
+<a id="nestedblock--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String) Map of string keys and values for storing arbitrary metadata.
+- `labels` (Map of String) Map of string keys and values for organizing resources.
+- `name` (String) Name of the resource.
+- `namespace` (String) Namespace for namespaced resources.

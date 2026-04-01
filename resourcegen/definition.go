@@ -44,51 +44,25 @@ type FileData struct {
 // generated data source mirrors the schema stored in Definition.Schema and is
 // written into a file named datasource_<provider>_<kind>_<version>.go.
 func (d Definition) AsDataSource(pkgName, provider string) (FileData, error) {
-	schemaMap := d.Schema
-	if schemaMap == nil {
-		schemaMap = map[string]*schema.Schema{}
-	}
 	providerName := providerSegment(provider)
 	funcName := d.DataSourceFuncName(providerName)
 	description := d.descriptionOrDefault()
 	apiVersion := apiVersionFor(d.Group, d.Version)
-	manifestJSONField := "kubefu_manifest_json"
-	manifestYAMLField := "kubefu_manifest_yaml"
-	schemaMap = copySchemaMap(schemaMap)
-	applyDefinitionSchemaOverrides(d, schemaMap)
-	schemaMap[manifestJSONField] = &schema.Schema{
-		Type:        schema.TypeString,
-		Description: "Rendered manifest (canonical JSON) for this data source.",
-		Computed:    true,
-	}
-	schemaMap[manifestYAMLField] = &schema.Schema{
-		Type:        schema.TypeString,
-		Description: "Rendered manifest (canonical YAML) for this data source.",
-		Computed:    true,
-	}
-	ensureComputedString(schemaMap, "api_version", "APIVersion defines the versioned schema of this representation of an object.")
-	ensureComputedString(schemaMap, "kind", "Kind is a string value representing the REST resource this object represents.")
-	manifestKeys := make([]string, 0, len(schemaMap))
-	for key := range schemaMap {
-		if key == "api_version" || key == "kind" || key == manifestJSONField || key == manifestYAMLField {
-			continue
-		}
-		manifestKeys = append(manifestKeys, key)
-	}
-	sort.Strings(manifestKeys)
-	manifestObjectPaths := objectPathsForSchema(schemaMap)
+	prepared := PrepareDataSourceSchema(d, d.Schema, PrepareDataSourceSchemaOptions{
+		EnsureRootMetadataName: true,
+	})
 	ds := &resource.DataSource{
 		PackageName:         pkgName,
 		FuncName:            funcName,
 		Description:         description,
-		Schema:              schemaMap,
+		Schema:              prepared.Schema,
 		ProviderName:        d.Provider,
 		CompatibleVersions:  d.ProviderVersions,
 		APIVersion:          apiVersion,
 		Kind:                d.Kind,
 		ID:                  d.ID(),
-		ManifestKeys:        manifestKeys,
-		ManifestObjectPaths: manifestObjectPaths,
+		ManifestKeys:        prepared.ManifestKeys,
+		ManifestObjectPaths: prepared.ManifestObjectPaths,
 	}
 	source, err := ds.Render()
 	if err != nil {

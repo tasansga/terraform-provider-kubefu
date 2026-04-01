@@ -1,10 +1,14 @@
 package kubefu
 
 import (
+	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 const sampleCRD = `
@@ -38,6 +42,32 @@ spec:
                 topicName:
                   type: string
                 partitions:
+                  type: integer
+`
+
+const sampleCRDNoMetadata = `
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: widgets.example.io
+spec:
+  group: example.io
+  names:
+    kind: Widget
+    plural: widgets
+  scope: Namespaced
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                size:
                   type: integer
 `
 
@@ -96,5 +126,65 @@ func TestLoadUserSchemasFromDirContinuesOnError(t *testing.T) {
 	}
 	if len(diags) == 0 {
 		t.Fatalf("expected diagnostics for bad file")
+	}
+}
+
+func TestLoadUserSchemasAddsMetadataNameWhenMissing(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "widget.yaml")
+	if err := os.WriteFile(path, []byte(sampleCRDNoMetadata), 0o644); err != nil {
+		t.Fatalf("write CRD: %v", err)
+	}
+	dataSources, diags := loadUserSchemas([]string{path})
+	if len(diags) > 0 {
+		t.Fatalf("unexpected diagnostics: %+v", diags)
+	}
+	if len(dataSources) != 1 {
+		t.Fatalf("expected 1 data source, got %d", len(dataSources))
+	}
+	var ds *schema.Resource
+	for _, resource := range dataSources {
+		ds = resource
+	}
+	if ds == nil || ds.Schema == nil {
+		t.Fatalf("expected data source schema")
+	}
+	metadataField, ok := ds.Schema["metadata"]
+	if !ok || metadataField == nil {
+		t.Fatalf("expected metadata field")
+	}
+	if metadataField.Type != schema.TypeList {
+		t.Fatalf("expected metadata list type, got %d", metadataField.Type)
+	}
+	metaElem, ok := metadataField.Elem.(*schema.Resource)
+	if !ok || metaElem == nil || metaElem.Schema == nil {
+		t.Fatalf("expected metadata elem schema")
+	}
+	if _, ok := metaElem.Schema["name"]; !ok {
+		t.Fatalf("expected metadata.name field")
+	}
+
+	d := ds.Data(nil)
+	if err := d.Set("metadata", []interface{}{map[string]interface{}{"name": "widget-a"}}); err != nil {
+		t.Fatalf("set metadata: %v", err)
+	}
+	readDiags := ds.ReadContext(context.Background(), d, nil)
+	if len(readDiags) > 0 {
+		t.Fatalf("unexpected read diagnostics: %+v", readDiags)
+	}
+	rawJSON, ok := d.Get("kubefu_manifest_json").(string)
+	if !ok || strings.TrimSpace(rawJSON) == "" {
+		t.Fatalf("expected kubefu_manifest_json output")
+	}
+	var manifest map[string]interface{}
+	if err := json.Unmarshal([]byte(rawJSON), &manifest); err != nil {
+		t.Fatalf("parse manifest json: %v", err)
+	}
+	metadata, ok := manifest["metadata"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected manifest metadata object, got %T", manifest["metadata"])
+	}
+	if metadata["name"] != "widget-a" {
+		t.Fatalf("expected metadata.name widget-a, got %v", metadata["name"])
 	}
 }

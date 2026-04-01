@@ -18,6 +18,7 @@ Generated data source for io.k8s.api.apps.v1.Kustomization
 ### Optional
 
 - `config_map_generator` (Block List) (see [below for nested schema](#nestedblock--config_map_generator))
+- `metadata` (Block List, Max: 1) Standard object's metadata. (see [below for nested schema](#nestedblock--metadata))
 - `namespace` (String) Namespace to apply to resources in this kustomization.
 - `resources` (List of String) Relative paths to resource files or directories.
 - `secret_generator` (Block List) (see [below for nested schema](#nestedblock--secret_generator))
@@ -58,6 +59,17 @@ Optional:
 - `literals` (List of String)
 
 
+
+
+<a id="nestedblock--metadata"></a>
+### Nested Schema for `metadata`
+
+Optional:
+
+- `annotations` (Map of String) Map of string keys and values for storing arbitrary metadata.
+- `labels` (Map of String) Map of string keys and values for organizing resources.
+- `name` (String) Name of the resource.
+- `namespace` (String) Namespace for namespaced resources.
 
 
 <a id="nestedblock--secret_generator"></a>

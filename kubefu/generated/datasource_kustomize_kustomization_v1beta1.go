@@ -122,6 +122,44 @@ func dataSourceKustomizeKustomizeConfigK8sIoKustomizationV1Beta1() *schema.Resou
 				Required:    false,
 				Computed:    true,
 			},
+			"metadata": {
+				Type:        schema.TypeList,
+				Description: "Standard object's metadata.",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"annotations": {
+						Type:        schema.TypeMap,
+						Description: "Map of string keys and values for storing arbitrary metadata.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"labels": {
+						Type:        schema.TypeMap,
+						Description: "Map of string keys and values for organizing resources.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"name": {
+						Type:        schema.TypeString,
+						Description: "Name of the resource.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"namespace": {
+						Type:        schema.TypeString,
+						Description: "Namespace for namespaced resources.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+				}},
+			},
 			"namespace": {
 				Type:        schema.TypeString,
 				Description: "Namespace to apply to resources in this kustomization.",
@@ -235,7 +273,7 @@ func dataSourceKustomizeKustomizeConfigK8sIoKustomizationV1Beta1Read(_ context.C
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.config.k8s.io/v1beta1", "Kustomization", "kustomize.config.k8s.io/v1beta1/Kustomization"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"config_map_generator", "namespace", "resources", "secret_generator"}, []string{"config_map_generator.generator_args", "config_map_generator.generator_args.kv_pair_sources", "secret_generator.generator_args", "secret_generator.generator_args.kv_pair_sources"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"config_map_generator", "metadata", "namespace", "resources", "secret_generator"}, []string{"config_map_generator.generator_args", "config_map_generator.generator_args.kv_pair_sources", "metadata", "secret_generator.generator_args", "secret_generator.generator_args.kv_pair_sources"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

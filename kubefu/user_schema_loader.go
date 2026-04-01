@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"unicode"
 
@@ -145,27 +144,9 @@ func buildUserSchemaDataSource(entry resourcegen.ResourceEntry, provider string)
 	if key == "" {
 		return nil, ""
 	}
-	schemaMap := copySchemaMap(entry.Schema)
-	ensureComputedString(schemaMap, "api_version", "APIVersion defines the versioned schema of this representation of an object.")
-	ensureComputedString(schemaMap, "kind", "Kind is a string value representing the REST resource this object represents.")
-	schemaMap["kubefu_manifest_json"] = &schema.Schema{
-		Type:        schema.TypeString,
-		Description: "Rendered manifest (canonical JSON) for this data source.",
-		Computed:    true,
-	}
-	schemaMap["kubefu_manifest_yaml"] = &schema.Schema{
-		Type:        schema.TypeString,
-		Description: "Rendered manifest (canonical YAML) for this data source.",
-		Computed:    true,
-	}
-	manifestKeys := make([]string, 0, len(schemaMap))
-	for name := range schemaMap {
-		if name == "api_version" || name == "kind" || name == "kubefu_manifest_json" || name == "kubefu_manifest_yaml" {
-			continue
-		}
-		manifestKeys = append(manifestKeys, name)
-	}
-	manifestObjectPaths := objectPathsForSchema(schemaMap)
+	prepared := resourcegen.PrepareDataSourceSchema(def, entry.Schema, resourcegen.PrepareDataSourceSchemaOptions{
+		EnsureRootMetadataName: true,
+	})
 	apiVersion := apiVersionFor(entry.Group, entry.Version)
 	id := def.ID()
 	description := entry.DefinitionDescription
@@ -177,85 +158,14 @@ func buildUserSchemaDataSource(entry resourcegen.ResourceEntry, provider string)
 			if err := manifest.SetDataSourceDefaults(d, apiVersion, entry.Kind, id); err != nil {
 				return diag.FromErr(err)
 			}
-			if err := manifest.SetDataSourceManifestWithObjectPathsForMeta(d, m, manifestKeys, manifestObjectPaths); err != nil {
+			if err := manifest.SetDataSourceManifestWithObjectPathsForMeta(d, m, prepared.ManifestKeys, prepared.ManifestObjectPaths); err != nil {
 				return diag.FromErr(err)
 			}
 			return nil
 		},
 		Description: description,
-		Schema:      schemaMap,
+		Schema:      prepared.Schema,
 	}, key
-}
-
-func copySchemaMap(src map[string]*schema.Schema) map[string]*schema.Schema {
-	if src == nil {
-		return map[string]*schema.Schema{}
-	}
-	dst := make(map[string]*schema.Schema, len(src))
-	for k, v := range src {
-		dst[k] = v
-	}
-	return dst
-}
-
-func ensureComputedString(schemaMap map[string]*schema.Schema, key, description string) {
-	if schemaMap == nil {
-		return
-	}
-	if existing, ok := schemaMap[key]; ok && existing != nil {
-		clone := *existing
-		clone.Required = false
-		clone.Optional = false
-		clone.Computed = true
-		if clone.Description == "" && description != "" {
-			clone.Description = description
-		}
-		schemaMap[key] = &clone
-		return
-	}
-	schemaMap[key] = &schema.Schema{
-		Type:        schema.TypeString,
-		Description: description,
-		Computed:    true,
-	}
-}
-
-func objectPathsForSchema(schemaMap map[string]*schema.Schema) []string {
-	if len(schemaMap) == 0 {
-		return nil
-	}
-	paths := make(map[string]struct{})
-	collectObjectPaths(schemaMap, "", paths)
-	if len(paths) == 0 {
-		return nil
-	}
-	keys := make([]string, 0, len(paths))
-	for key := range paths {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-	return keys
-}
-
-func collectObjectPaths(schemaMap map[string]*schema.Schema, prefix string, paths map[string]struct{}) {
-	for name, entry := range schemaMap {
-		if entry == nil {
-			continue
-		}
-		path := name
-		if prefix != "" {
-			path = prefix + "." + name
-		}
-		elem, ok := entry.Elem.(*schema.Resource)
-		if entry.Type == schema.TypeList && ok {
-			if entry.MaxItems == 1 {
-				paths[path] = struct{}{}
-			}
-			if elem != nil {
-				collectObjectPaths(elem.Schema, path, paths)
-			}
-		}
-	}
 }
 
 func normalizeProviderSegment(provider string) string {

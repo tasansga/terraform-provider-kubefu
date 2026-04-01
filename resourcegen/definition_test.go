@@ -169,3 +169,34 @@ func TestDefinitionAsDataSourceKustomizationAddsNamespaceAndResources(t *testing
 		t.Fatalf("generated data source missing resources field: %s", content)
 	}
 }
+
+func TestDefinitionAsDataSourceAddsMetadataNameWhenMissing(t *testing.T) {
+	def := Definition{
+		Kind:    "Widget",
+		Group:   "example.io",
+		Version: "v1",
+		Schema: map[string]*schema.Schema{
+			"spec": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"size": {
+						Type:     schema.TypeInt,
+						Optional: true,
+					},
+				}},
+			},
+		},
+	}
+	result, err := def.AsDataSource("generated", "user")
+	if err != nil {
+		t.Fatalf("AsDataSource() error: %v", err)
+	}
+	content := string(result.Content)
+	if !strings.Contains(content, `"metadata": {`) {
+		t.Fatalf("generated data source missing metadata field: %s", content)
+	}
+	if !strings.Contains(content, `"name": {`) {
+		t.Fatalf("generated data source missing metadata.name field: %s", content)
+	}
+}
