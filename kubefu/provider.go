@@ -113,7 +113,7 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				DefaultFunc: schemaPathsDefaultFunc,
-				Description: "Optional list of local schema files or directories to load (CRD YAML or OpenAPI JSON)",
+				Description: "Optional list of local schema files or directories to load (CRD YAML or OpenAPI JSON). Must match KUBEFU_SCHEMA_PATHS exactly; absolute paths are recommended.",
 			},
 			"manifest_render_mode": {
 				Type:         schema.TypeString,

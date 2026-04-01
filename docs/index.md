@@ -29,4 +29,4 @@ description: |-
 - `kustomize_version` (List of String) Optional list of Kustomize schema versions to target
 - `manifest_render_mode` (String) Manifest rendering mode for kubefu_manifest_json/kubefu_manifest_yaml. Use "compact" to omit empty/zero values, or "canonical" to preserve all values.
 - `prometheus_operator_version` (List of String) Optional list of Prometheus Operator schema versions to target
-- `schema_paths` (List of String) Optional list of local schema files or directories to load (CRD YAML or OpenAPI JSON)
+- `schema_paths` (List of String) Optional list of local schema files or directories to load (CRD YAML or OpenAPI JSON). Must match KUBEFU_SCHEMA_PATHS exactly; absolute paths are recommended.

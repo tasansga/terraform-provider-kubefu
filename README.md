@@ -158,9 +158,11 @@ resource "kubefu_manifest" "message_core" {
 
 ## Example: List registered user schema data sources
 
+`KUBEFU_SCHEMA_PATHS` must be set before provider schema loading and must match `schema_paths` exactly. Using absolute paths for both is recommended.
+
 ```hcl
 provider "kubefu" {
-  schema_paths = ["./crds"]
+  schema_paths = ["/abs/path/to/crds"]
 }
 
 data "kubefu_registered_user_schemas" "user" {}
