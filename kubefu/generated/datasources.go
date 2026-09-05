@@ -21,7 +21,7 @@ type Versions struct {
 }
 
 func DataSources(versions Versions) map[string]*schema.Resource {
-	result := make(map[string]*schema.Resource, 336)
+	result := make(map[string]*schema.Resource, 361)
 	{
 		ds := dataSourceCertManagerAcmeCertManagerIoChallengeV1()
 		warnings := make([]string, 0, 2)
@@ -821,6 +821,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_external_secrets_generators_external_secrets_io_acr_access_token_v1alpha1"] = ds
 	}
 	{
+		ds := dataSourceExternalSecretsGeneratorsExternalSecretsIoBeyondtrustWorkloadCredentialsDynamicSecretV1Alpha1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("external_secrets"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceExternalSecretsGeneratorsExternalSecretsIoBeyondtrustWorkloadCredentialsDynamicSecretV1Alpha1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_external_secrets_generators_external_secrets_io_beyondtrust_workload_credentials_dynamic_secret_v1alpha1",
+					"external_secrets",
+					strings.Join(dataSourceExternalSecretsGeneratorsExternalSecretsIoBeyondtrustWorkloadCredentialsDynamicSecretV1Alpha1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_external_secrets_generators_external_secrets_io_beyondtrust_workload_credentials_dynamic_secret_v1alpha1"] = ds
+	}
+	{
 		ds := dataSourceExternalSecretsGeneratorsExternalSecretsIoCloudsmithAccessTokenV1Alpha1()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("external_secrets"))
@@ -966,6 +987,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 			ds.DeprecationMessage = strings.Join(warnings, " ")
 		}
 		result["kubefu_external_secrets_generators_external_secrets_io_github_access_token_v1alpha1"] = ds
+	}
+	{
+		ds := dataSourceExternalSecretsGeneratorsExternalSecretsIoGitlabDeployTokenV1Alpha1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("external_secrets"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceExternalSecretsGeneratorsExternalSecretsIoGitlabDeployTokenV1Alpha1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_external_secrets_generators_external_secrets_io_gitlab_deploy_token_v1alpha1",
+					"external_secrets",
+					strings.Join(dataSourceExternalSecretsGeneratorsExternalSecretsIoGitlabDeployTokenV1Alpha1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_external_secrets_generators_external_secrets_io_gitlab_deploy_token_v1alpha1"] = ds
 	}
 	{
 		ds := dataSourceExternalSecretsGeneratorsExternalSecretsIoGrafanaV1Alpha1()
@@ -2480,6 +2522,48 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_gateway_api_gateway_networking_k8s_io_reference_grant_v1beta1"] = ds
 	}
 	{
+		ds := dataSourceGatewayApiGatewayNetworkingK8sIoTCPRouteV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceGatewayApiGatewayNetworkingK8sIoTCPRouteV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_gateway_api_gateway_networking_k8s_io_tcp_route_v1",
+					"gateway_api",
+					strings.Join(dataSourceGatewayApiGatewayNetworkingK8sIoTCPRouteV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_gateway_api_gateway_networking_k8s_io_tcp_route_v1"] = ds
+	}
+	{
+		ds := dataSourceGatewayApiGatewayNetworkingK8sIoTCPRouteV1Alpha2()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceGatewayApiGatewayNetworkingK8sIoTCPRouteV1Alpha2CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_gateway_api_gateway_networking_k8s_io_tcp_route_v1alpha2",
+					"gateway_api",
+					strings.Join(dataSourceGatewayApiGatewayNetworkingK8sIoTCPRouteV1Alpha2CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_gateway_api_gateway_networking_k8s_io_tcp_route_v1alpha2"] = ds
+	}
+	{
 		ds := dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
@@ -2543,6 +2627,48 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_gateway_api_gateway_networking_k8s_io_tls_route_v1alpha3"] = ds
 	}
 	{
+		ds := dataSourceGatewayApiGatewayNetworkingK8sIoUDPRouteV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceGatewayApiGatewayNetworkingK8sIoUDPRouteV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_gateway_api_gateway_networking_k8s_io_udp_route_v1",
+					"gateway_api",
+					strings.Join(dataSourceGatewayApiGatewayNetworkingK8sIoUDPRouteV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_gateway_api_gateway_networking_k8s_io_udp_route_v1"] = ds
+	}
+	{
+		ds := dataSourceGatewayApiGatewayNetworkingK8sIoUDPRouteV1Alpha2()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("gateway_api"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceGatewayApiGatewayNetworkingK8sIoUDPRouteV1Alpha2CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_gateway_api_gateway_networking_k8s_io_udp_route_v1alpha2",
+					"gateway_api",
+					strings.Join(dataSourceGatewayApiGatewayNetworkingK8sIoUDPRouteV1Alpha2CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_gateway_api_gateway_networking_k8s_io_udp_route_v1alpha2"] = ds
+	}
+	{
 		ds := dataSourceK8sAdmissionregistrationK8sIoExternalAdmissionHookConfigurationV1Alpha1()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
@@ -2585,6 +2711,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_admissionregistration_k8s_io_initializer_configuration_v1alpha1"] = ds
 	}
 	{
+		ds := dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyBindingV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyBindingV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_admissionregistration_k8s_io_mutating_admission_policy_binding_v1",
+					"k8s",
+					strings.Join(dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyBindingV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_admissionregistration_k8s_io_mutating_admission_policy_binding_v1"] = ds
+	}
+	{
 		ds := dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyBindingV1Alpha1()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
@@ -2625,6 +2772,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 			ds.DeprecationMessage = strings.Join(warnings, " ")
 		}
 		result["kubefu_k8s_admissionregistration_k8s_io_mutating_admission_policy_binding_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_admissionregistration_k8s_io_mutating_admission_policy_v1",
+					"k8s",
+					strings.Join(dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_admissionregistration_k8s_io_mutating_admission_policy_v1"] = ds
 	}
 	{
 		ds := dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyV1Alpha1()
@@ -3782,6 +3950,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_certificates_k8s_io_certificate_signing_request_v1beta1"] = ds
 	}
 	{
+		ds := dataSourceK8sCertificatesK8sIoClusterTrustBundleV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sCertificatesK8sIoClusterTrustBundleV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_certificates_k8s_io_cluster_trust_bundle_v1",
+					"k8s",
+					strings.Join(dataSourceK8sCertificatesK8sIoClusterTrustBundleV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_certificates_k8s_io_cluster_trust_bundle_v1"] = ds
+	}
+	{
 		ds := dataSourceK8sCertificatesK8sIoClusterTrustBundleV1Alpha1()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
@@ -3822,6 +4011,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 			ds.DeprecationMessage = strings.Join(warnings, " ")
 		}
 		result["kubefu_k8s_certificates_k8s_io_cluster_trust_bundle_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceK8sCertificatesK8sIoPodCertificateRequestV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sCertificatesK8sIoPodCertificateRequestV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_certificates_k8s_io_pod_certificate_request_v1",
+					"k8s",
+					strings.Join(dataSourceK8sCertificatesK8sIoPodCertificateRequestV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_certificates_k8s_io_pod_certificate_request_v1"] = ds
 	}
 	{
 		ds := dataSourceK8sCertificatesK8sIoPodCertificateRequestV1Alpha1()
@@ -4811,6 +5021,48 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_internal_apiserver_k8s_io_storage_version_v1alpha1"] = ds
 	}
 	{
+		ds := dataSourceK8sLifecycleK8sIoEvictionRequestV1Alpha1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sLifecycleK8sIoEvictionRequestV1Alpha1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_lifecycle_k8s_io_eviction_request_v1alpha1",
+					"k8s",
+					strings.Join(dataSourceK8sLifecycleK8sIoEvictionRequestV1Alpha1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_lifecycle_k8s_io_eviction_request_v1alpha1"] = ds
+	}
+	{
+		ds := dataSourceK8sLifecycleK8sIoEvictionV1Alpha1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sLifecycleK8sIoEvictionV1Alpha1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_lifecycle_k8s_io_eviction_v1alpha1",
+					"k8s",
+					strings.Join(dataSourceK8sLifecycleK8sIoEvictionV1Alpha1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_lifecycle_k8s_io_eviction_v1alpha1"] = ds
+	}
+	{
 		ds := dataSourceK8sNetworkingK8sIoClusterCIDRV1Alpha1()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
@@ -5525,6 +5777,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_resource_k8s_io_device_class_v1beta2"] = ds
 	}
 	{
+		ds := dataSourceK8sResourceK8sIoDeviceTaintRuleV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sResourceK8sIoDeviceTaintRuleV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_resource_k8s_io_device_taint_rule_v1",
+					"k8s",
+					strings.Join(dataSourceK8sResourceK8sIoDeviceTaintRuleV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_resource_k8s_io_device_taint_rule_v1"] = ds
+	}
+	{
 		ds := dataSourceK8sResourceK8sIoDeviceTaintRuleV1Alpha3()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
@@ -5544,6 +5817,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 			ds.DeprecationMessage = strings.Join(warnings, " ")
 		}
 		result["kubefu_k8s_resource_k8s_io_device_taint_rule_v1alpha3"] = ds
+	}
+	{
+		ds := dataSourceK8sResourceK8sIoDeviceTaintRuleV1Beta2()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sResourceK8sIoDeviceTaintRuleV1Beta2CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_resource_k8s_io_device_taint_rule_v1beta2",
+					"k8s",
+					strings.Join(dataSourceK8sResourceK8sIoDeviceTaintRuleV1Beta2CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_resource_k8s_io_device_taint_rule_v1beta2"] = ds
 	}
 	{
 		ds := dataSourceK8sResourceK8sIoPodSchedulingContextV1Alpha2()
@@ -5945,6 +6239,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_resource_k8s_io_resource_class_v1alpha2"] = ds
 	}
 	{
+		ds := dataSourceK8sResourceK8sIoResourcePoolStatusRequestV1Alpha3()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sResourceK8sIoResourcePoolStatusRequestV1Alpha3CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_resource_k8s_io_resource_pool_status_request_v1alpha3",
+					"k8s",
+					strings.Join(dataSourceK8sResourceK8sIoResourcePoolStatusRequestV1Alpha3CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_resource_k8s_io_resource_pool_status_request_v1alpha3"] = ds
+	}
+	{
 		ds := dataSourceK8sResourceK8sIoResourceSliceV1()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
@@ -6050,6 +6365,90 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_resource_k8s_io_resource_slice_v1beta2"] = ds
 	}
 	{
+		ds := dataSourceK8sSchedulingK8sIoCompositePodGroupV1Alpha3()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sSchedulingK8sIoCompositePodGroupV1Alpha3CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_scheduling_k8s_io_composite_pod_group_v1alpha3",
+					"k8s",
+					strings.Join(dataSourceK8sSchedulingK8sIoCompositePodGroupV1Alpha3CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_scheduling_k8s_io_composite_pod_group_v1alpha3"] = ds
+	}
+	{
+		ds := dataSourceK8sSchedulingK8sIoPodGroupV1Alpha2()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sSchedulingK8sIoPodGroupV1Alpha2CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_scheduling_k8s_io_pod_group_v1alpha2",
+					"k8s",
+					strings.Join(dataSourceK8sSchedulingK8sIoPodGroupV1Alpha2CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_scheduling_k8s_io_pod_group_v1alpha2"] = ds
+	}
+	{
+		ds := dataSourceK8sSchedulingK8sIoPodGroupV1Alpha3()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sSchedulingK8sIoPodGroupV1Alpha3CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_scheduling_k8s_io_pod_group_v1alpha3",
+					"k8s",
+					strings.Join(dataSourceK8sSchedulingK8sIoPodGroupV1Alpha3CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_scheduling_k8s_io_pod_group_v1alpha3"] = ds
+	}
+	{
+		ds := dataSourceK8sSchedulingK8sIoPodGroupV1Beta1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sSchedulingK8sIoPodGroupV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_scheduling_k8s_io_pod_group_v1beta1",
+					"k8s",
+					strings.Join(dataSourceK8sSchedulingK8sIoPodGroupV1Beta1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_scheduling_k8s_io_pod_group_v1beta1"] = ds
+	}
+	{
 		ds := dataSourceK8sSchedulingK8sIoPriorityClassV1()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
@@ -6132,6 +6531,69 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 			ds.DeprecationMessage = strings.Join(warnings, " ")
 		}
 		result["kubefu_k8s_scheduling_k8s_io_workload_v1alpha1"] = ds
+	}
+	{
+		ds := dataSourceK8sSchedulingK8sIoWorkloadV1Alpha2()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sSchedulingK8sIoWorkloadV1Alpha2CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_scheduling_k8s_io_workload_v1alpha2",
+					"k8s",
+					strings.Join(dataSourceK8sSchedulingK8sIoWorkloadV1Alpha2CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_scheduling_k8s_io_workload_v1alpha2"] = ds
+	}
+	{
+		ds := dataSourceK8sSchedulingK8sIoWorkloadV1Alpha3()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sSchedulingK8sIoWorkloadV1Alpha3CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_scheduling_k8s_io_workload_v1alpha3",
+					"k8s",
+					strings.Join(dataSourceK8sSchedulingK8sIoWorkloadV1Alpha3CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_scheduling_k8s_io_workload_v1alpha3"] = ds
+	}
+	{
+		ds := dataSourceK8sSchedulingK8sIoWorkloadV1Beta1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sSchedulingK8sIoWorkloadV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_scheduling_k8s_io_workload_v1beta1",
+					"k8s",
+					strings.Join(dataSourceK8sSchedulingK8sIoWorkloadV1Beta1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_scheduling_k8s_io_workload_v1beta1"] = ds
 	}
 	{
 		ds := dataSourceK8sSettingsK8sIoPodPresetV1Alpha1()
@@ -6470,6 +6932,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 		result["kubefu_k8s_storage_k8s_io_volume_attributes_class_v1beta1"] = ds
 	}
 	{
+		ds := dataSourceK8sStoragemigrationK8sIoStorageVersionMigrationV1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceK8sStoragemigrationK8sIoStorageVersionMigrationV1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_k8s_storagemigration_k8s_io_storage_version_migration_v1",
+					"k8s",
+					strings.Join(dataSourceK8sStoragemigrationK8sIoStorageVersionMigrationV1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_k8s_storagemigration_k8s_io_storage_version_migration_v1"] = ds
+	}
+	{
 		ds := dataSourceK8sStoragemigrationK8sIoStorageVersionMigrationV1Alpha1()
 		warnings := make([]string, 0, 2)
 		configured := versionpkg.NormalizeList(versions.versionFor("k8s"))
@@ -6510,6 +6993,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 			ds.DeprecationMessage = strings.Join(warnings, " ")
 		}
 		result["kubefu_k8s_storagemigration_k8s_io_storage_version_migration_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceKarpenterAwsAutoscalingXK8sIoCapacityBufferV1Beta1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("karpenter_aws"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKarpenterAwsAutoscalingXK8sIoCapacityBufferV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_karpenter_aws_autoscaling_x_k8s_io_capacity_buffer_v1beta1",
+					"karpenter_aws",
+					strings.Join(dataSourceKarpenterAwsAutoscalingXK8sIoCapacityBufferV1Beta1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_karpenter_aws_autoscaling_x_k8s_io_capacity_buffer_v1beta1"] = ds
 	}
 	{
 		ds := dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1()
@@ -6657,6 +7161,27 @@ func DataSources(versions Versions) map[string]*schema.Resource {
 			ds.DeprecationMessage = strings.Join(warnings, " ")
 		}
 		result["kubefu_karpenter_aws_karpenter_sh_node_pool_v1beta1"] = ds
+	}
+	{
+		ds := dataSourceKarpenterCoreAutoscalingXK8sIoCapacityBufferV1Beta1()
+		warnings := make([]string, 0, 2)
+		configured := versionpkg.NormalizeList(versions.versionFor("karpenter_core"))
+		if len(configured) > 0 {
+			incompatible := versionpkg.FilterIncompatible(configured, dataSourceKarpenterCoreAutoscalingXK8sIoCapacityBufferV1Beta1CompatibleVersions)
+			if len(incompatible) > 0 {
+				warnings = append(warnings, fmt.Sprintf(
+					"%s is only guaranteed to work with %s versions %s; configured versions %s may be incompatible",
+					"kubefu_karpenter_core_autoscaling_x_k8s_io_capacity_buffer_v1beta1",
+					"karpenter_core",
+					strings.Join(dataSourceKarpenterCoreAutoscalingXK8sIoCapacityBufferV1Beta1CompatibleVersions, ", "),
+					strings.Join(incompatible, ", "),
+				))
+			}
+		}
+		if len(warnings) > 0 {
+			ds.DeprecationMessage = strings.Join(warnings, " ")
+		}
+		result["kubefu_karpenter_core_autoscaling_x_k8s_io_capacity_buffer_v1beta1"] = ds
 	}
 	{
 		ds := dataSourceKarpenterCoreKarpenterShNodeClaimV1()

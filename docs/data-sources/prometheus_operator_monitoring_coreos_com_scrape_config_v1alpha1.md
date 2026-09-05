@@ -608,6 +608,9 @@ Optional:
 See https://www.consul.io/api-docs/catalog#list-services
 It requires Prometheus >= 3.0.0.
 - `follow_redirects` (Boolean) Configure whether HTTP requests follow HTTP 3xx redirects. If unset, Prometheus uses its default value.
+- `health_filter` (String) healthFilter defines the filter expression used to filter the health results.
+See https://developer.hashicorp.com/consul/api-docs/health#filtering
+It requires Prometheus >= 3.11.2.
 - `namespace` (String) Namespaces are only supported in Consul Enterprise.
 - `no_proxy` (String) Comma-separated string that can contain IPs, CIDR notation, domain names that should be excluded from proxying. IP and domain names can contain port numbers.
 - `node_meta` (Map of String) Node metadata key/value pairs to filter nodes for a given service.

@@ -44,6 +44,12 @@ Optional:
 - `issuer_ref` (Block List, Max: 1) IssuerRef references a properly configured ACME-type Issuer which should be used to create this Order. If the Issuer does not exist, processing will be retried. If the Issuer is not an 'ACME' Issuer, an error will be returned and the Order will be marked as failed. (see [below for nested schema](#nestedblock--spec--issuer_ref))
 - `profile` (String) Profile allows requesting a certificate profile from the ACME server.
 Supported profiles are listed by the server's ACME directory URL.
+- `replaces` (String) Replaces is the ARI CertID (RFC 9773 §4.1) of the certificate that this
+Order is intended to replace. When set, cert-manager will include the
+"replaces" field on the newOrder request to the ACME server if and only
+if the server advertises ARI support in its directory. The CertID has
+the form "base64url(AKI).base64url(serial)" and is derived locally from
+the currently issued leaf certificate.
 - `request` (String) Certificate signing request bytes in DER encoding. This will be used when finalizing the order. This field must be set on the order.
 
 <a id="nestedblock--spec--issuer_ref"></a>

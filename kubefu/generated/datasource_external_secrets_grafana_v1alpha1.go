@@ -153,6 +153,13 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGrafanaV1Alpha1() *sche
 								Required:    false,
 								Computed:    true,
 							},
+							"seconds_to_live": {
+								Type:        schema.TypeInt,
+								Description: "SecondsToLive is the number of seconds before the generated service account token will expire.\nSome Grafana deployments (e.g. AWS Managed Grafana) require this value to be set.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 						}},
 					},
 					"url": {
@@ -212,4 +219,13 @@ var dataSourceExternalSecretsGeneratorsExternalSecretsIoGrafanaV1Alpha1Compatibl
 	"v2.0.1",
 	"v2.1.0",
 	"v2.2.0",
+	"v2.3.0",
+	"v2.4.0",
+	"v2.4.1",
+	"v2.5.0",
+	"v2.6.0",
+	"v2.7.0",
+	"v2.8.0",
+	"v2.9.0",
+	"v2.10.0",
 }

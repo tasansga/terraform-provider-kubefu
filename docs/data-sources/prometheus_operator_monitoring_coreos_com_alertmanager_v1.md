@@ -548,6 +548,7 @@ Optional:
 
 - `http_config` (Block List, Max: 1) HTTP client configuration. (see [below for nested schema](#nestedblock--spec--alertmanager_configuration--global--http_config))
 - `jira` (Block List, Max: 1) The default configuration for Jira. (see [below for nested schema](#nestedblock--spec--alertmanager_configuration--global--jira))
+- `mattermost` (Block List, Max: 1) mattermost defines the default Mattermost Config (see [below for nested schema](#nestedblock--spec--alertmanager_configuration--global--mattermost))
 - `ops_genie_api_key` (Block List, Max: 1) The default OpsGenie API Key. (see [below for nested schema](#nestedblock--spec--alertmanager_configuration--global--ops_genie_api_key))
 - `ops_genie_api_url` (Block List, Max: 1) The default OpsGenie API URL. (see [below for nested schema](#nestedblock--spec--alertmanager_configuration--global--ops_genie_api_url))
 - `pagerduty_url` (String) The default Pagerduty URL.
@@ -932,6 +933,30 @@ Optional:
 - `api_url` (String) The default Jira API URL.
 
 It requires Alertmanager >= v0.28.0.
+
+
+<a id="nestedblock--spec--alertmanager_configuration--global--mattermost"></a>
+### Nested Schema for `spec.alertmanager_configuration.global.mattermost`
+
+Optional:
+
+- `webhook_url` (Block List, Max: 1) webhookURL defines the default Mattermost Webhook URL.
+
+It requires Alertmanager >= v0.32.0. (see [below for nested schema](#nestedblock--spec--alertmanager_configuration--global--mattermost--webhook_url))
+
+<a id="nestedblock--spec--alertmanager_configuration--global--mattermost--webhook_url"></a>
+### Nested Schema for `spec.alertmanager_configuration.global.mattermost.webhook_url`
+
+Optional:
+
+- `key` (String) The key of the secret to select from.  Must be a valid secret key.
+- `name` (String) Name of the referent.
+This field is effectively required, but due to backwards compatibility is
+allowed to be empty. Instances of this type with an empty value here are
+almost certainly wrong.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+- `optional` (Boolean) Specify whether the Secret or its key must be defined
+
 
 
 <a id="nestedblock--spec--alertmanager_configuration--global--ops_genie_api_key"></a>

@@ -372,7 +372,7 @@ func dataSourceK8sNetworkingK8sIoIngressV1() *schema.Resource {
 							},
 							"http": {
 								Type:        schema.TypeList,
-								Description: "",
+								Description: "http is a HTTP IngressRuleValue, which contains a list of http selectors",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -620,4 +620,6 @@ var dataSourceK8sNetworkingK8sIoIngressV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

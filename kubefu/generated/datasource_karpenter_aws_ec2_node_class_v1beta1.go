@@ -551,4 +551,6 @@ var dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1Beta1CompatibleVersions =
 	"v1.0.10",
 	"v1.0.11",
 	"v1.0.12",
+	"v1.0.13",
+	"v1.0.14",
 }

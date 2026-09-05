@@ -2097,6 +2097,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																		Required:    true,
 																		Computed:    false,
 																	},
+																	"protocol": {
+																		Type:        schema.TypeString,
+																		Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
 																	"scheme": {
 																		Type:        schema.TypeString,
 																		Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -2227,6 +2234,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																		Required:    true,
 																		Computed:    false,
 																	},
+																	"protocol": {
+																		Type:        schema.TypeString,
+																		Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
 																	"scheme": {
 																		Type:        schema.TypeString,
 																		Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -2329,6 +2343,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Computed:    true,
 														MaxItems:    1,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"mode": {
+																Type:        schema.TypeString,
+																Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 															"port": {
 																Type:        schema.TypeInt,
 																Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -2396,6 +2417,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																Optional:    false,
 																Required:    true,
 																Computed:    false,
+															},
+															"protocol": {
+																Type:        schema.TypeString,
+																Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
 															},
 															"scheme": {
 																Type:        schema.TypeString,
@@ -2559,6 +2587,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Computed:    true,
 														MaxItems:    1,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"mode": {
+																Type:        schema.TypeString,
+																Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 															"port": {
 																Type:        schema.TypeInt,
 																Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -2626,6 +2661,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																Optional:    false,
 																Required:    true,
 																Computed:    false,
+															},
+															"protocol": {
+																Type:        schema.TypeString,
+																Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
 															},
 															"scheme": {
 																Type:        schema.TypeString,
@@ -3065,6 +3107,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Computed:    true,
 														MaxItems:    1,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"mode": {
+																Type:        schema.TypeString,
+																Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 															"port": {
 																Type:        schema.TypeInt,
 																Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -3129,6 +3178,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 															"port": {
 																Type:        schema.TypeString,
 																Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"protocol": {
+																Type:        schema.TypeString,
+																Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -3268,6 +3324,14 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"bind_mount_options": {
+														Type:        schema.TypeList,
+														Description: "bindMountOptions is the list of additional bind mount options to apply when mounting this volume into the container. Allowed values are noexec, nodev, and nosuid. These are Linux mount options and have no effect on Windows nodes. This field is not supported with image volumes. This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
 													"mount_path": {
 														Type:        schema.TypeString,
 														Description: "Path within the container at which the volume should be mounted.  Must not contain ':'.",
@@ -3766,6 +3830,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																		Required:    false,
 																		Computed:    true,
 																	},
+																	"protocol": {
+																		Type:        schema.TypeString,
+																		Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
 																	"scheme": {
 																		Type:        schema.TypeString,
 																		Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -3896,6 +3967,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																		Required:    false,
 																		Computed:    true,
 																	},
+																	"protocol": {
+																		Type:        schema.TypeString,
+																		Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
 																	"scheme": {
 																		Type:        schema.TypeString,
 																		Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -3998,6 +4076,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Computed:    true,
 														MaxItems:    1,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"mode": {
+																Type:        schema.TypeString,
+																Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 															"port": {
 																Type:        schema.TypeInt,
 																Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -4062,6 +4147,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 															"port": {
 																Type:        schema.TypeString,
 																Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"protocol": {
+																Type:        schema.TypeString,
+																Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -4228,6 +4320,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Computed:    true,
 														MaxItems:    1,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"mode": {
+																Type:        schema.TypeString,
+																Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 															"port": {
 																Type:        schema.TypeInt,
 																Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -4292,6 +4391,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 															"port": {
 																Type:        schema.TypeString,
 																Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"protocol": {
+																Type:        schema.TypeString,
+																Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -4734,6 +4840,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Computed:    true,
 														MaxItems:    1,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"mode": {
+																Type:        schema.TypeString,
+																Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 															"port": {
 																Type:        schema.TypeInt,
 																Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -4798,6 +4911,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 															"port": {
 																Type:        schema.TypeString,
 																Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"protocol": {
+																Type:        schema.TypeString,
+																Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -4944,6 +5064,14 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"bind_mount_options": {
+														Type:        schema.TypeList,
+														Description: "bindMountOptions is the list of additional bind mount options to apply when mounting this volume into the container. Allowed values are noexec, nodev, and nosuid. These are Linux mount options and have no effect on Windows nodes. This field is not supported with image volumes. This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
 													"mount_path": {
 														Type:        schema.TypeString,
 														Description: "Path within the container at which the volume should be mounted.  Must not contain ':'.",
@@ -4998,6 +5126,29 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 											"working_dir": {
 												Type:        schema.TypeString,
 												Description: "Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"eviction_responders": {
+										Type:        schema.TypeList,
+										Description: "evictionResponders reference responders that react to Evictions based on EvictionRequests. Responders should observe and communicate through the Eviction Resource API to help with the graceful termination of a pod. The responders are selected sequentially, according to their specified priority.\n\nResponders should periodically report on an eviction progress by updating the .status.responders[].heartbeatTime field of the Eviction object. If this field is not updated within the heartbeat deadline defined by the Eviction API (currently 20 minutes), the eviction is passed over to the next responder with a lower priority. If there is no other responder, the last default imperative-eviction.k8s.io/evictor responder with a priority of 100 will evict the pod using the imperative Eviction API (pods/<name>/eviction subresource).\n\nThe maximum length of the responders list is 10. Responders are not supported when the pod is part of a PodGroup (.spec.schedulingGroup is set). This field can only be set on creation and is immutable afterwards.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"name": {
+												Type:        schema.TypeString,
+												Description: "name allows you to identify the responder responding to the Eviction.\n\nIt must be a valid domain-prefixed key (such as \"acme.io/foo\"). Domain names *.k8s.io and *.kubernetes.io are reserved. This field must be unique for each responder. This field is required.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"priority": {
+												Type:        schema.TypeInt,
+												Description: "priority for this responder. Higher priorities are selected first by the evictionrequest-controller. If there are responders with the same priority, the responder whose domain name comes first in the alphabetical higher domain order, will be picked. This means that the top domain labels are compared alphabetically first, followed by the lower domain labels. The key is compared last.\n\nThe responder that is the managing controller of the pod should set the value of this field to 10000 to allow both for preemption or fallback registration by other responders.\n\nThe minimum value is 0 and the maximum value is 100000. The interval 0-999 is reserved for responders with *.k8s.io suffix. This field is required.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -5461,6 +5612,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																		Required:    true,
 																		Computed:    false,
 																	},
+																	"protocol": {
+																		Type:        schema.TypeString,
+																		Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
 																	"scheme": {
 																		Type:        schema.TypeString,
 																		Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -5591,6 +5749,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																		Required:    true,
 																		Computed:    false,
 																	},
+																	"protocol": {
+																		Type:        schema.TypeString,
+																		Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
 																	"scheme": {
 																		Type:        schema.TypeString,
 																		Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -5693,6 +5858,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Computed:    true,
 														MaxItems:    1,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"mode": {
+																Type:        schema.TypeString,
+																Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 															"port": {
 																Type:        schema.TypeInt,
 																Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -5760,6 +5932,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																Optional:    false,
 																Required:    true,
 																Computed:    false,
+															},
+															"protocol": {
+																Type:        schema.TypeString,
+																Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
 															},
 															"scheme": {
 																Type:        schema.TypeString,
@@ -5923,6 +6102,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Computed:    true,
 														MaxItems:    1,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"mode": {
+																Type:        schema.TypeString,
+																Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 															"port": {
 																Type:        schema.TypeInt,
 																Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -5990,6 +6176,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																Optional:    false,
 																Required:    true,
 																Computed:    false,
+															},
+															"protocol": {
+																Type:        schema.TypeString,
+																Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
 															},
 															"scheme": {
 																Type:        schema.TypeString,
@@ -6429,6 +6622,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Computed:    true,
 														MaxItems:    1,
 														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"mode": {
+																Type:        schema.TypeString,
+																Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 															"port": {
 																Type:        schema.TypeInt,
 																Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -6493,6 +6693,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 															"port": {
 																Type:        schema.TypeString,
 																Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"protocol": {
+																Type:        schema.TypeString,
+																Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -6632,6 +6839,14 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"bind_mount_options": {
+														Type:        schema.TypeList,
+														Description: "bindMountOptions is the list of additional bind mount options to apply when mounting this volume into the container. Allowed values are noexec, nodev, and nosuid. These are Linux mount options and have no effect on Windows nodes. This field is not supported with image volumes. This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
 													"mount_path": {
 														Type:        schema.TypeString,
 														Description: "Path within the container at which the volume should be mounted.  Must not contain ':'.",
@@ -6899,6 +7114,23 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 											"name": {
 												Type:        schema.TypeString,
 												Description: "Name of the scheduling gate. Each scheduling gate must have a unique name field.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"scheduling_group": {
+										Type:        schema.TypeList,
+										Description: "SchedulingGroup provides a reference to the immediate scheduling runtime grouping object that this Pod belongs to. This field is used by the scheduler to identify the group and apply the correct group scheduling policies. The association with a group also impacts other lifecycle aspects of a Pod that are relevant in a wider context of scheduling like preemption, resource attachment, etc. If not specified, the Pod is treated as a single unit in all of these aspects. The group object referenced by this field may not exist at the time the Pod is created. This field is immutable, but a group object with the same name may be recreated with different policies. Doing this during pod scheduling may result in the placement not conforming to the expected policies.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"pod_group_name": {
+												Type:        schema.TypeString,
+												Description: "PodGroupName specifies the name of the standalone PodGroup object that represents the runtime instance of this group. Must be a DNS subdomain.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -7566,6 +7798,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Required:    false,
 														Computed:    true,
 													},
+													"default_user": {
+														Type:        schema.TypeInt,
+														Description: "defaultUser is Optional: The owner UID of the created files by default. The defaultUser field is only used as a fallback when the item-level user field is unset. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"items": {
 														Type:        schema.TypeList,
 														Description: "If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.",
@@ -7593,6 +7832,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																Optional:    false,
 																Required:    true,
 																Computed:    false,
+															},
+															"user": {
+																Type:        schema.TypeInt,
+																Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
 															},
 														}},
 													},
@@ -7682,6 +7928,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Required:    false,
 														Computed:    true,
 													},
+													"default_user": {
+														Type:        schema.TypeInt,
+														Description: "defaultUser is Optional: The owner UID of the created files by default. The defaultUser field is only used as a fallback when the item-level user field is unset. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"items": {
 														Type:        schema.TypeList,
 														Description: "Items is a list of downward API volume file",
@@ -7758,6 +8011,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																	},
 																}},
 															},
+															"user": {
+																Type:        schema.TypeInt,
+																Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 														}},
 													},
 												}},
@@ -7773,6 +8033,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 													"medium": {
 														Type:        schema.TypeString,
 														Description: "What type of storage medium should back this directory. The default is \"\" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"mode": {
+														Type:        schema.TypeInt,
+														Description: "mode specifies the permission bits for the emptyDir directory, in numeric notation (e.g., 0755, 01777). Must be a value between 0000 and 01777. If not specified, defaults to 0777. This might be in conflict with other options that affect the file mode, like fsGroup. If fsGroup is specified, the fsGroup permissions will override the mode specified here. This field has no effect on Windows. This field is alpha and requires EmptyDirVolumeMode featuregate to be enabled.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -8739,6 +9006,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Required:    false,
 														Computed:    true,
 													},
+													"default_user": {
+														Type:        schema.TypeInt,
+														Description: "defaultUser is Optional: The owner UID of the created files by default. The defaultUser field is only used as a fallback when the item-level user field is unset. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"sources": {
 														Type:        schema.TypeList,
 														Description: "list of volume projections",
@@ -8830,6 +9104,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																		Required:    false,
 																		Computed:    true,
 																	},
+																	"user": {
+																		Type:        schema.TypeInt,
+																		Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
 																}},
 															},
 															"config_map": {
@@ -8867,6 +9148,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																				Optional:    false,
 																				Required:    true,
 																				Computed:    false,
+																			},
+																			"user": {
+																				Type:        schema.TypeInt,
+																				Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																				Optional:    true,
+																				Required:    false,
+																				Computed:    true,
 																			},
 																		}},
 																	},
@@ -8970,6 +9258,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																					},
 																				}},
 																			},
+																			"user": {
+																				Type:        schema.TypeInt,
+																				Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																				Optional:    true,
+																				Required:    false,
+																				Computed:    true,
+																			},
 																		}},
 																	},
 																}},
@@ -9024,6 +9319,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																		Required:    false,
 																		Computed:    true,
 																	},
+																	"user": {
+																		Type:        schema.TypeInt,
+																		Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
 																	"user_annotations": {
 																		Type:        schema.TypeMap,
 																		Description: "userAnnotations allow pod authors to pass additional information to the signer implementation.  Kubernetes does not restrict or validate this metadata in any way.\n\nThese values are copied verbatim into the `spec.unverifiedUserAnnotations` field of the PodCertificateRequest objects that Kubelet creates.\n\nEntries are subject to the same validation as object metadata annotations, with the addition that all keys must be domain-prefixed. No restrictions are placed on values, except an overall size limitation on the entire field.\n\nSigners should document the keys and values they support. Signers should deny requests that contain keys they do not recognize.",
@@ -9069,6 +9371,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																				Required:    true,
 																				Computed:    false,
 																			},
+																			"user": {
+																				Type:        schema.TypeInt,
+																				Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																				Optional:    true,
+																				Required:    false,
+																				Computed:    true,
+																			},
 																		}},
 																	},
 																	"name": {
@@ -9112,6 +9421,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																	"path": {
 																		Type:        schema.TypeString,
 																		Description: "Path is the path relative to the mount point of the file to project the token into.",
+																		Optional:    true,
+																		Required:    false,
+																		Computed:    true,
+																	},
+																	"user": {
+																		Type:        schema.TypeInt,
+																		Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
 																		Optional:    true,
 																		Required:    false,
 																		Computed:    true,
@@ -9357,6 +9673,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 														Required:    false,
 														Computed:    true,
 													},
+													"default_user": {
+														Type:        schema.TypeInt,
+														Description: "defaultUser is Optional: The owner UID of the created files by default. The defaultUser field is only used as a fallback when the item-level user field is unset. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"items": {
 														Type:        schema.TypeList,
 														Description: "If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.",
@@ -9384,6 +9707,13 @@ func dataSourceK8sCoreReplicationControllerV1() *schema.Resource {
 																Optional:    false,
 																Required:    true,
 																Computed:    false,
+															},
+															"user": {
+																Type:        schema.TypeInt,
+																Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
 															},
 														}},
 													},
@@ -9634,7 +9964,7 @@ func dataSourceK8sCoreReplicationControllerV1Read(_ context.Context, d *schema.R
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "ReplicationController", "core/v1/ReplicationController"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.template", "spec.template.metadata", "spec.template.metadata.initializers", "spec.template.metadata.initializers.result", "spec.template.metadata.initializers.result.details", "spec.template.metadata.initializers.result.metadata", "spec.template.spec", "spec.template.spec.affinity", "spec.template.spec.affinity.node_affinity", "spec.template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.template.spec.affinity.pod_affinity", "spec.template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.template.spec.affinity.pod_anti_affinity", "spec.template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.template.spec.containers.env.value_from", "spec.template.spec.containers.env.value_from.config_map_key_ref", "spec.template.spec.containers.env.value_from.field_ref", "spec.template.spec.containers.env.value_from.file_key_ref", "spec.template.spec.containers.env.value_from.resource_field_ref", "spec.template.spec.containers.env.value_from.secret_key_ref", "spec.template.spec.containers.env_from.config_map_ref", "spec.template.spec.containers.env_from.secret_ref", "spec.template.spec.containers.lifecycle_", "spec.template.spec.containers.lifecycle_.post_start", "spec.template.spec.containers.lifecycle_.post_start.exec", "spec.template.spec.containers.lifecycle_.post_start.http_get", "spec.template.spec.containers.lifecycle_.post_start.sleep", "spec.template.spec.containers.lifecycle_.post_start.tcp_socket", "spec.template.spec.containers.lifecycle_.pre_stop", "spec.template.spec.containers.lifecycle_.pre_stop.exec", "spec.template.spec.containers.lifecycle_.pre_stop.http_get", "spec.template.spec.containers.lifecycle_.pre_stop.sleep", "spec.template.spec.containers.lifecycle_.pre_stop.tcp_socket", "spec.template.spec.containers.liveness_probe", "spec.template.spec.containers.liveness_probe.exec", "spec.template.spec.containers.liveness_probe.grpc", "spec.template.spec.containers.liveness_probe.http_get", "spec.template.spec.containers.liveness_probe.tcp_socket", "spec.template.spec.containers.readiness_probe", "spec.template.spec.containers.readiness_probe.exec", "spec.template.spec.containers.readiness_probe.grpc", "spec.template.spec.containers.readiness_probe.http_get", "spec.template.spec.containers.readiness_probe.tcp_socket", "spec.template.spec.containers.resources", "spec.template.spec.containers.restart_policy_rules.exit_codes", "spec.template.spec.containers.security_context", "spec.template.spec.containers.security_context.app_armor_profile", "spec.template.spec.containers.security_context.capabilities", "spec.template.spec.containers.security_context.se_linux_options", "spec.template.spec.containers.security_context.seccomp_profile", "spec.template.spec.containers.security_context.windows_options", "spec.template.spec.containers.startup_probe", "spec.template.spec.containers.startup_probe.exec", "spec.template.spec.containers.startup_probe.grpc", "spec.template.spec.containers.startup_probe.http_get", "spec.template.spec.containers.startup_probe.tcp_socket", "spec.template.spec.dns_config", "spec.template.spec.ephemeral_containers.env.value_from", "spec.template.spec.ephemeral_containers.env.value_from.config_map_key_ref", "spec.template.spec.ephemeral_containers.env.value_from.field_ref", "spec.template.spec.ephemeral_containers.env.value_from.file_key_ref", "spec.template.spec.ephemeral_containers.env.value_from.resource_field_ref", "spec.template.spec.ephemeral_containers.env.value_from.secret_key_ref", "spec.template.spec.ephemeral_containers.env_from.config_map_ref", "spec.template.spec.ephemeral_containers.env_from.secret_ref", "spec.template.spec.ephemeral_containers.lifecycle_", "spec.template.spec.ephemeral_containers.lifecycle_.post_start", "spec.template.spec.ephemeral_containers.lifecycle_.post_start.exec", "spec.template.spec.ephemeral_containers.lifecycle_.post_start.http_get", "spec.template.spec.ephemeral_containers.lifecycle_.post_start.sleep", "spec.template.spec.ephemeral_containers.lifecycle_.post_start.tcp_socket", "spec.template.spec.ephemeral_containers.lifecycle_.pre_stop", "spec.template.spec.ephemeral_containers.lifecycle_.pre_stop.exec", "spec.template.spec.ephemeral_containers.lifecycle_.pre_stop.http_get", "spec.template.spec.ephemeral_containers.lifecycle_.pre_stop.sleep", "spec.template.spec.ephemeral_containers.lifecycle_.pre_stop.tcp_socket", "spec.template.spec.ephemeral_containers.liveness_probe", "spec.template.spec.ephemeral_containers.liveness_probe.exec", "spec.template.spec.ephemeral_containers.liveness_probe.grpc", "spec.template.spec.ephemeral_containers.liveness_probe.http_get", "spec.template.spec.ephemeral_containers.liveness_probe.tcp_socket", "spec.template.spec.ephemeral_containers.readiness_probe", "spec.template.spec.ephemeral_containers.readiness_probe.exec", "spec.template.spec.ephemeral_containers.readiness_probe.grpc", "spec.template.spec.ephemeral_containers.readiness_probe.http_get", "spec.template.spec.ephemeral_containers.readiness_probe.tcp_socket", "spec.template.spec.ephemeral_containers.resources", "spec.template.spec.ephemeral_containers.restart_policy_rules.exit_codes", "spec.template.spec.ephemeral_containers.security_context", "spec.template.spec.ephemeral_containers.security_context.app_armor_profile", "spec.template.spec.ephemeral_containers.security_context.capabilities", "spec.template.spec.ephemeral_containers.security_context.se_linux_options", "spec.template.spec.ephemeral_containers.security_context.seccomp_profile", "spec.template.spec.ephemeral_containers.security_context.windows_options", "spec.template.spec.ephemeral_containers.startup_probe", "spec.template.spec.ephemeral_containers.startup_probe.exec", "spec.template.spec.ephemeral_containers.startup_probe.grpc", "spec.template.spec.ephemeral_containers.startup_probe.http_get", "spec.template.spec.ephemeral_containers.startup_probe.tcp_socket", "spec.template.spec.init_containers.env.value_from", "spec.template.spec.init_containers.env.value_from.config_map_key_ref", "spec.template.spec.init_containers.env.value_from.field_ref", "spec.template.spec.init_containers.env.value_from.file_key_ref", "spec.template.spec.init_containers.env.value_from.resource_field_ref", "spec.template.spec.init_containers.env.value_from.secret_key_ref", "spec.template.spec.init_containers.env_from.config_map_ref", "spec.template.spec.init_containers.env_from.secret_ref", "spec.template.spec.init_containers.lifecycle_", "spec.template.spec.init_containers.lifecycle_.post_start", "spec.template.spec.init_containers.lifecycle_.post_start.exec", "spec.template.spec.init_containers.lifecycle_.post_start.http_get", "spec.template.spec.init_containers.lifecycle_.post_start.sleep", "spec.template.spec.init_containers.lifecycle_.post_start.tcp_socket", "spec.template.spec.init_containers.lifecycle_.pre_stop", "spec.template.spec.init_containers.lifecycle_.pre_stop.exec", "spec.template.spec.init_containers.lifecycle_.pre_stop.http_get", "spec.template.spec.init_containers.lifecycle_.pre_stop.sleep", "spec.template.spec.init_containers.lifecycle_.pre_stop.tcp_socket", "spec.template.spec.init_containers.liveness_probe", "spec.template.spec.init_containers.liveness_probe.exec", "spec.template.spec.init_containers.liveness_probe.grpc", "spec.template.spec.init_containers.liveness_probe.http_get", "spec.template.spec.init_containers.liveness_probe.tcp_socket", "spec.template.spec.init_containers.readiness_probe", "spec.template.spec.init_containers.readiness_probe.exec", "spec.template.spec.init_containers.readiness_probe.grpc", "spec.template.spec.init_containers.readiness_probe.http_get", "spec.template.spec.init_containers.readiness_probe.tcp_socket", "spec.template.spec.init_containers.resources", "spec.template.spec.init_containers.restart_policy_rules.exit_codes", "spec.template.spec.init_containers.security_context", "spec.template.spec.init_containers.security_context.app_armor_profile", "spec.template.spec.init_containers.security_context.capabilities", "spec.template.spec.init_containers.security_context.se_linux_options", "spec.template.spec.init_containers.security_context.seccomp_profile", "spec.template.spec.init_containers.security_context.windows_options", "spec.template.spec.init_containers.startup_probe", "spec.template.spec.init_containers.startup_probe.exec", "spec.template.spec.init_containers.startup_probe.grpc", "spec.template.spec.init_containers.startup_probe.http_get", "spec.template.spec.init_containers.startup_probe.tcp_socket", "spec.template.spec.os", "spec.template.spec.resource_claims.source", "spec.template.spec.resources", "spec.template.spec.security_context", "spec.template.spec.security_context.app_armor_profile", "spec.template.spec.security_context.se_linux_options", "spec.template.spec.security_context.seccomp_profile", "spec.template.spec.security_context.windows_options", "spec.template.spec.topology_spread_constraints.label_selector", "spec.template.spec.volumes.aws_elastic_block_store", "spec.template.spec.volumes.azure_disk", "spec.template.spec.volumes.azure_file", "spec.template.spec.volumes.cephfs", "spec.template.spec.volumes.cephfs.secret_ref", "spec.template.spec.volumes.cinder", "spec.template.spec.volumes.cinder.secret_ref", "spec.template.spec.volumes.config_map", "spec.template.spec.volumes.csi", "spec.template.spec.volumes.csi.node_publish_secret_ref", "spec.template.spec.volumes.downward_api", "spec.template.spec.volumes.downward_api.items.field_ref", "spec.template.spec.volumes.downward_api.items.resource_field_ref", "spec.template.spec.volumes.empty_dir", "spec.template.spec.volumes.ephemeral", "spec.template.spec.volumes.ephemeral.volume_claim_template", "spec.template.spec.volumes.ephemeral.volume_claim_template.metadata", "spec.template.spec.volumes.ephemeral.volume_claim_template.spec", "spec.template.spec.volumes.ephemeral.volume_claim_template.spec.data_source", "spec.template.spec.volumes.ephemeral.volume_claim_template.spec.data_source_ref", "spec.template.spec.volumes.ephemeral.volume_claim_template.spec.resources", "spec.template.spec.volumes.ephemeral.volume_claim_template.spec.selector", "spec.template.spec.volumes.fc", "spec.template.spec.volumes.flex_volume", "spec.template.spec.volumes.flex_volume.secret_ref", "spec.template.spec.volumes.flocker", "spec.template.spec.volumes.gce_persistent_disk", "spec.template.spec.volumes.git_repo", "spec.template.spec.volumes.glusterfs", "spec.template.spec.volumes.host_path", "spec.template.spec.volumes.image", "spec.template.spec.volumes.iscsi", "spec.template.spec.volumes.iscsi.secret_ref", "spec.template.spec.volumes.nfs", "spec.template.spec.volumes.persistent_volume_claim", "spec.template.spec.volumes.photon_persistent_disk", "spec.template.spec.volumes.portworx_volume", "spec.template.spec.volumes.projected", "spec.template.spec.volumes.projected.sources.cluster_trust_bundle", "spec.template.spec.volumes.projected.sources.cluster_trust_bundle.label_selector", "spec.template.spec.volumes.projected.sources.config_map", "spec.template.spec.volumes.projected.sources.downward_api", "spec.template.spec.volumes.projected.sources.downward_api.items.field_ref", "spec.template.spec.volumes.projected.sources.downward_api.items.resource_field_ref", "spec.template.spec.volumes.projected.sources.pod_certificate", "spec.template.spec.volumes.projected.sources.secret", "spec.template.spec.volumes.projected.sources.service_account_token", "spec.template.spec.volumes.quobyte", "spec.template.spec.volumes.rbd", "spec.template.spec.volumes.rbd.secret_ref", "spec.template.spec.volumes.scale_io", "spec.template.spec.volumes.scale_io.secret_ref", "spec.template.spec.volumes.secret", "spec.template.spec.volumes.storageos", "spec.template.spec.volumes.storageos.secret_ref", "spec.template.spec.volumes.vsphere_volume", "spec.template.spec.workload_ref", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.template", "spec.template.metadata", "spec.template.metadata.initializers", "spec.template.metadata.initializers.result", "spec.template.metadata.initializers.result.details", "spec.template.metadata.initializers.result.metadata", "spec.template.spec", "spec.template.spec.affinity", "spec.template.spec.affinity.node_affinity", "spec.template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.template.spec.affinity.pod_affinity", "spec.template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.template.spec.affinity.pod_anti_affinity", "spec.template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.template.spec.containers.env.value_from", "spec.template.spec.containers.env.value_from.config_map_key_ref", "spec.template.spec.containers.env.value_from.field_ref", "spec.template.spec.containers.env.value_from.file_key_ref", "spec.template.spec.containers.env.value_from.resource_field_ref", "spec.template.spec.containers.env.value_from.secret_key_ref", "spec.template.spec.containers.env_from.config_map_ref", "spec.template.spec.containers.env_from.secret_ref", "spec.template.spec.containers.lifecycle_", "spec.template.spec.containers.lifecycle_.post_start", "spec.template.spec.containers.lifecycle_.post_start.exec", "spec.template.spec.containers.lifecycle_.post_start.http_get", "spec.template.spec.containers.lifecycle_.post_start.sleep", "spec.template.spec.containers.lifecycle_.post_start.tcp_socket", "spec.template.spec.containers.lifecycle_.pre_stop", "spec.template.spec.containers.lifecycle_.pre_stop.exec", "spec.template.spec.containers.lifecycle_.pre_stop.http_get", "spec.template.spec.containers.lifecycle_.pre_stop.sleep", "spec.template.spec.containers.lifecycle_.pre_stop.tcp_socket", "spec.template.spec.containers.liveness_probe", "spec.template.spec.containers.liveness_probe.exec", "spec.template.spec.containers.liveness_probe.grpc", "spec.template.spec.containers.liveness_probe.http_get", "spec.template.spec.containers.liveness_probe.tcp_socket", "spec.template.spec.containers.readiness_probe", "spec.template.spec.containers.readiness_probe.exec", "spec.template.spec.containers.readiness_probe.grpc", "spec.template.spec.containers.readiness_probe.http_get", "spec.template.spec.containers.readiness_probe.tcp_socket", "spec.template.spec.containers.resources", "spec.template.spec.containers.restart_policy_rules.exit_codes", "spec.template.spec.containers.security_context", "spec.template.spec.containers.security_context.app_armor_profile", "spec.template.spec.containers.security_context.capabilities", "spec.template.spec.containers.security_context.se_linux_options", "spec.template.spec.containers.security_context.seccomp_profile", "spec.template.spec.containers.security_context.windows_options", "spec.template.spec.containers.startup_probe", "spec.template.spec.containers.startup_probe.exec", "spec.template.spec.containers.startup_probe.grpc", "spec.template.spec.containers.startup_probe.http_get", "spec.template.spec.containers.startup_probe.tcp_socket", "spec.template.spec.dns_config", "spec.template.spec.ephemeral_containers.env.value_from", "spec.template.spec.ephemeral_containers.env.value_from.config_map_key_ref", "spec.template.spec.ephemeral_containers.env.value_from.field_ref", "spec.template.spec.ephemeral_containers.env.value_from.file_key_ref", "spec.template.spec.ephemeral_containers.env.value_from.resource_field_ref", "spec.template.spec.ephemeral_containers.env.value_from.secret_key_ref", "spec.template.spec.ephemeral_containers.env_from.config_map_ref", "spec.template.spec.ephemeral_containers.env_from.secret_ref", "spec.template.spec.ephemeral_containers.lifecycle_", "spec.template.spec.ephemeral_containers.lifecycle_.post_start", "spec.template.spec.ephemeral_containers.lifecycle_.post_start.exec", "spec.template.spec.ephemeral_containers.lifecycle_.post_start.http_get", "spec.template.spec.ephemeral_containers.lifecycle_.post_start.sleep", "spec.template.spec.ephemeral_containers.lifecycle_.post_start.tcp_socket", "spec.template.spec.ephemeral_containers.lifecycle_.pre_stop", "spec.template.spec.ephemeral_containers.lifecycle_.pre_stop.exec", "spec.template.spec.ephemeral_containers.lifecycle_.pre_stop.http_get", "spec.template.spec.ephemeral_containers.lifecycle_.pre_stop.sleep", "spec.template.spec.ephemeral_containers.lifecycle_.pre_stop.tcp_socket", "spec.template.spec.ephemeral_containers.liveness_probe", "spec.template.spec.ephemeral_containers.liveness_probe.exec", "spec.template.spec.ephemeral_containers.liveness_probe.grpc", "spec.template.spec.ephemeral_containers.liveness_probe.http_get", "spec.template.spec.ephemeral_containers.liveness_probe.tcp_socket", "spec.template.spec.ephemeral_containers.readiness_probe", "spec.template.spec.ephemeral_containers.readiness_probe.exec", "spec.template.spec.ephemeral_containers.readiness_probe.grpc", "spec.template.spec.ephemeral_containers.readiness_probe.http_get", "spec.template.spec.ephemeral_containers.readiness_probe.tcp_socket", "spec.template.spec.ephemeral_containers.resources", "spec.template.spec.ephemeral_containers.restart_policy_rules.exit_codes", "spec.template.spec.ephemeral_containers.security_context", "spec.template.spec.ephemeral_containers.security_context.app_armor_profile", "spec.template.spec.ephemeral_containers.security_context.capabilities", "spec.template.spec.ephemeral_containers.security_context.se_linux_options", "spec.template.spec.ephemeral_containers.security_context.seccomp_profile", "spec.template.spec.ephemeral_containers.security_context.windows_options", "spec.template.spec.ephemeral_containers.startup_probe", "spec.template.spec.ephemeral_containers.startup_probe.exec", "spec.template.spec.ephemeral_containers.startup_probe.grpc", "spec.template.spec.ephemeral_containers.startup_probe.http_get", "spec.template.spec.ephemeral_containers.startup_probe.tcp_socket", "spec.template.spec.init_containers.env.value_from", "spec.template.spec.init_containers.env.value_from.config_map_key_ref", "spec.template.spec.init_containers.env.value_from.field_ref", "spec.template.spec.init_containers.env.value_from.file_key_ref", "spec.template.spec.init_containers.env.value_from.resource_field_ref", "spec.template.spec.init_containers.env.value_from.secret_key_ref", "spec.template.spec.init_containers.env_from.config_map_ref", "spec.template.spec.init_containers.env_from.secret_ref", "spec.template.spec.init_containers.lifecycle_", "spec.template.spec.init_containers.lifecycle_.post_start", "spec.template.spec.init_containers.lifecycle_.post_start.exec", "spec.template.spec.init_containers.lifecycle_.post_start.http_get", "spec.template.spec.init_containers.lifecycle_.post_start.sleep", "spec.template.spec.init_containers.lifecycle_.post_start.tcp_socket", "spec.template.spec.init_containers.lifecycle_.pre_stop", "spec.template.spec.init_containers.lifecycle_.pre_stop.exec", "spec.template.spec.init_containers.lifecycle_.pre_stop.http_get", "spec.template.spec.init_containers.lifecycle_.pre_stop.sleep", "spec.template.spec.init_containers.lifecycle_.pre_stop.tcp_socket", "spec.template.spec.init_containers.liveness_probe", "spec.template.spec.init_containers.liveness_probe.exec", "spec.template.spec.init_containers.liveness_probe.grpc", "spec.template.spec.init_containers.liveness_probe.http_get", "spec.template.spec.init_containers.liveness_probe.tcp_socket", "spec.template.spec.init_containers.readiness_probe", "spec.template.spec.init_containers.readiness_probe.exec", "spec.template.spec.init_containers.readiness_probe.grpc", "spec.template.spec.init_containers.readiness_probe.http_get", "spec.template.spec.init_containers.readiness_probe.tcp_socket", "spec.template.spec.init_containers.resources", "spec.template.spec.init_containers.restart_policy_rules.exit_codes", "spec.template.spec.init_containers.security_context", "spec.template.spec.init_containers.security_context.app_armor_profile", "spec.template.spec.init_containers.security_context.capabilities", "spec.template.spec.init_containers.security_context.se_linux_options", "spec.template.spec.init_containers.security_context.seccomp_profile", "spec.template.spec.init_containers.security_context.windows_options", "spec.template.spec.init_containers.startup_probe", "spec.template.spec.init_containers.startup_probe.exec", "spec.template.spec.init_containers.startup_probe.grpc", "spec.template.spec.init_containers.startup_probe.http_get", "spec.template.spec.init_containers.startup_probe.tcp_socket", "spec.template.spec.os", "spec.template.spec.resource_claims.source", "spec.template.spec.resources", "spec.template.spec.scheduling_group", "spec.template.spec.security_context", "spec.template.spec.security_context.app_armor_profile", "spec.template.spec.security_context.se_linux_options", "spec.template.spec.security_context.seccomp_profile", "spec.template.spec.security_context.windows_options", "spec.template.spec.topology_spread_constraints.label_selector", "spec.template.spec.volumes.aws_elastic_block_store", "spec.template.spec.volumes.azure_disk", "spec.template.spec.volumes.azure_file", "spec.template.spec.volumes.cephfs", "spec.template.spec.volumes.cephfs.secret_ref", "spec.template.spec.volumes.cinder", "spec.template.spec.volumes.cinder.secret_ref", "spec.template.spec.volumes.config_map", "spec.template.spec.volumes.csi", "spec.template.spec.volumes.csi.node_publish_secret_ref", "spec.template.spec.volumes.downward_api", "spec.template.spec.volumes.downward_api.items.field_ref", "spec.template.spec.volumes.downward_api.items.resource_field_ref", "spec.template.spec.volumes.empty_dir", "spec.template.spec.volumes.ephemeral", "spec.template.spec.volumes.ephemeral.volume_claim_template", "spec.template.spec.volumes.ephemeral.volume_claim_template.metadata", "spec.template.spec.volumes.ephemeral.volume_claim_template.spec", "spec.template.spec.volumes.ephemeral.volume_claim_template.spec.data_source", "spec.template.spec.volumes.ephemeral.volume_claim_template.spec.data_source_ref", "spec.template.spec.volumes.ephemeral.volume_claim_template.spec.resources", "spec.template.spec.volumes.ephemeral.volume_claim_template.spec.selector", "spec.template.spec.volumes.fc", "spec.template.spec.volumes.flex_volume", "spec.template.spec.volumes.flex_volume.secret_ref", "spec.template.spec.volumes.flocker", "spec.template.spec.volumes.gce_persistent_disk", "spec.template.spec.volumes.git_repo", "spec.template.spec.volumes.glusterfs", "spec.template.spec.volumes.host_path", "spec.template.spec.volumes.image", "spec.template.spec.volumes.iscsi", "spec.template.spec.volumes.iscsi.secret_ref", "spec.template.spec.volumes.nfs", "spec.template.spec.volumes.persistent_volume_claim", "spec.template.spec.volumes.photon_persistent_disk", "spec.template.spec.volumes.portworx_volume", "spec.template.spec.volumes.projected", "spec.template.spec.volumes.projected.sources.cluster_trust_bundle", "spec.template.spec.volumes.projected.sources.cluster_trust_bundle.label_selector", "spec.template.spec.volumes.projected.sources.config_map", "spec.template.spec.volumes.projected.sources.downward_api", "spec.template.spec.volumes.projected.sources.downward_api.items.field_ref", "spec.template.spec.volumes.projected.sources.downward_api.items.resource_field_ref", "spec.template.spec.volumes.projected.sources.pod_certificate", "spec.template.spec.volumes.projected.sources.secret", "spec.template.spec.volumes.projected.sources.service_account_token", "spec.template.spec.volumes.quobyte", "spec.template.spec.volumes.rbd", "spec.template.spec.volumes.rbd.secret_ref", "spec.template.spec.volumes.scale_io", "spec.template.spec.volumes.scale_io.secret_ref", "spec.template.spec.volumes.secret", "spec.template.spec.volumes.storageos", "spec.template.spec.volumes.storageos.secret_ref", "spec.template.spec.volumes.vsphere_volume", "spec.template.spec.workload_ref", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -9669,4 +9999,6 @@ var dataSourceK8sCoreReplicationControllerV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

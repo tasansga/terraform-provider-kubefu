@@ -100,6 +100,12 @@ serviceAccountRef must be used by providing operators service account details. (
 - `external_token_endpoint` (String) externalTokenEndpoint is the endpoint explicitly set up to provide tokens, which will be matched against the
 credential_source.url in the provided credConfig. This field is merely to double-check the external token source
 URL is having the expected value.
+- `gcp_service_account_email` (String) GCPServiceAccountEmail is the email of the Google Cloud service account to impersonate
+after Workload Identity Federation. Use this to grant access through the service account's
+IAM bindings (for example roles/secretmanager.secretAccessor). When set, it overrides
+service_account_impersonation_url in the external account JSON from credConfig;
+when serviceAccountRef is set, it also overrides the "iam.gke.io/gcp-service-account" annotation
+on that ServiceAccount.
 - `service_account_ref` (Block List, Max: 1) serviceAccountRef is the reference to the kubernetes ServiceAccount to be used for obtaining the tokens,
 when Kubernetes is configured as provider in workload identity pool. (see [below for nested schema](#nestedblock--spec--auth--workload_identity_federation--service_account_ref))
 

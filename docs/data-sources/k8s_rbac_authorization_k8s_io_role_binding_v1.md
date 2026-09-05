@@ -37,9 +37,12 @@ RoleBinding references a role, but does not contain it.  It can reference a Role
 
 Required:
 
-- `api_group` (String) APIGroup is the group for the resource being referenced
 - `kind` (String) Kind is the type of resource being referenced
 - `name` (String) Name is the name of resource being referenced
+
+Optional:
+
+- `api_group` (String) APIGroup is the group for the resource being referenced
 
 
 <a id="nestedblock--metadata"></a>

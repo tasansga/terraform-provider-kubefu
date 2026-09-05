@@ -55,6 +55,8 @@ May be set to zero to fetch and create it once. Defaults to 1h.
   No periodic updates occur if refreshInterval is 0.
 - OnChange: Only synchronizes the Secret when the ExternalSecret's metadata or specification changes
 - `secret_store_ref` (Block List, Max: 1) SecretStoreRef defines which SecretStore to fetch the ExternalSecret data. (see [below for nested schema](#nestedblock--spec--secret_store_ref))
+- `sync_windows` (Block List, Max: 1) SyncWindows optionally restricts when periodic refreshes may occur.
+Evaluated in UTC, only for Periodic refresh policy (or when refreshPolicy is unset). (see [below for nested schema](#nestedblock--spec--sync_windows))
 - `target` (Block List, Max: 1) ExternalSecretTarget defines the Kubernetes Secret to be created
 There can be only one target per ExternalSecret. (see [below for nested schema](#nestedblock--spec--target))
 
@@ -78,6 +80,7 @@ Optional:
 - `decoding_strategy` (String) Used to define a decoding Strategy
 - `key` (String) Key is the key used in the Provider, mandatory
 - `metadata_policy` (String) Policy for fetching tags/labels from provider secrets, possible options are Fetch, None. Defaults to None
+- `null_byte_policy` (String) Controls how ESO handles fetched secret data containing NUL bytes for this source.
 - `property` (String) Used to select a specific property of the Provider value (if a map), if supported
 - `version` (String) Used to select a specific version of the Provider value, if supported
 
@@ -142,6 +145,7 @@ Optional:
 - `decoding_strategy` (String) Used to define a decoding Strategy
 - `key` (String) Key is the key used in the Provider, mandatory
 - `metadata_policy` (String) Policy for fetching tags/labels from provider secrets, possible options are Fetch, None. Defaults to None
+- `null_byte_policy` (String) Controls how ESO handles fetched secret data containing NUL bytes for this source.
 - `property` (String) Used to select a specific property of the Provider value (if a map), if supported
 - `version` (String) Used to select a specific version of the Provider value, if supported
 
@@ -154,6 +158,7 @@ Optional:
 - `conversion_strategy` (String) Used to define a conversion Strategy
 - `decoding_strategy` (String) Used to define a decoding Strategy
 - `name` (Block List, Max: 1) Finds secrets based on the name. (see [below for nested schema](#nestedblock--spec--data_from--find--name))
+- `null_byte_policy` (String) Controls how ESO handles fetched secret data containing NUL bytes for this find source.
 - `path` (String) A root path to start the find operations.
 - `tags` (Map of String) Find secrets based on tags.
 
@@ -250,6 +255,32 @@ Defaults to `SecretStore`
 - `name` (String) Name of the SecretStore resource
 
 
+<a id="nestedblock--spec--sync_windows"></a>
+### Nested Schema for `spec.sync_windows`
+
+Optional:
+
+- `kind` (String) Kind applies to every window in the list.
+"allow" -- syncs are permitted only while at least one window is active;
+           all other times are blocked.
+"deny"  -- syncs are blocked while any window is active;
+           all other times are permitted.
+- `windows` (Block List) Windows is the list of schedule+duration pairs. (see [below for nested schema](#nestedblock--spec--sync_windows--windows))
+
+<a id="nestedblock--spec--sync_windows--windows"></a>
+### Nested Schema for `spec.sync_windows.windows`
+
+Optional:
+
+- `duration` (String) Duration specifies how long the window stays open after each Schedule
+firing. Example: "8h".
+- `schedule` (String) Schedule is a standard 5-field cron expression evaluated in UTC, or a
+named shorthand such as @daily or @every 1h. It marks the start time of
+each window occurrence.
+Example: "0 22 * * 1-5" opens a window every weekday at 22:00 UTC.
+
+
+
 <a id="nestedblock--spec--target"></a>
 ### Nested Schema for `spec.target`
 
@@ -310,6 +341,7 @@ Optional:
 - `literal` (String)
 - `secret` (Block List, Max: 1) TemplateRef specifies a reference to either a ConfigMap or a Secret resource. (see [below for nested schema](#nestedblock--spec--target--template--template_from--secret))
 - `target` (String) TemplateTarget specifies where the rendered templates should be applied.
+- `values_decoding_strategy` (String) Used to define a decoding Strategy for the rendered template values.
 
 <a id="nestedblock--spec--target--template--template_from--config_map"></a>
 ### Nested Schema for `spec.target.template.template_from.config_map`

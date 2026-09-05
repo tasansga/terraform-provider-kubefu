@@ -125,6 +125,13 @@ func dataSourceCertManagerAcmeCertManagerIoOrderV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"replaces": {
+						Type:        schema.TypeString,
+						Description: "Replaces is the ARI CertID (RFC 9773 §4.1) of the certificate that this\nOrder is intended to replace. When set, cert-manager will include the\n\"replaces\" field on the newOrder request to the ACME server if and only\nif the server advertises ARI support in its directory. The CertID has\nthe form \"base64url(AKI).base64url(serial)\" and is derived locally from\nthe currently issued leaf certificate.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"request": {
 						Type:        schema.TypeString,
 						Description: "Certificate signing request bytes in DER encoding. This will be used when finalizing the order. This field must be set on the order.",
@@ -290,4 +297,5 @@ var dataSourceCertManagerAcmeCertManagerIoOrderV1CompatibleVersions = []string{
 	"v1.18.0",
 	"v1.19.0",
 	"v1.20.0",
+	"v1.21.0",
 }

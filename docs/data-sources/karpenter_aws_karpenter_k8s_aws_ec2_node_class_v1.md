@@ -53,8 +53,12 @@ the AMIFamily() helper function
 - `block_device_mappings` (Block List) BlockDeviceMappings to be applied to provisioned nodes. (see [below for nested schema](#nestedblock--spec--block_device_mappings))
 - `capacity_reservation_selector_terms` (Block List) CapacityReservationSelectorTerms is a list of capacity reservation selector terms. Each term is ORed together to
 determine the set of eligible capacity reservations. (see [below for nested schema](#nestedblock--spec--capacity_reservation_selector_terms))
+- `connection_tracking` (Block List, Max: 1) ConnectionTracking configures idle connection tracking timeouts for
+ENIs Karpenter provisions in the launch template. EFA-only interfaces
+are excluded. See ConnectionTracking. (see [below for nested schema](#nestedblock--spec--connection_tracking))
 - `context` (String) Context is a Reserved field in EC2 APIs
 https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateFleet.html
+- `cpu_options` (Block List, Max: 1) CPUOptions defines the CPU options for the instance. (see [below for nested schema](#nestedblock--spec--cpu_options))
 - `detailed_monitoring` (Boolean) DetailedMonitoring controls if detailed monitoring is enabled for instances that are launched
 - `instance_profile` (String) InstanceProfile is the AWS entity that instances use.
 This field is mutually exclusive from role.
@@ -81,6 +85,8 @@ for limiting exposure of Instance Metadata and User Data to pods.
 If omitted, defaults to httpEndpoint enabled, with httpProtocolIPv6
 disabled, with httpPutResponseLimit of 1, and with httpTokens
 required. (see [below for nested schema](#nestedblock--spec--metadata_options))
+- `network_interfaces` (Block List) NetworkInterfaces specifies the network interface configurations to be attached to provisioned instances. (see [below for nested schema](#nestedblock--spec--network_interfaces))
+- `placement_group_selector` (Block List, Max: 1) PlacementGroupSelector defines the name or the id of the placement to resolve with the nodeclass. (see [below for nested schema](#nestedblock--spec--placement_group_selector))
 - `role` (String) Role is the AWS identity that nodes use. This field is immutable.
 This field is mutually exclusive from instanceProfile.
 Marking this field as immutable avoids concerns around terminating managed instance profiles from running instances.
@@ -200,6 +206,37 @@ Optional:
 Specifying '*' for a value selects all values for a given tag key.
 
 
+<a id="nestedblock--spec--connection_tracking"></a>
+### Nested Schema for `spec.connection_tracking`
+
+Optional:
+
+- `tcp_established_timeout` (Number) TCPEstablishedTimeout is the timeout (in seconds) for idle TCP connections
+in an established state.
+Value must be between 60 and 432,000 (5 days).
+If unset, EC2 applies its default which is 350 seconds for Nitro v6
+instance types (excluding P6e-GB200) and 432,000 seconds for other
+instance types.
+- `udp_stream_timeout` (Number) UDPStreamTimeout is the timeout (in seconds) for idle UDP "stream" flows
+that have seen more than one request-response transaction.
+Value must be between 60 and 180.
+If unset, EC2 applies its default of 180 seconds.
+- `udp_timeout` (Number) UDPTimeout is the timeout (in seconds) for idle UDP flows that have seen
+traffic only in a single direction or a single request-response transaction.
+Value must be between 30 and 60.
+If unset, EC2 applies its default of 30 seconds.
+
+
+<a id="nestedblock--spec--cpu_options"></a>
+### Nested Schema for `spec.cpu_options`
+
+Optional:
+
+- `nested_virtualization` (String) NestedVirtualization enables or disables nested virtualization on the instance.
+When enabled, Karpenter filters instance types to only those reporting
+"nested-virtualization" in ProcessorInfo.SupportedFeatures from DescribeInstanceTypes.
+
+
 <a id="nestedblock--spec--kubelet"></a>
 ### Nested Schema for `spec.kubelet`
 
@@ -267,6 +304,25 @@ If the state is "required", one must send a signed token header with any
 instance metadata retrieval requests. In this state, retrieving the IAM
 role credentials always returns the version 2.0 credentials; the version
 1.0 credentials are not available.
+
+
+<a id="nestedblock--spec--network_interfaces"></a>
+### Nested Schema for `spec.network_interfaces`
+
+Optional:
+
+- `device_index` (Number) DeviceIndex is the device index for the network interface attachment.
+- `interface_type` (String) InterfaceType is the type of network interface. Valid values are "interface" and "efa-only".
+- `network_card_index` (Number) NetworkCardIndex is the index of the network card to attach the interface to.
+
+
+<a id="nestedblock--spec--placement_group_selector"></a>
+### Nested Schema for `spec.placement_group_selector`
+
+Optional:
+
+- `id` (String) ID is the placement group id in EC2
+- `name` (String) Name is the placement group name in EC2
 
 
 <a id="nestedblock--spec--security_group_selector_terms"></a>

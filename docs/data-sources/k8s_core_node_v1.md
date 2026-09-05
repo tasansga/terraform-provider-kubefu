@@ -183,6 +183,7 @@ Optional:
 - `external_id` (String) External ID of the node assigned by some machine database (e.g. a cloud provider). Deprecated.
 - `pod_cid_rs` (List of String) podCIDRs represents the IP ranges assigned to the node for usage by Pods on that node. If this field is specified, the 0th entry must match the podCIDR field. It may contain at most 1 value for each of IPv4 and IPv6.
 - `pod_cidr` (String) PodCIDR represents the pod IP range assigned to the node.
+- `pod_preemption_policy` (Block List, Max: 1) PodPreemptionPolicy controls the node-level preemption behaviors for pods on this node. This is an alpha field and requires enabling the InPlacePodVerticalScalingSchedulerPreemption feature gate. (see [below for nested schema](#nestedblock--spec--pod_preemption_policy))
 - `provider_id` (String) ID of the node assigned by the cloud provider in the format: <ProviderName>://<ProviderSpecificNodeID>
 - `taints` (Block List) If specified, the node's taints. (see [below for nested schema](#nestedblock--spec--taints))
 - `unschedulable` (Boolean) Unschedulable controls node schedulability of new pods. By default, node is schedulable. More info: https://kubernetes.io/docs/concepts/nodes/node/#manual-node-administration
@@ -222,6 +223,14 @@ Optional:
 - `resource_version` (String) Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency
 - `uid` (String) UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
 
+
+
+<a id="nestedblock--spec--pod_preemption_policy"></a>
+### Nested Schema for `spec.pod_preemption_policy`
+
+Optional:
+
+- `disable_resize_preemption` (List of String) DisableResizePreemption lists the owners (e.g., autoscalers, operators, administrators) that have requested to disable scheduler and Kubelet preemption for in-place pod resize on this node. If this list is non-empty, resize-induced preemption is disabled on this node. This is an alpha field and requires enabling the InPlacePodVerticalScalingSchedulerPreemption feature gate.
 
 
 <a id="nestedblock--spec--taints"></a>
@@ -406,6 +415,7 @@ Required:
 
 Optional:
 
+- `running_in_user_namespace` (Boolean) Whether the node is running in a user namespace.
 - `swap` (Block List, Max: 1) Swap Info reported by the node. (see [below for nested schema](#nestedblock--status--node_info--swap))
 
 <a id="nestedblock--status--node_info--swap"></a>

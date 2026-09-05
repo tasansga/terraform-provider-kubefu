@@ -51,12 +51,16 @@ Optional:
 - `acr_access_token_spec` (Block List, Max: 1) ACRAccessTokenSpec defines how to generate the access token
 e.g. how to authenticate and which registry to use.
 see: https://github.com/Azure/acr/blob/main/docs/AAD-OAuth.md#overview (see [below for nested schema](#nestedblock--spec--generator--acr_access_token_spec))
+- `beyondtrust_workload_credentials_dynamic_secret_spec` (Block List, Max: 1) BeyondtrustWorkloadCredentialsDynamicSecretSpec defines the desired spec for BeyondtrustWorkloadCredentials dynamic generator.
+This generator enables obtaining temporary, short-lived credentials from BeyondTrust Workload Credentials.
+For more information, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api (see [below for nested schema](#nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec))
 - `cloudsmith_access_token_spec` (Block List, Max: 1) CloudsmithAccessTokenSpec defines the configuration for generating a Cloudsmith access token using OIDC authentication. (see [below for nested schema](#nestedblock--spec--generator--cloudsmith_access_token_spec))
 - `ecr_authorization_token_spec` (Block List, Max: 1) ECRAuthorizationTokenSpec defines the desired state to generate an AWS ECR authorization token. (see [below for nested schema](#nestedblock--spec--generator--ecr_authorization_token_spec))
 - `ecr_r_authorization_token_spec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spec--generator--ecr_r_authorization_token_spec))
 - `fake_spec` (Block List, Max: 1) FakeSpec contains the static data. (see [below for nested schema](#nestedblock--spec--generator--fake_spec))
 - `gcr_access_token_spec` (Block List, Max: 1) GCRAccessTokenSpec defines the desired state to generate a Google Container Registry access token. (see [below for nested schema](#nestedblock--spec--generator--gcr_access_token_spec))
 - `github_access_token_spec` (Block List, Max: 1) GithubAccessTokenSpec defines the desired state to generate a GitHub access token. (see [below for nested schema](#nestedblock--spec--generator--github_access_token_spec))
+- `gitlab_deploy_token_spec` (Block List, Max: 1) GitlabDeployTokenSpec defines the desired state to generate a GitLab deploy token. (see [below for nested schema](#nestedblock--spec--generator--gitlab_deploy_token_spec))
 - `grafana_spec` (Block List, Max: 1) GrafanaSpec controls the behavior of the grafana generator. (see [below for nested schema](#nestedblock--spec--generator--grafana_spec))
 - `mfa_spec` (Block List, Max: 1) MFASpec controls the behavior of the mfa generator. (see [below for nested schema](#nestedblock--spec--generator--mfa_spec))
 - `password_spec` (Block List, Max: 1) PasswordSpec controls the behavior of the password generator. (see [below for nested schema](#nestedblock--spec--generator--password_spec))
@@ -170,6 +174,115 @@ then this audiences will be appended to the list
 Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
 
+
+
+
+<a id="nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec"></a>
+### Nested Schema for `spec.generator.beyondtrust_workload_credentials_dynamic_secret_spec`
+
+Optional:
+
+- `controller` (String) Controller selects the controller that should handle this generator.
+Leave empty to use the default controller.
+- `provider_` (Block List, Max: 1) Provider contains the BeyondtrustWorkloadCredentials provider configuration including authentication,
+server connection details, and the folder path to the dynamic secret definition.
+The folderPath should point to a dynamic secret definition that has been created in
+BeyondTrust Workload Credentials (e.g., "production/aws-temp").
+For setup details, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api (see [below for nested schema](#nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_))
+- `retry_settings` (Block List, Max: 1) RetrySettings configures exponential backoff for failed API requests.
+If not specified, uses the default retry settings. (see [below for nested schema](#nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--retry_settings))
+
+<a id="nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_"></a>
+### Nested Schema for `spec.generator.beyondtrust_workload_credentials_dynamic_secret_spec.provider_`
+
+Optional:
+
+- `auth` (Block List, Max: 1) Auth configures how the Operator authenticates with the BeyondTrust Workload Credentials API.
+Currently supports API key authentication via Kubernetes secret reference.
+For authentication setup, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#authentication (see [below for nested schema](#nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_--auth))
+- `ca_bundle` (String) CABundle is a base64-encoded CA certificate used to validate the BeyondTrust Workload Credentials API TLS certificate.
+Use this when your BeyondTrust instance uses a self-signed certificate or internal CA.
+If not set, the system's trusted root certificates are used.
+- `ca_provider` (Block List, Max: 1) CAProvider points to a Secret or ConfigMap containing a PEM-encoded CA certificate.
+This is used to validate the BeyondTrust Workload Credentials API TLS certificate.
+Use this as an alternative to CABundle when you want to reference an existing Kubernetes resource. (see [below for nested schema](#nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_--ca_provider))
+- `folder_path` (String) FolderPath specifies the default folder path for secret retrieval.
+Secrets will be fetched from this folder unless overridden in the ExternalSecret spec.
+Example: "production/database" or "dev/api-keys"
+Leave empty to retrieve secrets from the root folder.
+For folder organization, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#folders
+- `server` (Block List, Max: 1) Server configures the BeyondTrust Workload Credentials server connection details.
+Includes the API URL and Site ID for your BeyondTrust instance.
+For API reference, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api (see [below for nested schema](#nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_--server))
+
+<a id="nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_--auth"></a>
+### Nested Schema for `spec.generator.beyondtrust_workload_credentials_dynamic_secret_spec.provider_.auth`
+
+Optional:
+
+- `apikey` (Block List, Max: 1) APIKey configures API token authentication for BeyondTrust Workload Credentials.
+The token is retrieved from a Kubernetes secret and used as a Bearer token for API requests. (see [below for nested schema](#nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_--auth--apikey))
+
+<a id="nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_--auth--apikey"></a>
+### Nested Schema for `spec.generator.beyondtrust_workload_credentials_dynamic_secret_spec.provider_.auth.apikey`
+
+Optional:
+
+- `token` (Block List, Max: 1) Token references the Kubernetes secret containing the BeyondTrust Workload Credentials API token.
+The secret should contain the API key used to authenticate with BeyondTrust Workload Credentials.
+Create an API token in your BeyondTrust Workload Credentials console and store it in a Kubernetes secret.
+For details on creating API tokens, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#authentication (see [below for nested schema](#nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_--auth--apikey--token))
+
+<a id="nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_--auth--apikey--token"></a>
+### Nested Schema for `spec.generator.beyondtrust_workload_credentials_dynamic_secret_spec.provider_.auth.apikey.token`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+
+<a id="nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_--ca_provider"></a>
+### Nested Schema for `spec.generator.beyondtrust_workload_credentials_dynamic_secret_spec.provider_.ca_provider`
+
+Optional:
+
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
+
+
+<a id="nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--provider_--server"></a>
+### Nested Schema for `spec.generator.beyondtrust_workload_credentials_dynamic_secret_spec.provider_.server`
+
+Optional:
+
+- `api_url` (String) APIURL is the base URL of your BeyondTrust Workload Credentials API server.
+This should be the full URL to your BeyondTrust instance.
+Example: https://api.beyondtrust.io/siie
+For more information, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#base-url
+- `site_id` (String) SiteID is your BeyondTrust Workload Credentials site identifier (UUID format).
+This identifier is unique to your BeyondTrust Workload Credentials instance.
+You can find your Site ID in the BeyondTrust Workload Credentials admin console.
+Example: a1b2c3d4-e5f6-4890-abcd-ef1234567890
+For more information, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api
+
+
+
+<a id="nestedblock--spec--generator--beyondtrust_workload_credentials_dynamic_secret_spec--retry_settings"></a>
+### Nested Schema for `spec.generator.beyondtrust_workload_credentials_dynamic_secret_spec.retry_settings`
+
+Optional:
+
+- `max_retries` (Number)
+- `retry_interval` (String)
 
 
 
@@ -467,6 +580,12 @@ serviceAccountRef must be used by providing operators service account details. (
 - `external_token_endpoint` (String) externalTokenEndpoint is the endpoint explicitly set up to provide tokens, which will be matched against the
 credential_source.url in the provided credConfig. This field is merely to double-check the external token source
 URL is having the expected value.
+- `gcp_service_account_email` (String) GCPServiceAccountEmail is the email of the Google Cloud service account to impersonate
+after Workload Identity Federation. Use this to grant access through the service account's
+IAM bindings (for example roles/secretmanager.secretAccessor). When set, it overrides
+service_account_impersonation_url in the external account JSON from credConfig;
+when serviceAccountRef is set, it also overrides the "iam.gke.io/gcp-service-account" annotation
+on that ServiceAccount.
 - `service_account_ref` (Block List, Max: 1) serviceAccountRef is the reference to the kubernetes ServiceAccount to be used for obtaining the tokens,
 when Kubernetes is configured as provider in workload identity pool. (see [below for nested schema](#nestedblock--spec--generator--gcr_access_token_spec--auth--workload_identity_federation--service_account_ref))
 
@@ -561,6 +680,58 @@ Ignored if referent is not cluster-scoped, otherwise defaults to the namespace o
 
 
 
+<a id="nestedblock--spec--generator--gitlab_deploy_token_spec"></a>
+### Nested Schema for `spec.generator.gitlab_deploy_token_spec`
+
+Optional:
+
+- `auth` (Block List, Max: 1) Auth configures how ESO authenticates with the GitLab API. (see [below for nested schema](#nestedblock--spec--generator--gitlab_deploy_token_spec--auth))
+- `expires_at` (String) ExpiresAt is an optional expiry for the deploy token. If omitted the token does
+not expire on the GitLab side and is revoked only when the generator state is
+cleaned up (on regeneration or when the consuming ExternalSecret is deleted).
+- `group_id` (String) GroupID is the numeric ID or unescaped path (e.g. parent/group) of the group to
+create the deploy token in. The generator URL-escapes paths before calling the
+GitLab API, so do not pre-encode. Mutually exclusive with projectID.
+- `name` (String) Name of the deploy token.
+- `project_id` (String) ProjectID is the numeric ID or unescaped path (e.g. group/project) of the
+project to create the deploy token in. The generator URL-escapes paths before
+calling the GitLab API, so do not pre-encode. Mutually exclusive with groupID.
+- `scopes` (List of String) Scopes granted to the deploy token. At least one scope is required.
+- `url` (String) URL configures the GitLab instance URL. Defaults to https://gitlab.com.
+- `username` (String) Username is an optional username for the deploy token. GitLab defaults it to
+gitlab+deploy-token-{n} when omitted.
+
+<a id="nestedblock--spec--generator--gitlab_deploy_token_spec--auth"></a>
+### Nested Schema for `spec.generator.gitlab_deploy_token_spec.auth`
+
+Optional:
+
+- `token` (Block List, Max: 1) Token references a secret containing a GitLab access token (personal, group, or
+project) with the api scope and at least the Maintainer role on the target. (see [below for nested schema](#nestedblock--spec--generator--gitlab_deploy_token_spec--auth--token))
+
+<a id="nestedblock--spec--generator--gitlab_deploy_token_spec--auth--token"></a>
+### Nested Schema for `spec.generator.gitlab_deploy_token_spec.auth.token`
+
+Optional:
+
+- `secret_ref` (Block List, Max: 1) SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--generator--gitlab_deploy_token_spec--auth--token--secret_ref))
+
+<a id="nestedblock--spec--generator--gitlab_deploy_token_spec--auth--token--secret_ref"></a>
+### Nested Schema for `spec.generator.gitlab_deploy_token_spec.auth.token.secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+
+
 <a id="nestedblock--spec--generator--grafana_spec"></a>
 ### Nested Schema for `spec.generator.grafana_spec`
 
@@ -623,6 +794,8 @@ Optional:
 - `role` (String) Role is the role of the service account.
 See here for the documentation on basic roles offered by Grafana:
 https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/access-control/rbac-fixed-basic-role-definitions/
+- `seconds_to_live` (Number) SecondsToLive is the number of seconds before the generated service account token will expire.
+Some Grafana deployments (e.g. AWS Managed Grafana) require this value to be set.
 
 
 
@@ -825,6 +998,9 @@ Optional:
 - `allow_empty_response` (Boolean) Do not fail if no secrets are found. Useful for requests where no data is expected.
 - `controller` (String) Used to select the correct ESO controller (think: ingress.ingressClassName)
 The ESO controller is instantiated with a specific controller name and filters VDS based on this property
+- `get_parameters` (Map of String) GetParameters are query-string parameters passed to Vault on GET calls.
+Each key may map to multiple values, matching HTTP query-string semantics.
+Ignored for non-GET methods; use Parameters for write bodies.
 - `method` (String) Vault API method to use (GET/POST/other)
 - `parameters` (Map of String) Parameters to pass to Vault write (for non-GET methods)
 - `path` (String) Vault path to obtain the dynamic secret from
@@ -956,6 +1132,7 @@ authentication method (see [below for nested schema](#nestedblock--spec--generat
 in Vault, e.g: "cert"
 - `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing client private key to
 authenticate with Vault using the Cert authentication method (see [below for nested schema](#nestedblock--spec--generator--vault_dynamic_secret_spec--provider_--auth--cert--secret_ref))
+- `vault_role` (String) VaultRole specifies the Vault role to use for TLS certificate authentication.
 
 <a id="nestedblock--spec--generator--vault_dynamic_secret_spec--provider_--auth--cert--client_cert"></a>
 ### Nested Schema for `spec.generator.vault_dynamic_secret_spec.provider_.auth.cert.client_cert`

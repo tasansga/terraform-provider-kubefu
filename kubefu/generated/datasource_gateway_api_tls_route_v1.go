@@ -332,4 +332,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1Read(_ context.Context,
 var dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1CompatibleVersions = []string{
 	"v1.5.0",
 	"v1.5.1",
+	"v1.6.0",
+	"v1.6.1",
+	"v1.6.2",
 }

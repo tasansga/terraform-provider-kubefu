@@ -458,6 +458,53 @@ func dataSourceCertManagerCertManagerIoCertificateV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"renewal": {
+						Type:        schema.TypeList,
+						Description: "`renewal` allows configuration of how your certificate is renewed. If the policy mentioned is\n`RenewBefore` then the controller respects `renewBefore` and `renewBeforePercentage`.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"policy": {
+								Type:        schema.TypeString,
+								Description: "`policy` must be one of `Disabled`, `RenewBefore`.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"windows": {
+								Type:        schema.TypeList,
+								Description: "`windows` mentions the behavior of when the renewal must happen.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"cron": {
+										Type:        schema.TypeString,
+										Description: "`cron` is a cron compliant string to allow when the renewal should be allowed. Format is as shown below:\n* * * * *\n| | | | |\n| | | | day of the week (0–6) (Sunday to Saturday;\n| | | month (1–12)             7 is also Sunday on some systems)\n| | day of the month (1–31)\n| hour (0–23)\nminute (0–59)",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"timezone": {
+										Type:        schema.TypeString,
+										Description: "`timezone` is IANA compliant timezone. For example America/Denver.\nIf this field is not set, timezone is treated as UTC.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"window_duration": {
+										Type:        schema.TypeString,
+										Description: "`windowDuration` is how long the cron definition is active for.\nValue must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+						}},
+					},
 					"revision_history_limit": {
 						Type:        schema.TypeInt,
 						Description: "revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history. Each revision represents a single `CertificateRequest` created by this Certificate, either when it was created, renewed, or Spec was changed. Revisions will be removed by oldest first if the number of revisions exceeds this number. If set, revisionHistoryLimit must be a value of `1` or greater. If unset (`nil`), revisions will not be garbage collected. Default value is `nil`.",
@@ -602,6 +649,78 @@ func dataSourceCertManagerCertManagerIoCertificateV1() *schema.Resource {
 				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"acme": {
+						Type:        schema.TypeList,
+						Description: "ACME stores information that is fetched from the ACME CA server.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"ari": {
+								Type:        schema.TypeList,
+								Description: "ARI stores the ACME Renewal Information that is fetched from the ACME server\nin accordance with RFC 9773. This is only populated if the ARI feature gate is enabled.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"explanation_url": {
+										Type:        schema.TypeString,
+										Description: "ExplanationURL is a human-readable URL that may explain why the suggested window\nhas its current value.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"last_checked": {
+										Type:        schema.TypeString,
+										Description: "LastChecked is the time at which the ACME server was last checked for renewal information.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"last_error": {
+										Type:        schema.TypeString,
+										Description: "LastError is the last error encountered when checking the ACME server for renewal information, if any.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"next_check": {
+										Type:        schema.TypeString,
+										Description: "NextCheck is the time at which the ACME server will next be checked for renewal information.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"suggested_window": {
+										Type:        schema.TypeList,
+										Description: "SuggestedWindow is the suggested renewal window as returned by the ACME server in accordance with RFC 9773.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"end": {
+												Type:        schema.TypeString,
+												Description: "End is the end of the suggested renewal window.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"start": {
+												Type:        schema.TypeString,
+												Description: "Start is the start of the suggested renewal window.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
+						}},
+					},
 					"conditions": {
 						Type:        schema.TypeList,
 						Description: "List of status conditions to indicate the status of certificates. Known condition types are `Ready` and `Issuing`.",
@@ -714,7 +833,7 @@ func dataSourceCertManagerCertManagerIoCertificateV1Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "cert-manager.io/v1", "Certificate", "cert-manager.io/v1/Certificate"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "spec.keystores", "spec.keystores.jks", "spec.keystores.jks.password_secret_ref", "spec.keystores.pkcs12", "spec.keystores.pkcs12.password_secret_ref", "spec.name_constraints", "spec.name_constraints.excluded", "spec.name_constraints.permitted", "spec.private_key", "spec.secret_template", "spec.subject", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.issuer_ref", "spec.keystores", "spec.keystores.jks", "spec.keystores.jks.password_secret_ref", "spec.keystores.pkcs12", "spec.keystores.pkcs12.password_secret_ref", "spec.name_constraints", "spec.name_constraints.excluded", "spec.name_constraints.permitted", "spec.private_key", "spec.renewal", "spec.secret_template", "spec.subject", "status", "status.acme", "status.acme.ari", "status.acme.ari.suggested_window"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -741,4 +860,5 @@ var dataSourceCertManagerCertManagerIoCertificateV1CompatibleVersions = []string
 	"v1.18.0",
 	"v1.19.0",
 	"v1.20.0",
+	"v1.21.0",
 }

@@ -66,6 +66,8 @@ Value must be an integer in the range (0,100). The minimum effective
 `renewBefore` derived from the `renewBeforePercentage` and `duration` fields is 5
 minutes.
 Cannot be set if the `renewBefore` field is set.
+- `renewal` (Block List, Max: 1) `renewal` allows configuration of how your certificate is renewed. If the policy mentioned is
+`RenewBefore` then the controller respects `renewBefore` and `renewBeforePercentage`. (see [below for nested schema](#nestedblock--spec--renewal))
 - `revision_history_limit` (Number) revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history. Each revision represents a single `CertificateRequest` created by this Certificate, either when it was created, renewed, or Spec was changed. Revisions will be removed by oldest first if the number of revisions exceeds this number. If set, revisionHistoryLimit must be a value of `1` or greater. If unset (`nil`), revisions will not be garbage collected. Default value is `nil`.
 - `secret_name` (String) SecretName is the name of the secret resource that will be automatically created and managed by this Certificate resource. It will be populated with a private key and certificate, signed by the denoted issuer.
 - `secret_template` (Block List, Max: 1) SecretTemplate defines annotations and labels to be propagated to the Kubernetes Secret when it is created or updated. Once created, labels and annotations are not yet removed from the Secret when they are removed from the template. See https://github.com/jetstack/cert-manager/issues/4292 (see [below for nested schema](#nestedblock--spec--secret_template))
@@ -202,6 +204,34 @@ Optional:
 - `size` (Number) Size is the key bit size of the corresponding private key for this certificate. If `algorithm` is set to `RSA`, valid values are `2048`, `4096` or `8192`, and will default to `2048` if not specified. If `algorithm` is set to `ECDSA`, valid values are `256`, `384` or `521`, and will default to `256` if not specified. No other values are allowed.
 
 
+<a id="nestedblock--spec--renewal"></a>
+### Nested Schema for `spec.renewal`
+
+Optional:
+
+- `policy` (String) `policy` must be one of `Disabled`, `RenewBefore`.
+- `windows` (Block List) `windows` mentions the behavior of when the renewal must happen. (see [below for nested schema](#nestedblock--spec--renewal--windows))
+
+<a id="nestedblock--spec--renewal--windows"></a>
+### Nested Schema for `spec.renewal.windows`
+
+Optional:
+
+- `cron` (String) `cron` is a cron compliant string to allow when the renewal should be allowed. Format is as shown below:
+* * * * *
+| | | | |
+| | | | day of the week (0–6) (Sunday to Saturday;
+| | | month (1–12)             7 is also Sunday on some systems)
+| | day of the month (1–31)
+| hour (0–23)
+minute (0–59)
+- `timezone` (String) `timezone` is IANA compliant timezone. For example America/Denver.
+If this field is not set, timezone is treated as UTC.
+- `window_duration` (String) `windowDuration` is how long the cron definition is active for.
+Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration.
+
+
+
 <a id="nestedblock--spec--secret_template"></a>
 ### Nested Schema for `spec.secret_template`
 
@@ -232,6 +262,7 @@ Optional:
 
 Optional:
 
+- `acme` (Block List, Max: 1) ACME stores information that is fetched from the ACME CA server. (see [below for nested schema](#nestedblock--status--acme))
 - `conditions` (Block List) List of status conditions to indicate the status of certificates. Known condition types are `Ready` and `Issuing`. (see [below for nested schema](#nestedblock--status--conditions))
 - `failed_issuance_attempts` (Number) The number of continuous failed issuance attempts up till now. This field gets removed (if set) on a successful issuance and gets set to 1 if unset and an issuance has failed. If an issuance has failed, the delay till the next issuance will be calculated using formula time.Hour * 2 ^ (failedIssuanceAttempts - 1).
 - `last_failure_time` (String) LastFailureTime is the time as recorded by the Certificate controller of the most recent failure to complete a CertificateRequest for this Certificate resource. If set, cert-manager will not re-request another Certificate until 1 hour has elapsed from this time.
@@ -243,6 +274,37 @@ Optional:
  When a CertificateRequest resource is created, it will have the `cert-manager.io/certificate-revision` set to one greater than the current value of this field.
  Upon issuance, this field will be set to the value of the annotation on the CertificateRequest resource used to issue the certificate.
  Persisting the value on the CertificateRequest resource allows the certificates controller to know whether a request is part of an old issuance or if it is part of the ongoing revision's issuance by checking if the revision value in the annotation is greater than this field.
+
+<a id="nestedblock--status--acme"></a>
+### Nested Schema for `status.acme`
+
+Optional:
+
+- `ari` (Block List, Max: 1) ARI stores the ACME Renewal Information that is fetched from the ACME server
+in accordance with RFC 9773. This is only populated if the ARI feature gate is enabled. (see [below for nested schema](#nestedblock--status--acme--ari))
+
+<a id="nestedblock--status--acme--ari"></a>
+### Nested Schema for `status.acme.ari`
+
+Optional:
+
+- `explanation_url` (String) ExplanationURL is a human-readable URL that may explain why the suggested window
+has its current value.
+- `last_checked` (String) LastChecked is the time at which the ACME server was last checked for renewal information.
+- `last_error` (String) LastError is the last error encountered when checking the ACME server for renewal information, if any.
+- `next_check` (String) NextCheck is the time at which the ACME server will next be checked for renewal information.
+- `suggested_window` (Block List, Max: 1) SuggestedWindow is the suggested renewal window as returned by the ACME server in accordance with RFC 9773. (see [below for nested schema](#nestedblock--status--acme--ari--suggested_window))
+
+<a id="nestedblock--status--acme--ari--suggested_window"></a>
+### Nested Schema for `status.acme.ari.suggested_window`
+
+Optional:
+
+- `end` (String) End is the end of the suggested renewal window.
+- `start` (String) Start is the start of the suggested renewal window.
+
+
+
 
 <a id="nestedblock--status--conditions"></a>
 ### Nested Schema for `status.conditions`

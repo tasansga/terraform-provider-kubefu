@@ -1217,6 +1217,24 @@ Optional:
 - `ca_file` (String) Path to the CA cert in the Prometheus container to use for the targets.
 - `cert` (Block List, Max: 1) Struct containing the client cert file for the targets. (see [below for nested schema](#nestedblock--spec--grpc_server_tls_config--cert))
 - `cert_file` (String) Path to the client cert file in the Prometheus container for the targets.
+- `cipher_suites` (List of String) cipherSuites defines the list of supported cipher suites for TLS
+versions up to TLS 1.2.
+
+If not defined, the Go default cipher suites are used.
+Available cipher suites are documented in the Go documentation:
+https://golang.org/pkg/crypto/tls/#pkg-constants
+
+It requires Thanos >= v0.42.0. Note that the operator doesn't verify if
+the Thanos version supports the provided values.
+- `curves` (List of String) curves defines the list of preferred elliptic curves for
+TLS handshakes.
+
+If not defined, the Go default curves are used.
+Available curves are documented in the Go documentation:
+https://golang.org/pkg/crypto/tls/#CurveID
+
+It requires Thanos >= v0.42.0. Note that the operator doesn't verify if
+the Thanos version supports the provided values.
 - `insecure_skip_verify` (Boolean) Disable target certificate validation.
 - `key_file` (String) Path to the client key file in the Prometheus container for the targets.
 - `key_secret` (Block List, Max: 1) Secret containing the client key file for the targets. (see [below for nested schema](#nestedblock--spec--grpc_server_tls_config--key_secret))
@@ -2487,6 +2505,8 @@ Optional:
 
 - `access_key` (Block List, Max: 1) AccessKey is the AWS API key. If not specified, the environment variable
 `AWS_ACCESS_KEY_ID` is used. (see [below for nested schema](#nestedblock--spec--remote_write--sigv4--access_key))
+- `external_id` (String) externalId defines the external ID used when assuming an AWS role. Can only be used with roleArn.
+It requires Prometheus >= v3.11.0 or Alertmanager >= v0.33.0. Currently not supported by Thanos.
 - `profile` (String) Profile is the named AWS profile used to authenticate.
 - `region` (String) Region is the AWS region. If blank, the region from the default credentials chain used.
 - `role_arn` (String) RoleArn is the named AWS profile used to authenticate.

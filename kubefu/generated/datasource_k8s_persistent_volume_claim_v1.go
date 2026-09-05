@@ -755,6 +755,53 @@ func dataSourceK8sCorePersistentVolumeClaimV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"health_status": {
+						Type:        schema.TypeList,
+						Description: "healthStatus contains the latest controller-reported health information for the volume bound to this claim.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"health_conditions": {
+								Type:        schema.TypeList,
+								Description: "conditions is the set of adverse conditions reported by the CSI controller plugin. An empty list means no adverse condition. At most 16 conditions may be reported.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"message": {
+										Type:        schema.TypeString,
+										Description: "message is a human-readable description. Maximum permitted length of a message is 1024 bytes.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"reason": {
+										Type:        schema.TypeString,
+										Description: "reason is a brief CamelCase machine-parseable reason. Together with status it forms the unique identity of a condition entry. Maximum permitted length of a reason is 256 bytes.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"status": {
+										Type:        schema.TypeString,
+										Description: "status is the machine-parseable health category. Possible values: - \"Inaccessible\": the volume cannot be accessed. - \"DataLoss\": data loss has been detected on the volume. - \"Degraded\": the volume is functioning with reduced capability.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "lastTransitionTime is when the current set of conditions first appeared.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 					"modify_volume_status": {
 						Type:        schema.TypeList,
 						Description: "ModifyVolumeStatus represents the status object of ControllerModifyVolume operation. When this is unset, there is no ModifyVolume operation being attempted. This is an alpha field and requires enabling VolumeAttributesClass feature.",
@@ -805,7 +852,7 @@ func dataSourceK8sCorePersistentVolumeClaimV1Read(_ context.Context, d *schema.R
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "PersistentVolumeClaim", "core/v1/PersistentVolumeClaim"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.data_source", "spec.data_source_ref", "spec.resources", "spec.selector", "status", "status.modify_volume_status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.data_source", "spec.data_source_ref", "spec.resources", "spec.selector", "status", "status.health_status", "status.modify_volume_status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -840,4 +887,6 @@ var dataSourceK8sCorePersistentVolumeClaimV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

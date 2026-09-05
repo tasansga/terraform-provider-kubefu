@@ -534,4 +534,5 @@ var dataSourceKarpenterCoreKarpenterShNodePoolV1Beta1CompatibleVersions = []stri
 	"v1.0.6",
 	"v1.0.7",
 	"v1.0.8",
+	"v1.0.9",
 }

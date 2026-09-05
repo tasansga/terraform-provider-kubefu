@@ -259,4 +259,5 @@ var dataSourceCertManagerCertManagerIoCertificateRequestV1CompatibleVersions = [
 	"v1.18.0",
 	"v1.19.0",
 	"v1.20.0",
+	"v1.21.0",
 }

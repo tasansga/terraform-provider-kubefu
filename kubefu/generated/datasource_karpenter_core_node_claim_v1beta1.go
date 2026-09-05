@@ -443,4 +443,5 @@ var dataSourceKarpenterCoreKarpenterShNodeClaimV1Beta1CompatibleVersions = []str
 	"v1.0.6",
 	"v1.0.7",
 	"v1.0.8",
+	"v1.0.9",
 }

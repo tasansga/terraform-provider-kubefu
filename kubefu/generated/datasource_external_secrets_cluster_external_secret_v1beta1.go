@@ -995,4 +995,13 @@ var dataSourceExternalSecretsExternalSecretsIoClusterExternalSecretV1Beta1Compat
 	"v2.0.1",
 	"v2.1.0",
 	"v2.2.0",
+	"v2.3.0",
+	"v2.4.0",
+	"v2.4.1",
+	"v2.5.0",
+	"v2.6.0",
+	"v2.7.0",
+	"v2.8.0",
+	"v2.9.0",
+	"v2.10.0",
 }

@@ -88,6 +88,7 @@ Optional:
 Optional:
 
 - `data` (Block List) Secret Data that should be pushed to providers (see [below for nested schema](#nestedblock--spec--push_secret_spec--data))
+- `data_to` (Block List) DataTo defines bulk push rules that expand source Secret keys into provider entries. (see [below for nested schema](#nestedblock--spec--push_secret_spec--data_to))
 - `deletion_policy` (String) Deletion Policy to handle Secrets in the provider.
 - `refresh_interval` (String) The Interval to which External Secrets will try to push a secret definition
 - `secret_store_refs` (Block List) (see [below for nested schema](#nestedblock--spec--push_secret_spec--secret_store_refs))
@@ -120,6 +121,97 @@ Optional:
 
 - `property` (String) Name of the property in the resulting secret
 - `remote_key` (String) Name of the resulting provider secret.
+
+
+
+
+<a id="nestedblock--spec--push_secret_spec--data_to"></a>
+### Nested Schema for `spec.push_secret_spec.data_to`
+
+Optional:
+
+- `conversion_strategy` (String) Used to define a conversion Strategy for the secret keys
+- `match` (Block List, Max: 1) Match pattern for selecting keys from the source Secret.
+If not specified, all keys are selected. (see [below for nested schema](#nestedblock--spec--push_secret_spec--data_to--match))
+- `metadata` (Map of String) Metadata is metadata attached to the secret.
+The structure of metadata is provider specific, please look it up in the provider documentation.
+- `remote_key` (String) RemoteKey is the name of the single provider secret that will receive ALL
+matched keys bundled as a JSON object (e.g. {"DB_HOST":"...","DB_USER":"..."}).
+When set, per-key expansion is skipped and a single push is performed.
+The provider's store prefix (if any) is still prepended to this value.
+When not set, each matched key is pushed as its own individual provider secret.
+- `rewrite` (Block List) Rewrite operations to transform keys before pushing to the provider.
+Operations are applied sequentially. (see [below for nested schema](#nestedblock--spec--push_secret_spec--data_to--rewrite))
+- `store_ref` (Block List, Max: 1) StoreRef specifies which SecretStore to push to. Required. (see [below for nested schema](#nestedblock--spec--push_secret_spec--data_to--store_ref))
+
+<a id="nestedblock--spec--push_secret_spec--data_to--match"></a>
+### Nested Schema for `spec.push_secret_spec.data_to.match`
+
+Optional:
+
+- `regexp` (String) Regexp matches keys by regular expression.
+If not specified, all keys are matched.
+
+
+<a id="nestedblock--spec--push_secret_spec--data_to--rewrite"></a>
+### Nested Schema for `spec.push_secret_spec.data_to.rewrite`
+
+Optional:
+
+- `regexp` (Block List, Max: 1) Used to rewrite with regular expressions. (see [below for nested schema](#nestedblock--spec--push_secret_spec--data_to--rewrite--regexp))
+- `transform` (Block List, Max: 1) Used to apply string transformation on the secrets. (see [below for nested schema](#nestedblock--spec--push_secret_spec--data_to--rewrite--transform))
+
+<a id="nestedblock--spec--push_secret_spec--data_to--rewrite--regexp"></a>
+### Nested Schema for `spec.push_secret_spec.data_to.rewrite.regexp`
+
+Optional:
+
+- `source` (String) Used to define the regular expression of a re.Compiler.
+- `target` (String) Used to define the target pattern of a ReplaceAll operation.
+
+
+<a id="nestedblock--spec--push_secret_spec--data_to--rewrite--transform"></a>
+### Nested Schema for `spec.push_secret_spec.data_to.rewrite.transform`
+
+Optional:
+
+- `template` (String) Used to define the template to apply on the secret name.
+`.value ` will specify the secret name in the template.
+
+
+
+<a id="nestedblock--spec--push_secret_spec--data_to--store_ref"></a>
+### Nested Schema for `spec.push_secret_spec.data_to.store_ref`
+
+Optional:
+
+- `kind` (String) Kind of the SecretStore resource (SecretStore or ClusterSecretStore)
+- `label_selector` (Block List, Max: 1) Optionally, sync to secret stores with label selector (see [below for nested schema](#nestedblock--spec--push_secret_spec--data_to--store_ref--label_selector))
+- `name` (String) Optionally, sync to the SecretStore of the given name
+
+<a id="nestedblock--spec--push_secret_spec--data_to--store_ref--label_selector"></a>
+### Nested Schema for `spec.push_secret_spec.data_to.store_ref.label_selector`
+
+Optional:
+
+- `match_expressions` (Block List) matchExpressions is a list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--spec--push_secret_spec--data_to--store_ref--label_selector--match_expressions))
+- `match_labels` (Map of String) matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--spec--push_secret_spec--data_to--store_ref--label_selector--match_expressions"></a>
+### Nested Schema for `spec.push_secret_spec.data_to.store_ref.label_selector.match_expressions`
+
+Optional:
+
+- `key` (String) key is the label key that the selector applies to.
+- `operator` (String) operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.
+- `values` (List of String) values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.
+
 
 
 
@@ -246,6 +338,7 @@ Optional:
 - `literal` (String)
 - `secret` (Block List, Max: 1) TemplateRef specifies a reference to either a ConfigMap or a Secret resource. (see [below for nested schema](#nestedblock--spec--push_secret_spec--template--template_from--secret))
 - `target` (String) TemplateTarget specifies where the rendered templates should be applied.
+- `values_decoding_strategy` (String) Used to define a decoding Strategy for the rendered template values.
 
 <a id="nestedblock--spec--push_secret_spec--template--template_from--config_map"></a>
 ### Nested Schema for `spec.push_secret_spec.template.template_from.config_map`

@@ -56,6 +56,14 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"build_metadata": {
+						Type:        schema.TypeList,
+						Description: "BuildMetadata specifies which kustomize build metadata should be added\nto the built resources. The allowed values are 'originAnnotations' to\nannotate resources with their source origin, and 'transformerAnnotations'\nto annotate resources with the transformers that produced them.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
 					"common_metadata": {
 						Type:        schema.TypeList,
 						Description: "CommonMetadata specifies the common labels and annotations that are applied to all resources. Any existing label or annotation will be overridden if its key matches a common one.",
@@ -251,6 +259,82 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
+							},
+						}},
+					},
+					"ignore": {
+						Type:        schema.TypeList,
+						Description: "Ignore is a list of rules for specifying which changes to ignore\nduring drift detection. These rules are applied to the resources managed\nby the Kustomization and are used to exclude specific JSON pointer paths\nfrom the drift detection and apply process.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"paths": {
+								Type:        schema.TypeList,
+								Description: "Paths is a list of JSON Pointer (RFC 6901) paths to be excluded from\nconsideration in a Kubernetes object.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Schema{Type: schema.TypeString},
+							},
+							"target": {
+								Type:        schema.TypeList,
+								Description: "Target is a selector for specifying Kubernetes objects to which this\nrule applies.\nIf Target is not set, the Paths will be ignored for all Kubernetes\nobjects within the manifest of the Kustomization.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"annotation_selector": {
+										Type:        schema.TypeString,
+										Description: "AnnotationSelector is a string that follows the label selection expression\nhttps://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api\nIt matches with the resource annotations.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"group": {
+										Type:        schema.TypeString,
+										Description: "Group is the API group to select resources from.\nTogether with Version and Kind it is capable of unambiguously identifying and/or selecting resources.\nhttps://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"kind": {
+										Type:        schema.TypeString,
+										Description: "Kind of the API Group to select resources from.\nTogether with Group and Version it is capable of unambiguously\nidentifying and/or selecting resources.\nhttps://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"label_selector": {
+										Type:        schema.TypeString,
+										Description: "LabelSelector is a string that follows the label selection expression\nhttps://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api\nIt matches with the resource labels.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name to match resources with.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"namespace": {
+										Type:        schema.TypeString,
+										Description: "Namespace to select resources from.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"version": {
+										Type:        schema.TypeString,
+										Description: "Version of the API Group to select resources from.\nTogether with Group and Kind it is capable of unambiguously identifying and/or selecting resources.\nhttps://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
 							},
 						}},
 					},
@@ -496,6 +580,13 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1() *schema.Resource {
 										Computed:    true,
 									},
 								}},
+							},
+							"substitute_strategy": {
+								Type:        schema.TypeString,
+								Description: "SubstituteStrategy defines the strategy for substituting variables in the YAML manifests.\nValid values are:\n\n - WithVariables (the default): require at least one variable to be defined,\n   either through the inline map or through the resolved references to ConfigMaps\n   and Secrets.\n - Always: perform the substitution even if no variables are defined.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 							},
 						}},
 					},
@@ -785,7 +876,7 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.toolkit.fluxcd.io/v1", "Kustomization", "kustomize.toolkit.fluxcd.io/v1/Kustomization"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "spec.decryption", "spec.decryption.secret_ref", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.patches.target", "spec.post_build", "spec.source_ref", "status", "status.inventory"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "spec.decryption", "spec.decryption.secret_ref", "spec.ignore.target", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.patches.target", "spec.post_build", "spec.source_ref", "status", "status.inventory"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -819,4 +910,15 @@ var dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1CompatibleVersions = []
 	"v2.8.1",
 	"v2.8.2",
 	"v2.8.3",
+	"v2.8.4",
+	"v2.8.5",
+	"v2.8.6",
+	"v2.8.7",
+	"v2.8.8",
+	"v2.9.0",
+	"v2.9.1",
+	"v2.9.2",
+	"v2.9.3",
+	"v2.9.4",
+	"v2.9.5",
 }

@@ -36,6 +36,11 @@ Optional:
 
 - `events` (List of String) Events specifies the list of event types to handle, e.g. 'push' for GitHub or 'Push Hook' for GitLab.
 - `interval` (String) Interval at which to reconcile the Receiver with its Secret references.
+- `oidc_providers` (Block List) OIDCProviders specifies the OIDC providers used to authenticate incoming
+requests when Type is 'generic-oidc'. The provider whose IssuerURL matches
+the token's 'iss' claim is used to verify the token signature, expiration
+and audience, and to evaluate the configured CEL validations against the
+token claims. (see [below for nested schema](#nestedblock--spec--oidc_providers))
 - `resource_filter` (String) ResourceFilter is a CEL expression expected to return a boolean that is
 evaluated for each resource referenced in the Resources field when a
 webhook is received. If the expression returns false then the controller
@@ -48,12 +53,64 @@ return a boolean.
 - `suspend` (Boolean) Suspend tells the controller to suspend subsequent events handling for this receiver.
 - `type` (String) Type of webhook sender, used to determine the validation procedure and payload deserialization.
 
+<a id="nestedblock--spec--oidc_providers"></a>
+### Nested Schema for `spec.oidc_providers`
+
+Optional:
+
+- `audience` (String) Audience is the expected audience ('aud' claim) for tokens issued by
+this provider. Defaults to 'notification-controller'.
+- `issuer_url` (String) IssuerURL is the OIDC issuer URL used for provider discovery. It must
+match the 'iss' claim of tokens issued by this provider.
+- `validations` (Block List) Validations is the list of CEL boolean expressions evaluated against the
+token claims and the variables. The request is accepted only if all of
+them evaluate to true; the message of each failing expression is returned
+to the caller.
+
+At least one validation is required. A valid signature alone does not
+authorize a request: public issuers issue tokens to any caller on the
+platform, so the validations must constrain the caller's identity claims
+(e.g. 'repository_owner' for GitHub Actions). (see [below for nested schema](#nestedblock--spec--oidc_providers--validations))
+- `variables` (Block List) Variables is an optional list of named CEL expressions, evaluated in order
+and exposed as 'vars.<name>'. Each expression can read the token claims
+via 'claims' and any variable defined before it. Use it to share
+sub-expressions across validations. (see [below for nested schema](#nestedblock--spec--oidc_providers--variables))
+
+<a id="nestedblock--spec--oidc_providers--validations"></a>
+### Nested Schema for `spec.oidc_providers.validations`
+
+Optional:
+
+- `expression` (String) Expression is the CEL boolean expression to evaluate.
+- `message` (String) Message is returned to the caller when the expression evaluates to false.
+
+
+<a id="nestedblock--spec--oidc_providers--variables"></a>
+### Nested Schema for `spec.oidc_providers.variables`
+
+Optional:
+
+- `expression` (String) Expression is the CEL expression that defines the variable value.
+- `name` (String) Name is the variable name; it must be a valid CEL identifier.
+
+
+
 <a id="nestedblock--spec--resources"></a>
 ### Nested Schema for `spec.resources`
 
 Optional:
 
 - `api_version` (String) API version of the referent
+- `filter` (String) Filter is a CEL expression expected to return a boolean that is evaluated
+for each resource matched by this reference when a webhook is received,
+in addition to the top-level resourceFilter. A reconciliation is requested
+only when both expressions (when set) return true.
+The expression can read the resource metadata via 'res' and the webhook
+request body via 'req'. For generic-oidc receivers, the verified OIDC
+token claims are also available via 'claims'.
+When the expression is specified the controller will parse it and mark
+the object as terminally failed if the expression is invalid or does not
+return a boolean.
 - `kind` (String) Kind of the referent
 - `match_labels` (Map of String) MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed. MatchLabels requires the name to be set to `*`.
 - `name` (String) Name of the referent If multiple resources are targeted `*` may be set.

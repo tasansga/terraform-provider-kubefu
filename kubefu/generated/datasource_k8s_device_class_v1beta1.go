@@ -255,10 +255,9 @@ func dataSourceK8sResourceK8sIoDeviceClassV1Beta1() *schema.Resource {
 			"spec": {
 				Type:        schema.TypeList,
 				Description: "Spec defines what can be allocated and how to configure it.\n\nThis is mutable. Consumers have to be prepared for classes changing at any time, either because they get updated or replaced. Claim allocations are done once based on whatever was set in classes at the time of allocation.\n\nChanging the spec automatically increments the metadata.generation number.",
-				Optional:    false,
-				Required:    true,
-				Computed:    false,
-				MinItems:    1,
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 					"config": {
@@ -349,4 +348,6 @@ var dataSourceK8sResourceK8sIoDeviceClassV1Beta1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

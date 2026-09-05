@@ -639,4 +639,6 @@ func dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyV1Beta1Read(_
 var dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyV1Beta1CompatibleVersions = []string{
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

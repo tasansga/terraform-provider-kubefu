@@ -183,6 +183,8 @@ Schemas are downloaded and stored under `schemas/`. Use the downloader to keep t
 make schema-download
 ```
 
+Set `GH_TOKEN` in your environment to avoid anonymous GitHub API rate limits.
+
 ### Regenerating data sources and docs
 
 Generated data sources live in `kubefu/generated` and are created from the schema directory:

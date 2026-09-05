@@ -280,6 +280,23 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1() *schema.Resource {
 									},
 								}},
 							},
+							"trusted_root_secret_ref": {
+								Type:        schema.TypeList,
+								Description: "TrustedRootSecretRef specifies the Kubernetes Secret containing a\nSigstore trusted_root.json file. This enables verification against\nself-hosted Sigstore infrastructure (custom Fulcio CA, self-hosted\nRekor instance). The Secret must contain a key named \"trusted_root.json\".",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name of the referent.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 						}},
 					},
 				}},
@@ -466,7 +483,7 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1Read(_ context.Context, d
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1", "OCIRepository", "source.toolkit.fluxcd.io/v1/OCIRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.cert_secret_ref", "spec.layer_selector", "spec.proxy_secret_ref", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact", "status.observed_layer_selector"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.cert_secret_ref", "spec.layer_selector", "spec.proxy_secret_ref", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "spec.verify.trusted_root_secret_ref", "status", "status.artifact", "status.observed_layer_selector"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -487,4 +504,15 @@ var dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1CompatibleVersions = []str
 	"v2.8.1",
 	"v2.8.2",
 	"v2.8.3",
+	"v2.8.4",
+	"v2.8.5",
+	"v2.8.6",
+	"v2.8.7",
+	"v2.8.8",
+	"v2.9.0",
+	"v2.9.1",
+	"v2.9.2",
+	"v2.9.3",
+	"v2.9.4",
+	"v2.9.5",
 }

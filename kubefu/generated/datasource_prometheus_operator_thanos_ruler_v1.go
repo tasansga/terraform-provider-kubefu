@@ -2860,6 +2860,22 @@ func dataSourcePrometheusOperatorMonitoringCoreosComThanosRulerV1() *schema.Reso
 								Required:    false,
 								Computed:    true,
 							},
+							"cipher_suites": {
+								Type:        schema.TypeList,
+								Description: "cipherSuites defines the list of supported cipher suites for TLS\nversions up to TLS 1.2.\n\nIf not defined, the Go default cipher suites are used.\nAvailable cipher suites are documented in the Go documentation:\nhttps://golang.org/pkg/crypto/tls/#pkg-constants\n\nIt requires Thanos >= v0.42.0. Note that the operator doesn't verify if\nthe Thanos version supports the provided values.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Schema{Type: schema.TypeString},
+							},
+							"curves": {
+								Type:        schema.TypeList,
+								Description: "curves defines the list of preferred elliptic curves for\nTLS handshakes.\n\nIf not defined, the Go default curves are used.\nAvailable curves are documented in the Go documentation:\nhttps://golang.org/pkg/crypto/tls/#CurveID\n\nIt requires Thanos >= v0.42.0. Note that the operator doesn't verify if\nthe Thanos version supports the provided values.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Schema{Type: schema.TypeString},
+							},
 							"insecure_skip_verify": {
 								Type:        schema.TypeBool,
 								Description: "Disable target certificate validation.",
@@ -5697,6 +5713,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComThanosRulerV1() *schema.Reso
 												Computed:    true,
 											},
 										}},
+									},
+									"external_id": {
+										Type:        schema.TypeString,
+										Description: "externalId defines the external ID used when assuming an AWS role. Can only be used with roleArn.\nIt requires Prometheus >= v3.11.0 or Alertmanager >= v0.33.0. Currently not supported by Thanos.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 									"profile": {
 										Type:        schema.TypeString,
@@ -9930,4 +9953,9 @@ var dataSourcePrometheusOperatorMonitoringCoreosComThanosRulerV1CompatibleVersio
 	"v0.89.0",
 	"v0.90.0",
 	"v0.90.1",
+	"v0.91.0",
+	"v0.92.0",
+	"v0.92.1",
+	"v0.93.0",
+	"v0.93.1",
 }

@@ -128,6 +128,8 @@ Optional:
 corresponding to the ASCII Armored file containing the GPG signing
 keypair as the value. It must be in the same namespace as the
 ImageUpdateAutomation. (see [below for nested schema](#nestedblock--spec--git--commit--signing_key--secret_ref))
+- `type` (String) Type selects the signing-key format expected in the referenced
+Secret. When empty, the controller defaults to 'gpg'.
 
 <a id="nestedblock--spec--git--commit--signing_key--secret_ref"></a>
 ### Nested Schema for `spec.git.commit.signing_key.secret_ref`

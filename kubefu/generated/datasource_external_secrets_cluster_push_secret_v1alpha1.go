@@ -206,6 +206,175 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 									},
 								}},
 							},
+							"data_to": {
+								Type:        schema.TypeList,
+								Description: "DataTo defines bulk push rules that expand source Secret keys into provider entries.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"conversion_strategy": {
+										Type:        schema.TypeString,
+										Description: "Used to define a conversion Strategy for the secret keys",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"match": {
+										Type:        schema.TypeList,
+										Description: "Match pattern for selecting keys from the source Secret.\nIf not specified, all keys are selected.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"regexp": {
+												Type:        schema.TypeString,
+												Description: "Regexp matches keys by regular expression.\nIf not specified, all keys are matched.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"metadata": {
+										Type:        schema.TypeMap,
+										Description: "Metadata is metadata attached to the secret.\nThe structure of metadata is provider specific, please look it up in the provider documentation.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"remote_key": {
+										Type:        schema.TypeString,
+										Description: "RemoteKey is the name of the single provider secret that will receive ALL\nmatched keys bundled as a JSON object (e.g. {\"DB_HOST\":\"...\",\"DB_USER\":\"...\"}).\nWhen set, per-key expansion is skipped and a single push is performed.\nThe provider's store prefix (if any) is still prepended to this value.\nWhen not set, each matched key is pushed as its own individual provider secret.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"rewrite": {
+										Type:        schema.TypeList,
+										Description: "Rewrite operations to transform keys before pushing to the provider.\nOperations are applied sequentially.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"regexp": {
+												Type:        schema.TypeList,
+												Description: "Used to rewrite with regular expressions.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"source": {
+														Type:        schema.TypeString,
+														Description: "Used to define the regular expression of a re.Compiler.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"target": {
+														Type:        schema.TypeString,
+														Description: "Used to define the target pattern of a ReplaceAll operation.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+											"transform": {
+												Type:        schema.TypeList,
+												Description: "Used to apply string transformation on the secrets.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"template": {
+														Type:        schema.TypeString,
+														Description: "Used to define the template to apply on the secret name.\n`.value ` will specify the secret name in the template.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+										}},
+									},
+									"store_ref": {
+										Type:        schema.TypeList,
+										Description: "StoreRef specifies which SecretStore to push to. Required.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"kind": {
+												Type:        schema.TypeString,
+												Description: "Kind of the SecretStore resource (SecretStore or ClusterSecretStore)",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"label_selector": {
+												Type:        schema.TypeList,
+												Description: "Optionally, sync to secret stores with label selector",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"match_expressions": {
+														Type:        schema.TypeList,
+														Description: "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"key": {
+																Type:        schema.TypeString,
+																Description: "key is the label key that the selector applies to.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"operator": {
+																Type:        schema.TypeString,
+																Description: "operator represents a key's relationship to a set of values.\nValid operators are In, NotIn, Exists and DoesNotExist.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"values": {
+																Type:        schema.TypeList,
+																Description: "values is an array of string values. If the operator is In or NotIn,\nthe values array must be non-empty. If the operator is Exists or DoesNotExist,\nthe values array must be empty. This array is replaced during a strategic\nmerge patch.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+																Elem: &schema.Schema{Type: schema.TypeString},
+															},
+														}},
+													},
+													"match_labels": {
+														Type:        schema.TypeMap,
+														Description: "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels\nmap is equivalent to an element of matchExpressions, whose key field is \"key\", the\noperator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+											"name": {
+												Type:        schema.TypeString,
+												Description: "Optionally, sync to the SecretStore of the given name",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+								}},
+							},
 							"deletion_policy": {
 								Type:        schema.TypeString,
 								Description: "Deletion Policy to handle Secrets in the provider.",
@@ -559,6 +728,13 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1() *sche
 												Required:    false,
 												Computed:    true,
 											},
+											"values_decoding_strategy": {
+												Type:        schema.TypeString,
+												Description: "Used to define a decoding Strategy for the rendered template values.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 										}},
 									},
 									"type": {
@@ -690,7 +866,7 @@ func dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1Read(_ c
 	if err := manifestpkg.SetDataSourceDefaults(d, "external-secrets.io/v1alpha1", "ClusterPushSecret", "external-secrets.io/v1alpha1/ClusterPushSecret"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.push_secret_metadata", "spec.push_secret_spec", "spec.push_secret_spec.data.match", "spec.push_secret_spec.data.match.remote_ref", "spec.push_secret_spec.secret_store_refs.label_selector", "spec.push_secret_spec.selector", "spec.push_secret_spec.selector.generator_ref", "spec.push_secret_spec.selector.secret", "spec.push_secret_spec.selector.secret.selector", "spec.push_secret_spec.template", "spec.push_secret_spec.template.metadata", "spec.push_secret_spec.template.template_from.config_map", "spec.push_secret_spec.template.template_from.secret", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.push_secret_metadata", "spec.push_secret_spec", "spec.push_secret_spec.data.match", "spec.push_secret_spec.data.match.remote_ref", "spec.push_secret_spec.data_to.match", "spec.push_secret_spec.data_to.rewrite.regexp", "spec.push_secret_spec.data_to.rewrite.transform", "spec.push_secret_spec.data_to.store_ref", "spec.push_secret_spec.data_to.store_ref.label_selector", "spec.push_secret_spec.secret_store_refs.label_selector", "spec.push_secret_spec.selector", "spec.push_secret_spec.selector.generator_ref", "spec.push_secret_spec.selector.secret", "spec.push_secret_spec.selector.secret.selector", "spec.push_secret_spec.template", "spec.push_secret_spec.template.metadata", "spec.push_secret_spec.template.template_from.config_map", "spec.push_secret_spec.template.template_from.secret", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -723,4 +899,13 @@ var dataSourceExternalSecretsExternalSecretsIoClusterPushSecretV1Alpha1Compatibl
 	"v2.0.1",
 	"v2.1.0",
 	"v2.2.0",
+	"v2.3.0",
+	"v2.4.0",
+	"v2.4.1",
+	"v2.5.0",
+	"v2.6.0",
+	"v2.7.0",
+	"v2.8.0",
+	"v2.9.0",
+	"v2.10.0",
 }

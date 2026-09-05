@@ -262,6 +262,13 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1(
 										Required:    false,
 										Computed:    true,
 									},
+									"gcp_service_account_email": {
+										Type:        schema.TypeString,
+										Description: "GCPServiceAccountEmail is the email of the Google Cloud service account to impersonate\nafter Workload Identity Federation. Use this to grant access through the service account's\nIAM bindings (for example roles/secretmanager.secretAccessor). When set, it overrides\nservice_account_impersonation_url in the external account JSON from credConfig;\nwhen serviceAccountRef is set, it also overrides the \"iam.gke.io/gcp-service-account\" annotation\non that ServiceAccount.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"service_account_ref": {
 										Type:        schema.TypeList,
 										Description: "serviceAccountRef is the reference to the kubernetes ServiceAccount to be used for obtaining the tokens,\nwhen Kubernetes is configured as provider in workload identity pool.",
@@ -410,4 +417,13 @@ var dataSourceExternalSecretsGeneratorsExternalSecretsIoGCRAccessTokenV1Alpha1Co
 	"v2.0.1",
 	"v2.1.0",
 	"v2.2.0",
+	"v2.3.0",
+	"v2.4.0",
+	"v2.4.1",
+	"v2.5.0",
+	"v2.6.0",
+	"v2.7.0",
+	"v2.8.0",
+	"v2.9.0",
+	"v2.10.0",
 }

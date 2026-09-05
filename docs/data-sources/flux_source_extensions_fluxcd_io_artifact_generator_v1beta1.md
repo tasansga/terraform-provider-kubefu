@@ -42,6 +42,12 @@ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-
 Optional:
 
 - `artifacts` (Block List) OutputArtifacts is a list of output artifacts to be generated. (see [below for nested schema](#nestedblock--spec--artifacts))
+- `common_metadata` (Block List, Max: 1) CommonMetadata specifies the common labels and annotations that are
+applied to all resources. Any existing label or annotation will be
+overridden if its key matches a common one. (see [below for nested schema](#nestedblock--spec--common_metadata))
+- `path_pattern` (String) PathPattern specifies a directory traversal pattern to match within the sources.
+The format is "@<alias>/<pattern>". Named captures in the pattern (e.g. "{app}")
+can be used as placeholders in OutputArtifacts fields.
 - `sources` (Block List) Sources is a list of references to the Flux source-controller
 resources that will be used to generate the artifact. (see [below for nested schema](#nestedblock--spec--sources))
 
@@ -81,6 +87,15 @@ If not specified, defaults to 'Overwrite'.
 The format is "@artifact/path", the alias "artifact"
 refers to the root path of the generated artifact.
 
+
+
+<a id="nestedblock--spec--common_metadata"></a>
+### Nested Schema for `spec.common_metadata`
+
+Optional:
+
+- `annotations` (Map of String) Annotations to be added to the object's metadata.
+- `labels` (Map of String) Labels to be added to the object's metadata.
 
 
 <a id="nestedblock--spec--sources"></a>

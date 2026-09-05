@@ -35,6 +35,9 @@ Optional:
 
 - `allow_empty_response` (Boolean) Do not fail if no secrets are found. Useful for requests where no data is expected.
 - `controller` (String) Used to select the correct ESO controller (think: ingress.ingressClassName) The ESO controller is instantiated with a specific controller name and filters VDS based on this property
+- `get_parameters` (Map of String) GetParameters are query-string parameters passed to Vault on GET calls.
+Each key may map to multiple values, matching HTTP query-string semantics.
+Ignored for non-GET methods; use Parameters for write bodies.
 - `method` (String) Vault API method to use (GET/POST/other)
 - `parameters` (Map of String) Parameters to pass to Vault write (for non-GET methods)
 - `path` (String) Vault path to obtain the dynamic secret from
@@ -127,6 +130,7 @@ Optional:
 - `path` (String) Path where the Certificate authentication backend is mounted
 in Vault, e.g: "cert"
 - `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing client private key to authenticate with Vault using the Cert authentication method (see [below for nested schema](#nestedblock--spec--provider_--auth--cert--secret_ref))
+- `vault_role` (String) VaultRole specifies the Vault role to use for TLS certificate authentication.
 
 <a id="nestedblock--spec--provider_--auth--cert--client_cert"></a>
 ### Nested Schema for `spec.provider_.auth.cert.client_cert`

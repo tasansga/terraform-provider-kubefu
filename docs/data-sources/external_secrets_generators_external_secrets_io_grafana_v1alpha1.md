@@ -97,3 +97,5 @@ Optional:
 - `role` (String) Role is the role of the service account.
 See here for the documentation on basic roles offered by Grafana:
 https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/access-control/rbac-fixed-basic-role-definitions/
+- `seconds_to_live` (Number) SecondsToLive is the number of seconds before the generated service account token will expire.
+Some Grafana deployments (e.g. AWS Managed Grafana) require this value to be set.

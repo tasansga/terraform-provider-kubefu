@@ -76,6 +76,9 @@ Exactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must
 Must use exactly one term.
 
 Exactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must be set. (see [below for nested schema](#nestedblock--spec--node_selector))
+- `partition_type_attribute` (String) PartitionTypeAttribute names a string device attribute (by fully qualified name, e.g. "gpu.example.com/profile") whose value labels each device with its partition type, such as "Full" or "Half" for a MIG-style GPU.
+
+When set, every partitionable device in the slice must carry the attribute and devices sharing a value must share the same ConsumesCounters cost.
 - `per_device_node_selection` (Boolean) PerDeviceNodeSelection defines whether the access from nodes to resources in the pool is set on the ResourceSlice level or on each device. If it is set to true, every device defined the ResourceSlice must specify this individually.
 
 Exactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must be set.
@@ -84,6 +87,14 @@ Exactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must
 The names of the SharedCounters must be unique in the ResourceSlice.
 
 The maximum number of counters in all sets is 32. (see [below for nested schema](#nestedblock--spec--shared_counters))
+- `skip_node_operations` (List of String) SkipNodeOperations lists node-local resource operations (gRPC calls) that will be skipped for the devices in this slice when determining whether operations are necessary on the node. If all allocated devices for a driver in a claim skip an operation, that gRPC call will be skipped. Valid values are:
+
+- "NodePrepareResources": NodePrepareResources gRPC calls are skipped. This
+  value cannot be specified unless "NodeUnprepareResources" is also listed
+  (or "*" is specified).
+- "NodeUnprepareResources": NodeUnprepareResources gRPC calls are skipped. - "*": All node-local resource operations are skipped.
+
+Other values may be added in the future. The kubelet must ignore unknown values.
 
 <a id="nestedblock--spec--pool"></a>
 ### Nested Schema for `spec.pool`
@@ -144,6 +155,8 @@ The maximum number of attributes and capacities combined is 32.
 There can only be a single entry per counterSet.
 
 The total number of device counter consumption entries must be <= 32. In addition, the total number in the entire ResourceSlice must be <= 1024 (for example, 64 devices with 16 counters each). (see [below for nested schema](#nestedblock--spec--devices--consumes_counters))
+- `node_allocatable_resource_mappings` (Map of String) NodeAllocatableResourceMappings defines the mapping of node resources that are managed by the DRA driver exposing this device. This includes resources currently reported in v1.Node `status.allocatable` that are not extended resources (see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#extended-resources). Examples include "cpu", "memory", "ephemeral-storage", and hugepages. In addition to standard requests made through the Pod `spec`, these resources can also be requested through claims and allocated by the DRA driver. For example, a CPU DRA driver might allocate exclusive CPUs or auxiliary node memory dependencies of an accelerator device. The keys of this map are the node-allocatable resource names (e.g., "cpu", "memory"). Extended resource names are not permitted as keys.
+- `node_allocatable_resources` (Map of String) NodeAllocatableResources defines the mapping of node resources that are managed by the DRA driver exposing this device. This includes resources currently reported in v1.Node `status.allocatable` that are not extended resources (see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#extended-resources). Examples include "cpu", "memory", "ephemeral-storage", and hugepages. In addition to standard requests made through the Pod `spec`, these resources can also be requested through claims and allocated by the DRA driver. For example, a CPU DRA driver might allocate exclusive CPUs or auxiliary node memory dependencies of an accelerator device. The keys of this map are the node-allocatable resource names (e.g., "cpu", "memory"). Extended resource names are not permitted as keys.
 - `node_name` (String) NodeName identifies the node where the device is available.
 
 Must only be set if Spec.PerDeviceNodeSelection is set to true. At most one of NodeName, NodeSelector and AllNodes can be set.
@@ -167,6 +180,18 @@ Required:
 - `counters` (Map of String) Counters defines the counters that will be consumed by the device.
 
 The maximum number counters in a device is 32. In addition, the maximum number of all counters in all devices is 1024 (for example, 64 devices with 16 counters each).
+
+Optional:
+
+- `compatibility_groups` (List of String) CompatibilityGroups is a list of opaque group names for this counter set consumption.
+
+Devices that consume counters from the same counter set may only be allocated at the same time ("co-allocated") if they all share at least one common group: the intersection of the CompatibilityGroups of all co-allocated devices on that counter set must be non-empty. Devices that consume from different counter sets are never compared via this field.
+
+An unset field, an explicit nil, and an empty list are equivalent and mean "no groups": such a device is only co-allocatable with sibling devices on the same counter set that also have no groups, and is never co-allocatable with a device that declares one or more groups.
+
+Group names are opaque and meaningful only within the publishing driver's pool.
+
+The maximum number of groups is 2, and the names must be unique.
 
 
 <a id="nestedblock--spec--devices--node_selector"></a>

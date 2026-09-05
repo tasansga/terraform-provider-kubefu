@@ -578,4 +578,6 @@ var dataSourceK8sStorageK8sIoStorageClassV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

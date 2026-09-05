@@ -615,6 +615,24 @@ func dataSourceK8sCoreNodeV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"pod_preemption_policy": {
+						Type:        schema.TypeList,
+						Description: "PodPreemptionPolicy controls the node-level preemption behaviors for pods on this node. This is an alpha field and requires enabling the InPlacePodVerticalScalingSchedulerPreemption feature gate.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"disable_resize_preemption": {
+								Type:        schema.TypeList,
+								Description: "DisableResizePreemption lists the owners (e.g., autoscalers, operators, administrators) that have requested to disable scheduler and Kubelet preemption for in-place pod resize on this node. If this list is non-empty, resize-induced preemption is disabled on this node. This is an alpha field and requires enabling the InPlacePodVerticalScalingSchedulerPreemption feature gate.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Schema{Type: schema.TypeString},
+							},
+						}},
+					},
 					"provider_id": {
 						Type:        schema.TypeString,
 						Description: "ID of the node assigned by the cloud provider in the format: <ProviderName>://<ProviderSpecificNodeID>",
@@ -1093,6 +1111,13 @@ func dataSourceK8sCoreNodeV1() *schema.Resource {
 								Required:    true,
 								Computed:    false,
 							},
+							"running_in_user_namespace": {
+								Type:        schema.TypeBool,
+								Description: "Whether the node is running in a user namespace.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"swap": {
 								Type:        schema.TypeList,
 								Description: "Swap Info reported by the node.",
@@ -1209,7 +1234,7 @@ func dataSourceK8sCoreNodeV1Read(_ context.Context, d *schema.ResourceData, m an
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "Node", "core/v1/Node"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.config_source", "spec.config_source.config_map", "spec.config_source.config_map_ref", "status", "status.config", "status.config.active", "status.config.active.config_map", "status.config.assigned", "status.config.assigned.config_map", "status.config.last_known_good", "status.config.last_known_good.config_map", "status.daemon_endpoints", "status.daemon_endpoints.kubelet_endpoint", "status.features", "status.node_info", "status.node_info.swap", "status.runtime_handlers.features"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.config_source", "spec.config_source.config_map", "spec.config_source.config_map_ref", "spec.pod_preemption_policy", "status", "status.config", "status.config.active", "status.config.active.config_map", "status.config.assigned", "status.config.assigned.config_map", "status.config.last_known_good", "status.config.last_known_good.config_map", "status.daemon_endpoints", "status.daemon_endpoints.kubelet_endpoint", "status.features", "status.node_info", "status.node_info.swap", "status.runtime_handlers.features"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -1244,4 +1269,6 @@ var dataSourceK8sCoreNodeV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

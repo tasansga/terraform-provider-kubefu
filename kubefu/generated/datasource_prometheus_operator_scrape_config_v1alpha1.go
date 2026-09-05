@@ -1193,6 +1193,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComScrapeConfigV1Alpha1() *sche
 								Required:    false,
 								Computed:    true,
 							},
+							"health_filter": {
+								Type:        schema.TypeString,
+								Description: "healthFilter defines the filter expression used to filter the health results.\nSee https://developer.hashicorp.com/consul/api-docs/health#filtering\nIt requires Prometheus >= 3.11.2.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"namespace": {
 								Type:        schema.TypeString,
 								Description: "Namespaces are only supported in Consul Enterprise.",
@@ -14560,4 +14567,9 @@ var dataSourcePrometheusOperatorMonitoringCoreosComScrapeConfigV1Alpha1Compatibl
 	"v0.89.0",
 	"v0.90.0",
 	"v0.90.1",
+	"v0.91.0",
+	"v0.92.0",
+	"v0.92.1",
+	"v0.93.0",
+	"v0.93.1",
 }

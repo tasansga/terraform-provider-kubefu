@@ -300,6 +300,7 @@ This is an alpha field and requires enabling RecoverVolumeExpansionFailure featu
 - `capacity` (Map of String) Represents the actual resources of the underlying volume.
 - `conditions` (Block List) Current Condition of persistent volume claim. If underlying persistent volume is being resized then the Condition will be set to 'ResizeStarted'. (see [below for nested schema](#nestedblock--status--conditions))
 - `current_volume_attributes_class_name` (String) currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using. When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim This is an alpha field and requires enabling VolumeAttributesClass feature.
+- `health_status` (Block List, Max: 1) healthStatus contains the latest controller-reported health information for the volume bound to this claim. (see [below for nested schema](#nestedblock--status--health_status))
 - `modify_volume_status` (Block List, Max: 1) ModifyVolumeStatus represents the status object of ControllerModifyVolume operation. When this is unset, there is no ModifyVolume operation being attempted. This is an alpha field and requires enabling VolumeAttributesClass feature. (see [below for nested schema](#nestedblock--status--modify_volume_status))
 - `phase` (String) Phase represents the current phase of PersistentVolumeClaim.
 - `resize_status` (String) ResizeStatus stores status of resize operation. ResizeStatus is not set by default but when expansion is complete resizeStatus is set to empty string by resize controller or kubelet. This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
@@ -315,6 +316,25 @@ Optional:
 - `reason` (String) Unique, this should be a short, machine understandable string that gives the reason for condition's last transition. If it reports "ResizeStarted" that means the underlying persistent volume is being resized.
 - `status` (String) Status is the status of the condition. Can be True, False, Unknown. More info: https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#:~:text=state%20of%20pvc-,conditions.status,-(string)%2C%20required
 - `type` (String) Type is the type of the condition. More info: https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#:~:text=set%20to%20%27ResizeStarted%27.-,PersistentVolumeClaimCondition,-contains%20details%20about
+
+
+<a id="nestedblock--status--health_status"></a>
+### Nested Schema for `status.health_status`
+
+Optional:
+
+- `health_conditions` (Block List) conditions is the set of adverse conditions reported by the CSI controller plugin. An empty list means no adverse condition. At most 16 conditions may be reported. (see [below for nested schema](#nestedblock--status--health_status--health_conditions))
+- `last_transition_time` (String) lastTransitionTime is when the current set of conditions first appeared.
+
+<a id="nestedblock--status--health_status--health_conditions"></a>
+### Nested Schema for `status.health_status.health_conditions`
+
+Optional:
+
+- `message` (String) message is a human-readable description. Maximum permitted length of a message is 1024 bytes.
+- `reason` (String) reason is a brief CamelCase machine-parseable reason. Together with status it forms the unique identity of a condition entry. Maximum permitted length of a reason is 256 bytes.
+- `status` (String) status is the machine-parseable health category. Possible values: - "Inaccessible": the volume cannot be accessed. - "DataLoss": data loss has been detected on the volume. - "Degraded": the volume is functioning with reduced capability.
+
 
 
 <a id="nestedblock--status--modify_volume_status"></a>

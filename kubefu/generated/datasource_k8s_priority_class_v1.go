@@ -481,9 +481,9 @@ func dataSourceK8sSchedulingK8sIoPriorityClassV1() *schema.Resource {
 			"value": {
 				Type:        schema.TypeInt,
 				Description: "The value of this priority class. This is the actual priority that pods receive when they have the name of this class in their pod spec.",
-				Optional:    false,
-				Required:    true,
-				Computed:    false,
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
 			},
 		},
 	}
@@ -523,4 +523,6 @@ var dataSourceK8sSchedulingK8sIoPriorityClassV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

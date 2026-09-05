@@ -555,6 +555,8 @@ It requires Alertmanager >= v0.31.0.
 - `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
 - `smarthost` (String) The SMTP host and port through which emails are sent. E.g. example.com:25
 - `text` (String) The text body of the email notification.
+- `threading` (Block List, Max: 1) threading defines the threading configuration for email receiver.
+It requires Alertmanager >= v0.30.0. (see [below for nested schema](#nestedblock--spec--receivers--email_configs--threading))
 - `tls_config` (Block List, Max: 1) TLS configuration (see [below for nested schema](#nestedblock--spec--receivers--email_configs--tls_config))
 - `to` (String) The email address to send notifications to.
 
@@ -585,6 +587,15 @@ Optional:
 
 - `key` (String) Key of the tuple.
 - `value` (String) Value of the tuple.
+
+
+<a id="nestedblock--spec--receivers--email_configs--threading"></a>
+### Nested Schema for `spec.receivers.email_configs.threading`
+
+Optional:
+
+- `thread_by_date` (String) threadByDate defines what granularity of current date to thread by. Accepted values: Daily, None.
+(None means group by alert group key, no date).
 
 
 <a id="nestedblock--spec--receivers--email_configs--tls_config"></a>
@@ -2832,7 +2843,9 @@ It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
 - `proxy_from_environment` (Boolean) Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
 
 It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
-- `proxy_url` (String) `proxyURL` defines the HTTP proxy server to use.
+- `proxy_url` (String) Optional proxy URL.
+
+If defined, this field takes precedence over `proxyUrl`.
 - `tls_config` (Block List, Max: 1) TLS configuration for the client. (see [below for nested schema](#nestedblock--spec--receivers--rocketchat_configs--http_config--tls_config))
 
 <a id="nestedblock--spec--receivers--rocketchat_configs--http_config--authorization"></a>
@@ -3275,6 +3288,9 @@ before failing the request and allowing it to be retried.
 It requires Alertmanager >= v0.30.0.
 - `title` (String) title defines the title text displayed in the Slack message attachment.
 - `title_link` (String) titleLink defines the URL that the title will link to when clicked.
+- `update_message` (Boolean) updateMessage enables updating existing Slack messages instead of creating new ones
+when alert state changes. Please note that Webhook URLs do not support updates.
+It requires Alertmanager >= v0.32.0.
 - `username` (String) username defines the slack bot user name.
 
 <a id="nestedblock--spec--receivers--slack_configs--actions"></a>
@@ -3716,6 +3732,11 @@ Optional:
 - `subject` (String) Subject line when the message is delivered to email endpoints.
 - `target_arn` (String) The  mobile platform endpoint ARN if message is delivered via mobile notifications. If you don't specify this value, you must specify a value for the topic_arn or PhoneNumber.
 - `topic_arn` (String) SNS topic ARN, i.e. arn:aws:sns:us-east-2:698519295917:My-Topic If you don't specify this value, you must specify a value for the PhoneNumber or TargetARN.
+- `use_awshttp_client` (Boolean) useAWSHTTPClient forces the AWS SDK's BuildableClient instead of
+alertmanager's tracing-wrapped HTTP client. Auto-enabled when AWS_CA_BUNDLE
+is set; set explicitly when configuring ca_bundle via shared AWS config.
+
+It requires Alertmanager >= 0.33.0.
 
 <a id="nestedblock--spec--receivers--sns_configs--http_config"></a>
 ### Nested Schema for `spec.receivers.sns_configs.http_config`
@@ -4087,6 +4108,8 @@ Optional:
 Optional:
 
 - `access_key` (Block List, Max: 1) AccessKey is the AWS API key. If blank, the environment variable `AWS_ACCESS_KEY_ID` is used. (see [below for nested schema](#nestedblock--spec--receivers--sns_configs--sigv4--access_key))
+- `external_id` (String) externalId defines the external ID used when assuming an AWS role. Can only be used with roleArn.
+It requires Prometheus >= v3.11.0 or Alertmanager >= v0.33.0. Currently not supported by Thanos.
 - `profile` (String) Profile is the named AWS profile used to authenticate.
 - `region` (String) Region is the AWS region. If blank, the region from the default credentials chain used.
 - `role_arn` (String) RoleArn is the named AWS profile used to authenticate.
@@ -5294,6 +5317,10 @@ Optional:
 
 - `http_config` (Block List, Max: 1) HTTP client configuration. (see [below for nested schema](#nestedblock--spec--receivers--webhook_configs--http_config))
 - `max_alerts` (Number) Maximum number of alerts to be sent per webhook message. When 0, all alerts are included.
+- `payload` (String) payload define custom payload to be sent to the webhook endpoint.
+This is an advanced configuration option that allows you
+to define a custom payload using Go templates.
+It requires Alertmanager >= v0.32.0.
 - `send_resolved` (Boolean) Whether or not to notify about resolved alerts.
 - `timeout` (String) The maximum time to wait for a webhook request to complete, before failing the
 request and allowing it to be retried.

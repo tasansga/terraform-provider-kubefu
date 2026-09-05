@@ -65,6 +65,21 @@ Optional:
 - `dns01` (Block List, Max: 1) Configures cert-manager to attempt to complete authorizations by performing the DNS01 challenge flow. (see [below for nested schema](#nestedblock--spec--solver--dns01))
 - `http01` (Block List, Max: 1) Configures cert-manager to attempt to complete authorizations by performing the HTTP01 challenge flow. It is not possible to obtain certificates for wildcard domain names (e.g. `*.example.com`) using the HTTP01 challenge mechanism. (see [below for nested schema](#nestedblock--spec--solver--http01))
 - `selector` (Block List, Max: 1) Selector selects a set of DNSNames on the Certificate resource that should be solved using this challenge solver. If not specified, the solver will be treated as the 'default' solver with the lowest priority, i.e. if any other solver has a more specific match, it will be used instead. (see [below for nested schema](#nestedblock--spec--solver--selector))
+- `wait_instead_of_self_check` (String) WaitInsteadOfSelfCheck, if set, skips cert-manager's self-check and
+instead waits this long after presentation before asking the ACME server
+to validate the challenge.
+
+This is an advanced escape hatch for environments where cert-manager's
+self-check cannot succeed from its own network or DNS viewpoint even
+though the ACME server can still validate successfully, for example due
+to split-horizon DNS or NAT hairpinning.
+
+A value of 0 skips the self-check and asks the ACME server to validate
+immediately after presentation, relying on the ACME server's own
+validation retries (RFC 8555 section 8.2) to succeed once the challenge
+has propagated. A negative duration is rejected.
+Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration,
+for example `30s` or `2m`.
 
 <a id="nestedblock--spec--solver--dns01"></a>
 ### Nested Schema for `spec.solver.dns01`
@@ -1750,6 +1765,9 @@ Optional:
 Optional:
 
 - `presented` (Boolean) presented will be set to true if the challenge values for this challenge are currently 'presented'. This *does not* imply the self check is passing. Only that the values have been 'submitted' for the appropriate challenge mechanism (i.e. the DNS01 TXT record has been presented, or the HTTP01 configuration has been configured).
+- `presented_at` (String) PresentedAt records when cert-manager first configured the solver
+resources for this challenge. This is used by the optional delay-based
+readiness logic.
 - `processing` (Boolean) Used to denote whether this challenge should be processed or not. This field will only be set to true by the 'scheduling' component. It will only be set to false by the 'challenges' controller, after the challenge has reached a final state or timed out. If this field is set to false, the challenge controller will not take any more action.
 - `reason` (String) Contains human readable information on why the Challenge is in the current state.
 - `state` (String) Contains the current 'state' of the challenge. If not set, the state of the challenge is unknown.

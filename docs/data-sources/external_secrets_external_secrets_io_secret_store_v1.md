@@ -45,7 +45,7 @@ Optional:
 - `controller` (String) Used to select the correct ESO controller (think: ingress.ingressClassName)
 The ESO controller is instantiated with a specific controller name and filters ES based on this property
 - `provider_` (Block List, Max: 1) Used to configure the provider. Only one provider may be set (see [below for nested schema](#nestedblock--spec--provider_))
-- `refresh_interval` (Number) Used to configure store refresh interval in seconds. Empty or 0 will default to the controller config.
+- `refresh_interval` (String) Used to configure store refresh interval in seconds. Empty or 0 will default to the controller config.
 - `retry_settings` (Block List, Max: 1) Used to configure http retries if failed (see [below for nested schema](#nestedblock--spec--retry_settings))
 
 <a id="nestedblock--spec--conditions"></a>
@@ -94,10 +94,16 @@ Optional:
 - `azurekv` (Block List, Max: 1) AzureKV configures this store to sync secrets using Azure Key Vault provider (see [below for nested schema](#nestedblock--spec--provider_--azurekv))
 - `barbican` (Block List, Max: 1) Barbican configures this store to sync secrets using the OpenStack Barbican provider (see [below for nested schema](#nestedblock--spec--provider_--barbican))
 - `beyondtrust` (Block List, Max: 1) Beyondtrust configures this store to sync secrets using Password Safe provider. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrust))
+- `beyondtrustworkloadcredentials` (Block List, Max: 1) BeyondtrustWorkloadCredentials configures this store to sync secrets using the BeyondTrust Workload Credentials provider. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrustworkloadcredentials))
 - `bitwardensecretsmanager` (Block List, Max: 1) BitwardenSecretsManager configures this store to sync secrets using BitwardenSecretsManager provider (see [below for nested schema](#nestedblock--spec--provider_--bitwardensecretsmanager))
 - `chef` (Block List, Max: 1) Chef configures this store to sync secrets with chef server (see [below for nested schema](#nestedblock--spec--provider_--chef))
 - `cloudrusm` (Block List, Max: 1) CloudruSM configures this store to sync secrets using the Cloud.ru Secret Manager provider (see [below for nested schema](#nestedblock--spec--provider_--cloudrusm))
 - `conjur` (Block List, Max: 1) Conjur configures this store to sync secrets using conjur provider (see [below for nested schema](#nestedblock--spec--provider_--conjur))
+- `crd` (Block List, Max: 1) CRD configures this store to sync secrets from arbitrary Kubernetes resources,
+including both custom resources (CRDs) and core API resources. Resources are
+selected by API group, version and kind, where group can be "" (empty string)
+for core resources such as ConfigMap. Reading the core v1 Secret is
+intentionally blocked — use the Kubernetes provider for that. (see [below for nested schema](#nestedblock--spec--provider_--crd))
 - `delinea` (Block List, Max: 1) Delinea DevOps Secrets Vault
 https://docs.delinea.com/online-help/products/devops-secrets-vault/current (see [below for nested schema](#nestedblock--spec--provider_--delinea))
 - `device42` (Block List, Max: 1) Device42 configures this store to sync secrets using the Device42 provider (see [below for nested schema](#nestedblock--spec--provider_--device42))
@@ -117,7 +123,9 @@ https://docs.delinea.com/online-help/products/devops-secrets-vault/current (see 
 - `onboardbase` (Block List, Max: 1) Onboardbase configures this store to sync secrets using the Onboardbase provider (see [below for nested schema](#nestedblock--spec--provider_--onboardbase))
 - `onepassword` (Block List, Max: 1) OnePassword configures this store to sync secrets using the 1Password Cloud provider (see [below for nested schema](#nestedblock--spec--provider_--onepassword))
 - `onepassword_sdk` (Block List, Max: 1) OnePasswordSDK configures this store to use 1Password's new Go SDK to sync secrets. (see [below for nested schema](#nestedblock--spec--provider_--onepassword_sdk))
+- `open_bao` (Block List, Max: 1) OpenBao configures this store to sync secrets using the OpenBao provider. (see [below for nested schema](#nestedblock--spec--provider_--open_bao))
 - `oracle` (Block List, Max: 1) Oracle configures this store to sync secrets using Oracle Vault provider (see [below for nested schema](#nestedblock--spec--provider_--oracle))
+- `ovh` (Block List, Max: 1) OVHcloud configures this store to sync secrets using the OVHcloud provider. (see [below for nested schema](#nestedblock--spec--provider_--ovh))
 - `passbolt` (Block List, Max: 1) PassboltProvider provides access to Passbolt secrets manager.
 See: https://www.passbolt.com. (see [below for nested schema](#nestedblock--spec--provider_--passbolt))
 - `passworddepot` (Block List, Max: 1) Configures a store to sync secrets with a Password Depot instance. (see [below for nested schema](#nestedblock--spec--provider_--passworddepot))
@@ -144,6 +152,8 @@ Optional:
 if the AkeylessGWApiURL URL is using HTTPS protocol. If not set the system root certificates
 are used to validate the TLS connection.
 - `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate Akeyless Gateway certificate. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--ca_provider))
+- `ignore_cache` (Boolean) IgnoreCache bypasses the Gateway cache for secret reads when true.
+Only relevant when akeylessGWApiURL points to an Akeyless Gateway.
 
 <a id="nestedblock--spec--provider_--akeyless--auth_secret_ref"></a>
 ### Nested Schema for `spec.provider_.akeyless.auth_secret_ref`
@@ -154,6 +164,10 @@ Optional:
 token stored in the named Secret resource. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth))
 - `secret_ref` (Block List, Max: 1) Reference to a Secret that contains the details
 to authenticate with Akeyless. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref--secret_ref))
+- `service_account_ref` (Block List, Max: 1) ServiceAccountRef specifies a Kubernetes ServiceAccount used for azure_ad
+authentication on AKS Workload Identity. The operator obtains a federated
+identity token from this ServiceAccount via the TokenRequest API instead
+of using the ESO controller pod identity. Ignored for other access types. (see [below for nested schema](#nestedblock--spec--provider_--akeyless--auth_secret_ref--service_account_ref))
 
 <a id="nestedblock--spec--provider_--akeyless--auth_secret_ref--kubernetes_auth"></a>
 ### Nested Schema for `spec.provider_.akeyless.auth_secret_ref.kubernetes_auth`
@@ -245,6 +259,19 @@ Ignored if referent is not cluster-scoped, otherwise defaults to the namespace o
 
 
 
+<a id="nestedblock--spec--provider_--akeyless--auth_secret_ref--service_account_ref"></a>
+### Nested Schema for `spec.provider_.akeyless.auth_secret_ref.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
 
 <a id="nestedblock--spec--provider_--akeyless--ca_provider"></a>
 ### Nested Schema for `spec.provider_.akeyless.ca_provider`
@@ -330,6 +357,8 @@ Optional:
 - `auth` (Block List, Max: 1) Auth defines the information necessary to authenticate against AWS
 if not set aws sdk will infer credentials from your environment
 see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials (see [below for nested schema](#nestedblock--spec--provider_--aws--auth))
+- `custom_session_tags` (Map of String) CustomSessionTags defines additional STS session tags to include when SessionTagsPolicy is Custom.
+These are merged with the automatically injected esoNamespace, esoStoreName, and esoStoreKind tags.
 - `external_id` (String) AWS External ID set on assumed IAM roles
 - `prefix` (String) Prefix adds a prefix to all retrieved values.
 - `region` (String) AWS Region to be used for the provider
@@ -337,6 +366,11 @@ see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.h
 - `secrets_manager` (Block List, Max: 1) SecretsManager defines how the provider behaves when interacting with AWS SecretsManager (see [below for nested schema](#nestedblock--spec--provider_--aws--secrets_manager))
 - `service` (String) Service defines which service should be used to fetch the secrets
 - `session_tags` (Block List) AWS STS assume role session tags (see [below for nested schema](#nestedblock--spec--provider_--aws--session_tags))
+- `session_tags_policy` (String) SessionTagsPolicy controls whether and how STS session tags are added when assuming roles.
+None (default): no tags are added.
+Simple: automatically adds esoNamespace (from the ExternalSecret), esoStoreName, and esoStoreKind tags.
+Custom: adds esoNamespace, esoStoreName, and esoStoreKind plus any tags defined in CustomSessionTags.
+Note: the IAM role must have sts:TagSession permission when using Simple or Custom.
 - `transitive_tag_keys` (List of String) AWS STS assume role transitive session tags. Required when multiple rules are used with the provider
 
 <a id="nestedblock--spec--provider_--aws--auth"></a>
@@ -760,6 +794,90 @@ Optional:
 
 
 
+<a id="nestedblock--spec--provider_--beyondtrustworkloadcredentials"></a>
+### Nested Schema for `spec.provider_.beyondtrustworkloadcredentials`
+
+Optional:
+
+- `auth` (Block List, Max: 1) Auth configures how the Operator authenticates with the BeyondTrust Workload Credentials API.
+Currently supports API key authentication via Kubernetes secret reference.
+For authentication setup, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#authentication (see [below for nested schema](#nestedblock--spec--provider_--beyondtrustworkloadcredentials--auth))
+- `ca_bundle` (String) CABundle is a base64-encoded CA certificate used to validate the BeyondTrust Workload Credentials API TLS certificate.
+Use this when your BeyondTrust instance uses a self-signed certificate or internal CA.
+If not set, the system's trusted root certificates are used.
+- `ca_provider` (Block List, Max: 1) CAProvider points to a Secret or ConfigMap containing a PEM-encoded CA certificate.
+This is used to validate the BeyondTrust Workload Credentials API TLS certificate.
+Use this as an alternative to CABundle when you want to reference an existing Kubernetes resource. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrustworkloadcredentials--ca_provider))
+- `folder_path` (String) FolderPath specifies the default folder path for secret retrieval.
+Secrets will be fetched from this folder unless overridden in the ExternalSecret spec.
+Example: "production/database" or "dev/api-keys"
+Leave empty to retrieve secrets from the root folder.
+For folder organization, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#folders
+- `server` (Block List, Max: 1) Server configures the BeyondTrust Workload Credentials server connection details.
+Includes the API URL and Site ID for your BeyondTrust instance.
+For API reference, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api (see [below for nested schema](#nestedblock--spec--provider_--beyondtrustworkloadcredentials--server))
+
+<a id="nestedblock--spec--provider_--beyondtrustworkloadcredentials--auth"></a>
+### Nested Schema for `spec.provider_.beyondtrustworkloadcredentials.auth`
+
+Optional:
+
+- `apikey` (Block List, Max: 1) APIKey configures API token authentication for BeyondTrust Workload Credentials.
+The token is retrieved from a Kubernetes secret and used as a Bearer token for API requests. (see [below for nested schema](#nestedblock--spec--provider_--beyondtrustworkloadcredentials--auth--apikey))
+
+<a id="nestedblock--spec--provider_--beyondtrustworkloadcredentials--auth--apikey"></a>
+### Nested Schema for `spec.provider_.beyondtrustworkloadcredentials.auth.apikey`
+
+Optional:
+
+- `token` (Block List, Max: 1) Token references the Kubernetes secret containing the BeyondTrust Workload Credentials API token.
+The secret should contain the API key used to authenticate with BeyondTrust Workload Credentials.
+Create an API token in your BeyondTrust Workload Credentials console and store it in a Kubernetes secret.
+For details on creating API tokens, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#authentication (see [below for nested schema](#nestedblock--spec--provider_--beyondtrustworkloadcredentials--auth--apikey--token))
+
+<a id="nestedblock--spec--provider_--beyondtrustworkloadcredentials--auth--apikey--token"></a>
+### Nested Schema for `spec.provider_.beyondtrustworkloadcredentials.auth.apikey.token`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+
+<a id="nestedblock--spec--provider_--beyondtrustworkloadcredentials--ca_provider"></a>
+### Nested Schema for `spec.provider_.beyondtrustworkloadcredentials.ca_provider`
+
+Optional:
+
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
+
+
+<a id="nestedblock--spec--provider_--beyondtrustworkloadcredentials--server"></a>
+### Nested Schema for `spec.provider_.beyondtrustworkloadcredentials.server`
+
+Optional:
+
+- `api_url` (String) APIURL is the base URL of your BeyondTrust Workload Credentials API server.
+This should be the full URL to your BeyondTrust instance.
+Example: https://api.beyondtrust.io/siie
+For more information, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#base-url
+- `site_id` (String) SiteID is your BeyondTrust Workload Credentials site identifier (UUID format).
+This identifier is unique to your BeyondTrust Workload Credentials instance.
+You can find your Site ID in the BeyondTrust Workload Credentials admin console.
+Example: a1b2c3d4-e5f6-4890-abcd-ef1234567890
+For more information, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api
+
+
+
 <a id="nestedblock--spec--provider_--bitwardensecretsmanager"></a>
 ### Nested Schema for `spec.provider_.bitwardensecretsmanager`
 
@@ -923,6 +1041,7 @@ that contains a PEM-encoded certificate. (see [below for nested schema](#nestedb
 Optional:
 
 - `apikey` (Block List, Max: 1) Authenticates with Conjur using an API key. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--apikey))
+- `cert` (Block List, Max: 1) Cert enables certificate-based authentication using a client certificate and key. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--cert))
 - `jwt` (Block List, Max: 1) Jwt enables JWT authentication using Kubernetes service account tokens. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--jwt))
 
 <a id="nestedblock--spec--provider_--conjur--auth--apikey"></a>
@@ -950,6 +1069,44 @@ Ignored if referent is not cluster-scoped, otherwise defaults to the namespace o
 
 <a id="nestedblock--spec--provider_--conjur--auth--apikey--user_ref"></a>
 ### Nested Schema for `spec.provider_.conjur.auth.apikey.user_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--conjur--auth--cert"></a>
+### Nested Schema for `spec.provider_.conjur.auth.cert`
+
+Optional:
+
+- `account` (String) Account is the Conjur organization account name.
+- `client_cert_ref` (Block List, Max: 1) ClientCertRef is a reference to a specific 'key' containing the client certificate
+within a Secret resource. The certificate must be PEM-encoded. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--cert--client_cert_ref))
+- `client_key_ref` (Block List, Max: 1) ClientKeyRef is a reference to a specific 'key' containing the private RSA client key
+within a Secret resource. The key must be PEM-encoded. (see [below for nested schema](#nestedblock--spec--provider_--conjur--auth--cert--client_key_ref))
+- `host_id` (String) Optional HostID for cert authentication (can be omitted when using 'spiffe' mode).
+- `service_id` (String) The conjur authn cert webservice id
+
+<a id="nestedblock--spec--provider_--conjur--auth--cert--client_cert_ref"></a>
+### Nested Schema for `spec.provider_.conjur.auth.cert.client_cert_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--conjur--auth--cert--client_key_ref"></a>
+### Nested Schema for `spec.provider_.conjur.auth.cert.client_key_ref`
 
 Optional:
 
@@ -1012,6 +1169,173 @@ Optional:
 - `namespace` (String) The namespace the Provider type is in.
 Can only be defined when used in a ClusterSecretStore.
 - `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
+
+
+
+<a id="nestedblock--spec--provider_--crd"></a>
+### Nested Schema for `spec.provider_.crd`
+
+Optional:
+
+- `auth` (Block List, Max: 1) Auth configures authentication to the Kubernetes API, same as the
+Kubernetes provider. Required when Server.URL is set (unless using AuthRef). (see [below for nested schema](#nestedblock--spec--provider_--crd--auth))
+- `auth_ref` (Block List, Max: 1) AuthRef references a Secret containing a kubeconfig. Same semantics as the
+Kubernetes provider. (see [below for nested schema](#nestedblock--spec--provider_--crd--auth_ref))
+- `resource` (Block List, Max: 1) Resource identifies the CRD by its API group, version and kind. (see [below for nested schema](#nestedblock--spec--provider_--crd--resource))
+- `server` (Block List, Max: 1) Server configures the Kubernetes API address and TLS trust, same as the
+Kubernetes provider. When omitted, the URL defaults to the in-cluster API. (see [below for nested schema](#nestedblock--spec--provider_--crd--server))
+- `whitelist` (Block List, Max: 1) Whitelist optionally restricts which object names and requested properties
+are allowed to be read. (see [below for nested schema](#nestedblock--spec--provider_--crd--whitelist))
+
+<a id="nestedblock--spec--provider_--crd--auth"></a>
+### Nested Schema for `spec.provider_.crd.auth`
+
+Optional:
+
+- `cert` (Block List, Max: 1) has both clientCert and clientKey as secretKeySelector (see [below for nested schema](#nestedblock--spec--provider_--crd--auth--cert))
+- `service_account` (Block List, Max: 1) points to a service account that should be used for authentication (see [below for nested schema](#nestedblock--spec--provider_--crd--auth--service_account))
+- `token` (Block List, Max: 1) use static token to authenticate with (see [below for nested schema](#nestedblock--spec--provider_--crd--auth--token))
+
+<a id="nestedblock--spec--provider_--crd--auth--cert"></a>
+### Nested Schema for `spec.provider_.crd.auth.cert`
+
+Optional:
+
+- `client_cert` (Block List, Max: 1) SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--crd--auth--cert--client_cert))
+- `client_key` (Block List, Max: 1) SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--crd--auth--cert--client_key))
+
+<a id="nestedblock--spec--provider_--crd--auth--cert--client_cert"></a>
+### Nested Schema for `spec.provider_.crd.auth.cert.client_cert`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--crd--auth--cert--client_key"></a>
+### Nested Schema for `spec.provider_.crd.auth.cert.client_key`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--crd--auth--service_account"></a>
+### Nested Schema for `spec.provider_.crd.auth.service_account`
+
+Optional:
+
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--crd--auth--token"></a>
+### Nested Schema for `spec.provider_.crd.auth.token`
+
+Optional:
+
+- `bearer_token` (Block List, Max: 1) SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--crd--auth--token--bearer_token))
+
+<a id="nestedblock--spec--provider_--crd--auth--token--bearer_token"></a>
+### Nested Schema for `spec.provider_.crd.auth.token.bearer_token`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+
+<a id="nestedblock--spec--provider_--crd--auth_ref"></a>
+### Nested Schema for `spec.provider_.crd.auth_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--crd--resource"></a>
+### Nested Schema for `spec.provider_.crd.resource`
+
+Optional:
+
+- `group` (String) Group is the API group of the resource. Use "" (empty string) for core
+Kubernetes resources such as ConfigMap; use e.g. "config.example.io"
+for a CRD. The field is required to be present in the manifest — write
+`group: ""` explicitly for core resources so typos fail at admission
+time rather than later at discovery.
+- `kind` (String) Kind is the Kubernetes resource kind (e.g. "MyCustomResource").
+- `version` (String) Version is the API version of the resource (e.g. "v1alpha1").
+
+
+<a id="nestedblock--spec--provider_--crd--server"></a>
+### Nested Schema for `spec.provider_.crd.server`
+
+Optional:
+
+- `ca_bundle` (String) CABundle is a base64-encoded CA certificate
+- `ca_provider` (Block List, Max: 1) see: https://external-secrets.io/latest/spec/#external-secrets.io/v1alpha1.CAProvider (see [below for nested schema](#nestedblock--spec--provider_--crd--server--ca_provider))
+- `url` (String) configures the Kubernetes server Address.
+
+<a id="nestedblock--spec--provider_--crd--server--ca_provider"></a>
+### Nested Schema for `spec.provider_.crd.server.ca_provider`
+
+Optional:
+
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
+
+
+
+<a id="nestedblock--spec--provider_--crd--whitelist"></a>
+### Nested Schema for `spec.provider_.crd.whitelist`
+
+Optional:
+
+- `rules` (Block List) Rules is a list of allow rules. If rules are set, at least one rule must
+match for a request to be allowed. (see [below for nested schema](#nestedblock--spec--provider_--crd--whitelist--rules))
+
+<a id="nestedblock--spec--provider_--crd--whitelist--rules"></a>
+### Nested Schema for `spec.provider_.crd.whitelist.rules`
+
+Optional:
+
+- `name` (String) Name is an optional regular expression matched against the bare object name.
+For both SecretStore and ClusterSecretStore this is always the object name
+without any namespace prefix (e.g. "my-db-spec", not "prod/my-db-spec").
+- `namespace` (String) Namespace is an optional regular expression matched against the namespace of
+the object. Applies only when a ClusterSecretStore is used; it is ignored
+for SecretStore (where the namespace is fixed to the store namespace).
+- `properties` (List of String) Properties is an optional list of regular expressions matched against
+requested property keys (for example: "spec.secretValue").
+
 
 
 
@@ -1185,6 +1509,8 @@ Optional:
 This is NOT RECOMMENDED for production use.
 Set to true only if you understand the security implications.
 - `server_url` (String) ServerURL is the DVLS instance URL (e.g., https://dvls.example.com).
+- `vault` (String) Vault is the name or UUID of the vault to fetch secrets from.
+When omitted, the vault must be specified in the secret key using the legacy format "<vault-id>/<entry-id>".
 
 <a id="nestedblock--spec--provider_--dvls--auth"></a>
 ### Nested Schema for `spec.provider_.dvls.auth`
@@ -1362,6 +1688,12 @@ serviceAccountRef must be used by providing operators service account details. (
 - `external_token_endpoint` (String) externalTokenEndpoint is the endpoint explicitly set up to provide tokens, which will be matched against the
 credential_source.url in the provided credConfig. This field is merely to double-check the external token source
 URL is having the expected value.
+- `gcp_service_account_email` (String) GCPServiceAccountEmail is the email of the Google Cloud service account to impersonate
+after Workload Identity Federation. Use this to grant access through the service account's
+IAM bindings (for example roles/secretmanager.secretAccessor). When set, it overrides
+service_account_impersonation_url in the external account JSON from credConfig;
+when serviceAccountRef is set, it also overrides the "iam.gke.io/gcp-service-account" annotation
+on that ServiceAccount.
 - `service_account_ref` (Block List, Max: 1) serviceAccountRef is the reference to the kubernetes ServiceAccount to be used for obtaining the tokens,
 when Kubernetes is configured as provider in workload identity pool. (see [below for nested schema](#nestedblock--spec--provider_--gcpsm--auth--workload_identity_federation--service_account_ref))
 
@@ -1422,8 +1754,14 @@ Optional:
 - `auth` (Block List, Max: 1) auth configures how secret-manager authenticates with a Github instance. (see [below for nested schema](#nestedblock--spec--provider_--github--auth))
 - `environment` (String) environment will be used to fetch secrets from a particular environment within a github repository
 - `installation_id` (Number) installationID specifies the Github APP installation that will be used to authenticate the client
+- `org_secret_visibility` (String) orgSecretVisibility controls the visibility of organization secrets pushed via PushSecret.
+Valid values are "all" or "private".
+When unset, new secrets are created with visibility "all" and existing secrets preserve
+whatever visibility they already have in GitHub.
 - `organization` (String) organization will be used to fetch secrets from the Github organization
 - `repository` (String) repository will be used to fetch secrets from the Github repository within an organization
+- `secret_type` (String) secretType specifies which GitHub secret service to use.
+Defaults to Actions for backwards compatibility.
 - `upload_url` (String) Upload URL for enterprise instances. Default to URL.
 - `url` (String) URL configures the Github instance URL. Defaults to https://github.com/.
 
@@ -1996,6 +2334,8 @@ Optional:
 
 - `environment_slug` (String) EnvironmentSlug is the required slug identifier for the environment.
 - `expand_secret_references` (Boolean) ExpandSecretReferences indicates whether secret references should be expanded. Defaults to true if not provided.
+- `organization_slug` (String) OrganizationSlug is the optional slug that identifies the organization that will be used
+during authentication. Useful for sub-organization setups
 - `project_slug` (String) ProjectSlug is the required slug identifier for the project.
 - `recursive` (Boolean) Recursive indicates whether the secrets should be fetched recursively. Defaults to false if not provided.
 - `secrets_path` (String) SecretsPath specifies the path to the secrets within the workspace. Defaults to "/" if not provided.
@@ -2010,6 +2350,7 @@ Optional:
 - `auth_ref` (Block List, Max: 1) A reference to a specific 'key' within a Secret resource.
 In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--keepersecurity--auth_ref))
 - `folder_id` (String)
+- `get_by_title_fallback` (Boolean)
 
 <a id="nestedblock--spec--provider_--keepersecurity--auth_ref"></a>
 ### Nested Schema for `spec.provider_.keepersecurity.auth_ref`
@@ -2176,6 +2517,7 @@ Expected JSON structure:
   }
 } (see [below for nested schema](#nestedblock--spec--provider_--nebiusmysterybox--auth--service_account_creds_secret_ref))
 - `token_secret_ref` (Block List, Max: 1) Token authenticates with Nebius Mysterybox by presenting a token. (see [below for nested schema](#nestedblock--spec--provider_--nebiusmysterybox--auth--token_secret_ref))
+- `workload_identity` (Block List, Max: 1) WorkloadIdentity defines configuration for workload identity authentication to Nebius IAM. (see [below for nested schema](#nestedblock--spec--provider_--nebiusmysterybox--auth--workload_identity))
 
 <a id="nestedblock--spec--provider_--nebiusmysterybox--auth--service_account_creds_secret_ref"></a>
 ### Nested Schema for `spec.provider_.nebiusmysterybox.auth.service_account_creds_secret_ref`
@@ -2199,6 +2541,31 @@ Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
 - `namespace` (String) The namespace of the Secret resource being referred to.
 Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--nebiusmysterybox--auth--workload_identity"></a>
+### Nested Schema for `spec.provider_.nebiusmysterybox.auth.workload_identity`
+
+Optional:
+
+- `iam_service_account_id` (String) IAMServiceAccountID is the Nebius IAM service account identifier that the
+federated Kubernetes service account should impersonate during token exchange.
+- `service_account_ref` (Block List, Max: 1) ServiceAccountRef references a Kubernetes ServiceAccount used to request a
+temporary JWT via the TokenRequest API. The JWT is then exchanged for a
+Nebius IAM token using workload federation. (see [below for nested schema](#nestedblock--spec--provider_--nebiusmysterybox--auth--workload_identity--service_account_ref))
+
+<a id="nestedblock--spec--provider_--nebiusmysterybox--auth--workload_identity--service_account_ref"></a>
+### Nested Schema for `spec.provider_.nebiusmysterybox.auth.workload_identity.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+Some providers automatically extend the audience field based on well-known annotations for workload
+identity (e.g. IRSA or GCP Workload Identity)
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
 
 
 
@@ -2364,6 +2731,9 @@ When enabled, secrets are cached with the specified TTL.
 Write operations (PushSecret, DeleteSecret) automatically invalidate relevant cache entries.
 If omitted, caching is disabled (default).
 cache: {} is a valid option to set. (see [below for nested schema](#nestedblock--spec--provider_--onepassword_sdk--cache))
+- `environment` (String) Environment defines the 1Password Environment ID to read variables from.
+Environments are read-only: PushSecret, DeleteSecret, and SecretExists return an error when set.
+Mutually exclusive with Vault.
 - `integration_info` (Block List, Max: 1) IntegrationInfo specifies the name and version of the integration built using the 1Password Go SDK.
 If you don't know which name and version to use, use `DefaultIntegrationName` and `DefaultIntegrationVersion`, respectively. (see [below for nested schema](#nestedblock--spec--provider_--onepassword_sdk--integration_info))
 - `vault` (String) Vault defines the vault's name to access. Do NOT add op:// prefix. This will be done automatically.
@@ -2406,6 +2776,196 @@ Optional:
 
 - `name` (String) Name defaults to "1Password SDK".
 - `version` (String) Version defaults to "v1.0.0".
+
+
+
+<a id="nestedblock--spec--provider_--open_bao"></a>
+### Nested Schema for `spec.provider_.open_bao`
+
+Optional:
+
+- `auth` (Block List, Max: 1) Auth configures how secret-manager authenticates with the OpenBao server. (see [below for nested schema](#nestedblock--spec--provider_--open_bao--auth))
+- `ca_bundle` (String) PEM encoded CA bundle used to validate the OpenBao server certificate. If
+this and `caProvider` are not set the system root certificates are used
+to validate the TLS connection.
+- `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate OpenBao server
+certificate. If this and `caBundle` are not set the system root
+certificates are used to validate the TLS connection. (see [below for nested schema](#nestedblock--spec--provider_--open_bao--ca_provider))
+- `namespace` (String) Name of the [OpenBao Namespace]. Namespaces is a set of features within
+OpenBao that allows OpenBao environments to support secure multi-tenancy.
+e.g: "ns1".
+
+[OpenBao Namespace]: https://openbao.org/docs/concepts/namespaces/
+- `path` (String) Path is the mount path of the OpenBao KV backend endpoint, e.g:
+"secret". The v2 KV secret engine version specific "/data" path suffix
+for fetching secrets from OpenBao is optional and will be appended
+if not present in specified path.
+- `server` (String) Server is the connection address for the OpenBao server, e.g: `https://openbao.example.com:8200`.
+- `version` (String) Version is the OpenBao KV secret engine version. This can be either "v1" or
+"v2". Version defaults to "v2".
+
+<a id="nestedblock--spec--provider_--open_bao--auth"></a>
+### Nested Schema for `spec.provider_.open_bao.auth`
+
+Optional:
+
+- `app_role` (Block List, Max: 1) AppRole authenticates with OpenBao using the [App Role auth mechanism],
+with the role and secret stored in a Kubernetes Secret resource.
+
+[App Role auth mechanism]: https://openbao.org/docs/auth/approle/ (see [below for nested schema](#nestedblock--spec--provider_--open_bao--auth--app_role))
+- `kubernetes` (Block List, Max: 1) Kubernetes authenticates with OpenBao by passing a ServiceAccount
+token to the [Kubernetes auth mechanism].
+
+[Kubernetes auth mechanism]: https://openbao.org/docs/auth/kubernetes/ (see [below for nested schema](#nestedblock--spec--provider_--open_bao--auth--kubernetes))
+- `namespace` (String) Name of the [OpenBao Namespace] to authenticate to. This can be different
+than the namespace your secret is in. Namespaces is a set of features
+within OpenBao that allows OpenBao environments to support secure
+multi-tenancy. e.g: "ns1". This will default to OpenBao.Namespace field
+if set, or empty otherwise
+
+[OpenBao Namespace]: https://openbao.org/docs/concepts/namespaces/
+- `token_secret_ref` (Block List, Max: 1) TokenSecretRef authenticates with OpenBao by presenting a token. (see [below for nested schema](#nestedblock--spec--provider_--open_bao--auth--token_secret_ref))
+- `user_pass` (Block List, Max: 1) UserPass authenticates with OpenBao by passing a username/password pair (see [below for nested schema](#nestedblock--spec--provider_--open_bao--auth--user_pass))
+
+<a id="nestedblock--spec--provider_--open_bao--auth--app_role"></a>
+### Nested Schema for `spec.provider_.open_bao.auth.app_role`
+
+Optional:
+
+- `path` (String) Path where the App Role authentication backend is mounted
+in OpenBao, e.g: "approle"
+- `role_id` (String) RoleID configured in the App Role authentication backend when setting
+up the authentication backend in OpenBao.
+- `role_ref` (Block List, Max: 1) Reference to a key in a Secret that contains the App Role ID used
+to authenticate with OpenBao.
+The `key` field must be specified and denotes which entry within the Secret
+resource is used as the app role id. (see [below for nested schema](#nestedblock--spec--provider_--open_bao--auth--app_role--role_ref))
+- `secret_ref` (Block List, Max: 1) Reference to a key in a Secret that contains the App Role secret used
+to authenticate with OpenBao.
+The `key` field must be specified and denotes which entry within the Secret
+resource is used as the app role secret. (see [below for nested schema](#nestedblock--spec--provider_--open_bao--auth--app_role--secret_ref))
+
+<a id="nestedblock--spec--provider_--open_bao--auth--app_role--role_ref"></a>
+### Nested Schema for `spec.provider_.open_bao.auth.app_role.role_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--open_bao--auth--app_role--secret_ref"></a>
+### Nested Schema for `spec.provider_.open_bao.auth.app_role.secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--open_bao--auth--kubernetes"></a>
+### Nested Schema for `spec.provider_.open_bao.auth.kubernetes`
+
+Optional:
+
+- `path` (String) Path where the Kubernetes authentication backend is mounted in OpenBao, e.g:
+"kubernetes"
+- `role` (String) A required field containing the OpenBao Role to assume. A Role binds a
+Kubernetes ServiceAccount with a set of OpenBao policies.
+- `secret_ref` (Block List, Max: 1) Optional secret field containing a Kubernetes ServiceAccount JWT used
+for authenticating with OpenBao. If a name is specified without a key,
+`token` is the default. (see [below for nested schema](#nestedblock--spec--provider_--open_bao--auth--kubernetes--secret_ref))
+- `service_account_ref` (Block List, Max: 1) Optional service account field containing the name of a Kubernetes ServiceAccount.
+If the service account is specified, a token will be requested from the Kubernetes
+TokenRequest API for authenticating with OpenBao.
+Any configured audiences will be passed to the TokenRequest as-is. (see [below for nested schema](#nestedblock--spec--provider_--open_bao--auth--kubernetes--service_account_ref))
+
+<a id="nestedblock--spec--provider_--open_bao--auth--kubernetes--secret_ref"></a>
+### Nested Schema for `spec.provider_.open_bao.auth.kubernetes.secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--open_bao--auth--kubernetes--service_account_ref"></a>
+### Nested Schema for `spec.provider_.open_bao.auth.kubernetes.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+Some providers automatically extend the audience field based on well-known annotations for workload
+identity (e.g. IRSA or GCP Workload Identity)
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--open_bao--auth--token_secret_ref"></a>
+### Nested Schema for `spec.provider_.open_bao.auth.token_secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--open_bao--auth--user_pass"></a>
+### Nested Schema for `spec.provider_.open_bao.auth.user_pass`
+
+Optional:
+
+- `path` (String) Path where the UserPassword authentication backend is mounted
+in OpenBao, e.g: "userpass"
+- `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing password for the user
+used to authenticate with OpenBao using the [UserPass authentication
+method]
+
+[UserPass authentication method]: https://openbao.org/docs/auth/userpass/ (see [below for nested schema](#nestedblock--spec--provider_--open_bao--auth--user_pass--secret_ref))
+- `username` (String) Username is a username used to authenticate using the [UserPass
+authentication method]
+
+[UserPass authentication method]: https://openbao.org/docs/auth/userpass/
+
+<a id="nestedblock--spec--provider_--open_bao--auth--user_pass--secret_ref"></a>
+### Nested Schema for `spec.provider_.open_bao.auth.user_pass.secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+
+<a id="nestedblock--spec--provider_--open_bao--ca_provider"></a>
+### Nested Schema for `spec.provider_.open_bao.ca_provider`
+
+Optional:
+
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
 
 
 
@@ -2485,12 +3045,108 @@ Ignored if referent is not cluster-scoped, otherwise defaults to the namespace o
 
 
 
+<a id="nestedblock--spec--provider_--ovh"></a>
+### Nested Schema for `spec.provider_.ovh`
+
+Optional:
+
+- `auth` (Block List, Max: 1) Authentication method (mtls or token). (see [below for nested schema](#nestedblock--spec--provider_--ovh--auth))
+- `cas_required` (Boolean) Enables or disables check-and-set (CAS) (default: false).
+- `okms_timeout` (Number) Setup a timeout in seconds when requests to the KMS are made (default: 30).
+- `okmsid` (String) specifies the OKMS ID.
+- `server` (String) specifies the OKMS server endpoint.
+
+<a id="nestedblock--spec--provider_--ovh--auth"></a>
+### Nested Schema for `spec.provider_.ovh.auth`
+
+Optional:
+
+- `mtls` (Block List, Max: 1) OvhClientMTLS defines the configuration required to authenticate to OVHcloud's Secret Manager using mTLS. (see [below for nested schema](#nestedblock--spec--provider_--ovh--auth--mtls))
+- `token` (Block List, Max: 1) OvhClientToken defines the configuration required to authenticate to OVHcloud's Secret Manager using a token. (see [below for nested schema](#nestedblock--spec--provider_--ovh--auth--token))
+
+<a id="nestedblock--spec--provider_--ovh--auth--mtls"></a>
+### Nested Schema for `spec.provider_.ovh.auth.mtls`
+
+Optional:
+
+- `ca_bundle` (String)
+- `ca_provider` (Block List, Max: 1) CAProvider provides a custom certificate authority for accessing the provider's store.
+The CAProvider points to a Secret or ConfigMap resource that contains a PEM-encoded certificate. (see [below for nested schema](#nestedblock--spec--provider_--ovh--auth--mtls--ca_provider))
+- `cert_secret_ref` (Block List, Max: 1) SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--ovh--auth--mtls--cert_secret_ref))
+- `key_secret_ref` (Block List, Max: 1) SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--ovh--auth--mtls--key_secret_ref))
+
+<a id="nestedblock--spec--provider_--ovh--auth--mtls--ca_provider"></a>
+### Nested Schema for `spec.provider_.ovh.auth.mtls.ca_provider`
+
+Optional:
+
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
+
+
+<a id="nestedblock--spec--provider_--ovh--auth--mtls--cert_secret_ref"></a>
+### Nested Schema for `spec.provider_.ovh.auth.mtls.cert_secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+<a id="nestedblock--spec--provider_--ovh--auth--mtls--key_secret_ref"></a>
+### Nested Schema for `spec.provider_.ovh.auth.mtls.key_secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--ovh--auth--token"></a>
+### Nested Schema for `spec.provider_.ovh.auth.token`
+
+Optional:
+
+- `token_secret_ref` (Block List, Max: 1) SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--ovh--auth--token--token_secret_ref))
+
+<a id="nestedblock--spec--provider_--ovh--auth--token--token_secret_ref"></a>
+### Nested Schema for `spec.provider_.ovh.auth.token.token_secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+
+
 <a id="nestedblock--spec--provider_--passbolt"></a>
 ### Nested Schema for `spec.provider_.passbolt`
 
 Optional:
 
 - `auth` (Block List, Max: 1) Auth defines the information necessary to authenticate against Passbolt Server (see [below for nested schema](#nestedblock--spec--provider_--passbolt--auth))
+- `ca_bundle` (String) PEM encoded CA bundle used to validate Passbolt server certificate. Only used
+if the Host URL is using HTTPS protocol. If not set the system root certificates
+are used to validate the TLS connection.
+- `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate Passbolt server certificate. (see [below for nested schema](#nestedblock--spec--provider_--passbolt--ca_provider))
 - `host` (String) Host defines the Passbolt Server to connect to
 
 <a id="nestedblock--spec--provider_--passbolt--auth"></a>
@@ -2526,6 +3182,18 @@ Some instances of this field may be defaulted, in others it may be required.
 - `namespace` (String) The namespace of the Secret resource being referred to.
 Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
 
+
+
+<a id="nestedblock--spec--provider_--passbolt--ca_provider"></a>
+### Nested Schema for `spec.provider_.passbolt.ca_provider`
+
+Optional:
+
+- `key` (String) The key where the CA certificate can be found in the Secret or ConfigMap.
+- `name` (String) The name of the object located at the provider type.
+- `namespace` (String) The namespace the Provider type is in.
+Can only be defined when used in a ClusterSecretStore.
+- `type` (String) The type of provider to use such as "Secret", or "ConfigMap".
 
 
 
@@ -2611,6 +3279,8 @@ Optional:
 
 - `access_token` (Block List, Max: 1) AccessToken is the access tokens to sign in to the Pulumi Cloud Console. (see [below for nested schema](#nestedblock--spec--provider_--pulumi--access_token))
 - `api_url` (String) APIURL is the URL of the Pulumi API.
+- `auth` (Block List, Max: 1) Auth configures how the Operator authenticates with the Pulumi API.
+Either auth or the deprecated accessToken field must be specified. (see [below for nested schema](#nestedblock--spec--provider_--pulumi--auth))
 - `environment` (String) Environment are YAML documents composed of static key-value pairs, programmatic expressions,
 dynamically retrieved values from supported providers including all major clouds,
 and other Pulumi ESC environments.
@@ -2636,6 +3306,59 @@ Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) The name of the Secret resource being referred to.
 - `namespace` (String) The namespace of the Secret resource being referred to.
 Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--pulumi--auth"></a>
+### Nested Schema for `spec.provider_.pulumi.auth`
+
+Optional:
+
+- `access_token` (Block List, Max: 1) AccessToken authenticates using a Pulumi access token stored in a Kubernetes Secret. (see [below for nested schema](#nestedblock--spec--provider_--pulumi--auth--access_token))
+- `oidc_config` (Block List, Max: 1) OIDCConfig authenticates using Kubernetes ServiceAccount tokens via OIDC. (see [below for nested schema](#nestedblock--spec--provider_--pulumi--auth--oidc_config))
+
+<a id="nestedblock--spec--provider_--pulumi--auth--access_token"></a>
+### Nested Schema for `spec.provider_.pulumi.auth.access_token`
+
+Optional:
+
+- `secret_ref` (Block List, Max: 1) SecretRef is a reference to a secret containing the Pulumi API token. (see [below for nested schema](#nestedblock--spec--provider_--pulumi--auth--access_token--secret_ref))
+
+<a id="nestedblock--spec--provider_--pulumi--auth--access_token--secret_ref"></a>
+### Nested Schema for `spec.provider_.pulumi.auth.access_token.secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--pulumi--auth--oidc_config"></a>
+### Nested Schema for `spec.provider_.pulumi.auth.oidc_config`
+
+Optional:
+
+- `expiration_seconds` (Number) ExpirationSeconds sets the token validity duration for service account and OIDC token.
+Defaults to 10 minutes.
+- `organization` (String) Organization is the name of the Pulumi organization configured for OIDC authentication.
+- `service_account_ref` (Block List, Max: 1) ServiceAccountRef specifies the Kubernetes ServiceAccount to use for authentication. (see [below for nested schema](#nestedblock--spec--provider_--pulumi--auth--oidc_config--service_account_ref))
+
+<a id="nestedblock--spec--provider_--pulumi--auth--oidc_config--service_account_ref"></a>
+### Nested Schema for `spec.provider_.pulumi.auth.oidc_config.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String) Audience specifies the `aud` claim for the service account token
+If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+then this audiences will be appended to the list
+- `name` (String) The name of the ServiceAccount resource being referred to.
+- `namespace` (String) Namespace of the resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
 
 
 
@@ -2703,10 +3426,18 @@ Optional:
 if the ServerURL URL is using HTTPS protocol. If not set the system root certificates
 are used to validate the TLS connection.
 - `ca_provider` (Block List, Max: 1) The provider for the CA bundle to use to validate Secret ServerURL certificate. (see [below for nested schema](#nestedblock--spec--provider_--secretserver--ca_provider))
+- `disable_site_id_validation` (Boolean) DisableSiteIDValidation permits a missing site ID for new secrets.
+The provider sends 0 if no site ID is set.
 - `domain` (String) Domain is the secret server domain.
 - `password` (Block List, Max: 1) Password is the secret server account password. (see [below for nested schema](#nestedblock--spec--provider_--secretserver--password))
 - `server_url` (String) ServerURL
 URL to your secret server installation
+- `site_id` (Number) SiteID is the ID of the Secret Server site for new secrets.
+PushSecret metadata can override this value for one secret.
+The provider uses 1 if this field is not set.
+- `token` (Block List, Max: 1) Token is an access token used to authenticate to the secret server,
+as an alternative to Username and Password. When set, Username and
+Password are not required and are ignored. (see [below for nested schema](#nestedblock--spec--provider_--secretserver--token))
 - `username` (Block List, Max: 1) Username is the secret server account username. (see [below for nested schema](#nestedblock--spec--provider_--secretserver--username))
 
 <a id="nestedblock--spec--provider_--secretserver--ca_provider"></a>
@@ -2731,6 +3462,27 @@ Optional:
 
 <a id="nestedblock--spec--provider_--secretserver--password--secret_ref"></a>
 ### Nested Schema for `spec.provider_.secretserver.password.secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--secretserver--token"></a>
+### Nested Schema for `spec.provider_.secretserver.token`
+
+Optional:
+
+- `secret_ref` (Block List, Max: 1) SecretRef references a key in a secret that will be used as value. (see [below for nested schema](#nestedblock--spec--provider_--secretserver--token--secret_ref))
+- `value` (String) Value can be specified directly to set a value without using a secret.
+
+<a id="nestedblock--spec--provider_--secretserver--token--secret_ref"></a>
+### Nested Schema for `spec.provider_.secretserver.token.secret_ref`
 
 Optional:
 
@@ -2917,6 +3669,7 @@ authentication method (see [below for nested schema](#nestedblock--spec--provide
 in Vault, e.g: "cert"
 - `secret_ref` (Block List, Max: 1) SecretRef to a key in a Secret resource containing client private key to
 authenticate with Vault using the Cert authentication method (see [below for nested schema](#nestedblock--spec--provider_--vault--auth--cert--secret_ref))
+- `vault_role` (String) VaultRole specifies the Vault role to use for TLS certificate authentication.
 
 <a id="nestedblock--spec--provider_--vault--auth--cert--client_cert"></a>
 ### Nested Schema for `spec.provider_.vault.auth.cert.client_cert`

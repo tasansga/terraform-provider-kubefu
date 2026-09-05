@@ -99,6 +99,13 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1() *schema.Resour
 										Required:    false,
 										Computed:    true,
 									},
+									"null_byte_policy": {
+										Type:        schema.TypeString,
+										Description: "Controls how ESO handles fetched secret data containing NUL bytes for this source.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"property": {
 										Type:        schema.TypeString,
 										Description: "Used to select a specific property of the Provider value (if a map), if supported",
@@ -232,6 +239,13 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1() *schema.Resour
 										Required:    false,
 										Computed:    true,
 									},
+									"null_byte_policy": {
+										Type:        schema.TypeString,
+										Description: "Controls how ESO handles fetched secret data containing NUL bytes for this source.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"property": {
 										Type:        schema.TypeString,
 										Description: "Used to select a specific property of the Provider value (if a map), if supported",
@@ -286,6 +300,13 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1() *schema.Resour
 												Computed:    true,
 											},
 										}},
+									},
+									"null_byte_policy": {
+										Type:        schema.TypeString,
+										Description: "Controls how ESO handles fetched secret data containing NUL bytes for this find source.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
 									},
 									"path": {
 										Type:        schema.TypeString,
@@ -501,6 +522,46 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1() *schema.Resour
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
+							},
+						}},
+					},
+					"sync_windows": {
+						Type:        schema.TypeList,
+						Description: "SyncWindows optionally restricts when periodic refreshes may occur.\nEvaluated in UTC, only for Periodic refresh policy (or when refreshPolicy is unset).",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"kind": {
+								Type:        schema.TypeString,
+								Description: "Kind applies to every window in the list.\n\"allow\" -- syncs are permitted only while at least one window is active;\n           all other times are blocked.\n\"deny\"  -- syncs are blocked while any window is active;\n           all other times are permitted.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"windows": {
+								Type:        schema.TypeList,
+								Description: "Windows is the list of schedule+duration pairs.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"duration": {
+										Type:        schema.TypeString,
+										Description: "Duration specifies how long the window stays open after each Schedule\nfiring. Example: \"8h\".",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"schedule": {
+										Type:        schema.TypeString,
+										Description: "Schedule is a standard 5-field cron expression evaluated in UTC, or a\nnamed shorthand such as @daily or @every 1h. It marks the start time of\neach window occurrence.\nExample: \"0 22 * * 1-5\" opens a window every weekday at 22:00 UTC.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
 							},
 						}},
 					},
@@ -726,6 +787,13 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1() *schema.Resour
 												Required:    false,
 												Computed:    true,
 											},
+											"values_decoding_strategy": {
+												Type:        schema.TypeString,
+												Description: "Used to define a decoding Strategy for the rendered template values.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 										}},
 									},
 									"type": {
@@ -836,7 +904,7 @@ func dataSourceExternalSecretsExternalSecretsIoExternalSecretV1Read(_ context.Co
 	if err := manifestpkg.SetDataSourceDefaults(d, "external-secrets.io/v1", "ExternalSecret", "external-secrets.io/v1/ExternalSecret"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.data.remote_ref", "spec.data.source_ref", "spec.data.source_ref.generator_ref", "spec.data.source_ref.store_ref", "spec.data_from.extract", "spec.data_from.find", "spec.data_from.find.name", "spec.data_from.rewrite.merge", "spec.data_from.rewrite.regexp", "spec.data_from.rewrite.transform", "spec.data_from.source_ref", "spec.data_from.source_ref.generator_ref", "spec.data_from.source_ref.store_ref", "spec.secret_store_ref", "spec.target", "spec.target.manifest", "spec.target.template", "spec.target.template.metadata", "spec.target.template.template_from.config_map", "spec.target.template.template_from.secret", "status", "status.binding"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.data.remote_ref", "spec.data.source_ref", "spec.data.source_ref.generator_ref", "spec.data.source_ref.store_ref", "spec.data_from.extract", "spec.data_from.find", "spec.data_from.find.name", "spec.data_from.rewrite.merge", "spec.data_from.rewrite.regexp", "spec.data_from.rewrite.transform", "spec.data_from.source_ref", "spec.data_from.source_ref.generator_ref", "spec.data_from.source_ref.store_ref", "spec.secret_store_ref", "spec.sync_windows", "spec.target", "spec.target.manifest", "spec.target.template", "spec.target.template.metadata", "spec.target.template.template_from.config_map", "spec.target.template.template_from.secret", "status", "status.binding"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -867,4 +935,13 @@ var dataSourceExternalSecretsExternalSecretsIoExternalSecretV1CompatibleVersions
 	"v2.0.1",
 	"v2.1.0",
 	"v2.2.0",
+	"v2.3.0",
+	"v2.4.0",
+	"v2.4.1",
+	"v2.5.0",
+	"v2.6.0",
+	"v2.7.0",
+	"v2.8.0",
+	"v2.9.0",
+	"v2.10.0",
 }

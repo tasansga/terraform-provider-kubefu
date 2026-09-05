@@ -30,9 +30,9 @@ func dataSourceK8sDiscoveryK8sIoEndpointSliceV1() *schema.Resource {
 			"endpoints": {
 				Type:        schema.TypeList,
 				Description: "endpoints is a list of unique endpoints in this slice. Each slice may include a maximum of 1000 endpoints.",
-				Optional:    false,
-				Required:    true,
-				Computed:    false,
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 					"addresses": {
 						Type:        schema.TypeList,
@@ -511,4 +511,6 @@ var dataSourceK8sDiscoveryK8sIoEndpointSliceV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

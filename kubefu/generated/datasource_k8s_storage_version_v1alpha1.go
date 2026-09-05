@@ -262,17 +262,16 @@ func dataSourceK8sInternalApiserverK8sIoStorageVersionV1Alpha1() *schema.Resourc
 			"spec": {
 				Type:        schema.TypeMap,
 				Description: "Spec is an empty spec. It is here to comply with Kubernetes API style.",
-				Optional:    false,
-				Required:    true,
-				Computed:    false,
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
 			},
 			"status": {
 				Type:        schema.TypeList,
 				Description: "API server instances report the version they can decode and the version they encode objects to when persisting objects in the backend.",
-				Optional:    false,
-				Required:    true,
-				Computed:    false,
-				MinItems:    1,
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
 					"common_encoding_version": {
@@ -406,4 +405,6 @@ var dataSourceK8sInternalApiserverK8sIoStorageVersionV1Alpha1CompatibleVersions 
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

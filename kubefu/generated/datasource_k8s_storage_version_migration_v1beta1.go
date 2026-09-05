@@ -372,4 +372,6 @@ func dataSourceK8sStoragemigrationK8sIoStorageVersionMigrationV1Beta1Read(_ cont
 }
 var dataSourceK8sStoragemigrationK8sIoStorageVersionMigrationV1Beta1CompatibleVersions = []string{
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

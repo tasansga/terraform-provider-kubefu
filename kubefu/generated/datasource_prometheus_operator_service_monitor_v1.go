@@ -1501,4 +1501,9 @@ var dataSourcePrometheusOperatorMonitoringCoreosComServiceMonitorV1CompatibleVer
 	"v0.89.0",
 	"v0.90.0",
 	"v0.90.1",
+	"v0.91.0",
+	"v0.92.0",
+	"v0.92.1",
+	"v0.93.0",
+	"v0.93.1",
 }

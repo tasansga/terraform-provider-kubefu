@@ -144,13 +144,6 @@ Optional:
 <a id="nestedblock--status"></a>
 ### Nested Schema for `status`
 
-Required:
-
-- `current_healthy` (Number) current number of healthy pods
-- `desired_healthy` (Number) minimum desired number of healthy pods
-- `disruptions_allowed` (Number) Number of pod disruptions that are currently allowed.
-- `expected_pods` (Number) total number of pods counted by this disruption budget
-
 Optional:
 
 - `conditions` (Block List) Conditions contain conditions for PDB. The disruption controller sets the DisruptionAllowed condition. The following are known values for the reason field (additional reasons could be added in the future): - SyncFailed: The controller encountered an error and wasn't able to compute
@@ -162,7 +155,11 @@ Optional:
 - SufficientPods: There are more pods than required by the PodDisruptionBudget.
                   The condition will be True, and the number of allowed
                   disruptions are provided by the disruptionsAllowed property. (see [below for nested schema](#nestedblock--status--conditions))
+- `current_healthy` (Number) current number of healthy pods
+- `desired_healthy` (Number) minimum desired number of healthy pods
 - `disrupted_pods` (Map of String) DisruptedPods contains information about pods whose eviction was processed by the API server eviction subresource handler but has not yet been observed by the PodDisruptionBudget controller. A pod will be in this map from the time when the API server processed the eviction request to the time when the pod is seen by PDB controller as having been marked for deletion (or after a timeout). The key in the map is the name of the pod and the value is the time when the API server processed the eviction request. If the deletion didn't occur and a pod is still there it will be removed from the list automatically by PodDisruptionBudget controller after some time. If everything goes smooth this map should be empty for the most of the time. Large number of entries in the map may indicate problems with pod deletions.
+- `disruptions_allowed` (Number) Number of pod disruptions that are currently allowed.
+- `expected_pods` (Number) total number of pods counted by this disruption budget
 - `observed_generation` (Number) Most recent generation observed when updating this PDB status. DisruptionsAllowed and other status information is valid only if observedGeneration equals to PDB's object generation.
 
 <a id="nestedblock--status--conditions"></a>

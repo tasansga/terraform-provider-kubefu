@@ -296,6 +296,13 @@ func dataSourceK8sStorageK8sIoCSIDriverV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"prevent_pod_scheduling_if_missing": {
+						Type:        schema.TypeBool,
+						Description: "PreventPodSchedulingIfMissing indicates that the CSI driver wants to prevent pod scheduling if the CSI driver on the node is missing.\n\nEnabling this option will prevent the scheduler (or any other component which embeds default scheduler such as cluster-autoscaler) from scheduling pods to nodes where CSI driver is not installed.\n\nFor components(such as cluster-autoscaler) that embed the scheduler and run pod placement simulations using scheduler plugins, they MUST be aware of CSI driver registration information via CSINode object. They must create simulated CSINode objects in addition to Node objects during scheduling simulation, otherwise if PreventPodSchedulingIfMissing is enabled globally for CSIDriver object, any newly created node may be rejected by the scheduler because of missing CSI driver information from the node.\n\nThis is an alpha feature and requires the VolumeLimitScaling feature gate to be enabled. Default is \"false\".",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"requires_republish": {
 						Type:        schema.TypeBool,
 						Description: "RequiresRepublish indicates the CSI driver wants `NodePublishVolume` being periodically called to reflect any possible change in the mounted volume. This field defaults to false.\n\nNote: After a successful initial NodePublishVolume call, subsequent calls to NodePublishVolume should only update the contents of the volume. New mount points will not be seen by a running container.\n\nThis is an alpha feature and only available when the CSIServiceAccountToken feature is enabled.",
@@ -391,4 +398,6 @@ var dataSourceK8sStorageK8sIoCSIDriverV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

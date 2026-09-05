@@ -469,9 +469,9 @@ func dataSourceK8sRbacAuthorizationK8sIoClusterRoleBindingV1() *schema.Resource 
 					"api_group": {
 						Type:        schema.TypeString,
 						Description: "APIGroup is the group for the resource being referenced",
-						Optional:    false,
-						Required:    true,
-						Computed:    false,
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"kind": {
 						Type:        schema.TypeString,
@@ -570,4 +570,6 @@ var dataSourceK8sRbacAuthorizationK8sIoClusterRoleBindingV1CompatibleVersions = 
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

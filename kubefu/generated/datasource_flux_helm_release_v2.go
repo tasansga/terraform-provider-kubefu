@@ -665,6 +665,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"post_render_strategy": {
+						Type:        schema.TypeString,
+						Description: "PostRenderStrategy defines the strategy for sending hooks to post-renderers.\nValid values are 'nohooks' (hooks not sent to post-renderers, Helm 3 behavior),\n'combined' (hooks and templates sent together, Helm 4 default), and 'separate'\n(hooks and templates sent in separate streams, Helm 4.2 opt-in).\nDefaults to 'combined', or 'nohooks' when the UseHelm3Defaults feature gate is enabled.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"post_renderers": {
 						Type:        schema.TypeList,
 						Description: "PostRenderers holds an array of Helm PostRenderers, which will be applied in order\nof their definition.",
@@ -1011,6 +1018,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 						Computed:    true,
 						MaxItems:    1,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"chart_name_change_strategy": {
+								Type:        schema.TypeString,
+								Description: "ChartNameChangeStrategy defines the strategy to use when a Helm chart name changes.\nValid values are 'Reinstall' or 'InPlaceUpdate'. Defaults to 'Reinstall' if omitted.\n\nReinstall: Reinstall the Helm release, uninstalling the existing Helm release.\n\nInPlaceUpdate: Update the Helm release in place.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"cleanup_on_fail": {
 								Type:        schema.TypeBool,
 								Description: "CleanupOnFail allows deletion of new resources created during the Helm\nupgrade action when it fails.",
@@ -1169,6 +1183,13 @@ func dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2() *schema.Resource {
 							"kind": {
 								Type:        schema.TypeString,
 								Description: "Kind of the values referent, valid values are ('Secret', 'ConfigMap').",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"literal": {
+								Type:        schema.TypeBool,
+								Description: "Literal marks this ValuesReference as a literal value. When set in\ncombination with TargetPath, the referenced value is merged at the target\npath without interpreting Helm's `--set` syntax (commas, brackets, dots,\nequal signs, etc.), mirroring the behavior of `helm --set-literal`. This\nis the only safe way to inject arbitrary file content (config files, JSON\nblobs, multi-line strings containing special characters) through\n`valuesFrom`. Has no effect when TargetPath is empty: in that mode the\nreferenced value is always YAML-merged at the root.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -1612,4 +1633,15 @@ var dataSourceFluxHelmToolkitFluxcdIoHelmReleaseV2CompatibleVersions = []string{
 	"v2.8.1",
 	"v2.8.2",
 	"v2.8.3",
+	"v2.8.4",
+	"v2.8.5",
+	"v2.8.6",
+	"v2.8.7",
+	"v2.8.8",
+	"v2.9.0",
+	"v2.9.1",
+	"v2.9.2",
+	"v2.9.3",
+	"v2.9.4",
+	"v2.9.5",
 }

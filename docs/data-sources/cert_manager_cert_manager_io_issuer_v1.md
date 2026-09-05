@@ -97,6 +97,21 @@ Optional:
 - `dns01` (Block List, Max: 1) Configures cert-manager to attempt to complete authorizations by performing the DNS01 challenge flow. (see [below for nested schema](#nestedblock--spec--acme--solvers--dns01))
 - `http01` (Block List, Max: 1) Configures cert-manager to attempt to complete authorizations by performing the HTTP01 challenge flow. It is not possible to obtain certificates for wildcard domain names (e.g. `*.example.com`) using the HTTP01 challenge mechanism. (see [below for nested schema](#nestedblock--spec--acme--solvers--http01))
 - `selector` (Block List, Max: 1) Selector selects a set of DNSNames on the Certificate resource that should be solved using this challenge solver. If not specified, the solver will be treated as the 'default' solver with the lowest priority, i.e. if any other solver has a more specific match, it will be used instead. (see [below for nested schema](#nestedblock--spec--acme--solvers--selector))
+- `wait_instead_of_self_check` (String) WaitInsteadOfSelfCheck, if set, skips cert-manager's self-check and
+instead waits this long after presentation before asking the ACME server
+to validate the challenge.
+
+This is an advanced escape hatch for environments where cert-manager's
+self-check cannot succeed from its own network or DNS viewpoint even
+though the ACME server can still validate successfully, for example due
+to split-horizon DNS or NAT hairpinning.
+
+A value of 0 skips the self-check and asks the ACME server to validate
+immediately after presentation, relying on the ACME server's own
+validation retries (RFC 8555 section 8.2) to succeed once the challenge
+has propagated. A negative duration is rejected.
+Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration,
+for example `30s` or `2m`.
 
 <a id="nestedblock--spec--acme--solvers--dns01"></a>
 ### Nested Schema for `spec.acme.solvers.dns01`
@@ -1819,6 +1834,9 @@ by the Vault server.
 Optional:
 
 - `app_role` (Block List, Max: 1) AppRole authenticates with Vault using the App Role auth mechanism, with the role and secret stored in a Kubernetes Secret resource. (see [below for nested schema](#nestedblock--spec--vault--auth--app_role))
+- `aws` (Block List, Max: 1) AWS authenticates with Vault using AWS IAM authentication.
+This allows authentication using IAM roles for service accounts (IRSA),
+EKS Pod Identity (PIA), or ambient credentials (EC2 instance profiles, ECS task role). (see [below for nested schema](#nestedblock--spec--vault--auth--aws))
 - `client_certificate` (Block List, Max: 1) ClientCertificate authenticates with Vault by presenting a client
 certificate during the request's TLS handshake.
 Works only when using HTTPS protocol. (see [below for nested schema](#nestedblock--spec--vault--auth--client_certificate))
@@ -1841,6 +1859,38 @@ Optional:
 
 - `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
+
+
+<a id="nestedblock--spec--vault--auth--aws"></a>
+### Nested Schema for `spec.vault.auth.aws`
+
+Optional:
+
+- `iam_role_arn` (String) The ARN of the AWS IAM role to assume using the Kubernetes service account
+token. Required when using IRSA (serviceAccountRef is set).
+This role must have a trust policy that allows the OIDC provider to assume it.
+- `mount_path` (String) The Vault mountPath here is the mount path to use when authenticating with
+Vault. For example, setting a value to `/v1/auth/foo`, will use the path
+`/v1/auth/foo/login` to authenticate with Vault. If unspecified, the
+default value "/v1/auth/aws" will be used.
+- `region` (String) The AWS region to use for authentication. If not specified, the region
+will be determined from AWS_REGION or AWS_DEFAULT_REGION environment
+variables, falling back to "us-east-1" if not set.
+- `role` (String) A required field containing the Vault Role to assume when authenticating.
+- `service_account_ref` (Block List, Max: 1) A reference to a service account that will be used to request a web identity
+token for IRSA (IAM Roles for Service Accounts) authentication. (see [below for nested schema](#nestedblock--spec--vault--auth--aws--service_account_ref))
+- `vault_header_value` (String) The Vault header value to include in the STS signing request.
+This is used to prevent replay attacks.
+
+<a id="nestedblock--spec--vault--auth--aws--service_account_ref"></a>
+### Nested Schema for `spec.vault.auth.aws.service_account_ref`
+
+Optional:
+
+- `audiences` (List of String) TokenAudiences is an optional list of extra audiences to include in the token passed to Vault.
+The default audiences are always included in the token.
+- `name` (String) Name of the ServiceAccount used to request a token.
 
 
 
@@ -1944,6 +1994,8 @@ More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/nam
 Optional:
 
 - `cloud` (Block List, Max: 1) Cloud specifies the Venafi cloud configuration settings. Only one of TPP or Cloud may be specified. (see [below for nested schema](#nestedblock--spec--venafi--cloud))
+- `ngts` (Block List, Max: 1) NGTS specifies Palo Alto Networks Next Generation Trust Services (NGTS) configuration
+using OAuth 2.0 Client Credentials. Only one of tpp, cloud, or ngts may be specified. (see [below for nested schema](#nestedblock--spec--venafi--ngts))
 - `tpp` (Block List, Max: 1) TPP specifies Trust Protection Platform configuration settings. Only one of TPP or Cloud may be specified. (see [below for nested schema](#nestedblock--spec--venafi--tpp))
 - `zone` (String) Zone is the Venafi Policy Zone to use for this issuer. All requests made to the Venafi platform will be restricted by the named zone policy. This field is required.
 
@@ -1962,6 +2014,33 @@ Optional:
 
 - `key` (String) The key of the entry in the Secret resource's `data` field to be used. Some instances of this field may be defaulted, in others it may be required.
 - `name` (String) Name of the resource being referred to. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+
+
+
+<a id="nestedblock--spec--venafi--ngts"></a>
+### Nested Schema for `spec.venafi.ngts`
+
+Optional:
+
+- `credentials_ref` (Block List, Max: 1) CredentialsRef is a reference to a Kubernetes Secret containing the OAuth 2.0
+Client ID and Client Secret. The secret must contain the keys 'client-id' and
+'client-secret'. (see [below for nested schema](#nestedblock--spec--venafi--ngts--credentials_ref))
+- `token_endpoint` (String) TokenEndpoint is the OAuth 2.0 token endpoint URL used to obtain access tokens,
+for example "https://auth.apps.paloaltonetworks.com/oauth2/access_token".
+Defaults to "https://auth.apps.paloaltonetworks.com/oauth2/access_token" if not set.
+- `tsg_id` (String) TSGID is the Tenant Service Group ID used to scope the OAuth 2.0 access token,
+for example "1234567890". The tsg_id: prefix is added automatically.
+This field is required.
+- `url` (String) URL is the base URL for the NGTS API endpoint.
+Defaults to "https://api.strata.paloaltonetworks.com/ngts" if not set.
+
+<a id="nestedblock--spec--venafi--ngts--credentials_ref"></a>
+### Nested Schema for `spec.venafi.ngts.credentials_ref`
+
+Optional:
+
+- `name` (String) Name of the resource being referred to.
+More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 
 
 

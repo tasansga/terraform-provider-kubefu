@@ -124,6 +124,37 @@ func dataSourceFluxSourceExtensionsFluxcdIoArtifactGeneratorV1Beta1() *schema.Re
 							},
 						}},
 					},
+					"common_metadata": {
+						Type:        schema.TypeList,
+						Description: "CommonMetadata specifies the common labels and annotations that are\napplied to all resources. Any existing label or annotation will be\noverridden if its key matches a common one.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"annotations": {
+								Type:        schema.TypeMap,
+								Description: "Annotations to be added to the object's metadata.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"labels": {
+								Type:        schema.TypeMap,
+								Description: "Labels to be added to the object's metadata.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"path_pattern": {
+						Type:        schema.TypeString,
+						Description: "PathPattern specifies a directory traversal pattern to match within the sources.\nThe format is \"@<alias>/<pattern>\". Named captures in the pattern (e.g. \"{app}\")\ncan be used as placeholders in OutputArtifacts fields.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"sources": {
 						Type:        schema.TypeList,
 						Description: "Sources is a list of references to the Flux source-controller\nresources that will be used to generate the artifact.",
@@ -285,7 +316,7 @@ func dataSourceFluxSourceExtensionsFluxcdIoArtifactGeneratorV1Beta1Read(_ contex
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.extensions.fluxcd.io/v1beta1", "ArtifactGenerator", "source.extensions.fluxcd.io/v1beta1/ArtifactGenerator"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -301,4 +332,15 @@ var dataSourceFluxSourceExtensionsFluxcdIoArtifactGeneratorV1Beta1CompatibleVers
 	"v2.8.1",
 	"v2.8.2",
 	"v2.8.3",
+	"v2.8.4",
+	"v2.8.5",
+	"v2.8.6",
+	"v2.8.7",
+	"v2.8.8",
+	"v2.9.0",
+	"v2.9.1",
+	"v2.9.2",
+	"v2.9.3",
+	"v2.9.4",
+	"v2.9.5",
 }

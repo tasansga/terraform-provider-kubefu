@@ -83,6 +83,11 @@ available by e.g. post-install hooks.
 
 
 If not set, it defaults to true.
+- `post_render_strategy` (String) PostRenderStrategy defines the strategy for sending hooks to post-renderers.
+Valid values are 'nohooks' (hooks not sent to post-renderers, Helm 3 behavior),
+'combined' (hooks and templates sent together, Helm 4 default), and 'separate'
+(hooks and templates sent in separate streams, Helm 4.2 opt-in).
+Defaults to 'combined', or 'nohooks' when the UseHelm3Defaults feature gate is enabled.
 - `post_renderers` (Block List) PostRenderers holds an array of Helm PostRenderers, which will be applied in order
 of their definition. (see [below for nested schema](#nestedblock--spec--post_renderers))
 - `release_name` (String) ReleaseName used for the Helm release. Defaults to a composition of
@@ -567,6 +572,12 @@ to 'HelmReleaseSpec.Timeout'.
 
 Optional:
 
+- `chart_name_change_strategy` (String) ChartNameChangeStrategy defines the strategy to use when a Helm chart name changes.
+Valid values are 'Reinstall' or 'InPlaceUpdate'. Defaults to 'Reinstall' if omitted.
+
+Reinstall: Reinstall the Helm release, uninstalling the existing Helm release.
+
+InPlaceUpdate: Update the Helm release in place.
 - `cleanup_on_fail` (Boolean) CleanupOnFail allows deletion of new resources created during the Helm
 upgrade action when it fails.
 - `crds` (String) CRDs upgrade CRDs from the Helm Chart's crds directory according
@@ -649,6 +660,14 @@ Defaults to '5m'.
 Optional:
 
 - `kind` (String) Kind of the values referent, valid values are ('Secret', 'ConfigMap').
+- `literal` (Boolean) Literal marks this ValuesReference as a literal value. When set in
+combination with TargetPath, the referenced value is merged at the target
+path without interpreting Helm's `--set` syntax (commas, brackets, dots,
+equal signs, etc.), mirroring the behavior of `helm --set-literal`. This
+is the only safe way to inject arbitrary file content (config files, JSON
+blobs, multi-line strings containing special characters) through
+`valuesFrom`. Has no effect when TargetPath is empty: in that mode the
+referenced value is always YAML-merged at the root.
 - `name` (String) Name of the values referent. Should reside in the same namespace as the
 referring resource.
 - `optional` (Boolean) Optional marks this ValuesReference as optional. When set, a not found error

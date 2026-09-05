@@ -183,6 +183,7 @@ func downloadSchemas(cfg providerConfig) error {
 		"command":   "download-schema",
 		"provider":  cfg.displayName,
 		"schemaDir": targetDir,
+		"auth":      strings.TrimSpace(os.Getenv("GH_TOKEN")) != "",
 	}).Info("starting schema download")
 
 	schemaDownloader := cfg.factory(logger)

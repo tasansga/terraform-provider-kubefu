@@ -1644,6 +1644,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 														Required:    true,
 														Computed:    false,
 													},
+													"protocol": {
+														Type:        schema.TypeString,
+														Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"scheme": {
 														Type:        schema.TypeString,
 														Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -1774,6 +1781,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 														Required:    true,
 														Computed:    false,
 													},
+													"protocol": {
+														Type:        schema.TypeString,
+														Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"scheme": {
 														Type:        schema.TypeString,
 														Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -1876,6 +1890,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -1943,6 +1964,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 												Optional:    false,
 												Required:    true,
 												Computed:    false,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"scheme": {
 												Type:        schema.TypeString,
@@ -2106,6 +2134,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -2173,6 +2208,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 												Optional:    false,
 												Required:    true,
 												Computed:    false,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"scheme": {
 												Type:        schema.TypeString,
@@ -2612,6 +2654,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -2676,6 +2725,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -2815,6 +2871,14 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"bind_mount_options": {
+										Type:        schema.TypeList,
+										Description: "bindMountOptions is the list of additional bind mount options to apply when mounting this volume into the container. Allowed values are noexec, nodev, and nosuid. These are Linux mount options and have no effect on Windows nodes. This field is not supported with image volumes. This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
 									"mount_path": {
 										Type:        schema.TypeString,
 										Description: "Path within the container at which the volume should be mounted.  Must not contain ':'.",
@@ -3313,6 +3377,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 														Required:    false,
 														Computed:    true,
 													},
+													"protocol": {
+														Type:        schema.TypeString,
+														Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"scheme": {
 														Type:        schema.TypeString,
 														Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -3443,6 +3514,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 														Required:    false,
 														Computed:    true,
 													},
+													"protocol": {
+														Type:        schema.TypeString,
+														Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"scheme": {
 														Type:        schema.TypeString,
 														Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -3545,6 +3623,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -3609,6 +3694,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -3775,6 +3867,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -3839,6 +3938,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -4281,6 +4387,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -4345,6 +4458,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -4491,6 +4611,14 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"bind_mount_options": {
+										Type:        schema.TypeList,
+										Description: "bindMountOptions is the list of additional bind mount options to apply when mounting this volume into the container. Allowed values are noexec, nodev, and nosuid. These are Linux mount options and have no effect on Windows nodes. This field is not supported with image volumes. This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
 									"mount_path": {
 										Type:        schema.TypeString,
 										Description: "Path within the container at which the volume should be mounted.  Must not contain ':'.",
@@ -4545,6 +4673,29 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 							"working_dir": {
 								Type:        schema.TypeString,
 								Description: "Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"eviction_responders": {
+						Type:        schema.TypeList,
+						Description: "evictionResponders reference responders that react to Evictions based on EvictionRequests. Responders should observe and communicate through the Eviction Resource API to help with the graceful termination of a pod. The responders are selected sequentially, according to their specified priority.\n\nResponders should periodically report on an eviction progress by updating the .status.responders[].heartbeatTime field of the Eviction object. If this field is not updated within the heartbeat deadline defined by the Eviction API (currently 20 minutes), the eviction is passed over to the next responder with a lower priority. If there is no other responder, the last default imperative-eviction.k8s.io/evictor responder with a priority of 100 will evict the pod using the imperative Eviction API (pods/<name>/eviction subresource).\n\nThe maximum length of the responders list is 10. Responders are not supported when the pod is part of a PodGroup (.spec.schedulingGroup is set). This field can only be set on creation and is immutable afterwards.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"name": {
+								Type:        schema.TypeString,
+								Description: "name allows you to identify the responder responding to the Eviction.\n\nIt must be a valid domain-prefixed key (such as \"acme.io/foo\"). Domain names *.k8s.io and *.kubernetes.io are reserved. This field must be unique for each responder. This field is required.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"priority": {
+								Type:        schema.TypeInt,
+								Description: "priority for this responder. Higher priorities are selected first by the evictionrequest-controller. If there are responders with the same priority, the responder whose domain name comes first in the alphabetical higher domain order, will be picked. This means that the top domain labels are compared alphabetically first, followed by the lower domain labels. The key is compared last.\n\nThe responder that is the managing controller of the pod should set the value of this field to 10000 to allow both for preemption or fallback registration by other responders.\n\nThe minimum value is 0 and the maximum value is 100000. The interval 0-999 is reserved for responders with *.k8s.io suffix. This field is required.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -5008,6 +5159,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 														Required:    true,
 														Computed:    false,
 													},
+													"protocol": {
+														Type:        schema.TypeString,
+														Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"scheme": {
 														Type:        schema.TypeString,
 														Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -5138,6 +5296,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 														Required:    true,
 														Computed:    false,
 													},
+													"protocol": {
+														Type:        schema.TypeString,
+														Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"scheme": {
 														Type:        schema.TypeString,
 														Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -5240,6 +5405,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -5307,6 +5479,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 												Optional:    false,
 												Required:    true,
 												Computed:    false,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"scheme": {
 												Type:        schema.TypeString,
@@ -5470,6 +5649,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -5537,6 +5723,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 												Optional:    false,
 												Required:    true,
 												Computed:    false,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 											"scheme": {
 												Type:        schema.TypeString,
@@ -5976,6 +6169,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -6040,6 +6240,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -6179,6 +6386,14 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"bind_mount_options": {
+										Type:        schema.TypeList,
+										Description: "bindMountOptions is the list of additional bind mount options to apply when mounting this volume into the container. Allowed values are noexec, nodev, and nosuid. These are Linux mount options and have no effect on Windows nodes. This field is not supported with image volumes. This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
 									"mount_path": {
 										Type:        schema.TypeString,
 										Description: "Path within the container at which the volume should be mounted.  Must not contain ':'.",
@@ -6446,6 +6661,23 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 							"name": {
 								Type:        schema.TypeString,
 								Description: "Name of the scheduling gate. Each scheduling gate must have a unique name field.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+					"scheduling_group": {
+						Type:        schema.TypeList,
+						Description: "SchedulingGroup provides a reference to the immediate scheduling runtime grouping object that this Pod belongs to. This field is used by the scheduler to identify the group and apply the correct group scheduling policies. The association with a group also impacts other lifecycle aspects of a Pod that are relevant in a wider context of scheduling like preemption, resource attachment, etc. If not specified, the Pod is treated as a single unit in all of these aspects. The group object referenced by this field may not exist at the time the Pod is created. This field is immutable, but a group object with the same name may be recreated with different policies. Doing this during pod scheduling may result in the placement not conforming to the expected policies.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						MaxItems:    1,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"pod_group_name": {
+								Type:        schema.TypeString,
+								Description: "PodGroupName specifies the name of the standalone PodGroup object that represents the runtime instance of this group. Must be a DNS subdomain.",
 								Optional:    true,
 								Required:    false,
 								Computed:    true,
@@ -7113,6 +7345,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 									},
+									"default_user": {
+										Type:        schema.TypeInt,
+										Description: "defaultUser is Optional: The owner UID of the created files by default. The defaultUser field is only used as a fallback when the item-level user field is unset. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"items": {
 										Type:        schema.TypeList,
 										Description: "If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.",
@@ -7140,6 +7379,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 												Optional:    false,
 												Required:    true,
 												Computed:    false,
+											},
+											"user": {
+												Type:        schema.TypeInt,
+												Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 										}},
 									},
@@ -7229,6 +7475,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 									},
+									"default_user": {
+										Type:        schema.TypeInt,
+										Description: "defaultUser is Optional: The owner UID of the created files by default. The defaultUser field is only used as a fallback when the item-level user field is unset. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"items": {
 										Type:        schema.TypeList,
 										Description: "Items is a list of downward API volume file",
@@ -7305,6 +7558,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 													},
 												}},
 											},
+											"user": {
+												Type:        schema.TypeInt,
+												Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 										}},
 									},
 								}},
@@ -7320,6 +7580,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 									"medium": {
 										Type:        schema.TypeString,
 										Description: "What type of storage medium should back this directory. The default is \"\" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"mode": {
+										Type:        schema.TypeInt,
+										Description: "mode specifies the permission bits for the emptyDir directory, in numeric notation (e.g., 0755, 01777). Must be a value between 0000 and 01777. If not specified, defaults to 0777. This might be in conflict with other options that affect the file mode, like fsGroup. If fsGroup is specified, the fsGroup permissions will override the mode specified here. This field has no effect on Windows. This field is alpha and requires EmptyDirVolumeMode featuregate to be enabled.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -8286,6 +8553,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 									},
+									"default_user": {
+										Type:        schema.TypeInt,
+										Description: "defaultUser is Optional: The owner UID of the created files by default. The defaultUser field is only used as a fallback when the item-level user field is unset. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"sources": {
 										Type:        schema.TypeList,
 										Description: "list of volume projections",
@@ -8377,6 +8651,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 														Required:    false,
 														Computed:    true,
 													},
+													"user": {
+														Type:        schema.TypeInt,
+														Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 												}},
 											},
 											"config_map": {
@@ -8414,6 +8695,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 																Optional:    false,
 																Required:    true,
 																Computed:    false,
+															},
+															"user": {
+																Type:        schema.TypeInt,
+																Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
 															},
 														}},
 													},
@@ -8517,6 +8805,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 																	},
 																}},
 															},
+															"user": {
+																Type:        schema.TypeInt,
+																Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 														}},
 													},
 												}},
@@ -8571,6 +8866,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 														Required:    false,
 														Computed:    true,
 													},
+													"user": {
+														Type:        schema.TypeInt,
+														Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"user_annotations": {
 														Type:        schema.TypeMap,
 														Description: "userAnnotations allow pod authors to pass additional information to the signer implementation.  Kubernetes does not restrict or validate this metadata in any way.\n\nThese values are copied verbatim into the `spec.unverifiedUserAnnotations` field of the PodCertificateRequest objects that Kubelet creates.\n\nEntries are subject to the same validation as object metadata annotations, with the addition that all keys must be domain-prefixed. No restrictions are placed on values, except an overall size limitation on the entire field.\n\nSigners should document the keys and values they support. Signers should deny requests that contain keys they do not recognize.",
@@ -8616,6 +8918,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 																Required:    true,
 																Computed:    false,
 															},
+															"user": {
+																Type:        schema.TypeInt,
+																Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 														}},
 													},
 													"name": {
@@ -8659,6 +8968,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 													"path": {
 														Type:        schema.TypeString,
 														Description: "Path is the path relative to the mount point of the file to project the token into.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"user": {
+														Type:        schema.TypeInt,
+														Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -8904,6 +9220,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 									},
+									"default_user": {
+										Type:        schema.TypeInt,
+										Description: "defaultUser is Optional: The owner UID of the created files by default. The defaultUser field is only used as a fallback when the item-level user field is unset. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"items": {
 										Type:        schema.TypeList,
 										Description: "If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.",
@@ -8931,6 +9254,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 												Optional:    false,
 												Required:    true,
 												Computed:    false,
+											},
+											"user": {
+												Type:        schema.TypeInt,
+												Description: "user is Optional: The owner UID of the created file. If specified, the item-level user field takes precedence over defaultUser. (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 										}},
 									},
@@ -9193,6 +9523,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"message": {
+												Type:        schema.TypeString,
+												Description: "Message provides human-readable context for Health (e.g. \"ECC error count exceeded threshold\"). This field is populated by the kubelet when ResourceHealthStatusMessage is enabled if the DRA plugin returns a message, and is null otherwise.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_id": {
 												Type:        schema.TypeString,
 												Description: "ResourceID is the unique identifier of the resource. See the ResourceID type for more information.",
@@ -9603,6 +9940,33 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
+									},
+									"volume_status": {
+										Type:        schema.TypeList,
+										Description: "volumeStatus represents volume-type-specific status about the mounted volume.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"image": {
+												Type:        schema.TypeList,
+												Description: "image represents an OCI object (a container image or artifact) pulled and mounted on the kubelet's host machine.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"image_ref": {
+														Type:        schema.TypeString,
+														Description: "ImageRef is the digest of the image used for this volume. It should have a value that's similar to the pod's status.containerStatuses[i].imageID. The ImageRef length should not exceed 256 characters.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+										}},
 									},
 								}},
 							},
@@ -9650,6 +10014,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"message": {
+												Type:        schema.TypeString,
+												Description: "Message provides human-readable context for Health (e.g. \"ECC error count exceeded threshold\"). This field is populated by the kubelet when ResourceHealthStatusMessage is enabled if the DRA plugin returns a message, and is null otherwise.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_id": {
 												Type:        schema.TypeString,
 												Description: "ResourceID is the unique identifier of the resource. See the ResourceID type for more information.",
@@ -10060,6 +10431,33 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
+									},
+									"volume_status": {
+										Type:        schema.TypeList,
+										Description: "volumeStatus represents volume-type-specific status about the mounted volume.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"image": {
+												Type:        schema.TypeList,
+												Description: "image represents an OCI object (a container image or artifact) pulled and mounted on the kubelet's host machine.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"image_ref": {
+														Type:        schema.TypeString,
+														Description: "ImageRef is the digest of the image used for this volume. It should have a value that's similar to the pod's status.containerStatuses[i].imageID. The ImageRef length should not exceed 256 characters.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+										}},
 									},
 								}},
 							},
@@ -10177,6 +10575,13 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 												Required:    false,
 												Computed:    true,
 											},
+											"message": {
+												Type:        schema.TypeString,
+												Description: "Message provides human-readable context for Health (e.g. \"ECC error count exceeded threshold\"). This field is populated by the kubelet when ResourceHealthStatusMessage is enabled if the DRA plugin returns a message, and is null otherwise.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"resource_id": {
 												Type:        schema.TypeString,
 												Description: "ResourceID is the unique identifier of the resource. See the ResourceID type for more information.",
@@ -10588,6 +10993,33 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 										Required:    false,
 										Computed:    true,
 									},
+									"volume_status": {
+										Type:        schema.TypeList,
+										Description: "volumeStatus represents volume-type-specific status about the mounted volume.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"image": {
+												Type:        schema.TypeList,
+												Description: "image represents an OCI object (a container image or artifact) pulled and mounted on the kubelet's host machine.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"image_ref": {
+														Type:        schema.TypeString,
+														Description: "ImageRef is the digest of the image used for this volume. It should have a value that's similar to the pod's status.containerStatuses[i].imageID. The ImageRef length should not exceed 256 characters.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+										}},
+									},
 								}},
 							},
 						}},
@@ -10598,6 +11030,90 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
+					},
+					"node_allocatable_resource_claim_statuses": {
+						Type:        schema.TypeList,
+						Description: "NodeAllocatableResourceClaimStatuses contains the status of node-allocatable resources that were allocated for this pod through DRA claims. This includes resources currently reported in v1.Node `status.allocatable` that are not extended resources (see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#extended-resources). Examples include \"cpu\", \"memory\", \"ephemeral-storage\", and hugepages.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"containers": {
+								Type:        schema.TypeList,
+								Description: "Containers lists the names of all containers in this pod that reference the claim.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Schema{Type: schema.TypeString},
+							},
+							"mapping": {
+								Type:        schema.TypeList,
+								Description: "Mapping contains allocations through devices mapped in the device spec's `nodeAllocatableResources[...].mapping` field. This is used by kubelet for pod level and container-level cgroup enforcement.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name is the name of the resource (e.g., cpu, memory).",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"quantity": {
+										Type:        schema.TypeString,
+										Description: "Quantity is the total node allocatable resource capacity allocated for the claim. This claim's allocated devices is shared by all the containers referencing the claim. Kubelet adds this value to both requests and limits at the pod-level cgroup, and to limits at the container-level cgroup for each container referencing the claim.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"overhead": {
+								Type:        schema.TypeList,
+								Description: "Overhead contains allocations through devices mapped in the device spec's `nodeAllocatableResources[...].overhead` field. This is used by kubelet for pod level and container-level cgroup enforcement.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Description: "Name is the name of the resource (e.g., cpu, memory).",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"per_container": {
+										Type:        schema.TypeString,
+										Description: "PerContainer is the variable overhead quantity applied for each container referencing the claim. The container references are recorded in `nodeAllocatableResourceClaimStatuses.containers`. The total overhead quantity allocated for the claim is computed as: Quantity = PerPod + (PerContainer * NumReferences) Kubelet accounts for this overhead in cgroups: - Pod-level cgroup (requests and limits): Kubelet adds PerPod + (PerContainer * NumReferences). - Container-level cgroup (limits only): Kubelet adds PerPod + PerContainer for each referencing container. This allows any single container to access the pod-level overhead, while the parent cgroup caps the total usage to account for PerPod exactly once. At least one of PerPod or PerContainer must be specified. Specifying neither is an invalid configuration.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"per_pod": {
+										Type:        schema.TypeString,
+										Description: "PerPod is the flat overhead quantity allocated per pod. Adding to each container limit allows individual containers to utilize the overhead, while the parent pod-level cgroup limit caps the total usage at the pod boundary where the overhead is accounted for exactly once. At least one of PerPod or PerContainer must be specified. Specifying neither is an invalid configuration.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"resource_claim_name": {
+								Type:        schema.TypeString,
+								Description: "ResourceClaimName is the resource claim referenced by the pod that resulted in this node allocatable resource allocation.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"resources": {
+								Type:        schema.TypeMap,
+								Description: "Resources is a map of the node-allocatable resource name to the aggregate quantity allocated to the claim.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
 					},
 					"nominated_node_name": {
 						Type:        schema.TypeString,
@@ -10741,6 +11257,59 @@ func dataSourceK8sCorePodV1() *schema.Resource {
 						Required:    false,
 						Computed:    true,
 					},
+					"volume_health": {
+						Type:        schema.TypeList,
+						Description: "volumeHealth contains node-reported health for each volume the pod is using. Populated by the kubelet on the pod's node.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"health_conditions": {
+								Type:        schema.TypeList,
+								Description: "conditions is the set of adverse conditions reported by the CSI node plugin for this volume on this node. At most 16 conditions may be reported.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"message": {
+										Type:        schema.TypeString,
+										Description: "message is a human-readable description. Maximum permitted length of a message is 1024 bytes.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"reason": {
+										Type:        schema.TypeString,
+										Description: "reason is a brief CamelCase machine-parseable reason. Together with status it forms the unique identity of a condition entry. Maximum permitted length of a reason is 256 bytes.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"status": {
+										Type:        schema.TypeString,
+										Description: "status is the machine-parseable health category. Possible values: - \"Inaccessible\": the volume cannot be accessed. - \"DataLoss\": data loss has been detected on the volume. - \"Degraded\": the volume is functioning with reduced capability.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"last_transition_time": {
+								Type:        schema.TypeString,
+								Description: "lastTransitionTime is when the current set of conditions first appeared.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "name matches an entry in pod.spec.volumes.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
 				}},
 			},
 		},
@@ -10753,7 +11322,7 @@ func dataSourceK8sCorePodV1Read(_ context.Context, d *schema.ResourceData, m any
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "Pod", "core/v1/Pod"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.affinity", "spec.affinity.node_affinity", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.affinity.pod_affinity", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.affinity.pod_anti_affinity", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.containers.env.value_from", "spec.containers.env.value_from.config_map_key_ref", "spec.containers.env.value_from.field_ref", "spec.containers.env.value_from.file_key_ref", "spec.containers.env.value_from.resource_field_ref", "spec.containers.env.value_from.secret_key_ref", "spec.containers.env_from.config_map_ref", "spec.containers.env_from.secret_ref", "spec.containers.lifecycle_", "spec.containers.lifecycle_.post_start", "spec.containers.lifecycle_.post_start.exec", "spec.containers.lifecycle_.post_start.http_get", "spec.containers.lifecycle_.post_start.sleep", "spec.containers.lifecycle_.post_start.tcp_socket", "spec.containers.lifecycle_.pre_stop", "spec.containers.lifecycle_.pre_stop.exec", "spec.containers.lifecycle_.pre_stop.http_get", "spec.containers.lifecycle_.pre_stop.sleep", "spec.containers.lifecycle_.pre_stop.tcp_socket", "spec.containers.liveness_probe", "spec.containers.liveness_probe.exec", "spec.containers.liveness_probe.grpc", "spec.containers.liveness_probe.http_get", "spec.containers.liveness_probe.tcp_socket", "spec.containers.readiness_probe", "spec.containers.readiness_probe.exec", "spec.containers.readiness_probe.grpc", "spec.containers.readiness_probe.http_get", "spec.containers.readiness_probe.tcp_socket", "spec.containers.resources", "spec.containers.restart_policy_rules.exit_codes", "spec.containers.security_context", "spec.containers.security_context.app_armor_profile", "spec.containers.security_context.capabilities", "spec.containers.security_context.se_linux_options", "spec.containers.security_context.seccomp_profile", "spec.containers.security_context.windows_options", "spec.containers.startup_probe", "spec.containers.startup_probe.exec", "spec.containers.startup_probe.grpc", "spec.containers.startup_probe.http_get", "spec.containers.startup_probe.tcp_socket", "spec.dns_config", "spec.ephemeral_containers.env.value_from", "spec.ephemeral_containers.env.value_from.config_map_key_ref", "spec.ephemeral_containers.env.value_from.field_ref", "spec.ephemeral_containers.env.value_from.file_key_ref", "spec.ephemeral_containers.env.value_from.resource_field_ref", "spec.ephemeral_containers.env.value_from.secret_key_ref", "spec.ephemeral_containers.env_from.config_map_ref", "spec.ephemeral_containers.env_from.secret_ref", "spec.ephemeral_containers.lifecycle_", "spec.ephemeral_containers.lifecycle_.post_start", "spec.ephemeral_containers.lifecycle_.post_start.exec", "spec.ephemeral_containers.lifecycle_.post_start.http_get", "spec.ephemeral_containers.lifecycle_.post_start.sleep", "spec.ephemeral_containers.lifecycle_.post_start.tcp_socket", "spec.ephemeral_containers.lifecycle_.pre_stop", "spec.ephemeral_containers.lifecycle_.pre_stop.exec", "spec.ephemeral_containers.lifecycle_.pre_stop.http_get", "spec.ephemeral_containers.lifecycle_.pre_stop.sleep", "spec.ephemeral_containers.lifecycle_.pre_stop.tcp_socket", "spec.ephemeral_containers.liveness_probe", "spec.ephemeral_containers.liveness_probe.exec", "spec.ephemeral_containers.liveness_probe.grpc", "spec.ephemeral_containers.liveness_probe.http_get", "spec.ephemeral_containers.liveness_probe.tcp_socket", "spec.ephemeral_containers.readiness_probe", "spec.ephemeral_containers.readiness_probe.exec", "spec.ephemeral_containers.readiness_probe.grpc", "spec.ephemeral_containers.readiness_probe.http_get", "spec.ephemeral_containers.readiness_probe.tcp_socket", "spec.ephemeral_containers.resources", "spec.ephemeral_containers.restart_policy_rules.exit_codes", "spec.ephemeral_containers.security_context", "spec.ephemeral_containers.security_context.app_armor_profile", "spec.ephemeral_containers.security_context.capabilities", "spec.ephemeral_containers.security_context.se_linux_options", "spec.ephemeral_containers.security_context.seccomp_profile", "spec.ephemeral_containers.security_context.windows_options", "spec.ephemeral_containers.startup_probe", "spec.ephemeral_containers.startup_probe.exec", "spec.ephemeral_containers.startup_probe.grpc", "spec.ephemeral_containers.startup_probe.http_get", "spec.ephemeral_containers.startup_probe.tcp_socket", "spec.init_containers.env.value_from", "spec.init_containers.env.value_from.config_map_key_ref", "spec.init_containers.env.value_from.field_ref", "spec.init_containers.env.value_from.file_key_ref", "spec.init_containers.env.value_from.resource_field_ref", "spec.init_containers.env.value_from.secret_key_ref", "spec.init_containers.env_from.config_map_ref", "spec.init_containers.env_from.secret_ref", "spec.init_containers.lifecycle_", "spec.init_containers.lifecycle_.post_start", "spec.init_containers.lifecycle_.post_start.exec", "spec.init_containers.lifecycle_.post_start.http_get", "spec.init_containers.lifecycle_.post_start.sleep", "spec.init_containers.lifecycle_.post_start.tcp_socket", "spec.init_containers.lifecycle_.pre_stop", "spec.init_containers.lifecycle_.pre_stop.exec", "spec.init_containers.lifecycle_.pre_stop.http_get", "spec.init_containers.lifecycle_.pre_stop.sleep", "spec.init_containers.lifecycle_.pre_stop.tcp_socket", "spec.init_containers.liveness_probe", "spec.init_containers.liveness_probe.exec", "spec.init_containers.liveness_probe.grpc", "spec.init_containers.liveness_probe.http_get", "spec.init_containers.liveness_probe.tcp_socket", "spec.init_containers.readiness_probe", "spec.init_containers.readiness_probe.exec", "spec.init_containers.readiness_probe.grpc", "spec.init_containers.readiness_probe.http_get", "spec.init_containers.readiness_probe.tcp_socket", "spec.init_containers.resources", "spec.init_containers.restart_policy_rules.exit_codes", "spec.init_containers.security_context", "spec.init_containers.security_context.app_armor_profile", "spec.init_containers.security_context.capabilities", "spec.init_containers.security_context.se_linux_options", "spec.init_containers.security_context.seccomp_profile", "spec.init_containers.security_context.windows_options", "spec.init_containers.startup_probe", "spec.init_containers.startup_probe.exec", "spec.init_containers.startup_probe.grpc", "spec.init_containers.startup_probe.http_get", "spec.init_containers.startup_probe.tcp_socket", "spec.os", "spec.resource_claims.source", "spec.resources", "spec.security_context", "spec.security_context.app_armor_profile", "spec.security_context.se_linux_options", "spec.security_context.seccomp_profile", "spec.security_context.windows_options", "spec.topology_spread_constraints.label_selector", "spec.volumes.aws_elastic_block_store", "spec.volumes.azure_disk", "spec.volumes.azure_file", "spec.volumes.cephfs", "spec.volumes.cephfs.secret_ref", "spec.volumes.cinder", "spec.volumes.cinder.secret_ref", "spec.volumes.config_map", "spec.volumes.csi", "spec.volumes.csi.node_publish_secret_ref", "spec.volumes.downward_api", "spec.volumes.downward_api.items.field_ref", "spec.volumes.downward_api.items.resource_field_ref", "spec.volumes.empty_dir", "spec.volumes.ephemeral", "spec.volumes.ephemeral.volume_claim_template", "spec.volumes.ephemeral.volume_claim_template.metadata", "spec.volumes.ephemeral.volume_claim_template.spec", "spec.volumes.ephemeral.volume_claim_template.spec.data_source", "spec.volumes.ephemeral.volume_claim_template.spec.data_source_ref", "spec.volumes.ephemeral.volume_claim_template.spec.resources", "spec.volumes.ephemeral.volume_claim_template.spec.selector", "spec.volumes.fc", "spec.volumes.flex_volume", "spec.volumes.flex_volume.secret_ref", "spec.volumes.flocker", "spec.volumes.gce_persistent_disk", "spec.volumes.git_repo", "spec.volumes.glusterfs", "spec.volumes.host_path", "spec.volumes.image", "spec.volumes.iscsi", "spec.volumes.iscsi.secret_ref", "spec.volumes.nfs", "spec.volumes.persistent_volume_claim", "spec.volumes.photon_persistent_disk", "spec.volumes.portworx_volume", "spec.volumes.projected", "spec.volumes.projected.sources.cluster_trust_bundle", "spec.volumes.projected.sources.cluster_trust_bundle.label_selector", "spec.volumes.projected.sources.config_map", "spec.volumes.projected.sources.downward_api", "spec.volumes.projected.sources.downward_api.items.field_ref", "spec.volumes.projected.sources.downward_api.items.resource_field_ref", "spec.volumes.projected.sources.pod_certificate", "spec.volumes.projected.sources.secret", "spec.volumes.projected.sources.service_account_token", "spec.volumes.quobyte", "spec.volumes.rbd", "spec.volumes.rbd.secret_ref", "spec.volumes.scale_io", "spec.volumes.scale_io.secret_ref", "spec.volumes.secret", "spec.volumes.storageos", "spec.volumes.storageos.secret_ref", "spec.volumes.vsphere_volume", "spec.workload_ref", "status", "status.container_statuses.last_state", "status.container_statuses.last_state.running", "status.container_statuses.last_state.terminated", "status.container_statuses.last_state.waiting", "status.container_statuses.resources", "status.container_statuses.state", "status.container_statuses.state.running", "status.container_statuses.state.terminated", "status.container_statuses.state.waiting", "status.container_statuses.user", "status.container_statuses.user.linux", "status.ephemeral_container_statuses.last_state", "status.ephemeral_container_statuses.last_state.running", "status.ephemeral_container_statuses.last_state.terminated", "status.ephemeral_container_statuses.last_state.waiting", "status.ephemeral_container_statuses.resources", "status.ephemeral_container_statuses.state", "status.ephemeral_container_statuses.state.running", "status.ephemeral_container_statuses.state.terminated", "status.ephemeral_container_statuses.state.waiting", "status.ephemeral_container_statuses.user", "status.ephemeral_container_statuses.user.linux", "status.extended_resource_claim_status", "status.init_container_statuses.last_state", "status.init_container_statuses.last_state.running", "status.init_container_statuses.last_state.terminated", "status.init_container_statuses.last_state.waiting", "status.init_container_statuses.resources", "status.init_container_statuses.state", "status.init_container_statuses.state.running", "status.init_container_statuses.state.terminated", "status.init_container_statuses.state.waiting", "status.init_container_statuses.user", "status.init_container_statuses.user.linux", "status.resources"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.affinity", "spec.affinity.node_affinity", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.affinity.pod_affinity", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.affinity.pod_anti_affinity", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.containers.env.value_from", "spec.containers.env.value_from.config_map_key_ref", "spec.containers.env.value_from.field_ref", "spec.containers.env.value_from.file_key_ref", "spec.containers.env.value_from.resource_field_ref", "spec.containers.env.value_from.secret_key_ref", "spec.containers.env_from.config_map_ref", "spec.containers.env_from.secret_ref", "spec.containers.lifecycle_", "spec.containers.lifecycle_.post_start", "spec.containers.lifecycle_.post_start.exec", "spec.containers.lifecycle_.post_start.http_get", "spec.containers.lifecycle_.post_start.sleep", "spec.containers.lifecycle_.post_start.tcp_socket", "spec.containers.lifecycle_.pre_stop", "spec.containers.lifecycle_.pre_stop.exec", "spec.containers.lifecycle_.pre_stop.http_get", "spec.containers.lifecycle_.pre_stop.sleep", "spec.containers.lifecycle_.pre_stop.tcp_socket", "spec.containers.liveness_probe", "spec.containers.liveness_probe.exec", "spec.containers.liveness_probe.grpc", "spec.containers.liveness_probe.http_get", "spec.containers.liveness_probe.tcp_socket", "spec.containers.readiness_probe", "spec.containers.readiness_probe.exec", "spec.containers.readiness_probe.grpc", "spec.containers.readiness_probe.http_get", "spec.containers.readiness_probe.tcp_socket", "spec.containers.resources", "spec.containers.restart_policy_rules.exit_codes", "spec.containers.security_context", "spec.containers.security_context.app_armor_profile", "spec.containers.security_context.capabilities", "spec.containers.security_context.se_linux_options", "spec.containers.security_context.seccomp_profile", "spec.containers.security_context.windows_options", "spec.containers.startup_probe", "spec.containers.startup_probe.exec", "spec.containers.startup_probe.grpc", "spec.containers.startup_probe.http_get", "spec.containers.startup_probe.tcp_socket", "spec.dns_config", "spec.ephemeral_containers.env.value_from", "spec.ephemeral_containers.env.value_from.config_map_key_ref", "spec.ephemeral_containers.env.value_from.field_ref", "spec.ephemeral_containers.env.value_from.file_key_ref", "spec.ephemeral_containers.env.value_from.resource_field_ref", "spec.ephemeral_containers.env.value_from.secret_key_ref", "spec.ephemeral_containers.env_from.config_map_ref", "spec.ephemeral_containers.env_from.secret_ref", "spec.ephemeral_containers.lifecycle_", "spec.ephemeral_containers.lifecycle_.post_start", "spec.ephemeral_containers.lifecycle_.post_start.exec", "spec.ephemeral_containers.lifecycle_.post_start.http_get", "spec.ephemeral_containers.lifecycle_.post_start.sleep", "spec.ephemeral_containers.lifecycle_.post_start.tcp_socket", "spec.ephemeral_containers.lifecycle_.pre_stop", "spec.ephemeral_containers.lifecycle_.pre_stop.exec", "spec.ephemeral_containers.lifecycle_.pre_stop.http_get", "spec.ephemeral_containers.lifecycle_.pre_stop.sleep", "spec.ephemeral_containers.lifecycle_.pre_stop.tcp_socket", "spec.ephemeral_containers.liveness_probe", "spec.ephemeral_containers.liveness_probe.exec", "spec.ephemeral_containers.liveness_probe.grpc", "spec.ephemeral_containers.liveness_probe.http_get", "spec.ephemeral_containers.liveness_probe.tcp_socket", "spec.ephemeral_containers.readiness_probe", "spec.ephemeral_containers.readiness_probe.exec", "spec.ephemeral_containers.readiness_probe.grpc", "spec.ephemeral_containers.readiness_probe.http_get", "spec.ephemeral_containers.readiness_probe.tcp_socket", "spec.ephemeral_containers.resources", "spec.ephemeral_containers.restart_policy_rules.exit_codes", "spec.ephemeral_containers.security_context", "spec.ephemeral_containers.security_context.app_armor_profile", "spec.ephemeral_containers.security_context.capabilities", "spec.ephemeral_containers.security_context.se_linux_options", "spec.ephemeral_containers.security_context.seccomp_profile", "spec.ephemeral_containers.security_context.windows_options", "spec.ephemeral_containers.startup_probe", "spec.ephemeral_containers.startup_probe.exec", "spec.ephemeral_containers.startup_probe.grpc", "spec.ephemeral_containers.startup_probe.http_get", "spec.ephemeral_containers.startup_probe.tcp_socket", "spec.init_containers.env.value_from", "spec.init_containers.env.value_from.config_map_key_ref", "spec.init_containers.env.value_from.field_ref", "spec.init_containers.env.value_from.file_key_ref", "spec.init_containers.env.value_from.resource_field_ref", "spec.init_containers.env.value_from.secret_key_ref", "spec.init_containers.env_from.config_map_ref", "spec.init_containers.env_from.secret_ref", "spec.init_containers.lifecycle_", "spec.init_containers.lifecycle_.post_start", "spec.init_containers.lifecycle_.post_start.exec", "spec.init_containers.lifecycle_.post_start.http_get", "spec.init_containers.lifecycle_.post_start.sleep", "spec.init_containers.lifecycle_.post_start.tcp_socket", "spec.init_containers.lifecycle_.pre_stop", "spec.init_containers.lifecycle_.pre_stop.exec", "spec.init_containers.lifecycle_.pre_stop.http_get", "spec.init_containers.lifecycle_.pre_stop.sleep", "spec.init_containers.lifecycle_.pre_stop.tcp_socket", "spec.init_containers.liveness_probe", "spec.init_containers.liveness_probe.exec", "spec.init_containers.liveness_probe.grpc", "spec.init_containers.liveness_probe.http_get", "spec.init_containers.liveness_probe.tcp_socket", "spec.init_containers.readiness_probe", "spec.init_containers.readiness_probe.exec", "spec.init_containers.readiness_probe.grpc", "spec.init_containers.readiness_probe.http_get", "spec.init_containers.readiness_probe.tcp_socket", "spec.init_containers.resources", "spec.init_containers.restart_policy_rules.exit_codes", "spec.init_containers.security_context", "spec.init_containers.security_context.app_armor_profile", "spec.init_containers.security_context.capabilities", "spec.init_containers.security_context.se_linux_options", "spec.init_containers.security_context.seccomp_profile", "spec.init_containers.security_context.windows_options", "spec.init_containers.startup_probe", "spec.init_containers.startup_probe.exec", "spec.init_containers.startup_probe.grpc", "spec.init_containers.startup_probe.http_get", "spec.init_containers.startup_probe.tcp_socket", "spec.os", "spec.resource_claims.source", "spec.resources", "spec.scheduling_group", "spec.security_context", "spec.security_context.app_armor_profile", "spec.security_context.se_linux_options", "spec.security_context.seccomp_profile", "spec.security_context.windows_options", "spec.topology_spread_constraints.label_selector", "spec.volumes.aws_elastic_block_store", "spec.volumes.azure_disk", "spec.volumes.azure_file", "spec.volumes.cephfs", "spec.volumes.cephfs.secret_ref", "spec.volumes.cinder", "spec.volumes.cinder.secret_ref", "spec.volumes.config_map", "spec.volumes.csi", "spec.volumes.csi.node_publish_secret_ref", "spec.volumes.downward_api", "spec.volumes.downward_api.items.field_ref", "spec.volumes.downward_api.items.resource_field_ref", "spec.volumes.empty_dir", "spec.volumes.ephemeral", "spec.volumes.ephemeral.volume_claim_template", "spec.volumes.ephemeral.volume_claim_template.metadata", "spec.volumes.ephemeral.volume_claim_template.spec", "spec.volumes.ephemeral.volume_claim_template.spec.data_source", "spec.volumes.ephemeral.volume_claim_template.spec.data_source_ref", "spec.volumes.ephemeral.volume_claim_template.spec.resources", "spec.volumes.ephemeral.volume_claim_template.spec.selector", "spec.volumes.fc", "spec.volumes.flex_volume", "spec.volumes.flex_volume.secret_ref", "spec.volumes.flocker", "spec.volumes.gce_persistent_disk", "spec.volumes.git_repo", "spec.volumes.glusterfs", "spec.volumes.host_path", "spec.volumes.image", "spec.volumes.iscsi", "spec.volumes.iscsi.secret_ref", "spec.volumes.nfs", "spec.volumes.persistent_volume_claim", "spec.volumes.photon_persistent_disk", "spec.volumes.portworx_volume", "spec.volumes.projected", "spec.volumes.projected.sources.cluster_trust_bundle", "spec.volumes.projected.sources.cluster_trust_bundle.label_selector", "spec.volumes.projected.sources.config_map", "spec.volumes.projected.sources.downward_api", "spec.volumes.projected.sources.downward_api.items.field_ref", "spec.volumes.projected.sources.downward_api.items.resource_field_ref", "spec.volumes.projected.sources.pod_certificate", "spec.volumes.projected.sources.secret", "spec.volumes.projected.sources.service_account_token", "spec.volumes.quobyte", "spec.volumes.rbd", "spec.volumes.rbd.secret_ref", "spec.volumes.scale_io", "spec.volumes.scale_io.secret_ref", "spec.volumes.secret", "spec.volumes.storageos", "spec.volumes.storageos.secret_ref", "spec.volumes.vsphere_volume", "spec.workload_ref", "status", "status.container_statuses.last_state", "status.container_statuses.last_state.running", "status.container_statuses.last_state.terminated", "status.container_statuses.last_state.waiting", "status.container_statuses.resources", "status.container_statuses.state", "status.container_statuses.state.running", "status.container_statuses.state.terminated", "status.container_statuses.state.waiting", "status.container_statuses.user", "status.container_statuses.user.linux", "status.container_statuses.volume_mounts.volume_status", "status.container_statuses.volume_mounts.volume_status.image", "status.ephemeral_container_statuses.last_state", "status.ephemeral_container_statuses.last_state.running", "status.ephemeral_container_statuses.last_state.terminated", "status.ephemeral_container_statuses.last_state.waiting", "status.ephemeral_container_statuses.resources", "status.ephemeral_container_statuses.state", "status.ephemeral_container_statuses.state.running", "status.ephemeral_container_statuses.state.terminated", "status.ephemeral_container_statuses.state.waiting", "status.ephemeral_container_statuses.user", "status.ephemeral_container_statuses.user.linux", "status.ephemeral_container_statuses.volume_mounts.volume_status", "status.ephemeral_container_statuses.volume_mounts.volume_status.image", "status.extended_resource_claim_status", "status.init_container_statuses.last_state", "status.init_container_statuses.last_state.running", "status.init_container_statuses.last_state.terminated", "status.init_container_statuses.last_state.waiting", "status.init_container_statuses.resources", "status.init_container_statuses.state", "status.init_container_statuses.state.running", "status.init_container_statuses.state.terminated", "status.init_container_statuses.state.waiting", "status.init_container_statuses.user", "status.init_container_statuses.user.linux", "status.init_container_statuses.volume_mounts.volume_status", "status.init_container_statuses.volume_mounts.volume_status.image", "status.resources"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -10788,4 +11357,6 @@ var dataSourceK8sCorePodV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

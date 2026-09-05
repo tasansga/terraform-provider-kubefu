@@ -195,6 +195,10 @@ If empty, the operator will create and manage a headless service named `promethe
 or `prometheus-agent-operated` for PrometheusAgent resources.
 When deploying multiple Prometheus/PrometheusAgent resources in the same namespace, it is recommended to specify a different value for each.
 See https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#stable-network-id for more details.
+- `sharding_strategy` (Block List, Max: 1) shardingStrategy defines the sharding strategy for distributing scraped targets across Prometheus shards.
+
+When not defined, the operator defaults to the 'Address' mode which distributes
+targets based on a hash of the target address. (see [below for nested schema](#nestedblock--spec--sharding_strategy))
 - `shards` (Number) EXPERIMENTAL: Number of shards to distribute targets onto. Number of replicas multiplied by shards is the total number of Pods created. Note that scaling down shards will not reshard data onto remaining instances, it must be manually moved. Increasing shards will not reshard data either but it will continue to be available from the same instances. To query globally use Thanos sidecar and Thanos querier or remote write data to a central location. Sharding is done on the content of the `__address__` target meta-label.
 - `storage` (Block List, Max: 1) Storage spec to specify how storage shall be used. (see [below for nested schema](#nestedblock--spec--storage))
 - `target_limit` (Number) TargetLimit defines a limit on the number of scraped targets that will be accepted. Only valid in Prometheus versions 2.45.0 and newer.
@@ -2142,6 +2146,20 @@ It requires Prometheus >= v3.5.0.
 resource attributes to the `target_info` metric, on top of converting them into the `instance` and `job` labels.
 
 It requires Prometheus >= v3.1.0.
+- `label_name_preserve_multiple_underscores` (Boolean) labelNamePreserveMultipleUnderscores enables preserving of multiple consecutive underscores in label names when translation_strategy uses
+underscore escaping.
+When true (default), multiple consecutive underscores are preserved during label name sanitization.
+
+Notice: This one has no impact if `nameEscapingScheme` is `AllowUTF8`.
+
+It requires Prometheus >= v3.8.0.
+- `label_name_underscore_sanitization` (Boolean) labelNameUnderscoreSanitization controls whether to enable prepending of 'key_' to labels starting with '_'.
+Reserved labels starting with '__' are not modified.
+This is only relevant when translation_strategy uses underscore escaping (e.g., "UnderscoreEscapingWithSuffixes" or "UnderscoreEscapingWithoutSuffixes").
+
+Notice: This one has no impact if `nameEscapingScheme` is `AllowUTF8`.
+
+It requires Prometheus >= v3.8.0.
 - `promote_all_resource_attributes` (Boolean) Promote all resource attributes to metric labels except the ones defined in `ignoreResourceAttributes`.
 
 Cannot be true when `promoteResourceAttributes` is defined.
@@ -2666,6 +2684,8 @@ Optional:
 Optional:
 
 - `access_key` (Block List, Max: 1) AccessKey is the AWS API key. If blank, the environment variable `AWS_ACCESS_KEY_ID` is used. (see [below for nested schema](#nestedblock--spec--remote_write--sigv4--access_key))
+- `external_id` (String) externalId defines the external ID used when assuming an AWS role. Can only be used with roleArn.
+It requires Prometheus >= v3.11.0 or Alertmanager >= v0.33.0. Currently not supported by Thanos.
 - `profile` (String) Profile is the named AWS profile used to authenticate.
 - `region` (String) Region is the AWS region. If blank, the region from the default credentials chain used.
 - `role_arn` (String) RoleArn is the named AWS profile used to authenticate.
@@ -3235,6 +3255,38 @@ Optional:
 
 
 
+<a id="nestedblock--spec--sharding_strategy"></a>
+### Nested Schema for `spec.sharding_strategy`
+
+Optional:
+
+- `mode` (String) mode defines the sharding mode. Can be 'Address' or 'Topology'.
+
+'Address' is the default mode and distributes targets across shards
+based on a hash of the target address.
+
+'Topology' enables zone-aware sharding where each shard is assigned to a
+specific topology zone and only scrapes targets in that zone.
+(Alpha) Using the 'Topology' mode requires the `PrometheusTopologySharding`
+feature gate to be enabled.
+- `topology` (Block List, Max: 1) topology defines the configuration for topology-aware sharding.
+This field is only valid when mode is set to 'Topology'. (see [below for nested schema](#nestedblock--spec--sharding_strategy--topology))
+
+<a id="nestedblock--spec--sharding_strategy--topology"></a>
+### Nested Schema for `spec.sharding_strategy.topology`
+
+Optional:
+
+- `external_label_name` (String) externalLabelName defines the name of the Prometheus external label used
+to communicate the topology zone assigned to the Prometheus instance.
+If not defined, it defaults to "zone".
+If set to the empty string, no external label is added to the Prometheus configuration.
+- `values` (List of String) values defines the list of topology values (e.g. zone names) to be used
+for sharding. The configured number of shards must be greater than or
+equal to the number of values.
+
+
+
 <a id="nestedblock--spec--storage"></a>
 ### Nested Schema for `spec.storage`
 
@@ -3654,6 +3706,12 @@ Optional:
 
 Optional:
 
+- `chunk_encoding` (Block List, Max: 1) chunkEncoding configures per-chunk-type encoding overrides.
+
+It requires Prometheus >= v3.13.0.
+
+Notice: Setting "Xor" is incompatible with --enable-feature=st-storage
+(XOR chunks do not store start timestamps). (see [below for nested schema](#nestedblock--spec--tsdb--chunk_encoding))
 - `out_of_order_time_window` (String) Configures how old an out-of-order/out-of-bounds sample can be with
 respect to the TSDB max time.
 
@@ -3664,6 +3722,35 @@ This is an *experimental feature*, it may change in any upcoming release
 in a breaking way.
 
 It requires Prometheus >= v2.39.0 or PrometheusAgent >= v2.54.0.
+- `stale_series_compaction_threshold` (String) staleSeriesCompactionThreshold configures the trigger point for compacting
+stale series from memory into persistent blocks and removing those stale
+series from memory.
+
+The threshold is a number between 0.0 and 1.0. It represents the ratio of
+stale series in memory to the total series in memory. The stale series
+compaction is triggered when this ratio crosses the configured threshold.
+It may not trigger the stale series compaction if the usual head compaction
+is about to happen soon.
+
+If set to 0, stale series compaction is disabled.
+
+It requires Prometheus >= v3.10.0.
+
+<a id="nestedblock--spec--tsdb--chunk_encoding"></a>
+### Nested Schema for `spec.tsdb.chunk_encoding`
+
+Optional:
+
+- `floats` (String) floats selects the encoding used for float chunks.
+Valid values are "Xor" and "Xor2".
+
+Notice:
+ * Setting "Xor" is incompatible with --enable-feature=st-storage
+(XOR chunks do not store start timestamps).
+ * Setting "Xor2" automatically adds the `xor2-encoding` feature flag.
+
+It requires Prometheus >= v3.13.0.
+
 
 
 <a id="nestedblock--spec--update_strategy"></a>

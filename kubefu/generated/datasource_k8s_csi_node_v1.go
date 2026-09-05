@@ -318,6 +318,83 @@ func dataSourceK8sStorageK8sIoCSINodeV1() *schema.Resource {
 					},
 				}},
 			},
+			"status": {
+				Type:        schema.TypeList,
+				Description: "status contains health and status information for the node's storage.",
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"storage_health": {
+						Type:        schema.TypeList,
+						Description: "storageHealth contains backend health reports for CSI drivers registered on the node.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"health_conditions": {
+								Type:        schema.TypeList,
+								Description: "healthConditions are the adverse storage backend conditions reported by the CSI driver. At most 16 conditions may be reported.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"access_mode": {
+										Type:        schema.TypeString,
+										Description: "accessMode is the access mode affected. Nil means all access modes are affected.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"last_transition_time": {
+										Type:        schema.TypeString,
+										Description: "lastTransitionTime is when this condition first appeared at its current state.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"message": {
+										Type:        schema.TypeString,
+										Description: "message is a human-readable description. Maximum permitted length of a message is 1024 characters.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"reason": {
+										Type:        schema.TypeString,
+										Description: "reason is a brief CamelCase machine-parseable reason. Maximum permitted length of a reason is 256 characters.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"status": {
+										Type:        schema.TypeString,
+										Description: "status is the health status category. One of \"StorageUnreachable\", \"StorageDegraded\".",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"volume_mode": {
+										Type:        schema.TypeString,
+										Description: "volumeMode is the volume mode affected. Nil means both are affected.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
+							"name": {
+								Type:        schema.TypeString,
+								Description: "name is the CSI driver name, matching CSINodeDriver.name.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+						}},
+					},
+				}},
+			},
 		},
 	}
 }
@@ -328,7 +405,7 @@ func dataSourceK8sStorageK8sIoCSINodeV1Read(_ context.Context, d *schema.Resourc
 	if err := manifestpkg.SetDataSourceDefaults(d, "storage.k8s.io/v1", "CSINode", "storage.k8s.io/v1/CSINode"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.drivers.allocatable"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.drivers.allocatable", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -353,4 +430,6 @@ var dataSourceK8sStorageK8sIoCSINodeV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

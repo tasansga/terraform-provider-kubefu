@@ -400,16 +400,16 @@ func dataSourceK8sPolicyPodDisruptionBudgetV1() *schema.Resource {
 					"current_healthy": {
 						Type:        schema.TypeInt,
 						Description: "current number of healthy pods",
-						Optional:    false,
-						Required:    true,
-						Computed:    false,
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"desired_healthy": {
 						Type:        schema.TypeInt,
 						Description: "minimum desired number of healthy pods",
-						Optional:    false,
-						Required:    true,
-						Computed:    false,
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"disrupted_pods": {
 						Type:        schema.TypeMap,
@@ -421,16 +421,16 @@ func dataSourceK8sPolicyPodDisruptionBudgetV1() *schema.Resource {
 					"disruptions_allowed": {
 						Type:        schema.TypeInt,
 						Description: "Number of pod disruptions that are currently allowed.",
-						Optional:    false,
-						Required:    true,
-						Computed:    false,
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"expected_pods": {
 						Type:        schema.TypeInt,
 						Description: "total number of pods counted by this disruption budget",
-						Optional:    false,
-						Required:    true,
-						Computed:    false,
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
 					},
 					"observed_generation": {
 						Type:        schema.TypeInt,
@@ -472,4 +472,6 @@ var dataSourceK8sPolicyPodDisruptionBudgetV1CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

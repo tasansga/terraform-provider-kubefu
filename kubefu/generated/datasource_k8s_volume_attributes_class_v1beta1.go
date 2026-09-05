@@ -287,4 +287,5 @@ var dataSourceK8sStorageK8sIoVolumeAttributesClassV1Beta1CompatibleVersions = []
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
 }

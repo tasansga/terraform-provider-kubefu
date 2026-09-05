@@ -988,6 +988,13 @@ func dataSourceK8sAutoscalingHorizontalPodAutoscalerV2() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 							},
+							"observed_generation": {
+								Type:        schema.TypeInt,
+								Description: "observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 							"reason": {
 								Type:        schema.TypeString,
 								Description: "reason is the reason for the condition's last transition.",
@@ -1547,4 +1554,6 @@ var dataSourceK8sAutoscalingHorizontalPodAutoscalerV2CompatibleVersions = []stri
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

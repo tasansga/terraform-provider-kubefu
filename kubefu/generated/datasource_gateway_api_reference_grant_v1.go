@@ -136,4 +136,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1Read(_ context.Co
 var dataSourceGatewayApiGatewayNetworkingK8sIoReferenceGrantV1CompatibleVersions = []string{
 	"v1.5.0",
 	"v1.5.1",
+	"v1.6.0",
+	"v1.6.1",
+	"v1.6.2",
 }

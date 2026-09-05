@@ -296,4 +296,6 @@ var dataSourceK8sCertificatesK8sIoClusterTrustBundleV1Beta1CompatibleVersions = 
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

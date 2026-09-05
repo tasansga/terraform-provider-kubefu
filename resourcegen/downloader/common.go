@@ -85,10 +85,27 @@ func githubAPIError(resp *http.Response) string {
 	return fmt.Sprintf(" (github rate limit: %s)", strings.Join(details, ", "))
 }
 
+func applyAuthHeader(req *http.Request) {
+	if req == nil || req.URL == nil {
+		return
+	}
+	if token := strings.TrimSpace(os.Getenv("GH_TOKEN")); token != "" {
+		if req.URL.Hostname() == "api.github.com" {
+			if req.Header == nil {
+				req.Header = make(http.Header)
+			}
+			if req.Header.Get("Authorization") == "" {
+				req.Header.Set("Authorization", "Bearer "+token)
+			}
+		}
+	}
+}
+
 func doRequest(client *http.Client, req *http.Request) (*http.Response, error) {
 	if client == nil {
 		client = http.DefaultClient
 	}
+	applyAuthHeader(req)
 	for {
 		resp, err := client.Do(req)
 		if err != nil {

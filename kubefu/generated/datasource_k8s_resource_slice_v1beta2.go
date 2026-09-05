@@ -333,6 +333,14 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Beta2() *schema.Resource {
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"compatibility_groups": {
+										Type:        schema.TypeList,
+										Description: "CompatibilityGroups is a list of opaque group names for this counter set consumption.\n\nDevices that consume counters from the same counter set may only be allocated at the same time (\"co-allocated\") if they all share at least one common group: the intersection of the CompatibilityGroups of all co-allocated devices on that counter set must be non-empty. Devices that consume from different counter sets are never compared via this field.\n\nAn unset field, an explicit nil, and an empty list are equivalent and mean \"no groups\": such a device is only co-allocatable with sibling devices on the same counter set that also have no groups, and is never co-allocatable with a device that declares one or more groups.\n\nGroup names are opaque and meaningful only within the publishing driver's pool.\n\nThe maximum number of groups is 2, and the names must be unique.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
 									"counter_set": {
 										Type:        schema.TypeString,
 										Description: "CounterSet is the name of the set from which the counters defined will be consumed.",
@@ -355,6 +363,20 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Beta2() *schema.Resource {
 								Optional:    false,
 								Required:    true,
 								Computed:    false,
+							},
+							"node_allocatable_resource_mappings": {
+								Type:        schema.TypeMap,
+								Description: "NodeAllocatableResourceMappings defines the mapping of node resources that are managed by the DRA driver exposing this device. This includes resources currently reported in v1.Node `status.allocatable` that are not extended resources (see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#extended-resources). Examples include \"cpu\", \"memory\", \"ephemeral-storage\", and hugepages. In addition to standard requests made through the Pod `spec`, these resources can also be requested through claims and allocated by the DRA driver. For example, a CPU DRA driver might allocate exclusive CPUs or auxiliary node memory dependencies of an accelerator device. The keys of this map are the node-allocatable resource names (e.g., \"cpu\", \"memory\"). Extended resource names are not permitted as keys.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
+							"node_allocatable_resources": {
+								Type:        schema.TypeMap,
+								Description: "NodeAllocatableResources defines the mapping of node resources that are managed by the DRA driver exposing this device. This includes resources currently reported in v1.Node `status.allocatable` that are not extended resources (see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#extended-resources). Examples include \"cpu\", \"memory\", \"ephemeral-storage\", and hugepages. In addition to standard requests made through the Pod `spec`, these resources can also be requested through claims and allocated by the DRA driver. For example, a CPU DRA driver might allocate exclusive CPUs or auxiliary node memory dependencies of an accelerator device. The keys of this map are the node-allocatable resource names (e.g., \"cpu\", \"memory\"). Extended resource names are not permitted as keys.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
 							},
 							"node_name": {
 								Type:        schema.TypeString,
@@ -578,6 +600,13 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Beta2() *schema.Resource {
 							},
 						}},
 					},
+					"partition_type_attribute": {
+						Type:        schema.TypeString,
+						Description: "PartitionTypeAttribute names a string device attribute (by fully qualified name, e.g. \"gpu.example.com/profile\") whose value labels each device with its partition type, such as \"Full\" or \"Half\" for a MIG-style GPU.\n\nWhen set, every partitionable device in the slice must carry the attribute and devices sharing a value must share the same ConsumesCounters cost.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"per_device_node_selection": {
 						Type:        schema.TypeBool,
 						Description: "PerDeviceNodeSelection defines whether the access from nodes to resources in the pool is set on the ResourceSlice level or on each device. If it is set to true, every device defined the ResourceSlice must specify this individually.\n\nExactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must be set.",
@@ -640,6 +669,14 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Beta2() *schema.Resource {
 							},
 						}},
 					},
+					"skip_node_operations": {
+						Type:        schema.TypeList,
+						Description: "SkipNodeOperations lists node-local resource operations (gRPC calls) that will be skipped for the devices in this slice when determining whether operations are necessary on the node. If all allocated devices for a driver in a claim skip an operation, that gRPC call will be skipped. Valid values are:\n\n- \"NodePrepareResources\": NodePrepareResources gRPC calls are skipped. This\n  value cannot be specified unless \"NodeUnprepareResources\" is also listed\n  (or \"*\" is specified).\n- \"NodeUnprepareResources\": NodeUnprepareResources gRPC calls are skipped. - \"*\": All node-local resource operations are skipped.\n\nOther values may be added in the future. The kubelet must ignore unknown values.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+						Elem: &schema.Schema{Type: schema.TypeString},
+					},
 				}},
 			},
 		},
@@ -661,4 +698,6 @@ var dataSourceK8sResourceK8sIoResourceSliceV1Beta2CompatibleVersions = []string{
 	"v1.33.0",
 	"v1.34.0",
 	"v1.35.0",
+	"v1.36.0",
+	"v1.37.0",
 }

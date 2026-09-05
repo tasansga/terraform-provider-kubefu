@@ -145,6 +145,10 @@ specified matchers match against the identity. (see [below for nested schema](#n
 - `provider_` (String) Provider specifies the technology used to sign the OCI Artifact.
 - `secret_ref` (Block List, Max: 1) SecretRef specifies the Kubernetes Secret containing the
 trusted public keys. (see [below for nested schema](#nestedblock--spec--verify--secret_ref))
+- `trusted_root_secret_ref` (Block List, Max: 1) TrustedRootSecretRef specifies the Kubernetes Secret containing a
+Sigstore trusted_root.json file. This enables verification against
+self-hosted Sigstore infrastructure (custom Fulcio CA, self-hosted
+Rekor instance). The Secret must contain a key named "trusted_root.json". (see [below for nested schema](#nestedblock--spec--verify--trusted_root_secret_ref))
 
 <a id="nestedblock--spec--verify--match_oidc_identity"></a>
 ### Nested Schema for `spec.verify.match_oidc_identity`
@@ -161,6 +165,14 @@ be a valid Go regular expression.
 
 <a id="nestedblock--spec--verify--secret_ref"></a>
 ### Nested Schema for `spec.verify.secret_ref`
+
+Optional:
+
+- `name` (String) Name of the referent.
+
+
+<a id="nestedblock--spec--verify--trusted_root_secret_ref"></a>
+### Nested Schema for `spec.verify.trusted_root_secret_ref`
 
 Optional:
 

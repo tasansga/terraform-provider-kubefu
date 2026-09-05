@@ -3170,6 +3170,13 @@ func dataSourceCertManagerCertManagerIoClusterIssuerV1() *schema.Resource {
 											},
 										}},
 									},
+									"wait_instead_of_self_check": {
+										Type:        schema.TypeString,
+										Description: "WaitInsteadOfSelfCheck, if set, skips cert-manager's self-check and\ninstead waits this long after presentation before asking the ACME server\nto validate the challenge.\n\nThis is an advanced escape hatch for environments where cert-manager's\nself-check cannot succeed from its own network or DNS viewpoint even\nthough the ACME server can still validate successfully, for example due\nto split-horizon DNS or NAT hairpinning.\n\nA value of 0 skips the self-check and asks the ACME server to validate\nimmediately after presentation, relying on the ACME server's own\nvalidation retries (RFC 8555 section 8.2) to succeed once the challenge\nhas propagated. A negative duration is rejected.\nValue must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration,\nfor example `30s` or `2m`.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 								}},
 							},
 						}},
@@ -3294,6 +3301,76 @@ func dataSourceCertManagerCertManagerIoClusterIssuerV1() *schema.Resource {
 														Computed:    true,
 													},
 												}},
+											},
+										}},
+									},
+									"aws": {
+										Type:        schema.TypeList,
+										Description: "AWS authenticates with Vault using AWS IAM authentication.\nThis allows authentication using IAM roles for service accounts (IRSA),\nEKS Pod Identity (PIA), or ambient credentials (EC2 instance profiles, ECS task role).",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"iam_role_arn": {
+												Type:        schema.TypeString,
+												Description: "The ARN of the AWS IAM role to assume using the Kubernetes service account\ntoken. Required when using IRSA (serviceAccountRef is set).\nThis role must have a trust policy that allows the OIDC provider to assume it.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"mount_path": {
+												Type:        schema.TypeString,
+												Description: "The Vault mountPath here is the mount path to use when authenticating with\nVault. For example, setting a value to `/v1/auth/foo`, will use the path\n`/v1/auth/foo/login` to authenticate with Vault. If unspecified, the\ndefault value \"/v1/auth/aws\" will be used.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"region": {
+												Type:        schema.TypeString,
+												Description: "The AWS region to use for authentication. If not specified, the region\nwill be determined from AWS_REGION or AWS_DEFAULT_REGION environment\nvariables, falling back to \"us-east-1\" if not set.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"role": {
+												Type:        schema.TypeString,
+												Description: "A required field containing the Vault Role to assume when authenticating.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"service_account_ref": {
+												Type:        schema.TypeList,
+												Description: "A reference to a service account that will be used to request a web identity\ntoken for IRSA (IAM Roles for Service Accounts) authentication.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"audiences": {
+														Type:        schema.TypeList,
+														Description: "TokenAudiences is an optional list of extra audiences to include in the token passed to Vault.\nThe default audiences are always included in the token.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Schema{Type: schema.TypeString},
+													},
+													"name": {
+														Type:        schema.TypeString,
+														Description: "Name of the ServiceAccount used to request a token.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
+											"vault_header_value": {
+												Type:        schema.TypeString,
+												Description: "The Vault header value to include in the STS signing request.\nThis is used to prevent replay attacks.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
 											},
 										}},
 									},
@@ -3585,6 +3662,54 @@ func dataSourceCertManagerCertManagerIoClusterIssuerV1() *schema.Resource {
 									},
 								}},
 							},
+							"ngts": {
+								Type:        schema.TypeList,
+								Description: "NGTS specifies Palo Alto Networks Next Generation Trust Services (NGTS) configuration\nusing OAuth 2.0 Client Credentials. Only one of tpp, cloud, or ngts may be specified.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								MaxItems:    1,
+								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"credentials_ref": {
+										Type:        schema.TypeList,
+										Description: "CredentialsRef is a reference to a Kubernetes Secret containing the OAuth 2.0\nClient ID and Client Secret. The secret must contain the keys 'client-id' and\n'client-secret'.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"name": {
+												Type:        schema.TypeString,
+												Description: "Name of the resource being referred to.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+										}},
+									},
+									"token_endpoint": {
+										Type:        schema.TypeString,
+										Description: "TokenEndpoint is the OAuth 2.0 token endpoint URL used to obtain access tokens,\nfor example \"https://auth.apps.paloaltonetworks.com/oauth2/access_token\".\nDefaults to \"https://auth.apps.paloaltonetworks.com/oauth2/access_token\" if not set.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"tsg_id": {
+										Type:        schema.TypeString,
+										Description: "TSGID is the Tenant Service Group ID used to scope the OAuth 2.0 access token,\nfor example \"1234567890\". The tsg_id: prefix is added automatically.\nThis field is required.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"url": {
+										Type:        schema.TypeString,
+										Description: "URL is the base URL for the NGTS API endpoint.\nDefaults to \"https://api.strata.paloaltonetworks.com/ngts\" if not set.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+								}},
+							},
 							"tpp": {
 								Type:        schema.TypeList,
 								Description: "TPP specifies Trust Protection Platform configuration settings. Only one of TPP or Cloud may be specified.",
@@ -3763,7 +3888,7 @@ func dataSourceCertManagerCertManagerIoClusterIssuerV1Read(_ context.Context, d 
 	if err := manifestpkg.SetDataSourceDefaults(d, "cert-manager.io/v1", "ClusterIssuer", "cert-manager.io/v1/ClusterIssuer"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.acme", "spec.acme.external_account_binding", "spec.acme.external_account_binding.key_secret_ref", "spec.acme.private_key_secret_ref", "spec.acme.solvers.dns01", "spec.acme.solvers.dns01.acme_dns", "spec.acme.solvers.dns01.acme_dns.account_secret_ref", "spec.acme.solvers.dns01.akamai", "spec.acme.solvers.dns01.akamai.access_token_secret_ref", "spec.acme.solvers.dns01.akamai.client_secret_secret_ref", "spec.acme.solvers.dns01.akamai.client_token_secret_ref", "spec.acme.solvers.dns01.azure_dns", "spec.acme.solvers.dns01.azure_dns.client_secret_secret_ref", "spec.acme.solvers.dns01.azure_dns.managed_identity", "spec.acme.solvers.dns01.cloud_dns", "spec.acme.solvers.dns01.cloud_dns.service_account_secret_ref", "spec.acme.solvers.dns01.cloudflare", "spec.acme.solvers.dns01.cloudflare.api_key_secret_ref", "spec.acme.solvers.dns01.cloudflare.api_token_secret_ref", "spec.acme.solvers.dns01.digitalocean", "spec.acme.solvers.dns01.digitalocean.token_secret_ref", "spec.acme.solvers.dns01.rfc2136", "spec.acme.solvers.dns01.rfc2136.tsig_secret_secret_ref", "spec.acme.solvers.dns01.route53", "spec.acme.solvers.dns01.route53.access_key_id_secret_ref", "spec.acme.solvers.dns01.route53.auth", "spec.acme.solvers.dns01.route53.auth.kubernetes", "spec.acme.solvers.dns01.route53.auth.kubernetes.service_account_ref", "spec.acme.solvers.dns01.route53.secret_access_key_secret_ref", "spec.acme.solvers.dns01.webhook", "spec.acme.solvers.http01", "spec.acme.solvers.http01.gateway_http_route", "spec.acme.solvers.http01.gateway_http_route.pod_template", "spec.acme.solvers.http01.gateway_http_route.pod_template.metadata", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.resources", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.security_context", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.security_context.se_linux_options", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.security_context.seccomp_profile", "spec.acme.solvers.http01.ingress", "spec.acme.solvers.http01.ingress.ingress_template", "spec.acme.solvers.http01.ingress.ingress_template.metadata", "spec.acme.solvers.http01.ingress.pod_template", "spec.acme.solvers.http01.ingress.pod_template.metadata", "spec.acme.solvers.http01.ingress.pod_template.spec", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.resources", "spec.acme.solvers.http01.ingress.pod_template.spec.security_context", "spec.acme.solvers.http01.ingress.pod_template.spec.security_context.se_linux_options", "spec.acme.solvers.http01.ingress.pod_template.spec.security_context.seccomp_profile", "spec.acme.solvers.selector", "spec.ca", "spec.self_signed", "spec.vault", "spec.vault.auth", "spec.vault.auth.app_role", "spec.vault.auth.app_role.secret_ref", "spec.vault.auth.client_certificate", "spec.vault.auth.kubernetes", "spec.vault.auth.kubernetes.secret_ref", "spec.vault.auth.kubernetes.service_account_ref", "spec.vault.auth.token_secret_ref", "spec.vault.ca_bundle_secret_ref", "spec.vault.client_cert_secret_ref", "spec.vault.client_key_secret_ref", "spec.venafi", "spec.venafi.cloud", "spec.venafi.cloud.api_token_secret_ref", "spec.venafi.tpp", "spec.venafi.tpp.ca_bundle_secret_ref", "spec.venafi.tpp.credentials_ref", "status", "status.acme"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.acme", "spec.acme.external_account_binding", "spec.acme.external_account_binding.key_secret_ref", "spec.acme.private_key_secret_ref", "spec.acme.solvers.dns01", "spec.acme.solvers.dns01.acme_dns", "spec.acme.solvers.dns01.acme_dns.account_secret_ref", "spec.acme.solvers.dns01.akamai", "spec.acme.solvers.dns01.akamai.access_token_secret_ref", "spec.acme.solvers.dns01.akamai.client_secret_secret_ref", "spec.acme.solvers.dns01.akamai.client_token_secret_ref", "spec.acme.solvers.dns01.azure_dns", "spec.acme.solvers.dns01.azure_dns.client_secret_secret_ref", "spec.acme.solvers.dns01.azure_dns.managed_identity", "spec.acme.solvers.dns01.cloud_dns", "spec.acme.solvers.dns01.cloud_dns.service_account_secret_ref", "spec.acme.solvers.dns01.cloudflare", "spec.acme.solvers.dns01.cloudflare.api_key_secret_ref", "spec.acme.solvers.dns01.cloudflare.api_token_secret_ref", "spec.acme.solvers.dns01.digitalocean", "spec.acme.solvers.dns01.digitalocean.token_secret_ref", "spec.acme.solvers.dns01.rfc2136", "spec.acme.solvers.dns01.rfc2136.tsig_secret_secret_ref", "spec.acme.solvers.dns01.route53", "spec.acme.solvers.dns01.route53.access_key_id_secret_ref", "spec.acme.solvers.dns01.route53.auth", "spec.acme.solvers.dns01.route53.auth.kubernetes", "spec.acme.solvers.dns01.route53.auth.kubernetes.service_account_ref", "spec.acme.solvers.dns01.route53.secret_access_key_secret_ref", "spec.acme.solvers.dns01.webhook", "spec.acme.solvers.http01", "spec.acme.solvers.http01.gateway_http_route", "spec.acme.solvers.http01.gateway_http_route.pod_template", "spec.acme.solvers.http01.gateway_http_route.pod_template.metadata", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.resources", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.security_context", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.security_context.se_linux_options", "spec.acme.solvers.http01.gateway_http_route.pod_template.spec.security_context.seccomp_profile", "spec.acme.solvers.http01.ingress", "spec.acme.solvers.http01.ingress.ingress_template", "spec.acme.solvers.http01.ingress.ingress_template.metadata", "spec.acme.solvers.http01.ingress.pod_template", "spec.acme.solvers.http01.ingress.pod_template.metadata", "spec.acme.solvers.http01.ingress.pod_template.spec", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.acme.solvers.http01.ingress.pod_template.spec.resources", "spec.acme.solvers.http01.ingress.pod_template.spec.security_context", "spec.acme.solvers.http01.ingress.pod_template.spec.security_context.se_linux_options", "spec.acme.solvers.http01.ingress.pod_template.spec.security_context.seccomp_profile", "spec.acme.solvers.selector", "spec.ca", "spec.self_signed", "spec.vault", "spec.vault.auth", "spec.vault.auth.app_role", "spec.vault.auth.app_role.secret_ref", "spec.vault.auth.aws", "spec.vault.auth.aws.service_account_ref", "spec.vault.auth.client_certificate", "spec.vault.auth.kubernetes", "spec.vault.auth.kubernetes.secret_ref", "spec.vault.auth.kubernetes.service_account_ref", "spec.vault.auth.token_secret_ref", "spec.vault.ca_bundle_secret_ref", "spec.vault.client_cert_secret_ref", "spec.vault.client_key_secret_ref", "spec.venafi", "spec.venafi.cloud", "spec.venafi.cloud.api_token_secret_ref", "spec.venafi.ngts", "spec.venafi.ngts.credentials_ref", "spec.venafi.tpp", "spec.venafi.tpp.ca_bundle_secret_ref", "spec.venafi.tpp.credentials_ref", "status", "status.acme"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -3790,4 +3915,5 @@ var dataSourceCertManagerCertManagerIoClusterIssuerV1CompatibleVersions = []stri
 	"v1.18.0",
 	"v1.19.0",
 	"v1.20.0",
+	"v1.21.0",
 }

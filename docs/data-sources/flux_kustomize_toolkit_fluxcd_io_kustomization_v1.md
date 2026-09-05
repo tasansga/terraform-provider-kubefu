@@ -34,6 +34,10 @@ Kustomization is the Schema for the kustomizations API.
 
 Optional:
 
+- `build_metadata` (List of String) BuildMetadata specifies which kustomize build metadata should be added
+to the built resources. The allowed values are 'originAnnotations' to
+annotate resources with their source origin, and 'transformerAnnotations'
+to annotate resources with the transformers that produced them.
 - `common_metadata` (Block List, Max: 1) CommonMetadata specifies the common labels and annotations that are applied to all resources. Any existing label or annotation will be overridden if its key matches a common one. (see [below for nested schema](#nestedblock--spec--common_metadata))
 - `components` (List of String) Components specifies relative paths to specifications of other Components.
 - `decryption` (Block List, Max: 1) Decrypt Kubernetes secrets before applying them on the cluster. (see [below for nested schema](#nestedblock--spec--decryption))
@@ -47,6 +51,10 @@ delete if true). Defaults to 'MirrorPrune'.
 health of custom resources using Common Expression Language (CEL).
 The expressions are evaluated only when Wait or HealthChecks are specified. (see [below for nested schema](#nestedblock--spec--health_check_exprs))
 - `health_checks` (Block List) A list of resources to be included in the health assessment. (see [below for nested schema](#nestedblock--spec--health_checks))
+- `ignore` (Block List) Ignore is a list of rules for specifying which changes to ignore
+during drift detection. These rules are applied to the resources managed
+by the Kustomization and are used to exclude specific JSON pointer paths
+from the drift detection and apply process. (see [below for nested schema](#nestedblock--spec--ignore))
 - `ignore_missing_components` (Boolean) IgnoreMissingComponents instructs the controller to ignore Components paths
 not found in source by removing them from the generated kustomization.yaml
 before running kustomize build.
@@ -136,6 +144,44 @@ Optional:
 - `kind` (String) Kind of the referent.
 - `name` (String) Name of the referent.
 - `namespace` (String) Namespace of the referent, when not specified it acts as LocalObjectReference.
+
+
+<a id="nestedblock--spec--ignore"></a>
+### Nested Schema for `spec.ignore`
+
+Optional:
+
+- `paths` (List of String) Paths is a list of JSON Pointer (RFC 6901) paths to be excluded from
+consideration in a Kubernetes object.
+- `target` (Block List, Max: 1) Target is a selector for specifying Kubernetes objects to which this
+rule applies.
+If Target is not set, the Paths will be ignored for all Kubernetes
+objects within the manifest of the Kustomization. (see [below for nested schema](#nestedblock--spec--ignore--target))
+
+<a id="nestedblock--spec--ignore--target"></a>
+### Nested Schema for `spec.ignore.target`
+
+Optional:
+
+- `annotation_selector` (String) AnnotationSelector is a string that follows the label selection expression
+https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api
+It matches with the resource annotations.
+- `group` (String) Group is the API group to select resources from.
+Together with Version and Kind it is capable of unambiguously identifying and/or selecting resources.
+https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `kind` (String) Kind of the API Group to select resources from.
+Together with Group and Version it is capable of unambiguously
+identifying and/or selecting resources.
+https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+- `label_selector` (String) LabelSelector is a string that follows the label selection expression
+https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api
+It matches with the resource labels.
+- `name` (String) Name to match resources with.
+- `namespace` (String) Namespace to select resources from.
+- `version` (String) Version of the API Group to select resources from.
+Together with Group and Kind it is capable of unambiguously identifying and/or selecting resources.
+https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/api-group.md
+
 
 
 <a id="nestedblock--spec--images"></a>
@@ -233,6 +279,13 @@ Optional:
 
 - `substitute` (Map of String) Substitute holds a map of key/value pairs. The variables defined in your YAML manifests that match any of the keys defined in the map will be substituted with the set value. Includes support for bash string replacement functions e.g. ${var:=default}, ${var:position} and ${var/substring/replacement}.
 - `substitute_from` (Block List) SubstituteFrom holds references to ConfigMaps and Secrets containing the variables and their values to be substituted in the YAML manifests. The ConfigMap and the Secret data keys represent the var names, and they must match the vars declared in the manifests for the substitution to happen. (see [below for nested schema](#nestedblock--spec--post_build--substitute_from))
+- `substitute_strategy` (String) SubstituteStrategy defines the strategy for substituting variables in the YAML manifests.
+Valid values are:
+
+ - WithVariables (the default): require at least one variable to be defined,
+   either through the inline map or through the resolved references to ConfigMaps
+   and Secrets.
+ - Always: perform the substitution even if no variables are defined.
 
 <a id="nestedblock--spec--post_build--substitute_from"></a>
 ### Nested Schema for `spec.post_build.substitute_from`

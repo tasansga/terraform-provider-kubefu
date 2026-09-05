@@ -22,6 +22,7 @@ CSINode holds information about all CSI drivers installed on a node. CSI drivers
 ### Optional
 
 - `metadata` (Block List, Max: 1) metadata.name must be the Kubernetes node name. (see [below for nested schema](#nestedblock--metadata))
+- `status` (Block List, Max: 1) status contains health and status information for the node's storage. (see [below for nested schema](#nestedblock--status))
 
 ### Read-Only
 
@@ -127,3 +128,32 @@ Optional:
 
 - `block_owner_deletion` (Boolean) If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. Defaults to false. To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned.
 - `controller` (Boolean) If true, this reference points to the managing controller.
+
+
+
+<a id="nestedblock--status"></a>
+### Nested Schema for `status`
+
+Optional:
+
+- `storage_health` (Block List) storageHealth contains backend health reports for CSI drivers registered on the node. (see [below for nested schema](#nestedblock--status--storage_health))
+
+<a id="nestedblock--status--storage_health"></a>
+### Nested Schema for `status.storage_health`
+
+Optional:
+
+- `health_conditions` (Block List) healthConditions are the adverse storage backend conditions reported by the CSI driver. At most 16 conditions may be reported. (see [below for nested schema](#nestedblock--status--storage_health--health_conditions))
+- `name` (String) name is the CSI driver name, matching CSINodeDriver.name.
+
+<a id="nestedblock--status--storage_health--health_conditions"></a>
+### Nested Schema for `status.storage_health.health_conditions`
+
+Optional:
+
+- `access_mode` (String) accessMode is the access mode affected. Nil means all access modes are affected.
+- `last_transition_time` (String) lastTransitionTime is when this condition first appeared at its current state.
+- `message` (String) message is a human-readable description. Maximum permitted length of a message is 1024 characters.
+- `reason` (String) reason is a brief CamelCase machine-parseable reason. Maximum permitted length of a reason is 256 characters.
+- `status` (String) status is the health status category. One of "StorageUnreachable", "StorageDegraded".
+- `volume_mode` (String) volumeMode is the volume mode affected. Nil means both are affected.

@@ -3087,6 +3087,13 @@ func dataSourceCertManagerAcmeCertManagerIoChallengeV1() *schema.Resource {
 									},
 								}},
 							},
+							"wait_instead_of_self_check": {
+								Type:        schema.TypeString,
+								Description: "WaitInsteadOfSelfCheck, if set, skips cert-manager's self-check and\ninstead waits this long after presentation before asking the ACME server\nto validate the challenge.\n\nThis is an advanced escape hatch for environments where cert-manager's\nself-check cannot succeed from its own network or DNS viewpoint even\nthough the ACME server can still validate successfully, for example due\nto split-horizon DNS or NAT hairpinning.\n\nA value of 0 skips the self-check and asks the ACME server to validate\nimmediately after presentation, relying on the ACME server's own\nvalidation retries (RFC 8555 section 8.2) to succeed once the challenge\nhas propagated. A negative duration is rejected.\nValue must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration,\nfor example `30s` or `2m`.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+							},
 						}},
 					},
 					"token": {
@@ -3130,6 +3137,13 @@ func dataSourceCertManagerAcmeCertManagerIoChallengeV1() *schema.Resource {
 					"presented": {
 						Type:        schema.TypeBool,
 						Description: "presented will be set to true if the challenge values for this challenge are currently 'presented'. This *does not* imply the self check is passing. Only that the values have been 'submitted' for the appropriate challenge mechanism (i.e. the DNS01 TXT record has been presented, or the HTTP01 configuration has been configured).",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
+					"presented_at": {
+						Type:        schema.TypeString,
+						Description: "PresentedAt records when cert-manager first configured the solver\nresources for this challenge. This is used by the optional delay-based\nreadiness logic.",
 						Optional:    true,
 						Required:    false,
 						Computed:    true,
@@ -3194,4 +3208,5 @@ var dataSourceCertManagerAcmeCertManagerIoChallengeV1CompatibleVersions = []stri
 	"v1.18.0",
 	"v1.19.0",
 	"v1.20.0",
+	"v1.21.0",
 }
