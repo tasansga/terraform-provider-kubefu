@@ -308,6 +308,12 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 	case []interface{}:
 		pruned := make([]interface{}, 0, len(v))
 		for _, item := range v {
+			if explicit {
+				if s, ok := item.(string); ok {
+					pruned = append(pruned, s)
+					continue
+				}
+			}
 			next, keep := pruneManifestValue(item, path, explicitPaths, objectPaths, mode)
 			if keep {
 				if next == nil {
@@ -369,11 +375,72 @@ func explicitManifestPaths(d *schema.ResourceData, keys []string) map[string]str
 		}
 		rawValue, rawDiags := d.GetRawConfigAt(cty.Path{cty.GetAttrStep{Name: key}})
 		if hasDiagErrors(rawDiags) {
+			if isEmptyRawConfigDiag(rawDiags) && d.HasChange(key) {
+				if v, ok := d.GetOkExists(key); ok {
+					collectExplicitManifestPathsFromValue(v, key, paths, false)
+				}
+			}
 			continue
 		}
 		collectExplicitManifestPaths(rawValue, key, paths, false)
 	}
 	return paths
+}
+
+func isEmptyRawConfigDiag(diags diag.Diagnostics) bool {
+	for _, d := range diags {
+		if d.Summary == "Empty Raw Config" {
+			return true
+		}
+	}
+	return false
+}
+
+func collectExplicitManifestPathsFromValue(value interface{}, path string, paths map[string]struct{}, parentExplicit bool) bool {
+	if path == "" || value == nil {
+		return false
+	}
+	switch v := value.(type) {
+	case map[string]interface{}:
+		anyExplicit := false
+		for k, child := range v {
+			childPath := k
+			if path != "" {
+				childPath = path + "." + k
+			}
+			if collectExplicitManifestPathsFromValue(child, childPath, paths, parentExplicit) {
+				anyExplicit = true
+			}
+		}
+		if anyExplicit || parentExplicit || isTopLevelManifestPath(path) {
+			paths[path] = struct{}{}
+			return true
+		}
+		return false
+	case []interface{}:
+		anyExplicit := false
+		hasElements := false
+		for _, elem := range v {
+			hasElements = true
+			if collectExplicitManifestPathsFromValue(elem, path, paths, true) {
+				anyExplicit = true
+			}
+		}
+		if anyExplicit || hasElements || isTopLevelManifestPath(path) {
+			paths[path] = struct{}{}
+			return true
+		}
+		return false
+	case string:
+		if strings.TrimSpace(v) == "" {
+			return false
+		}
+		paths[path] = struct{}{}
+		return true
+	default:
+		paths[path] = struct{}{}
+		return true
+	}
 }
 
 func hasDiagErrors(diags diag.Diagnostics) bool {

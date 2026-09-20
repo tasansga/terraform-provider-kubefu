@@ -4,19 +4,21 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"os"
 	"sort"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/yaml"
 	k8yaml "k8s.io/apimachinery/pkg/util/yaml"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/discovery/cached/memory"
@@ -24,6 +26,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/restmapper"
 	"k8s.io/client-go/tools/clientcmd"
+	"sigs.k8s.io/yaml"
 )
 
 const (
@@ -70,12 +73,22 @@ func resourceManifestCreateOrUpdate(ctx context.Context, d *schema.ResourceData,
 	fieldManager := d.Get("field_manager").(string)
 	force := d.Get("force").(bool)
 
-	u, err := decodeManifest(manifest)
+	objs, err := decodeManifests(manifest)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	if err := validateManifest(u); err != nil {
-		return diag.FromErr(err)
+	for _, u := range objs {
+		if err := validateManifest(u); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	var oldObjs []*unstructured.Unstructured
+	if d.Id() != "" {
+		if parsed, err := parseManifestIDs(d.Id()); err == nil {
+			oldObjs = parsed
+			inheritRecordedNamespaces(objs, oldObjs)
+		}
 	}
 
 	client, mapper, err := buildKubeClients(cfg)
@@ -83,16 +96,47 @@ func resourceManifestCreateOrUpdate(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 
-	applied, err := applyManifest(ctx, client, mapper, cfg, u, fieldManager, force)
-	if err != nil {
-		return diag.FromErr(err)
+	appliedObjs := make([]*unstructured.Unstructured, 0, len(objs))
+	for _, u := range objs {
+		applied, err := applyManifest(ctx, client, mapper, cfg, u, fieldManager, force)
+		if err != nil {
+			if len(oldObjs) > 0 {
+				retained := retainUntouchedObjects(appliedObjs, oldObjs)
+				d.SetId(manifestIDs(retained))
+				return diag.FromErr(err)
+			}
+			if len(appliedObjs) > 0 {
+				d.SetId(manifestIDs(appliedObjs))
+			}
+			return diag.FromErr(err)
+		}
+		if applied != nil {
+			appliedObjs = append(appliedObjs, applied)
+		} else {
+			appliedObjs = append(appliedObjs, u)
+		}
 	}
 
-	id := manifestID(applied)
-	if id == "" {
-		id = manifestID(u)
+	// On update, delete any previously managed objects that were removed from the manifest.
+	if len(oldObjs) > 0 {
+		var unpruned []*unstructured.Unstructured
+		for _, oldU := range prunedObjects(oldObjs, appliedObjs) {
+			if err := deleteManifest(ctx, client, mapper, cfg, oldU); err != nil {
+				unpruned = append(unpruned, oldU)
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  fmt.Sprintf("Failed to prune removed manifest object %s: %s", manifestID(oldU), err),
+				})
+			}
+		}
+		if len(unpruned) > 0 {
+			allTracked := append(appliedObjs, unpruned...)
+			d.SetId(manifestIDs(allTracked))
+			return diags
+		}
 	}
-	d.SetId(id)
+
+	d.SetId(manifestIDs(appliedObjs))
 	return nil
 }
 
@@ -102,22 +146,28 @@ func resourceManifestRead(ctx context.Context, d *schema.ResourceData, m any) di
 		return diags
 	}
 
-	var u *unstructured.Unstructured
+	var objs []*unstructured.Unstructured
+	var idObjs []*unstructured.Unstructured
+	if d.Id() != "" {
+		idObjs, _ = parseManifestIDs(d.Id())
+	}
+
 	if manifest := strings.TrimSpace(d.Get("manifest").(string)); manifest != "" {
-		parsed, err := decodeManifest(manifest)
+		parsed, err := decodeManifests(manifest)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		if err := validateManifest(parsed); err != nil {
-			return diag.FromErr(err)
+		for _, u := range parsed {
+			if err := validateManifest(u); err != nil {
+				return diag.FromErr(err)
+			}
 		}
-		u = parsed
-	} else if d.Id() != "" {
-		parsed, err := parseManifestID(d.Id())
-		if err != nil {
-			return diag.FromErr(err)
+		if len(idObjs) > 0 {
+			inheritRecordedNamespaces(parsed, idObjs)
 		}
-		u = parsed
+		objs = parsed
+	} else if len(idObjs) > 0 {
+		objs = idObjs
 	} else {
 		return diag.Errorf("manifest is required unless importing by ID")
 	}
@@ -127,21 +177,38 @@ func resourceManifestRead(ctx context.Context, d *schema.ResourceData, m any) di
 		return diag.FromErr(err)
 	}
 
-	live, err := getManifest(ctx, client, mapper, cfg, u)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			d.SetId("")
-			return nil
+	var lives []*unstructured.Unstructured
+	notFoundCount := 0
+	for _, u := range objs {
+		live, err := getManifest(ctx, client, mapper, cfg, u)
+		if err != nil {
+			if apierrors.IsNotFound(err) {
+				notFoundCount++
+				continue
+			}
+			return diag.FromErr(err)
 		}
-		return diag.FromErr(err)
+		lives = append(lives, live)
+	}
+
+	if notFoundCount == len(objs) {
+		d.SetId("")
+		return nil
+	}
+
+	// If only a subset of objects was found, do NOT truncate d.Id() or d.Get("manifest")
+	// so missing resources remain tracked in state and can be re-converged.
+	if notFoundCount > 0 {
+		return nil
 	}
 
 	if d.Id() == "" {
-		d.SetId(manifestID(u))
+		d.SetId(manifestIDs(objs))
 	}
-	if err := setManifestFromObject(d, live); err != nil {
+	if err := setManifestFromObjects(d, lives); err != nil {
 		return diag.FromErr(err)
 	}
+	d.SetId(manifestIDs(lives))
 	return nil
 }
 
@@ -150,25 +217,31 @@ func resourceManifestDelete(ctx context.Context, d *schema.ResourceData, m any) 
 	if diags.HasError() {
 		return diags
 	}
-	manifest := strings.TrimSpace(d.Get("manifest").(string))
-	var u *unstructured.Unstructured
-	if manifest != "" {
-		parsed, err := decodeManifest(manifest)
-		if err != nil {
-			return diag.FromErr(err)
+
+	// Prioritize objects from d.Id() to delete exactly what was created in its recorded namespace.
+	var objs []*unstructured.Unstructured
+	if d.Id() != "" {
+		parsed, err := parseManifestIDs(d.Id())
+		if err == nil {
+			objs = parsed
 		}
-		if err := validateManifest(parsed); err != nil {
-			return diag.FromErr(err)
+	}
+	if len(objs) == 0 {
+		manifest := strings.TrimSpace(d.Get("manifest").(string))
+		if manifest != "" {
+			parsed, err := decodeManifests(manifest)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			for _, u := range parsed {
+				if err := validateManifest(u); err != nil {
+					return diag.FromErr(err)
+				}
+			}
+			objs = parsed
+		} else {
+			return diag.Errorf("manifest is required unless importing by ID")
 		}
-		u = parsed
-	} else if d.Id() != "" {
-		parsed, err := parseManifestID(d.Id())
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		u = parsed
-	} else {
-		return diag.Errorf("manifest is required unless importing by ID")
 	}
 
 	client, mapper, err := buildKubeClients(cfg)
@@ -176,9 +249,12 @@ func resourceManifestDelete(ctx context.Context, d *schema.ResourceData, m any) 
 		return diag.FromErr(err)
 	}
 
-	err = deleteManifest(ctx, client, mapper, cfg, u)
-	if err != nil && !errors.IsNotFound(err) {
-		return diag.FromErr(err)
+	// Delete in reverse order so dependents/workloads are deleted before dependencies/CRDs.
+	for _, u := range reverseObjects(objs) {
+		err = deleteManifest(ctx, client, mapper, cfg, u)
+		if err != nil && !apierrors.IsNotFound(err) && !meta.IsNoMatchError(err) {
+			return diag.FromErr(err)
+		}
 	}
 	return nil
 }
@@ -188,7 +264,7 @@ func resourceManifestImport(ctx context.Context, d *schema.ResourceData, m any) 
 	if diags.HasError() {
 		return nil, fmt.Errorf("%s", diags[0].Summary)
 	}
-	u, err := parseManifestID(d.Id())
+	objs, err := parseManifestIDs(d.Id())
 	if err != nil {
 		return nil, err
 	}
@@ -196,11 +272,15 @@ func resourceManifestImport(ctx context.Context, d *schema.ResourceData, m any) 
 	if err != nil {
 		return nil, err
 	}
-	live, err := getManifest(ctx, client, mapper, cfg, u)
-	if err != nil {
-		return nil, err
+	lives := make([]*unstructured.Unstructured, 0, len(objs))
+	for _, u := range objs {
+		live, err := getManifest(ctx, client, mapper, cfg, u)
+		if err != nil {
+			return nil, err
+		}
+		lives = append(lives, live)
 	}
-	if err := setManifestFromObject(d, live); err != nil {
+	if err := setManifestFromObjects(d, lives); err != nil {
 		return nil, err
 	}
 	return []*schema.ResourceData{d}, nil
@@ -214,17 +294,30 @@ func providerConfigFromMeta(meta any) (*providerConfig, diag.Diagnostics) {
 	return cfg, nil
 }
 
-func decodeManifest(manifest string) (*unstructured.Unstructured, error) {
+func decodeManifests(manifest string) ([]*unstructured.Unstructured, error) {
 	trimmed := strings.TrimSpace(manifest)
 	if trimmed == "" {
 		return nil, fmt.Errorf("manifest must not be empty")
 	}
 	decoder := k8yaml.NewYAMLOrJSONDecoder(bytes.NewReader([]byte(trimmed)), 4096)
-	obj := map[string]any{}
-	if err := decoder.Decode(&obj); err != nil {
-		return nil, fmt.Errorf("decode manifest: %w", err)
+	var objs []*unstructured.Unstructured
+	for {
+		obj := map[string]any{}
+		if err := decoder.Decode(&obj); err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			return nil, fmt.Errorf("decode manifest: %w", err)
+		}
+		if len(obj) == 0 {
+			continue
+		}
+		objs = append(objs, &unstructured.Unstructured{Object: obj})
 	}
-	return &unstructured.Unstructured{Object: obj}, nil
+	if len(objs) == 0 {
+		return nil, fmt.Errorf("manifest contains no resources")
+	}
+	return objs, nil
 }
 
 func validateManifest(u *unstructured.Unstructured) error {
@@ -316,6 +409,9 @@ func applyManifest(ctx context.Context, client dynamic.Interface, mapper meta.RE
 func getManifest(ctx context.Context, client dynamic.Interface, mapper meta.RESTMapper, cfg *providerConfig, u *unstructured.Unstructured) (*unstructured.Unstructured, error) {
 	mapping, err := mapper.RESTMapping(u.GroupVersionKind().GroupKind(), u.GroupVersionKind().Version)
 	if err != nil {
+		if meta.IsNoMatchError(err) {
+			return nil, &apierrors.StatusError{ErrStatus: metav1.Status{Reason: metav1.StatusReasonNotFound}}
+		}
 		return nil, fmt.Errorf("map resource: %w", err)
 	}
 	ns, err := resolveNamespace(cfg, u, mapping)
@@ -335,6 +431,9 @@ func getManifest(ctx context.Context, client dynamic.Interface, mapper meta.REST
 func deleteManifest(ctx context.Context, client dynamic.Interface, mapper meta.RESTMapper, cfg *providerConfig, u *unstructured.Unstructured) error {
 	mapping, err := mapper.RESTMapping(u.GroupVersionKind().GroupKind(), u.GroupVersionKind().Version)
 	if err != nil {
+		if meta.IsNoMatchError(err) {
+			return nil
+		}
 		return fmt.Errorf("map resource: %w", err)
 	}
 	ns, err := resolveNamespace(cfg, u, mapping)
@@ -348,7 +447,11 @@ func deleteManifest(ctx context.Context, client dynamic.Interface, mapper meta.R
 	} else {
 		target = resource
 	}
-	return target.Delete(ctx, u.GetName(), metav1.DeleteOptions{})
+	err = target.Delete(ctx, u.GetName(), metav1.DeleteOptions{})
+	if err != nil && !apierrors.IsNotFound(err) {
+		return err
+	}
+	return nil
 }
 
 func resolveNamespace(cfg *providerConfig, u *unstructured.Unstructured, mapping *meta.RESTMapping) (string, error) {
@@ -369,6 +472,13 @@ func resolveNamespace(cfg *providerConfig, u *unstructured.Unstructured, mapping
 }
 
 func kubeconfigNamespace(cfg *providerConfig) (string, error) {
+	if cfg.KubeConfigPath == "" {
+		if data, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
+			if inClusterNS := strings.TrimSpace(string(data)); inClusterNS != "" {
+				return inClusterNS, nil
+			}
+		}
+	}
 	loader := clientcmd.NewDefaultClientConfigLoadingRules()
 	if cfg.KubeConfigPath != "" {
 		loader.ExplicitPath = cfg.KubeConfigPath
@@ -402,15 +512,99 @@ func manifestID(u *unstructured.Unstructured) string {
 	return fmt.Sprintf("%s/%s/%s/%s", apiver, kind, ns, name)
 }
 
+func manifestIDs(objs []*unstructured.Unstructured) string {
+	if len(objs) == 0 {
+		return ""
+	}
+	if len(objs) == 1 {
+		return manifestID(objs[0])
+	}
+	ids := make([]string, 0, len(objs))
+	for _, u := range objs {
+		if id := manifestID(u); id != "" {
+			ids = append(ids, id)
+		}
+	}
+	return strings.Join(ids, ";")
+}
+
+func reverseObjects(objs []*unstructured.Unstructured) []*unstructured.Unstructured {
+	if len(objs) <= 1 {
+		return objs
+	}
+	reversed := make([]*unstructured.Unstructured, len(objs))
+	for i, u := range objs {
+		reversed[len(objs)-1-i] = u
+	}
+	return reversed
+}
+
+func prunedObjects(oldObjs, newObjs []*unstructured.Unstructured) []*unstructured.Unstructured {
+	newIDs := make(map[string]bool, len(newObjs))
+	for _, u := range newObjs {
+		if id := manifestID(u); id != "" {
+			newIDs[id] = true
+		}
+	}
+	var pruned []*unstructured.Unstructured
+	for _, oldU := range reverseObjects(oldObjs) {
+		oldID := manifestID(oldU)
+		if oldID != "" && !newIDs[oldID] {
+			pruned = append(pruned, oldU)
+		}
+	}
+	return pruned
+}
+
+func inheritRecordedNamespaces(objs, recordedObjs []*unstructured.Unstructured) {
+	for _, u := range objs {
+		if u.GetNamespace() == "" {
+			for _, rec := range recordedObjs {
+				if rec.GroupVersionKind() == u.GroupVersionKind() && rec.GetName() == u.GetName() && rec.GetNamespace() != "" {
+					u.SetNamespace(rec.GetNamespace())
+					break
+				}
+			}
+		}
+	}
+}
+
+func retainUntouchedObjects(appliedObjs, oldObjs []*unstructured.Unstructured) []*unstructured.Unstructured {
+	retained := make([]*unstructured.Unstructured, len(appliedObjs), len(appliedObjs)+len(oldObjs))
+	copy(retained, appliedObjs)
+
+	appliedIdentities := make(map[string]bool, len(appliedObjs))
+	for _, u := range appliedObjs {
+		key := fmt.Sprintf("%s/%s/%s/%s", u.GetAPIVersion(), u.GetKind(), u.GetNamespace(), u.GetName())
+		appliedIdentities[key] = true
+	}
+
+	for _, oldU := range oldObjs {
+		key := fmt.Sprintf("%s/%s/%s/%s", oldU.GetAPIVersion(), oldU.GetKind(), oldU.GetNamespace(), oldU.GetName())
+		if !appliedIdentities[key] {
+			retained = append(retained, oldU)
+		}
+	}
+	return retained
+}
+
 func parseManifestID(id string) (*unstructured.Unstructured, error) {
 	parts := strings.Split(id, "/")
-	if len(parts) != 4 {
-		return nil, fmt.Errorf("invalid manifest ID %q (expected apiVersion/kind/namespace/name)", id)
+	var apiver, kind, namespace, name string
+	switch len(parts) {
+	case 4:
+		apiver = strings.TrimSpace(parts[0])
+		kind = strings.TrimSpace(parts[1])
+		namespace = strings.TrimSpace(parts[2])
+		name = strings.TrimSpace(parts[3])
+	case 5:
+		apiver = strings.TrimSpace(parts[0]) + "/" + strings.TrimSpace(parts[1])
+		kind = strings.TrimSpace(parts[2])
+		namespace = strings.TrimSpace(parts[3])
+		name = strings.TrimSpace(parts[4])
+	default:
+		return nil, fmt.Errorf("invalid manifest ID %q (expected [group/]version/kind/namespace/name)", id)
 	}
-	apiver := strings.TrimSpace(parts[0])
-	kind := strings.TrimSpace(parts[1])
-	namespace := strings.TrimSpace(parts[2])
-	name := strings.TrimSpace(parts[3])
 	if apiver == "" || kind == "" || name == "" {
 		return nil, fmt.Errorf("invalid manifest ID %q (missing apiVersion/kind/name)", id)
 	}
@@ -424,25 +618,79 @@ func parseManifestID(id string) (*unstructured.Unstructured, error) {
 	return u, nil
 }
 
-func setManifestFromObject(d *schema.ResourceData, obj *unstructured.Unstructured) error {
-	if obj == nil {
+func parseManifestIDs(id string) ([]*unstructured.Unstructured, error) {
+	trimmed := strings.TrimSpace(id)
+	if trimmed == "" {
+		return nil, fmt.Errorf("manifest ID must not be empty")
+	}
+	rawIDs := strings.FieldsFunc(trimmed, func(r rune) bool {
+		return r == ';' || r == '\n'
+	})
+	if len(rawIDs) == 0 {
+		return nil, fmt.Errorf("invalid manifest ID %q", id)
+	}
+	var objs []*unstructured.Unstructured
+	for _, rawID := range rawIDs {
+		tok := strings.TrimSpace(rawID)
+		if tok == "" {
+			continue
+		}
+		u, err := parseManifestID(tok)
+		if err != nil {
+			return nil, err
+		}
+		objs = append(objs, u)
+	}
+	if len(objs) == 0 {
+		return nil, fmt.Errorf("invalid manifest ID %q", id)
+	}
+	return objs, nil
+}
+
+func setManifestFromObjects(d *schema.ResourceData, objs []*unstructured.Unstructured) error {
+	if len(objs) == 0 {
 		return nil
 	}
-	copyObj := runtime.DeepCopyJSON(obj.Object)
-	normalizeManifestObject(copyObj)
-	sorted := sortManifestValue(copyObj)
-	jsonPayload, err := json.Marshal(sorted)
-	if err != nil {
-		return fmt.Errorf("marshal live manifest: %w", err)
-	}
-	payload := string(jsonPayload)
-	if !manifestLooksLikeJSON(d.Get("manifest").(string)) {
-		yamlPayload, err := yaml.JSONToYAML(jsonPayload)
+	manifestStr, _ := d.Get("manifest").(string)
+	isJSON := len(objs) == 1 && manifestLooksLikeJSON(manifestStr)
+
+	var docs []string
+	for _, obj := range objs {
+		copyObj := runtime.DeepCopyJSON(obj.Object)
+		normalizeManifestObject(copyObj)
+		sorted := sortManifestValue(copyObj)
+		jsonPayload, err := json.Marshal(sorted)
 		if err != nil {
-			return fmt.Errorf("marshal live manifest yaml: %w", err)
+			return fmt.Errorf("marshal live manifest: %w", err)
 		}
-		payload = string(yamlPayload)
+		if isJSON {
+			docs = append(docs, string(jsonPayload))
+		} else {
+			yamlPayload, err := yaml.JSONToYAML(jsonPayload)
+			if err != nil {
+				return fmt.Errorf("marshal live manifest yaml: %w", err)
+			}
+			docs = append(docs, string(yamlPayload))
+		}
 	}
+
+	var payload string
+	if isJSON || len(docs) == 1 {
+		payload = docs[0]
+	} else {
+		var sb strings.Builder
+		for i, doc := range docs {
+			if i > 0 {
+				sb.WriteString("---\n")
+			}
+			sb.WriteString(doc)
+			if !strings.HasSuffix(doc, "\n") {
+				sb.WriteString("\n")
+			}
+		}
+		payload = sb.String()
+	}
+
 	if err := d.Set("manifest", payload); err != nil {
 		return fmt.Errorf("set manifest: %w", err)
 	}
