@@ -13976,4 +13976,5 @@ var dataSourcePrometheusOperatorMonitoringCoreosComAlertmanagerConfigV1Alpha1Com
 	"v0.92.1",
 	"v0.93.0",
 	"v0.93.1",
+	"v0.94.0",
 }

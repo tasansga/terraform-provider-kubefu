@@ -2497,6 +2497,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 														Required:    false,
 														Computed:    true,
 													},
+													"protocol": {
+														Type:        schema.TypeString,
+														Description: "Protocol selects the wire protocol for the probe connection.\nNil defaults to HTTP/1.1.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"scheme": {
 														Type:        schema.TypeString,
 														Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -2627,6 +2634,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 														Required:    false,
 														Computed:    true,
 													},
+													"protocol": {
+														Type:        schema.TypeString,
+														Description: "Protocol selects the wire protocol for the probe connection.\nNil defaults to HTTP/1.1.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"scheme": {
 														Type:        schema.TypeString,
 														Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -2729,6 +2743,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe.\nSet to \"TLS\" to use TLS without certificate verification.\nSet to \"Plaintext\" to use a plaintext (insecure) connection explicitly.\nIf not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -2793,6 +2814,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection.\nNil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -2959,6 +2987,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe.\nSet to \"TLS\" to use TLS without certificate verification.\nSet to \"Plaintext\" to use a plaintext (insecure) connection explicitly.\nIf not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -3023,6 +3058,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection.\nNil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -3465,6 +3507,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe.\nSet to \"TLS\" to use TLS without certificate verification.\nSet to \"Plaintext\" to use a plaintext (insecure) connection explicitly.\nIf not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -3529,6 +3578,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection.\nNil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -3668,6 +3724,14 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"bind_mount_options": {
+										Type:        schema.TypeList,
+										Description: "bindMountOptions is the list of additional bind mount options to apply when\nmounting this volume into the container. Allowed values are noexec,\nnodev, and nosuid. These are Linux mount options and have no effect on\nWindows nodes.\nThis field is not supported with image volumes.\nThis is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
 									"mount_path": {
 										Type:        schema.TypeString,
 										Description: "Path within the container at which the volume should be mounted.  Must not contain ':'.",
@@ -4415,6 +4479,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 														Required:    false,
 														Computed:    true,
 													},
+													"protocol": {
+														Type:        schema.TypeString,
+														Description: "Protocol selects the wire protocol for the probe connection.\nNil defaults to HTTP/1.1.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"scheme": {
 														Type:        schema.TypeString,
 														Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -4545,6 +4616,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 														Required:    false,
 														Computed:    true,
 													},
+													"protocol": {
+														Type:        schema.TypeString,
+														Description: "Protocol selects the wire protocol for the probe connection.\nNil defaults to HTTP/1.1.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"scheme": {
 														Type:        schema.TypeString,
 														Description: "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -4647,6 +4725,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe.\nSet to \"TLS\" to use TLS without certificate verification.\nSet to \"Plaintext\" to use a plaintext (insecure) connection explicitly.\nIf not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -4711,6 +4796,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection.\nNil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -4877,6 +4969,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe.\nSet to \"TLS\" to use TLS without certificate verification.\nSet to \"Plaintext\" to use a plaintext (insecure) connection explicitly.\nIf not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -4941,6 +5040,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection.\nNil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -5383,6 +5489,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Computed:    true,
 										MaxItems:    1,
 										Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+											"mode": {
+												Type:        schema.TypeString,
+												Description: "mode specifies the connection mode for the gRPC health probe.\nSet to \"TLS\" to use TLS without certificate verification.\nSet to \"Plaintext\" to use a plaintext (insecure) connection explicitly.\nIf not specified, the probe uses a plaintext (insecure) connection.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 											"port": {
 												Type:        schema.TypeInt,
 												Description: "Port number of the gRPC service. Number must be in the range 1 to 65535.",
@@ -5447,6 +5560,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 											"port": {
 												Type:        schema.TypeString,
 												Description: "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"protocol": {
+												Type:        schema.TypeString,
+												Description: "Protocol selects the wire protocol for the probe connection.\nNil defaults to HTTP/1.1.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -5586,6 +5706,14 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"bind_mount_options": {
+										Type:        schema.TypeList,
+										Description: "bindMountOptions is the list of additional bind mount options to apply when\nmounting this volume into the container. Allowed values are noexec,\nnodev, and nosuid. These are Linux mount options and have no effect on\nWindows nodes.\nThis field is not supported with image volumes.\nThis is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
 									"mount_path": {
 										Type:        schema.TypeString,
 										Description: "Path within the container at which the volume should be mounted.  Must not contain ':'.",
@@ -8376,6 +8504,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 						Required:    false,
 						Computed:    true,
 					},
+					"retention_percentage": {
+						Type:        schema.TypeString,
+						Description: "retentionPercentage defines the maximum percentage of the data volume's\ncapacity used by the Prometheus data.\n\nThe value is a number between 0 and 100. If set to 0, percentage-based\nretention is disabled.\n\nIt requires Prometheus >= v3.11.0 and is ignored by older versions.",
+						Optional:    true,
+						Required:    false,
+						Computed:    true,
+					},
 					"retention_size": {
 						Type:        schema.TypeString,
 						Description: "Maximum amount of disk space used by blocks. Supported units: B, KB, MB, GB, TB, PB, EB. Ex: `512MB`.",
@@ -9624,6 +9759,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Required:    false,
 										Computed:    true,
 									},
+									"mode": {
+										Type:        schema.TypeInt,
+										Description: "mode specifies the permission bits for the emptyDir directory, in numeric\nnotation (e.g., 0755, 01777). Must be a value between 0000 and 01777.\nIf not specified, defaults to 0777.\nThis might be in conflict with other options that affect the file\nmode, like fsGroup. If fsGroup is specified, the fsGroup permissions\nwill override the mode specified here.\nThis field has no effect on Windows.\nThis field is alpha and requires EmptyDirVolumeMode featuregate to be enabled.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"size_limit": {
 										Type:        schema.TypeString,
 										Description: "Total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir",
@@ -10214,6 +10356,53 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 												Required:    false,
 												Computed:    true,
 											},
+											"health_status": {
+												Type:        schema.TypeList,
+												Description: "healthStatus contains the latest controller-reported health information\nfor the volume bound to this claim.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+												MaxItems:    1,
+												Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+													"health_conditions": {
+														Type:        schema.TypeList,
+														Description: "conditions is the set of adverse conditions reported by\nthe CSI controller plugin. An empty list means no adverse condition.\nAt most 16 conditions may be reported.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+														Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+															"message": {
+																Type:        schema.TypeString,
+																Description: "message is a human-readable description.\nMaximum permitted length of a message is 1024 bytes.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"reason": {
+																Type:        schema.TypeString,
+																Description: "reason is a brief CamelCase machine-parseable reason.\nTogether with status it forms the unique identity of a condition entry.\nMaximum permitted length of a reason is 256 bytes.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"status": {
+																Type:        schema.TypeString,
+																Description: "status is the machine-parseable health category.\nPossible values:\n- \"Inaccessible\": the volume cannot be accessed.\n- \"DataLoss\": data loss has been detected on the volume.\n- \"Degraded\": the volume is functioning with reduced capability.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+														}},
+													},
+													"last_transition_time": {
+														Type:        schema.TypeString,
+														Description: "lastTransitionTime is when the current set of conditions first appeared.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+												}},
+											},
 											"modify_volume_status": {
 												Type:        schema.TypeList,
 												Description: "ModifyVolumeStatus represents the status object of ControllerModifyVolume operation. When this is unset, there is no ModifyVolume operation being attempted. This is an alpha field and requires enabling VolumeAttributesClass feature.",
@@ -10795,6 +10984,14 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 								Required:    false,
 								Computed:    true,
 								Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+									"bind_mount_options": {
+										Type:        schema.TypeList,
+										Description: "bindMountOptions is the list of additional bind mount options to apply when\nmounting this volume into the container. Allowed values are noexec,\nnodev, and nosuid. These are Linux mount options and have no effect on\nWindows nodes.\nThis field is not supported with image volumes.\nThis is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+										Elem: &schema.Schema{Type: schema.TypeString},
+									},
 									"mount_path": {
 										Type:        schema.TypeString,
 										Description: "Path within the container at which the volume should be mounted.  Must not contain ':'.",
@@ -11388,6 +11585,14 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 						Required:    false,
 						Computed:    true,
 						Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+							"bind_mount_options": {
+								Type:        schema.TypeList,
+								Description: "bindMountOptions is the list of additional bind mount options to apply when\nmounting this volume into the container. Allowed values are noexec,\nnodev, and nosuid. These are Linux mount options and have no effect on\nWindows nodes.\nThis field is not supported with image volumes.\nThis is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+								Optional:    true,
+								Required:    false,
+								Computed:    true,
+								Elem: &schema.Schema{Type: schema.TypeString},
+							},
 							"mount_path": {
 								Type:        schema.TypeString,
 								Description: "Path within the container at which the volume should be mounted.  Must not contain ':'.",
@@ -11693,6 +11898,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Required:    false,
 										Computed:    true,
 									},
+									"default_user": {
+										Type:        schema.TypeInt,
+										Description: "defaultUser is Optional: The owner UID of the created files by default.\nThe defaultUser field is only used as a fallback when the item-level user field is unset.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"items": {
 										Type:        schema.TypeList,
 										Description: "If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.",
@@ -11717,6 +11929,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 											"path": {
 												Type:        schema.TypeString,
 												Description: "The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"user": {
+												Type:        schema.TypeInt,
+												Description: "user is Optional: The owner UID of the created file.\nIf specified, the item-level user field takes precedence over defaultUser.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -11809,6 +12028,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Required:    false,
 										Computed:    true,
 									},
+									"default_user": {
+										Type:        schema.TypeInt,
+										Description: "defaultUser is Optional: The owner UID of the created files by default.\nThe defaultUser field is only used as a fallback when the item-level user field is unset.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"items": {
 										Type:        schema.TypeList,
 										Description: "Items is a list of downward API volume file",
@@ -11885,6 +12111,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 													},
 												}},
 											},
+											"user": {
+												Type:        schema.TypeInt,
+												Description: "user is Optional: The owner UID of the created file.\nIf specified, the item-level user field takes precedence over defaultUser.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
 										}},
 									},
 								}},
@@ -11900,6 +12133,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 									"medium": {
 										Type:        schema.TypeString,
 										Description: "What type of storage medium should back this directory. The default is \"\" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
+									"mode": {
+										Type:        schema.TypeInt,
+										Description: "mode specifies the permission bits for the emptyDir directory, in numeric\nnotation (e.g., 0755, 01777). Must be a value between 0000 and 01777.\nIf not specified, defaults to 0777.\nThis might be in conflict with other options that affect the file\nmode, like fsGroup. If fsGroup is specified, the fsGroup permissions\nwill override the mode specified here.\nThis field has no effect on Windows.\nThis field is alpha and requires EmptyDirVolumeMode featuregate to be enabled.",
 										Optional:    true,
 										Required:    false,
 										Computed:    true,
@@ -12647,6 +12887,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Required:    false,
 										Computed:    true,
 									},
+									"default_user": {
+										Type:        schema.TypeInt,
+										Description: "defaultUser is Optional: The owner UID of the created files by default.\nThe defaultUser field is only used as a fallback when the item-level user field is unset.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"sources": {
 										Type:        schema.TypeList,
 										Description: "list of volume projections",
@@ -12738,6 +12985,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 														Required:    false,
 														Computed:    true,
 													},
+													"user": {
+														Type:        schema.TypeInt,
+														Description: "user is Optional: The owner UID of the created file.\nIf specified, the item-level user field takes precedence over defaultUser.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 												}},
 											},
 											"config_map": {
@@ -12772,6 +13026,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 															"path": {
 																Type:        schema.TypeString,
 																Description: "The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"user": {
+																Type:        schema.TypeInt,
+																Description: "user is Optional: The owner UID of the created file.\nIf specified, the item-level user field takes precedence over defaultUser.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -12878,6 +13139,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 																	},
 																}},
 															},
+															"user": {
+																Type:        schema.TypeInt,
+																Description: "user is Optional: The owner UID of the created file.\nIf specified, the item-level user field takes precedence over defaultUser.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
 														}},
 													},
 												}},
@@ -12932,6 +13200,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 														Required:    false,
 														Computed:    true,
 													},
+													"user": {
+														Type:        schema.TypeInt,
+														Description: "user is Optional: The owner UID of the created file.\nIf specified, the item-level user field takes precedence over defaultUser.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
 													"user_annotations": {
 														Type:        schema.TypeMap,
 														Description: "userAnnotations allow pod authors to pass additional information to\nthe signer implementation.  Kubernetes does not restrict or validate this\nmetadata in any way.\n\nThese values are copied verbatim into the `spec.unverifiedUserAnnotations` field of\nthe PodCertificateRequest objects that Kubelet creates.\n\nEntries are subject to the same validation as object metadata annotations,\nwith the addition that all keys must be domain-prefixed. No restrictions\nare placed on values, except an overall size limitation on the entire field.\n\nSigners should document the keys and values they support. Signers should\ndeny requests that contain keys they do not recognize.",
@@ -12973,6 +13248,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 															"path": {
 																Type:        schema.TypeString,
 																Description: "The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.",
+																Optional:    true,
+																Required:    false,
+																Computed:    true,
+															},
+															"user": {
+																Type:        schema.TypeInt,
+																Description: "user is Optional: The owner UID of the created file.\nIf specified, the item-level user field takes precedence over defaultUser.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
 																Optional:    true,
 																Required:    false,
 																Computed:    true,
@@ -13020,6 +13302,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 													"path": {
 														Type:        schema.TypeString,
 														Description: "Path is the path relative to the mount point of the file to project the token into.",
+														Optional:    true,
+														Required:    false,
+														Computed:    true,
+													},
+													"user": {
+														Type:        schema.TypeInt,
+														Description: "user is Optional: The owner UID of the created file.\nIf specified, the item-level user field takes precedence over defaultUser.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
 														Optional:    true,
 														Required:    false,
 														Computed:    true,
@@ -13264,6 +13553,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 										Required:    false,
 										Computed:    true,
 									},
+									"default_user": {
+										Type:        schema.TypeInt,
+										Description: "defaultUser is Optional: The owner UID of the created files by default.\nThe defaultUser field is only used as a fallback when the item-level user field is unset.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
+										Optional:    true,
+										Required:    false,
+										Computed:    true,
+									},
 									"items": {
 										Type:        schema.TypeList,
 										Description: "If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.",
@@ -13288,6 +13584,13 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1() *schema.Resou
 											"path": {
 												Type:        schema.TypeString,
 												Description: "The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.",
+												Optional:    true,
+												Required:    false,
+												Computed:    true,
+											},
+											"user": {
+												Type:        schema.TypeInt,
+												Description: "user is Optional: The owner UID of the created file.\nIf specified, the item-level user field takes precedence over defaultUser.\n(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.",
 												Optional:    true,
 												Required:    false,
 												Computed:    true,
@@ -13914,7 +14217,7 @@ func dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1Read(_ context.C
 	if err := manifestpkg.SetDataSourceDefaults(d, "monitoring.coreos.com/v1", "Prometheus", "monitoring.coreos.com/v1/Prometheus"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.additional_alert_manager_configs", "spec.additional_alert_relabel_configs", "spec.additional_scrape_configs", "spec.affinity", "spec.affinity.node_affinity", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.affinity.pod_affinity", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.affinity.pod_anti_affinity", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.alerting", "spec.alerting.alertmanagers.authorization", "spec.alerting.alertmanagers.authorization.credentials", "spec.alerting.alertmanagers.basic_auth", "spec.alerting.alertmanagers.basic_auth.password", "spec.alerting.alertmanagers.basic_auth.username", "spec.alerting.alertmanagers.sigv4", "spec.alerting.alertmanagers.sigv4.access_key", "spec.alerting.alertmanagers.sigv4.secret_key", "spec.alerting.alertmanagers.tls_config", "spec.alerting.alertmanagers.tls_config.ca", "spec.alerting.alertmanagers.tls_config.ca.config_map", "spec.alerting.alertmanagers.tls_config.ca.secret", "spec.alerting.alertmanagers.tls_config.cert", "spec.alerting.alertmanagers.tls_config.cert.config_map", "spec.alerting.alertmanagers.tls_config.cert.secret", "spec.alerting.alertmanagers.tls_config.key_secret", "spec.apiserver_config", "spec.apiserver_config.authorization", "spec.apiserver_config.authorization.credentials", "spec.apiserver_config.basic_auth", "spec.apiserver_config.basic_auth.password", "spec.apiserver_config.basic_auth.username", "spec.apiserver_config.tls_config", "spec.apiserver_config.tls_config.ca", "spec.apiserver_config.tls_config.ca.config_map", "spec.apiserver_config.tls_config.ca.secret", "spec.apiserver_config.tls_config.cert", "spec.apiserver_config.tls_config.cert.config_map", "spec.apiserver_config.tls_config.cert.secret", "spec.apiserver_config.tls_config.key_secret", "spec.arbitrary_fs_access_through_s_ms", "spec.containers.env.value_from", "spec.containers.env.value_from.config_map_key_ref", "spec.containers.env.value_from.field_ref", "spec.containers.env.value_from.file_key_ref", "spec.containers.env.value_from.resource_field_ref", "spec.containers.env.value_from.secret_key_ref", "spec.containers.env_from.config_map_ref", "spec.containers.env_from.secret_ref", "spec.containers.lifecycle_", "spec.containers.lifecycle_.post_start", "spec.containers.lifecycle_.post_start.exec", "spec.containers.lifecycle_.post_start.http_get", "spec.containers.lifecycle_.post_start.sleep", "spec.containers.lifecycle_.post_start.tcp_socket", "spec.containers.lifecycle_.pre_stop", "spec.containers.lifecycle_.pre_stop.exec", "spec.containers.lifecycle_.pre_stop.http_get", "spec.containers.lifecycle_.pre_stop.sleep", "spec.containers.lifecycle_.pre_stop.tcp_socket", "spec.containers.liveness_probe", "spec.containers.liveness_probe.exec", "spec.containers.liveness_probe.grpc", "spec.containers.liveness_probe.http_get", "spec.containers.liveness_probe.tcp_socket", "spec.containers.readiness_probe", "spec.containers.readiness_probe.exec", "spec.containers.readiness_probe.grpc", "spec.containers.readiness_probe.http_get", "spec.containers.readiness_probe.tcp_socket", "spec.containers.resources", "spec.containers.restart_policy_rules.exit_codes", "spec.containers.security_context", "spec.containers.security_context.app_armor_profile", "spec.containers.security_context.capabilities", "spec.containers.security_context.se_linux_options", "spec.containers.security_context.seccomp_profile", "spec.containers.security_context.windows_options", "spec.containers.startup_probe", "spec.containers.startup_probe.exec", "spec.containers.startup_probe.grpc", "spec.containers.startup_probe.http_get", "spec.containers.startup_probe.tcp_socket", "spec.dns_config", "spec.exemplars", "spec.init_containers.env.value_from", "spec.init_containers.env.value_from.config_map_key_ref", "spec.init_containers.env.value_from.field_ref", "spec.init_containers.env.value_from.file_key_ref", "spec.init_containers.env.value_from.resource_field_ref", "spec.init_containers.env.value_from.secret_key_ref", "spec.init_containers.env_from.config_map_ref", "spec.init_containers.env_from.secret_ref", "spec.init_containers.lifecycle_", "spec.init_containers.lifecycle_.post_start", "spec.init_containers.lifecycle_.post_start.exec", "spec.init_containers.lifecycle_.post_start.http_get", "spec.init_containers.lifecycle_.post_start.sleep", "spec.init_containers.lifecycle_.post_start.tcp_socket", "spec.init_containers.lifecycle_.pre_stop", "spec.init_containers.lifecycle_.pre_stop.exec", "spec.init_containers.lifecycle_.pre_stop.http_get", "spec.init_containers.lifecycle_.pre_stop.sleep", "spec.init_containers.lifecycle_.pre_stop.tcp_socket", "spec.init_containers.liveness_probe", "spec.init_containers.liveness_probe.exec", "spec.init_containers.liveness_probe.grpc", "spec.init_containers.liveness_probe.http_get", "spec.init_containers.liveness_probe.tcp_socket", "spec.init_containers.readiness_probe", "spec.init_containers.readiness_probe.exec", "spec.init_containers.readiness_probe.grpc", "spec.init_containers.readiness_probe.http_get", "spec.init_containers.readiness_probe.tcp_socket", "spec.init_containers.resources", "spec.init_containers.restart_policy_rules.exit_codes", "spec.init_containers.security_context", "spec.init_containers.security_context.app_armor_profile", "spec.init_containers.security_context.capabilities", "spec.init_containers.security_context.se_linux_options", "spec.init_containers.security_context.seccomp_profile", "spec.init_containers.security_context.windows_options", "spec.init_containers.startup_probe", "spec.init_containers.startup_probe.exec", "spec.init_containers.startup_probe.grpc", "spec.init_containers.startup_probe.http_get", "spec.init_containers.startup_probe.tcp_socket", "spec.otlp", "spec.persistent_volume_claim_retention_policy", "spec.pod_metadata", "spec.pod_monitor_namespace_selector", "spec.pod_monitor_selector", "spec.probe_namespace_selector", "spec.probe_selector", "spec.query", "spec.remote_read.authorization", "spec.remote_read.authorization.credentials", "spec.remote_read.basic_auth", "spec.remote_read.basic_auth.password", "spec.remote_read.basic_auth.username", "spec.remote_read.oauth2", "spec.remote_read.oauth2.client_id", "spec.remote_read.oauth2.client_id.config_map", "spec.remote_read.oauth2.client_id.secret", "spec.remote_read.oauth2.client_secret", "spec.remote_read.oauth2.tls_config", "spec.remote_read.oauth2.tls_config.ca", "spec.remote_read.oauth2.tls_config.ca.config_map", "spec.remote_read.oauth2.tls_config.ca.secret", "spec.remote_read.oauth2.tls_config.cert", "spec.remote_read.oauth2.tls_config.cert.config_map", "spec.remote_read.oauth2.tls_config.cert.secret", "spec.remote_read.oauth2.tls_config.key_secret", "spec.remote_read.tls_config", "spec.remote_read.tls_config.ca", "spec.remote_read.tls_config.ca.config_map", "spec.remote_read.tls_config.ca.secret", "spec.remote_read.tls_config.cert", "spec.remote_read.tls_config.cert.config_map", "spec.remote_read.tls_config.cert.secret", "spec.remote_read.tls_config.key_secret", "spec.remote_write.authorization", "spec.remote_write.authorization.credentials", "spec.remote_write.azure_ad", "spec.remote_write.azure_ad.managed_identity", "spec.remote_write.azure_ad.oauth", "spec.remote_write.azure_ad.oauth.client_secret", "spec.remote_write.azure_ad.sdk", "spec.remote_write.azure_ad.workload_identity", "spec.remote_write.basic_auth", "spec.remote_write.basic_auth.password", "spec.remote_write.basic_auth.username", "spec.remote_write.metadata_config", "spec.remote_write.oauth2", "spec.remote_write.oauth2.client_id", "spec.remote_write.oauth2.client_id.config_map", "spec.remote_write.oauth2.client_id.secret", "spec.remote_write.oauth2.client_secret", "spec.remote_write.oauth2.tls_config", "spec.remote_write.oauth2.tls_config.ca", "spec.remote_write.oauth2.tls_config.ca.config_map", "spec.remote_write.oauth2.tls_config.ca.secret", "spec.remote_write.oauth2.tls_config.cert", "spec.remote_write.oauth2.tls_config.cert.config_map", "spec.remote_write.oauth2.tls_config.cert.secret", "spec.remote_write.oauth2.tls_config.key_secret", "spec.remote_write.queue_config", "spec.remote_write.sigv4", "spec.remote_write.sigv4.access_key", "spec.remote_write.sigv4.secret_key", "spec.remote_write.tls_config", "spec.remote_write.tls_config.ca", "spec.remote_write.tls_config.ca.config_map", "spec.remote_write.tls_config.ca.secret", "spec.remote_write.tls_config.cert", "spec.remote_write.tls_config.cert.config_map", "spec.remote_write.tls_config.cert.secret", "spec.remote_write.tls_config.key_secret", "spec.resources", "spec.rule_namespace_selector", "spec.rule_selector", "spec.rules", "spec.rules.alert", "spec.runtime", "spec.scrape_classes.attach_metadata", "spec.scrape_classes.authorization", "spec.scrape_classes.authorization.credentials", "spec.scrape_classes.tls_config", "spec.scrape_classes.tls_config.ca", "spec.scrape_classes.tls_config.ca.config_map", "spec.scrape_classes.tls_config.ca.secret", "spec.scrape_classes.tls_config.cert", "spec.scrape_classes.tls_config.cert.config_map", "spec.scrape_classes.tls_config.cert.secret", "spec.scrape_classes.tls_config.key_secret", "spec.scrape_config_namespace_selector", "spec.scrape_config_selector", "spec.security_context", "spec.security_context.app_armor_profile", "spec.security_context.se_linux_options", "spec.security_context.seccomp_profile", "spec.security_context.windows_options", "spec.service_monitor_namespace_selector", "spec.service_monitor_selector", "spec.shard_retention_policy", "spec.shard_retention_policy.retain", "spec.sharding_strategy", "spec.sharding_strategy.topology", "spec.storage", "spec.storage.empty_dir", "spec.storage.ephemeral", "spec.storage.ephemeral.volume_claim_template", "spec.storage.ephemeral.volume_claim_template.spec", "spec.storage.ephemeral.volume_claim_template.spec.data_source", "spec.storage.ephemeral.volume_claim_template.spec.data_source_ref", "spec.storage.ephemeral.volume_claim_template.spec.resources", "spec.storage.ephemeral.volume_claim_template.spec.selector", "spec.storage.volume_claim_template", "spec.storage.volume_claim_template.metadata", "spec.storage.volume_claim_template.spec", "spec.storage.volume_claim_template.spec.data_source", "spec.storage.volume_claim_template.spec.data_source_ref", "spec.storage.volume_claim_template.spec.resources", "spec.storage.volume_claim_template.spec.selector", "spec.storage.volume_claim_template.status", "spec.storage.volume_claim_template.status.modify_volume_status", "spec.thanos", "spec.thanos.grpc_server_tls_config", "spec.thanos.grpc_server_tls_config.ca", "spec.thanos.grpc_server_tls_config.ca.config_map", "spec.thanos.grpc_server_tls_config.ca.secret", "spec.thanos.grpc_server_tls_config.cert", "spec.thanos.grpc_server_tls_config.cert.config_map", "spec.thanos.grpc_server_tls_config.cert.secret", "spec.thanos.grpc_server_tls_config.key_secret", "spec.thanos.object_storage_config", "spec.thanos.resources", "spec.thanos.tracing_config", "spec.topology_spread_constraints.label_selector", "spec.tracing_config", "spec.tracing_config.tls_config", "spec.tracing_config.tls_config.ca", "spec.tracing_config.tls_config.ca.config_map", "spec.tracing_config.tls_config.ca.secret", "spec.tracing_config.tls_config.cert", "spec.tracing_config.tls_config.cert.config_map", "spec.tracing_config.tls_config.cert.secret", "spec.tracing_config.tls_config.key_secret", "spec.tsdb", "spec.tsdb.chunk_encoding", "spec.update_strategy", "spec.update_strategy.rolling_update", "spec.volumes.aws_elastic_block_store", "spec.volumes.azure_disk", "spec.volumes.azure_file", "spec.volumes.cephfs", "spec.volumes.cephfs.secret_ref", "spec.volumes.cinder", "spec.volumes.cinder.secret_ref", "spec.volumes.config_map", "spec.volumes.csi", "spec.volumes.csi.node_publish_secret_ref", "spec.volumes.downward_api", "spec.volumes.downward_api.items.field_ref", "spec.volumes.downward_api.items.resource_field_ref", "spec.volumes.empty_dir", "spec.volumes.ephemeral", "spec.volumes.ephemeral.volume_claim_template", "spec.volumes.ephemeral.volume_claim_template.spec", "spec.volumes.ephemeral.volume_claim_template.spec.data_source", "spec.volumes.ephemeral.volume_claim_template.spec.data_source_ref", "spec.volumes.ephemeral.volume_claim_template.spec.resources", "spec.volumes.ephemeral.volume_claim_template.spec.selector", "spec.volumes.fc", "spec.volumes.flex_volume", "spec.volumes.flex_volume.secret_ref", "spec.volumes.flocker", "spec.volumes.gce_persistent_disk", "spec.volumes.git_repo", "spec.volumes.glusterfs", "spec.volumes.host_path", "spec.volumes.image", "spec.volumes.iscsi", "spec.volumes.iscsi.secret_ref", "spec.volumes.nfs", "spec.volumes.persistent_volume_claim", "spec.volumes.photon_persistent_disk", "spec.volumes.portworx_volume", "spec.volumes.projected", "spec.volumes.projected.sources.cluster_trust_bundle", "spec.volumes.projected.sources.cluster_trust_bundle.label_selector", "spec.volumes.projected.sources.config_map", "spec.volumes.projected.sources.downward_api", "spec.volumes.projected.sources.downward_api.items.field_ref", "spec.volumes.projected.sources.downward_api.items.resource_field_ref", "spec.volumes.projected.sources.pod_certificate", "spec.volumes.projected.sources.secret", "spec.volumes.projected.sources.service_account_token", "spec.volumes.quobyte", "spec.volumes.rbd", "spec.volumes.rbd.secret_ref", "spec.volumes.scale_io", "spec.volumes.scale_io.secret_ref", "spec.volumes.secret", "spec.volumes.storageos", "spec.volumes.storageos.secret_ref", "spec.volumes.vsphere_volume", "spec.web", "spec.web.http_config", "spec.web.http_config.headers", "spec.web.tls_config", "spec.web.tls_config.cert", "spec.web.tls_config.cert.config_map", "spec.web.tls_config.cert.secret", "spec.web.tls_config.client_ca", "spec.web.tls_config.client_ca.config_map", "spec.web.tls_config.client_ca.secret", "spec.web.tls_config.key_secret", "status"}, []string{"spec", "spec.additional_alert_manager_configs", "spec.additional_alert_relabel_configs", "spec.additional_args", "spec.additional_scrape_configs", "spec.affinity", "spec.affinity.node_affinity", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_expressions", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_fields", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_expressions", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_fields", "spec.affinity.pod_affinity", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions", "spec.affinity.pod_anti_affinity", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions", "spec.alerting", "spec.alerting.alertmanagers", "spec.alerting.alertmanagers.alert_relabelings", "spec.alerting.alertmanagers.authorization", "spec.alerting.alertmanagers.authorization.credentials", "spec.alerting.alertmanagers.basic_auth", "spec.alerting.alertmanagers.basic_auth.password", "spec.alerting.alertmanagers.basic_auth.username", "spec.alerting.alertmanagers.relabelings", "spec.alerting.alertmanagers.sigv4", "spec.alerting.alertmanagers.sigv4.access_key", "spec.alerting.alertmanagers.sigv4.secret_key", "spec.alerting.alertmanagers.tls_config", "spec.alerting.alertmanagers.tls_config.ca", "spec.alerting.alertmanagers.tls_config.ca.config_map", "spec.alerting.alertmanagers.tls_config.ca.secret", "spec.alerting.alertmanagers.tls_config.cert", "spec.alerting.alertmanagers.tls_config.cert.config_map", "spec.alerting.alertmanagers.tls_config.cert.secret", "spec.alerting.alertmanagers.tls_config.key_secret", "spec.apiserver_config", "spec.apiserver_config.authorization", "spec.apiserver_config.authorization.credentials", "spec.apiserver_config.basic_auth", "spec.apiserver_config.basic_auth.password", "spec.apiserver_config.basic_auth.username", "spec.apiserver_config.tls_config", "spec.apiserver_config.tls_config.ca", "spec.apiserver_config.tls_config.ca.config_map", "spec.apiserver_config.tls_config.ca.secret", "spec.apiserver_config.tls_config.cert", "spec.apiserver_config.tls_config.cert.config_map", "spec.apiserver_config.tls_config.cert.secret", "spec.apiserver_config.tls_config.key_secret", "spec.arbitrary_fs_access_through_s_ms", "spec.containers", "spec.containers.env", "spec.containers.env.value_from", "spec.containers.env.value_from.config_map_key_ref", "spec.containers.env.value_from.field_ref", "spec.containers.env.value_from.file_key_ref", "spec.containers.env.value_from.resource_field_ref", "spec.containers.env.value_from.secret_key_ref", "spec.containers.env_from", "spec.containers.env_from.config_map_ref", "spec.containers.env_from.secret_ref", "spec.containers.lifecycle_", "spec.containers.lifecycle_.post_start", "spec.containers.lifecycle_.post_start.exec", "spec.containers.lifecycle_.post_start.http_get", "spec.containers.lifecycle_.post_start.http_get.http_headers", "spec.containers.lifecycle_.post_start.sleep", "spec.containers.lifecycle_.post_start.tcp_socket", "spec.containers.lifecycle_.pre_stop", "spec.containers.lifecycle_.pre_stop.exec", "spec.containers.lifecycle_.pre_stop.http_get", "spec.containers.lifecycle_.pre_stop.http_get.http_headers", "spec.containers.lifecycle_.pre_stop.sleep", "spec.containers.lifecycle_.pre_stop.tcp_socket", "spec.containers.liveness_probe", "spec.containers.liveness_probe.exec", "spec.containers.liveness_probe.grpc", "spec.containers.liveness_probe.http_get", "spec.containers.liveness_probe.http_get.http_headers", "spec.containers.liveness_probe.tcp_socket", "spec.containers.ports", "spec.containers.readiness_probe", "spec.containers.readiness_probe.exec", "spec.containers.readiness_probe.grpc", "spec.containers.readiness_probe.http_get", "spec.containers.readiness_probe.http_get.http_headers", "spec.containers.readiness_probe.tcp_socket", "spec.containers.resize_policy", "spec.containers.resources", "spec.containers.resources.claims", "spec.containers.restart_policy_rules", "spec.containers.restart_policy_rules.exit_codes", "spec.containers.security_context", "spec.containers.security_context.app_armor_profile", "spec.containers.security_context.capabilities", "spec.containers.security_context.se_linux_options", "spec.containers.security_context.seccomp_profile", "spec.containers.security_context.windows_options", "spec.containers.startup_probe", "spec.containers.startup_probe.exec", "spec.containers.startup_probe.grpc", "spec.containers.startup_probe.http_get", "spec.containers.startup_probe.http_get.http_headers", "spec.containers.startup_probe.tcp_socket", "spec.containers.volume_devices", "spec.containers.volume_mounts", "spec.dns_config", "spec.dns_config.options", "spec.excluded_from_enforcement", "spec.exemplars", "spec.host_aliases", "spec.image_pull_secrets", "spec.init_containers", "spec.init_containers.env", "spec.init_containers.env.value_from", "spec.init_containers.env.value_from.config_map_key_ref", "spec.init_containers.env.value_from.field_ref", "spec.init_containers.env.value_from.file_key_ref", "spec.init_containers.env.value_from.resource_field_ref", "spec.init_containers.env.value_from.secret_key_ref", "spec.init_containers.env_from", "spec.init_containers.env_from.config_map_ref", "spec.init_containers.env_from.secret_ref", "spec.init_containers.lifecycle_", "spec.init_containers.lifecycle_.post_start", "spec.init_containers.lifecycle_.post_start.exec", "spec.init_containers.lifecycle_.post_start.http_get", "spec.init_containers.lifecycle_.post_start.http_get.http_headers", "spec.init_containers.lifecycle_.post_start.sleep", "spec.init_containers.lifecycle_.post_start.tcp_socket", "spec.init_containers.lifecycle_.pre_stop", "spec.init_containers.lifecycle_.pre_stop.exec", "spec.init_containers.lifecycle_.pre_stop.http_get", "spec.init_containers.lifecycle_.pre_stop.http_get.http_headers", "spec.init_containers.lifecycle_.pre_stop.sleep", "spec.init_containers.lifecycle_.pre_stop.tcp_socket", "spec.init_containers.liveness_probe", "spec.init_containers.liveness_probe.exec", "spec.init_containers.liveness_probe.grpc", "spec.init_containers.liveness_probe.http_get", "spec.init_containers.liveness_probe.http_get.http_headers", "spec.init_containers.liveness_probe.tcp_socket", "spec.init_containers.ports", "spec.init_containers.readiness_probe", "spec.init_containers.readiness_probe.exec", "spec.init_containers.readiness_probe.grpc", "spec.init_containers.readiness_probe.http_get", "spec.init_containers.readiness_probe.http_get.http_headers", "spec.init_containers.readiness_probe.tcp_socket", "spec.init_containers.resize_policy", "spec.init_containers.resources", "spec.init_containers.resources.claims", "spec.init_containers.restart_policy_rules", "spec.init_containers.restart_policy_rules.exit_codes", "spec.init_containers.security_context", "spec.init_containers.security_context.app_armor_profile", "spec.init_containers.security_context.capabilities", "spec.init_containers.security_context.se_linux_options", "spec.init_containers.security_context.seccomp_profile", "spec.init_containers.security_context.windows_options", "spec.init_containers.startup_probe", "spec.init_containers.startup_probe.exec", "spec.init_containers.startup_probe.grpc", "spec.init_containers.startup_probe.http_get", "spec.init_containers.startup_probe.http_get.http_headers", "spec.init_containers.startup_probe.tcp_socket", "spec.init_containers.volume_devices", "spec.init_containers.volume_mounts", "spec.otlp", "spec.persistent_volume_claim_retention_policy", "spec.pod_metadata", "spec.pod_monitor_namespace_selector", "spec.pod_monitor_namespace_selector.match_expressions", "spec.pod_monitor_selector", "spec.pod_monitor_selector.match_expressions", "spec.probe_namespace_selector", "spec.probe_namespace_selector.match_expressions", "spec.probe_selector", "spec.probe_selector.match_expressions", "spec.prometheus_rules_excluded_from_enforce", "spec.query", "spec.remote_read", "spec.remote_read.authorization", "spec.remote_read.authorization.credentials", "spec.remote_read.basic_auth", "spec.remote_read.basic_auth.password", "spec.remote_read.basic_auth.username", "spec.remote_read.oauth2", "spec.remote_read.oauth2.client_id", "spec.remote_read.oauth2.client_id.config_map", "spec.remote_read.oauth2.client_id.secret", "spec.remote_read.oauth2.client_secret", "spec.remote_read.oauth2.tls_config", "spec.remote_read.oauth2.tls_config.ca", "spec.remote_read.oauth2.tls_config.ca.config_map", "spec.remote_read.oauth2.tls_config.ca.secret", "spec.remote_read.oauth2.tls_config.cert", "spec.remote_read.oauth2.tls_config.cert.config_map", "spec.remote_read.oauth2.tls_config.cert.secret", "spec.remote_read.oauth2.tls_config.key_secret", "spec.remote_read.tls_config", "spec.remote_read.tls_config.ca", "spec.remote_read.tls_config.ca.config_map", "spec.remote_read.tls_config.ca.secret", "spec.remote_read.tls_config.cert", "spec.remote_read.tls_config.cert.config_map", "spec.remote_read.tls_config.cert.secret", "spec.remote_read.tls_config.key_secret", "spec.remote_write", "spec.remote_write.authorization", "spec.remote_write.authorization.credentials", "spec.remote_write.azure_ad", "spec.remote_write.azure_ad.managed_identity", "spec.remote_write.azure_ad.oauth", "spec.remote_write.azure_ad.oauth.client_secret", "spec.remote_write.azure_ad.sdk", "spec.remote_write.azure_ad.workload_identity", "spec.remote_write.basic_auth", "spec.remote_write.basic_auth.password", "spec.remote_write.basic_auth.username", "spec.remote_write.metadata_config", "spec.remote_write.oauth2", "spec.remote_write.oauth2.client_id", "spec.remote_write.oauth2.client_id.config_map", "spec.remote_write.oauth2.client_id.secret", "spec.remote_write.oauth2.client_secret", "spec.remote_write.oauth2.tls_config", "spec.remote_write.oauth2.tls_config.ca", "spec.remote_write.oauth2.tls_config.ca.config_map", "spec.remote_write.oauth2.tls_config.ca.secret", "spec.remote_write.oauth2.tls_config.cert", "spec.remote_write.oauth2.tls_config.cert.config_map", "spec.remote_write.oauth2.tls_config.cert.secret", "spec.remote_write.oauth2.tls_config.key_secret", "spec.remote_write.queue_config", "spec.remote_write.sigv4", "spec.remote_write.sigv4.access_key", "spec.remote_write.sigv4.secret_key", "spec.remote_write.tls_config", "spec.remote_write.tls_config.ca", "spec.remote_write.tls_config.ca.config_map", "spec.remote_write.tls_config.ca.secret", "spec.remote_write.tls_config.cert", "spec.remote_write.tls_config.cert.config_map", "spec.remote_write.tls_config.cert.secret", "spec.remote_write.tls_config.key_secret", "spec.remote_write.write_relabel_configs", "spec.resources", "spec.resources.claims", "spec.rule_namespace_selector", "spec.rule_namespace_selector.match_expressions", "spec.rule_selector", "spec.rule_selector.match_expressions", "spec.rules", "spec.rules.alert", "spec.runtime", "spec.scrape_classes", "spec.scrape_classes.attach_metadata", "spec.scrape_classes.authorization", "spec.scrape_classes.authorization.credentials", "spec.scrape_classes.metric_relabelings", "spec.scrape_classes.relabelings", "spec.scrape_classes.tls_config", "spec.scrape_classes.tls_config.ca", "spec.scrape_classes.tls_config.ca.config_map", "spec.scrape_classes.tls_config.ca.secret", "spec.scrape_classes.tls_config.cert", "spec.scrape_classes.tls_config.cert.config_map", "spec.scrape_classes.tls_config.cert.secret", "spec.scrape_classes.tls_config.key_secret", "spec.scrape_config_namespace_selector", "spec.scrape_config_namespace_selector.match_expressions", "spec.scrape_config_selector", "spec.scrape_config_selector.match_expressions", "spec.security_context", "spec.security_context.app_armor_profile", "spec.security_context.se_linux_options", "spec.security_context.seccomp_profile", "spec.security_context.sysctls", "spec.security_context.windows_options", "spec.service_monitor_namespace_selector", "spec.service_monitor_namespace_selector.match_expressions", "spec.service_monitor_selector", "spec.service_monitor_selector.match_expressions", "spec.shard_retention_policy", "spec.shard_retention_policy.retain", "spec.sharding_strategy", "spec.sharding_strategy.topology", "spec.storage", "spec.storage.empty_dir", "spec.storage.ephemeral", "spec.storage.ephemeral.volume_claim_template", "spec.storage.ephemeral.volume_claim_template.spec", "spec.storage.ephemeral.volume_claim_template.spec.data_source", "spec.storage.ephemeral.volume_claim_template.spec.data_source_ref", "spec.storage.ephemeral.volume_claim_template.spec.resources", "spec.storage.ephemeral.volume_claim_template.spec.resources.claims", "spec.storage.ephemeral.volume_claim_template.spec.selector", "spec.storage.ephemeral.volume_claim_template.spec.selector.match_expressions", "spec.storage.volume_claim_template", "spec.storage.volume_claim_template.metadata", "spec.storage.volume_claim_template.spec", "spec.storage.volume_claim_template.spec.data_source", "spec.storage.volume_claim_template.spec.data_source_ref", "spec.storage.volume_claim_template.spec.resources", "spec.storage.volume_claim_template.spec.resources.claims", "spec.storage.volume_claim_template.spec.selector", "spec.storage.volume_claim_template.spec.selector.match_expressions", "spec.storage.volume_claim_template.status", "spec.storage.volume_claim_template.status.conditions", "spec.storage.volume_claim_template.status.modify_volume_status", "spec.thanos", "spec.thanos.additional_args", "spec.thanos.grpc_server_tls_config", "spec.thanos.grpc_server_tls_config.ca", "spec.thanos.grpc_server_tls_config.ca.config_map", "spec.thanos.grpc_server_tls_config.ca.secret", "spec.thanos.grpc_server_tls_config.cert", "spec.thanos.grpc_server_tls_config.cert.config_map", "spec.thanos.grpc_server_tls_config.cert.secret", "spec.thanos.grpc_server_tls_config.key_secret", "spec.thanos.object_storage_config", "spec.thanos.resources", "spec.thanos.resources.claims", "spec.thanos.tracing_config", "spec.thanos.volume_mounts", "spec.tolerations", "spec.topology_spread_constraints", "spec.topology_spread_constraints.label_selector", "spec.topology_spread_constraints.label_selector.match_expressions", "spec.tracing_config", "spec.tracing_config.tls_config", "spec.tracing_config.tls_config.ca", "spec.tracing_config.tls_config.ca.config_map", "spec.tracing_config.tls_config.ca.secret", "spec.tracing_config.tls_config.cert", "spec.tracing_config.tls_config.cert.config_map", "spec.tracing_config.tls_config.cert.secret", "spec.tracing_config.tls_config.key_secret", "spec.tsdb", "spec.tsdb.chunk_encoding", "spec.update_strategy", "spec.update_strategy.rolling_update", "spec.volume_mounts", "spec.volumes", "spec.volumes.aws_elastic_block_store", "spec.volumes.azure_disk", "spec.volumes.azure_file", "spec.volumes.cephfs", "spec.volumes.cephfs.secret_ref", "spec.volumes.cinder", "spec.volumes.cinder.secret_ref", "spec.volumes.config_map", "spec.volumes.config_map.items", "spec.volumes.csi", "spec.volumes.csi.node_publish_secret_ref", "spec.volumes.downward_api", "spec.volumes.downward_api.items", "spec.volumes.downward_api.items.field_ref", "spec.volumes.downward_api.items.resource_field_ref", "spec.volumes.empty_dir", "spec.volumes.ephemeral", "spec.volumes.ephemeral.volume_claim_template", "spec.volumes.ephemeral.volume_claim_template.spec", "spec.volumes.ephemeral.volume_claim_template.spec.data_source", "spec.volumes.ephemeral.volume_claim_template.spec.data_source_ref", "spec.volumes.ephemeral.volume_claim_template.spec.resources", "spec.volumes.ephemeral.volume_claim_template.spec.resources.claims", "spec.volumes.ephemeral.volume_claim_template.spec.selector", "spec.volumes.ephemeral.volume_claim_template.spec.selector.match_expressions", "spec.volumes.fc", "spec.volumes.flex_volume", "spec.volumes.flex_volume.secret_ref", "spec.volumes.flocker", "spec.volumes.gce_persistent_disk", "spec.volumes.git_repo", "spec.volumes.glusterfs", "spec.volumes.host_path", "spec.volumes.image", "spec.volumes.iscsi", "spec.volumes.iscsi.secret_ref", "spec.volumes.nfs", "spec.volumes.persistent_volume_claim", "spec.volumes.photon_persistent_disk", "spec.volumes.portworx_volume", "spec.volumes.projected", "spec.volumes.projected.sources", "spec.volumes.projected.sources.cluster_trust_bundle", "spec.volumes.projected.sources.cluster_trust_bundle.label_selector", "spec.volumes.projected.sources.cluster_trust_bundle.label_selector.match_expressions", "spec.volumes.projected.sources.config_map", "spec.volumes.projected.sources.config_map.items", "spec.volumes.projected.sources.downward_api", "spec.volumes.projected.sources.downward_api.items", "spec.volumes.projected.sources.downward_api.items.field_ref", "spec.volumes.projected.sources.downward_api.items.resource_field_ref", "spec.volumes.projected.sources.pod_certificate", "spec.volumes.projected.sources.secret", "spec.volumes.projected.sources.secret.items", "spec.volumes.projected.sources.service_account_token", "spec.volumes.quobyte", "spec.volumes.rbd", "spec.volumes.rbd.secret_ref", "spec.volumes.scale_io", "spec.volumes.scale_io.secret_ref", "spec.volumes.secret", "spec.volumes.secret.items", "spec.volumes.storageos", "spec.volumes.storageos.secret_ref", "spec.volumes.vsphere_volume", "spec.web", "spec.web.http_config", "spec.web.http_config.headers", "spec.web.tls_config", "spec.web.tls_config.cert", "spec.web.tls_config.cert.config_map", "spec.web.tls_config.cert.secret", "spec.web.tls_config.client_ca", "spec.web.tls_config.client_ca.config_map", "spec.web.tls_config.client_ca.secret", "spec.web.tls_config.key_secret", "status", "status.conditions", "status.shard_statuses"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.additional_alert_manager_configs", "spec.additional_alert_relabel_configs", "spec.additional_scrape_configs", "spec.affinity", "spec.affinity.node_affinity", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.affinity.pod_affinity", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.affinity.pod_anti_affinity", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.alerting", "spec.alerting.alertmanagers.authorization", "spec.alerting.alertmanagers.authorization.credentials", "spec.alerting.alertmanagers.basic_auth", "spec.alerting.alertmanagers.basic_auth.password", "spec.alerting.alertmanagers.basic_auth.username", "spec.alerting.alertmanagers.sigv4", "spec.alerting.alertmanagers.sigv4.access_key", "spec.alerting.alertmanagers.sigv4.secret_key", "spec.alerting.alertmanagers.tls_config", "spec.alerting.alertmanagers.tls_config.ca", "spec.alerting.alertmanagers.tls_config.ca.config_map", "spec.alerting.alertmanagers.tls_config.ca.secret", "spec.alerting.alertmanagers.tls_config.cert", "spec.alerting.alertmanagers.tls_config.cert.config_map", "spec.alerting.alertmanagers.tls_config.cert.secret", "spec.alerting.alertmanagers.tls_config.key_secret", "spec.apiserver_config", "spec.apiserver_config.authorization", "spec.apiserver_config.authorization.credentials", "spec.apiserver_config.basic_auth", "spec.apiserver_config.basic_auth.password", "spec.apiserver_config.basic_auth.username", "spec.apiserver_config.tls_config", "spec.apiserver_config.tls_config.ca", "spec.apiserver_config.tls_config.ca.config_map", "spec.apiserver_config.tls_config.ca.secret", "spec.apiserver_config.tls_config.cert", "spec.apiserver_config.tls_config.cert.config_map", "spec.apiserver_config.tls_config.cert.secret", "spec.apiserver_config.tls_config.key_secret", "spec.arbitrary_fs_access_through_s_ms", "spec.containers.env.value_from", "spec.containers.env.value_from.config_map_key_ref", "spec.containers.env.value_from.field_ref", "spec.containers.env.value_from.file_key_ref", "spec.containers.env.value_from.resource_field_ref", "spec.containers.env.value_from.secret_key_ref", "spec.containers.env_from.config_map_ref", "spec.containers.env_from.secret_ref", "spec.containers.lifecycle_", "spec.containers.lifecycle_.post_start", "spec.containers.lifecycle_.post_start.exec", "spec.containers.lifecycle_.post_start.http_get", "spec.containers.lifecycle_.post_start.sleep", "spec.containers.lifecycle_.post_start.tcp_socket", "spec.containers.lifecycle_.pre_stop", "spec.containers.lifecycle_.pre_stop.exec", "spec.containers.lifecycle_.pre_stop.http_get", "spec.containers.lifecycle_.pre_stop.sleep", "spec.containers.lifecycle_.pre_stop.tcp_socket", "spec.containers.liveness_probe", "spec.containers.liveness_probe.exec", "spec.containers.liveness_probe.grpc", "spec.containers.liveness_probe.http_get", "spec.containers.liveness_probe.tcp_socket", "spec.containers.readiness_probe", "spec.containers.readiness_probe.exec", "spec.containers.readiness_probe.grpc", "spec.containers.readiness_probe.http_get", "spec.containers.readiness_probe.tcp_socket", "spec.containers.resources", "spec.containers.restart_policy_rules.exit_codes", "spec.containers.security_context", "spec.containers.security_context.app_armor_profile", "spec.containers.security_context.capabilities", "spec.containers.security_context.se_linux_options", "spec.containers.security_context.seccomp_profile", "spec.containers.security_context.windows_options", "spec.containers.startup_probe", "spec.containers.startup_probe.exec", "spec.containers.startup_probe.grpc", "spec.containers.startup_probe.http_get", "spec.containers.startup_probe.tcp_socket", "spec.dns_config", "spec.exemplars", "spec.init_containers.env.value_from", "spec.init_containers.env.value_from.config_map_key_ref", "spec.init_containers.env.value_from.field_ref", "spec.init_containers.env.value_from.file_key_ref", "spec.init_containers.env.value_from.resource_field_ref", "spec.init_containers.env.value_from.secret_key_ref", "spec.init_containers.env_from.config_map_ref", "spec.init_containers.env_from.secret_ref", "spec.init_containers.lifecycle_", "spec.init_containers.lifecycle_.post_start", "spec.init_containers.lifecycle_.post_start.exec", "spec.init_containers.lifecycle_.post_start.http_get", "spec.init_containers.lifecycle_.post_start.sleep", "spec.init_containers.lifecycle_.post_start.tcp_socket", "spec.init_containers.lifecycle_.pre_stop", "spec.init_containers.lifecycle_.pre_stop.exec", "spec.init_containers.lifecycle_.pre_stop.http_get", "spec.init_containers.lifecycle_.pre_stop.sleep", "spec.init_containers.lifecycle_.pre_stop.tcp_socket", "spec.init_containers.liveness_probe", "spec.init_containers.liveness_probe.exec", "spec.init_containers.liveness_probe.grpc", "spec.init_containers.liveness_probe.http_get", "spec.init_containers.liveness_probe.tcp_socket", "spec.init_containers.readiness_probe", "spec.init_containers.readiness_probe.exec", "spec.init_containers.readiness_probe.grpc", "spec.init_containers.readiness_probe.http_get", "spec.init_containers.readiness_probe.tcp_socket", "spec.init_containers.resources", "spec.init_containers.restart_policy_rules.exit_codes", "spec.init_containers.security_context", "spec.init_containers.security_context.app_armor_profile", "spec.init_containers.security_context.capabilities", "spec.init_containers.security_context.se_linux_options", "spec.init_containers.security_context.seccomp_profile", "spec.init_containers.security_context.windows_options", "spec.init_containers.startup_probe", "spec.init_containers.startup_probe.exec", "spec.init_containers.startup_probe.grpc", "spec.init_containers.startup_probe.http_get", "spec.init_containers.startup_probe.tcp_socket", "spec.otlp", "spec.persistent_volume_claim_retention_policy", "spec.pod_metadata", "spec.pod_monitor_namespace_selector", "spec.pod_monitor_selector", "spec.probe_namespace_selector", "spec.probe_selector", "spec.query", "spec.remote_read.authorization", "spec.remote_read.authorization.credentials", "spec.remote_read.basic_auth", "spec.remote_read.basic_auth.password", "spec.remote_read.basic_auth.username", "spec.remote_read.oauth2", "spec.remote_read.oauth2.client_id", "spec.remote_read.oauth2.client_id.config_map", "spec.remote_read.oauth2.client_id.secret", "spec.remote_read.oauth2.client_secret", "spec.remote_read.oauth2.tls_config", "spec.remote_read.oauth2.tls_config.ca", "spec.remote_read.oauth2.tls_config.ca.config_map", "spec.remote_read.oauth2.tls_config.ca.secret", "spec.remote_read.oauth2.tls_config.cert", "spec.remote_read.oauth2.tls_config.cert.config_map", "spec.remote_read.oauth2.tls_config.cert.secret", "spec.remote_read.oauth2.tls_config.key_secret", "spec.remote_read.tls_config", "spec.remote_read.tls_config.ca", "spec.remote_read.tls_config.ca.config_map", "spec.remote_read.tls_config.ca.secret", "spec.remote_read.tls_config.cert", "spec.remote_read.tls_config.cert.config_map", "spec.remote_read.tls_config.cert.secret", "spec.remote_read.tls_config.key_secret", "spec.remote_write.authorization", "spec.remote_write.authorization.credentials", "spec.remote_write.azure_ad", "spec.remote_write.azure_ad.managed_identity", "spec.remote_write.azure_ad.oauth", "spec.remote_write.azure_ad.oauth.client_secret", "spec.remote_write.azure_ad.sdk", "spec.remote_write.azure_ad.workload_identity", "spec.remote_write.basic_auth", "spec.remote_write.basic_auth.password", "spec.remote_write.basic_auth.username", "spec.remote_write.metadata_config", "spec.remote_write.oauth2", "spec.remote_write.oauth2.client_id", "spec.remote_write.oauth2.client_id.config_map", "spec.remote_write.oauth2.client_id.secret", "spec.remote_write.oauth2.client_secret", "spec.remote_write.oauth2.tls_config", "spec.remote_write.oauth2.tls_config.ca", "spec.remote_write.oauth2.tls_config.ca.config_map", "spec.remote_write.oauth2.tls_config.ca.secret", "spec.remote_write.oauth2.tls_config.cert", "spec.remote_write.oauth2.tls_config.cert.config_map", "spec.remote_write.oauth2.tls_config.cert.secret", "spec.remote_write.oauth2.tls_config.key_secret", "spec.remote_write.queue_config", "spec.remote_write.sigv4", "spec.remote_write.sigv4.access_key", "spec.remote_write.sigv4.secret_key", "spec.remote_write.tls_config", "spec.remote_write.tls_config.ca", "spec.remote_write.tls_config.ca.config_map", "spec.remote_write.tls_config.ca.secret", "spec.remote_write.tls_config.cert", "spec.remote_write.tls_config.cert.config_map", "spec.remote_write.tls_config.cert.secret", "spec.remote_write.tls_config.key_secret", "spec.resources", "spec.rule_namespace_selector", "spec.rule_selector", "spec.rules", "spec.rules.alert", "spec.runtime", "spec.scrape_classes.attach_metadata", "spec.scrape_classes.authorization", "spec.scrape_classes.authorization.credentials", "spec.scrape_classes.tls_config", "spec.scrape_classes.tls_config.ca", "spec.scrape_classes.tls_config.ca.config_map", "spec.scrape_classes.tls_config.ca.secret", "spec.scrape_classes.tls_config.cert", "spec.scrape_classes.tls_config.cert.config_map", "spec.scrape_classes.tls_config.cert.secret", "spec.scrape_classes.tls_config.key_secret", "spec.scrape_config_namespace_selector", "spec.scrape_config_selector", "spec.security_context", "spec.security_context.app_armor_profile", "spec.security_context.se_linux_options", "spec.security_context.seccomp_profile", "spec.security_context.windows_options", "spec.service_monitor_namespace_selector", "spec.service_monitor_selector", "spec.shard_retention_policy", "spec.shard_retention_policy.retain", "spec.sharding_strategy", "spec.sharding_strategy.topology", "spec.storage", "spec.storage.empty_dir", "spec.storage.ephemeral", "spec.storage.ephemeral.volume_claim_template", "spec.storage.ephemeral.volume_claim_template.spec", "spec.storage.ephemeral.volume_claim_template.spec.data_source", "spec.storage.ephemeral.volume_claim_template.spec.data_source_ref", "spec.storage.ephemeral.volume_claim_template.spec.resources", "spec.storage.ephemeral.volume_claim_template.spec.selector", "spec.storage.volume_claim_template", "spec.storage.volume_claim_template.metadata", "spec.storage.volume_claim_template.spec", "spec.storage.volume_claim_template.spec.data_source", "spec.storage.volume_claim_template.spec.data_source_ref", "spec.storage.volume_claim_template.spec.resources", "spec.storage.volume_claim_template.spec.selector", "spec.storage.volume_claim_template.status", "spec.storage.volume_claim_template.status.health_status", "spec.storage.volume_claim_template.status.modify_volume_status", "spec.thanos", "spec.thanos.grpc_server_tls_config", "spec.thanos.grpc_server_tls_config.ca", "spec.thanos.grpc_server_tls_config.ca.config_map", "spec.thanos.grpc_server_tls_config.ca.secret", "spec.thanos.grpc_server_tls_config.cert", "spec.thanos.grpc_server_tls_config.cert.config_map", "spec.thanos.grpc_server_tls_config.cert.secret", "spec.thanos.grpc_server_tls_config.key_secret", "spec.thanos.object_storage_config", "spec.thanos.resources", "spec.thanos.tracing_config", "spec.topology_spread_constraints.label_selector", "spec.tracing_config", "spec.tracing_config.tls_config", "spec.tracing_config.tls_config.ca", "spec.tracing_config.tls_config.ca.config_map", "spec.tracing_config.tls_config.ca.secret", "spec.tracing_config.tls_config.cert", "spec.tracing_config.tls_config.cert.config_map", "spec.tracing_config.tls_config.cert.secret", "spec.tracing_config.tls_config.key_secret", "spec.tsdb", "spec.tsdb.chunk_encoding", "spec.update_strategy", "spec.update_strategy.rolling_update", "spec.volumes.aws_elastic_block_store", "spec.volumes.azure_disk", "spec.volumes.azure_file", "spec.volumes.cephfs", "spec.volumes.cephfs.secret_ref", "spec.volumes.cinder", "spec.volumes.cinder.secret_ref", "spec.volumes.config_map", "spec.volumes.csi", "spec.volumes.csi.node_publish_secret_ref", "spec.volumes.downward_api", "spec.volumes.downward_api.items.field_ref", "spec.volumes.downward_api.items.resource_field_ref", "spec.volumes.empty_dir", "spec.volumes.ephemeral", "spec.volumes.ephemeral.volume_claim_template", "spec.volumes.ephemeral.volume_claim_template.spec", "spec.volumes.ephemeral.volume_claim_template.spec.data_source", "spec.volumes.ephemeral.volume_claim_template.spec.data_source_ref", "spec.volumes.ephemeral.volume_claim_template.spec.resources", "spec.volumes.ephemeral.volume_claim_template.spec.selector", "spec.volumes.fc", "spec.volumes.flex_volume", "spec.volumes.flex_volume.secret_ref", "spec.volumes.flocker", "spec.volumes.gce_persistent_disk", "spec.volumes.git_repo", "spec.volumes.glusterfs", "spec.volumes.host_path", "spec.volumes.image", "spec.volumes.iscsi", "spec.volumes.iscsi.secret_ref", "spec.volumes.nfs", "spec.volumes.persistent_volume_claim", "spec.volumes.photon_persistent_disk", "spec.volumes.portworx_volume", "spec.volumes.projected", "spec.volumes.projected.sources.cluster_trust_bundle", "spec.volumes.projected.sources.cluster_trust_bundle.label_selector", "spec.volumes.projected.sources.config_map", "spec.volumes.projected.sources.downward_api", "spec.volumes.projected.sources.downward_api.items.field_ref", "spec.volumes.projected.sources.downward_api.items.resource_field_ref", "spec.volumes.projected.sources.pod_certificate", "spec.volumes.projected.sources.secret", "spec.volumes.projected.sources.service_account_token", "spec.volumes.quobyte", "spec.volumes.rbd", "spec.volumes.rbd.secret_ref", "spec.volumes.scale_io", "spec.volumes.scale_io.secret_ref", "spec.volumes.secret", "spec.volumes.storageos", "spec.volumes.storageos.secret_ref", "spec.volumes.vsphere_volume", "spec.web", "spec.web.http_config", "spec.web.http_config.headers", "spec.web.tls_config", "spec.web.tls_config.cert", "spec.web.tls_config.cert.config_map", "spec.web.tls_config.cert.secret", "spec.web.tls_config.client_ca", "spec.web.tls_config.client_ca.config_map", "spec.web.tls_config.client_ca.secret", "spec.web.tls_config.key_secret", "status"}, []string{"spec", "spec.additional_alert_manager_configs", "spec.additional_alert_relabel_configs", "spec.additional_args", "spec.additional_scrape_configs", "spec.affinity", "spec.affinity.node_affinity", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_expressions", "spec.affinity.node_affinity.preferred_during_scheduling_ignored_during_execution.preference.match_fields", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_expressions", "spec.affinity.node_affinity.required_during_scheduling_ignored_during_execution.node_selector_terms.match_fields", "spec.affinity.pod_affinity", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.affinity.pod_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions", "spec.affinity.pod_anti_affinity", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.label_selector.match_expressions", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector", "spec.affinity.pod_anti_affinity.preferred_during_scheduling_ignored_during_execution.pod_affinity_term.namespace_selector.match_expressions", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.label_selector.match_expressions", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector", "spec.affinity.pod_anti_affinity.required_during_scheduling_ignored_during_execution.namespace_selector.match_expressions", "spec.alerting", "spec.alerting.alertmanagers", "spec.alerting.alertmanagers.alert_relabelings", "spec.alerting.alertmanagers.authorization", "spec.alerting.alertmanagers.authorization.credentials", "spec.alerting.alertmanagers.basic_auth", "spec.alerting.alertmanagers.basic_auth.password", "spec.alerting.alertmanagers.basic_auth.username", "spec.alerting.alertmanagers.relabelings", "spec.alerting.alertmanagers.sigv4", "spec.alerting.alertmanagers.sigv4.access_key", "spec.alerting.alertmanagers.sigv4.secret_key", "spec.alerting.alertmanagers.tls_config", "spec.alerting.alertmanagers.tls_config.ca", "spec.alerting.alertmanagers.tls_config.ca.config_map", "spec.alerting.alertmanagers.tls_config.ca.secret", "spec.alerting.alertmanagers.tls_config.cert", "spec.alerting.alertmanagers.tls_config.cert.config_map", "spec.alerting.alertmanagers.tls_config.cert.secret", "spec.alerting.alertmanagers.tls_config.key_secret", "spec.apiserver_config", "spec.apiserver_config.authorization", "spec.apiserver_config.authorization.credentials", "spec.apiserver_config.basic_auth", "spec.apiserver_config.basic_auth.password", "spec.apiserver_config.basic_auth.username", "spec.apiserver_config.tls_config", "spec.apiserver_config.tls_config.ca", "spec.apiserver_config.tls_config.ca.config_map", "spec.apiserver_config.tls_config.ca.secret", "spec.apiserver_config.tls_config.cert", "spec.apiserver_config.tls_config.cert.config_map", "spec.apiserver_config.tls_config.cert.secret", "spec.apiserver_config.tls_config.key_secret", "spec.arbitrary_fs_access_through_s_ms", "spec.containers", "spec.containers.env", "spec.containers.env.value_from", "spec.containers.env.value_from.config_map_key_ref", "spec.containers.env.value_from.field_ref", "spec.containers.env.value_from.file_key_ref", "spec.containers.env.value_from.resource_field_ref", "spec.containers.env.value_from.secret_key_ref", "spec.containers.env_from", "spec.containers.env_from.config_map_ref", "spec.containers.env_from.secret_ref", "spec.containers.lifecycle_", "spec.containers.lifecycle_.post_start", "spec.containers.lifecycle_.post_start.exec", "spec.containers.lifecycle_.post_start.http_get", "spec.containers.lifecycle_.post_start.http_get.http_headers", "spec.containers.lifecycle_.post_start.sleep", "spec.containers.lifecycle_.post_start.tcp_socket", "spec.containers.lifecycle_.pre_stop", "spec.containers.lifecycle_.pre_stop.exec", "spec.containers.lifecycle_.pre_stop.http_get", "spec.containers.lifecycle_.pre_stop.http_get.http_headers", "spec.containers.lifecycle_.pre_stop.sleep", "spec.containers.lifecycle_.pre_stop.tcp_socket", "spec.containers.liveness_probe", "spec.containers.liveness_probe.exec", "spec.containers.liveness_probe.grpc", "spec.containers.liveness_probe.http_get", "spec.containers.liveness_probe.http_get.http_headers", "spec.containers.liveness_probe.tcp_socket", "spec.containers.ports", "spec.containers.readiness_probe", "spec.containers.readiness_probe.exec", "spec.containers.readiness_probe.grpc", "spec.containers.readiness_probe.http_get", "spec.containers.readiness_probe.http_get.http_headers", "spec.containers.readiness_probe.tcp_socket", "spec.containers.resize_policy", "spec.containers.resources", "spec.containers.resources.claims", "spec.containers.restart_policy_rules", "spec.containers.restart_policy_rules.exit_codes", "spec.containers.security_context", "spec.containers.security_context.app_armor_profile", "spec.containers.security_context.capabilities", "spec.containers.security_context.se_linux_options", "spec.containers.security_context.seccomp_profile", "spec.containers.security_context.windows_options", "spec.containers.startup_probe", "spec.containers.startup_probe.exec", "spec.containers.startup_probe.grpc", "spec.containers.startup_probe.http_get", "spec.containers.startup_probe.http_get.http_headers", "spec.containers.startup_probe.tcp_socket", "spec.containers.volume_devices", "spec.containers.volume_mounts", "spec.dns_config", "spec.dns_config.options", "spec.excluded_from_enforcement", "spec.exemplars", "spec.host_aliases", "spec.image_pull_secrets", "spec.init_containers", "spec.init_containers.env", "spec.init_containers.env.value_from", "spec.init_containers.env.value_from.config_map_key_ref", "spec.init_containers.env.value_from.field_ref", "spec.init_containers.env.value_from.file_key_ref", "spec.init_containers.env.value_from.resource_field_ref", "spec.init_containers.env.value_from.secret_key_ref", "spec.init_containers.env_from", "spec.init_containers.env_from.config_map_ref", "spec.init_containers.env_from.secret_ref", "spec.init_containers.lifecycle_", "spec.init_containers.lifecycle_.post_start", "spec.init_containers.lifecycle_.post_start.exec", "spec.init_containers.lifecycle_.post_start.http_get", "spec.init_containers.lifecycle_.post_start.http_get.http_headers", "spec.init_containers.lifecycle_.post_start.sleep", "spec.init_containers.lifecycle_.post_start.tcp_socket", "spec.init_containers.lifecycle_.pre_stop", "spec.init_containers.lifecycle_.pre_stop.exec", "spec.init_containers.lifecycle_.pre_stop.http_get", "spec.init_containers.lifecycle_.pre_stop.http_get.http_headers", "spec.init_containers.lifecycle_.pre_stop.sleep", "spec.init_containers.lifecycle_.pre_stop.tcp_socket", "spec.init_containers.liveness_probe", "spec.init_containers.liveness_probe.exec", "spec.init_containers.liveness_probe.grpc", "spec.init_containers.liveness_probe.http_get", "spec.init_containers.liveness_probe.http_get.http_headers", "spec.init_containers.liveness_probe.tcp_socket", "spec.init_containers.ports", "spec.init_containers.readiness_probe", "spec.init_containers.readiness_probe.exec", "spec.init_containers.readiness_probe.grpc", "spec.init_containers.readiness_probe.http_get", "spec.init_containers.readiness_probe.http_get.http_headers", "spec.init_containers.readiness_probe.tcp_socket", "spec.init_containers.resize_policy", "spec.init_containers.resources", "spec.init_containers.resources.claims", "spec.init_containers.restart_policy_rules", "spec.init_containers.restart_policy_rules.exit_codes", "spec.init_containers.security_context", "spec.init_containers.security_context.app_armor_profile", "spec.init_containers.security_context.capabilities", "spec.init_containers.security_context.se_linux_options", "spec.init_containers.security_context.seccomp_profile", "spec.init_containers.security_context.windows_options", "spec.init_containers.startup_probe", "spec.init_containers.startup_probe.exec", "spec.init_containers.startup_probe.grpc", "spec.init_containers.startup_probe.http_get", "spec.init_containers.startup_probe.http_get.http_headers", "spec.init_containers.startup_probe.tcp_socket", "spec.init_containers.volume_devices", "spec.init_containers.volume_mounts", "spec.otlp", "spec.persistent_volume_claim_retention_policy", "spec.pod_metadata", "spec.pod_monitor_namespace_selector", "spec.pod_monitor_namespace_selector.match_expressions", "spec.pod_monitor_selector", "spec.pod_monitor_selector.match_expressions", "spec.probe_namespace_selector", "spec.probe_namespace_selector.match_expressions", "spec.probe_selector", "spec.probe_selector.match_expressions", "spec.prometheus_rules_excluded_from_enforce", "spec.query", "spec.remote_read", "spec.remote_read.authorization", "spec.remote_read.authorization.credentials", "spec.remote_read.basic_auth", "spec.remote_read.basic_auth.password", "spec.remote_read.basic_auth.username", "spec.remote_read.oauth2", "spec.remote_read.oauth2.client_id", "spec.remote_read.oauth2.client_id.config_map", "spec.remote_read.oauth2.client_id.secret", "spec.remote_read.oauth2.client_secret", "spec.remote_read.oauth2.tls_config", "spec.remote_read.oauth2.tls_config.ca", "spec.remote_read.oauth2.tls_config.ca.config_map", "spec.remote_read.oauth2.tls_config.ca.secret", "spec.remote_read.oauth2.tls_config.cert", "spec.remote_read.oauth2.tls_config.cert.config_map", "spec.remote_read.oauth2.tls_config.cert.secret", "spec.remote_read.oauth2.tls_config.key_secret", "spec.remote_read.tls_config", "spec.remote_read.tls_config.ca", "spec.remote_read.tls_config.ca.config_map", "spec.remote_read.tls_config.ca.secret", "spec.remote_read.tls_config.cert", "spec.remote_read.tls_config.cert.config_map", "spec.remote_read.tls_config.cert.secret", "spec.remote_read.tls_config.key_secret", "spec.remote_write", "spec.remote_write.authorization", "spec.remote_write.authorization.credentials", "spec.remote_write.azure_ad", "spec.remote_write.azure_ad.managed_identity", "spec.remote_write.azure_ad.oauth", "spec.remote_write.azure_ad.oauth.client_secret", "spec.remote_write.azure_ad.sdk", "spec.remote_write.azure_ad.workload_identity", "spec.remote_write.basic_auth", "spec.remote_write.basic_auth.password", "spec.remote_write.basic_auth.username", "spec.remote_write.metadata_config", "spec.remote_write.oauth2", "spec.remote_write.oauth2.client_id", "spec.remote_write.oauth2.client_id.config_map", "spec.remote_write.oauth2.client_id.secret", "spec.remote_write.oauth2.client_secret", "spec.remote_write.oauth2.tls_config", "spec.remote_write.oauth2.tls_config.ca", "spec.remote_write.oauth2.tls_config.ca.config_map", "spec.remote_write.oauth2.tls_config.ca.secret", "spec.remote_write.oauth2.tls_config.cert", "spec.remote_write.oauth2.tls_config.cert.config_map", "spec.remote_write.oauth2.tls_config.cert.secret", "spec.remote_write.oauth2.tls_config.key_secret", "spec.remote_write.queue_config", "spec.remote_write.sigv4", "spec.remote_write.sigv4.access_key", "spec.remote_write.sigv4.secret_key", "spec.remote_write.tls_config", "spec.remote_write.tls_config.ca", "spec.remote_write.tls_config.ca.config_map", "spec.remote_write.tls_config.ca.secret", "spec.remote_write.tls_config.cert", "spec.remote_write.tls_config.cert.config_map", "spec.remote_write.tls_config.cert.secret", "spec.remote_write.tls_config.key_secret", "spec.remote_write.write_relabel_configs", "spec.resources", "spec.resources.claims", "spec.rule_namespace_selector", "spec.rule_namespace_selector.match_expressions", "spec.rule_selector", "spec.rule_selector.match_expressions", "spec.rules", "spec.rules.alert", "spec.runtime", "spec.scrape_classes", "spec.scrape_classes.attach_metadata", "spec.scrape_classes.authorization", "spec.scrape_classes.authorization.credentials", "spec.scrape_classes.metric_relabelings", "spec.scrape_classes.relabelings", "spec.scrape_classes.tls_config", "spec.scrape_classes.tls_config.ca", "spec.scrape_classes.tls_config.ca.config_map", "spec.scrape_classes.tls_config.ca.secret", "spec.scrape_classes.tls_config.cert", "spec.scrape_classes.tls_config.cert.config_map", "spec.scrape_classes.tls_config.cert.secret", "spec.scrape_classes.tls_config.key_secret", "spec.scrape_config_namespace_selector", "spec.scrape_config_namespace_selector.match_expressions", "spec.scrape_config_selector", "spec.scrape_config_selector.match_expressions", "spec.security_context", "spec.security_context.app_armor_profile", "spec.security_context.se_linux_options", "spec.security_context.seccomp_profile", "spec.security_context.sysctls", "spec.security_context.windows_options", "spec.service_monitor_namespace_selector", "spec.service_monitor_namespace_selector.match_expressions", "spec.service_monitor_selector", "spec.service_monitor_selector.match_expressions", "spec.shard_retention_policy", "spec.shard_retention_policy.retain", "spec.sharding_strategy", "spec.sharding_strategy.topology", "spec.storage", "spec.storage.empty_dir", "spec.storage.ephemeral", "spec.storage.ephemeral.volume_claim_template", "spec.storage.ephemeral.volume_claim_template.spec", "spec.storage.ephemeral.volume_claim_template.spec.data_source", "spec.storage.ephemeral.volume_claim_template.spec.data_source_ref", "spec.storage.ephemeral.volume_claim_template.spec.resources", "spec.storage.ephemeral.volume_claim_template.spec.resources.claims", "spec.storage.ephemeral.volume_claim_template.spec.selector", "spec.storage.ephemeral.volume_claim_template.spec.selector.match_expressions", "spec.storage.volume_claim_template", "spec.storage.volume_claim_template.metadata", "spec.storage.volume_claim_template.spec", "spec.storage.volume_claim_template.spec.data_source", "spec.storage.volume_claim_template.spec.data_source_ref", "spec.storage.volume_claim_template.spec.resources", "spec.storage.volume_claim_template.spec.resources.claims", "spec.storage.volume_claim_template.spec.selector", "spec.storage.volume_claim_template.spec.selector.match_expressions", "spec.storage.volume_claim_template.status", "spec.storage.volume_claim_template.status.conditions", "spec.storage.volume_claim_template.status.health_status", "spec.storage.volume_claim_template.status.health_status.health_conditions", "spec.storage.volume_claim_template.status.modify_volume_status", "spec.thanos", "spec.thanos.additional_args", "spec.thanos.grpc_server_tls_config", "spec.thanos.grpc_server_tls_config.ca", "spec.thanos.grpc_server_tls_config.ca.config_map", "spec.thanos.grpc_server_tls_config.ca.secret", "spec.thanos.grpc_server_tls_config.cert", "spec.thanos.grpc_server_tls_config.cert.config_map", "spec.thanos.grpc_server_tls_config.cert.secret", "spec.thanos.grpc_server_tls_config.key_secret", "spec.thanos.object_storage_config", "spec.thanos.resources", "spec.thanos.resources.claims", "spec.thanos.tracing_config", "spec.thanos.volume_mounts", "spec.tolerations", "spec.topology_spread_constraints", "spec.topology_spread_constraints.label_selector", "spec.topology_spread_constraints.label_selector.match_expressions", "spec.tracing_config", "spec.tracing_config.tls_config", "spec.tracing_config.tls_config.ca", "spec.tracing_config.tls_config.ca.config_map", "spec.tracing_config.tls_config.ca.secret", "spec.tracing_config.tls_config.cert", "spec.tracing_config.tls_config.cert.config_map", "spec.tracing_config.tls_config.cert.secret", "spec.tracing_config.tls_config.key_secret", "spec.tsdb", "spec.tsdb.chunk_encoding", "spec.update_strategy", "spec.update_strategy.rolling_update", "spec.volume_mounts", "spec.volumes", "spec.volumes.aws_elastic_block_store", "spec.volumes.azure_disk", "spec.volumes.azure_file", "spec.volumes.cephfs", "spec.volumes.cephfs.secret_ref", "spec.volumes.cinder", "spec.volumes.cinder.secret_ref", "spec.volumes.config_map", "spec.volumes.config_map.items", "spec.volumes.csi", "spec.volumes.csi.node_publish_secret_ref", "spec.volumes.downward_api", "spec.volumes.downward_api.items", "spec.volumes.downward_api.items.field_ref", "spec.volumes.downward_api.items.resource_field_ref", "spec.volumes.empty_dir", "spec.volumes.ephemeral", "spec.volumes.ephemeral.volume_claim_template", "spec.volumes.ephemeral.volume_claim_template.spec", "spec.volumes.ephemeral.volume_claim_template.spec.data_source", "spec.volumes.ephemeral.volume_claim_template.spec.data_source_ref", "spec.volumes.ephemeral.volume_claim_template.spec.resources", "spec.volumes.ephemeral.volume_claim_template.spec.resources.claims", "spec.volumes.ephemeral.volume_claim_template.spec.selector", "spec.volumes.ephemeral.volume_claim_template.spec.selector.match_expressions", "spec.volumes.fc", "spec.volumes.flex_volume", "spec.volumes.flex_volume.secret_ref", "spec.volumes.flocker", "spec.volumes.gce_persistent_disk", "spec.volumes.git_repo", "spec.volumes.glusterfs", "spec.volumes.host_path", "spec.volumes.image", "spec.volumes.iscsi", "spec.volumes.iscsi.secret_ref", "spec.volumes.nfs", "spec.volumes.persistent_volume_claim", "spec.volumes.photon_persistent_disk", "spec.volumes.portworx_volume", "spec.volumes.projected", "spec.volumes.projected.sources", "spec.volumes.projected.sources.cluster_trust_bundle", "spec.volumes.projected.sources.cluster_trust_bundle.label_selector", "spec.volumes.projected.sources.cluster_trust_bundle.label_selector.match_expressions", "spec.volumes.projected.sources.config_map", "spec.volumes.projected.sources.config_map.items", "spec.volumes.projected.sources.downward_api", "spec.volumes.projected.sources.downward_api.items", "spec.volumes.projected.sources.downward_api.items.field_ref", "spec.volumes.projected.sources.downward_api.items.resource_field_ref", "spec.volumes.projected.sources.pod_certificate", "spec.volumes.projected.sources.secret", "spec.volumes.projected.sources.secret.items", "spec.volumes.projected.sources.service_account_token", "spec.volumes.quobyte", "spec.volumes.rbd", "spec.volumes.rbd.secret_ref", "spec.volumes.scale_io", "spec.volumes.scale_io.secret_ref", "spec.volumes.secret", "spec.volumes.secret.items", "spec.volumes.storageos", "spec.volumes.storageos.secret_ref", "spec.volumes.vsphere_volume", "spec.web", "spec.web.http_config", "spec.web.http_config.headers", "spec.web.tls_config", "spec.web.tls_config.cert", "spec.web.tls_config.cert.config_map", "spec.web.tls_config.cert.secret", "spec.web.tls_config.client_ca", "spec.web.tls_config.client_ca.config_map", "spec.web.tls_config.client_ca.secret", "spec.web.tls_config.key_secret", "status", "status.conditions", "status.shard_statuses"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
@@ -13999,4 +14302,5 @@ var dataSourcePrometheusOperatorMonitoringCoreosComPrometheusV1CompatibleVersion
 	"v0.92.1",
 	"v0.93.0",
 	"v0.93.1",
+	"v0.94.0",
 }

@@ -53,6 +53,17 @@ by the given Alertmanager version. (see [below for nested schema](#nestedblock--
 - `cluster_advertise_address` (String) ClusterAdvertiseAddress is the explicit address to advertise in cluster. Needs to be provided for non RFC1918 [1] (public) addresses. [1] RFC1918: https://tools.ietf.org/html/rfc1918
 - `cluster_gossip_interval` (String) Interval between gossip attempts.
 - `cluster_label` (String) Defines the identifier that uniquely identifies the Alertmanager cluster. You should only set it when the Alertmanager cluster includes Alertmanager instances which are external to this Alertmanager resource. In practice, the addresses of the external instances are provided via the `.spec.additionalPeers` field.
+- `cluster_peer_name` (String) clusterPeerName defines the name that this Alertmanager instance uses to
+advertise itself to other cluster peers (the `--cluster.peer-name` flag,
+available since Alertmanager v0.30.0).
+
+If not set, the operator defaults to the pod's name (`$(POD_NAME)`),
+which is injected via the Kubernetes downward API. Setting this field
+lets you override that default with either a literal value or a string
+referencing environment variables that are already available in the
+Alertmanager container (for example `$(POD_NAME).$(NAMESPACE)`).
+
+/ It requires Alertmanager >= 0.30.0.
 - `cluster_peer_timeout` (String) Timeout for cluster peering.
 - `cluster_pushpull_interval` (String) Interval between pushpull attempts.
 - `cluster_tls` (Block List, Max: 1) Configures the mutual TLS configuration for the Alertmanager cluster's gossip protocol.
@@ -1736,6 +1747,8 @@ Optional:
 - `http_headers` (Block List) Custom headers to set in the request. HTTP allows repeated headers. (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--post_start--http_get--http_headers))
 - `path` (String) Path to access on the HTTP server.
 - `port` (String) Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+- `protocol` (String) Protocol selects the wire protocol for the probe connection.
+Nil defaults to HTTP/1.1.
 - `scheme` (String) Scheme to use for connecting to the host. Defaults to HTTP.
 
 <a id="nestedblock--spec--containers--lifecycle_--post_start--http_get--http_headers"></a>
@@ -1793,6 +1806,8 @@ Optional:
 - `http_headers` (Block List) Custom headers to set in the request. HTTP allows repeated headers. (see [below for nested schema](#nestedblock--spec--containers--lifecycle_--pre_stop--http_get--http_headers))
 - `path` (String) Path to access on the HTTP server.
 - `port` (String) Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+- `protocol` (String) Protocol selects the wire protocol for the probe connection.
+Nil defaults to HTTP/1.1.
 - `scheme` (String) Scheme to use for connecting to the host. Defaults to HTTP.
 
 <a id="nestedblock--spec--containers--lifecycle_--pre_stop--http_get--http_headers"></a>
@@ -1853,6 +1868,10 @@ Optional:
 
 Optional:
 
+- `mode` (String) mode specifies the connection mode for the gRPC health probe.
+Set to "TLS" to use TLS without certificate verification.
+Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+If not specified, the probe uses a plaintext (insecure) connection.
 - `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
 - `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
  If this is not specified, the default behavior is defined by gRPC.
@@ -1867,6 +1886,8 @@ Optional:
 - `http_headers` (Block List) Custom headers to set in the request. HTTP allows repeated headers. (see [below for nested schema](#nestedblock--spec--containers--liveness_probe--http_get--http_headers))
 - `path` (String) Path to access on the HTTP server.
 - `port` (String) Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+- `protocol` (String) Protocol selects the wire protocol for the probe connection.
+Nil defaults to HTTP/1.1.
 - `scheme` (String) Scheme to use for connecting to the host. Defaults to HTTP.
 
 <a id="nestedblock--spec--containers--liveness_probe--http_get--http_headers"></a>
@@ -1930,6 +1951,10 @@ Optional:
 
 Optional:
 
+- `mode` (String) mode specifies the connection mode for the gRPC health probe.
+Set to "TLS" to use TLS without certificate verification.
+Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+If not specified, the probe uses a plaintext (insecure) connection.
 - `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
 - `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
  If this is not specified, the default behavior is defined by gRPC.
@@ -1944,6 +1969,8 @@ Optional:
 - `http_headers` (Block List) Custom headers to set in the request. HTTP allows repeated headers. (see [below for nested schema](#nestedblock--spec--containers--readiness_probe--http_get--http_headers))
 - `path` (String) Path to access on the HTTP server.
 - `port` (String) Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+- `protocol` (String) Protocol selects the wire protocol for the probe connection.
+Nil defaults to HTTP/1.1.
 - `scheme` (String) Scheme to use for connecting to the host. Defaults to HTTP.
 
 <a id="nestedblock--spec--containers--readiness_probe--http_get--http_headers"></a>
@@ -2131,6 +2158,10 @@ Optional:
 
 Optional:
 
+- `mode` (String) mode specifies the connection mode for the gRPC health probe.
+Set to "TLS" to use TLS without certificate verification.
+Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+If not specified, the probe uses a plaintext (insecure) connection.
 - `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
 - `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
  If this is not specified, the default behavior is defined by gRPC.
@@ -2145,6 +2176,8 @@ Optional:
 - `http_headers` (Block List) Custom headers to set in the request. HTTP allows repeated headers. (see [below for nested schema](#nestedblock--spec--containers--startup_probe--http_get--http_headers))
 - `path` (String) Path to access on the HTTP server.
 - `port` (String) Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+- `protocol` (String) Protocol selects the wire protocol for the probe connection.
+Nil defaults to HTTP/1.1.
 - `scheme` (String) Scheme to use for connecting to the host. Defaults to HTTP.
 
 <a id="nestedblock--spec--containers--startup_probe--http_get--http_headers"></a>
@@ -2181,6 +2214,12 @@ Optional:
 
 Optional:
 
+- `bind_mount_options` (List of String) bindMountOptions is the list of additional bind mount options to apply when
+mounting this volume into the container. Allowed values are noexec,
+nodev, and nosuid. These are Linux mount options and have no effect on
+Windows nodes.
+This field is not supported with image volumes.
+This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.
 - `mount_path` (String) Path within the container at which the volume should be mounted.  Must not contain ':'.
 - `mount_propagation` (String) mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10.
 - `name` (String) This must match the Name of a Volume.
@@ -2440,6 +2479,8 @@ Optional:
 - `http_headers` (Block List) Custom headers to set in the request. HTTP allows repeated headers. (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--post_start--http_get--http_headers))
 - `path` (String) Path to access on the HTTP server.
 - `port` (String) Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+- `protocol` (String) Protocol selects the wire protocol for the probe connection.
+Nil defaults to HTTP/1.1.
 - `scheme` (String) Scheme to use for connecting to the host. Defaults to HTTP.
 
 <a id="nestedblock--spec--init_containers--lifecycle_--post_start--http_get--http_headers"></a>
@@ -2497,6 +2538,8 @@ Optional:
 - `http_headers` (Block List) Custom headers to set in the request. HTTP allows repeated headers. (see [below for nested schema](#nestedblock--spec--init_containers--lifecycle_--pre_stop--http_get--http_headers))
 - `path` (String) Path to access on the HTTP server.
 - `port` (String) Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+- `protocol` (String) Protocol selects the wire protocol for the probe connection.
+Nil defaults to HTTP/1.1.
 - `scheme` (String) Scheme to use for connecting to the host. Defaults to HTTP.
 
 <a id="nestedblock--spec--init_containers--lifecycle_--pre_stop--http_get--http_headers"></a>
@@ -2557,6 +2600,10 @@ Optional:
 
 Optional:
 
+- `mode` (String) mode specifies the connection mode for the gRPC health probe.
+Set to "TLS" to use TLS without certificate verification.
+Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+If not specified, the probe uses a plaintext (insecure) connection.
 - `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
 - `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
  If this is not specified, the default behavior is defined by gRPC.
@@ -2571,6 +2618,8 @@ Optional:
 - `http_headers` (Block List) Custom headers to set in the request. HTTP allows repeated headers. (see [below for nested schema](#nestedblock--spec--init_containers--liveness_probe--http_get--http_headers))
 - `path` (String) Path to access on the HTTP server.
 - `port` (String) Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+- `protocol` (String) Protocol selects the wire protocol for the probe connection.
+Nil defaults to HTTP/1.1.
 - `scheme` (String) Scheme to use for connecting to the host. Defaults to HTTP.
 
 <a id="nestedblock--spec--init_containers--liveness_probe--http_get--http_headers"></a>
@@ -2634,6 +2683,10 @@ Optional:
 
 Optional:
 
+- `mode` (String) mode specifies the connection mode for the gRPC health probe.
+Set to "TLS" to use TLS without certificate verification.
+Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+If not specified, the probe uses a plaintext (insecure) connection.
 - `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
 - `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
  If this is not specified, the default behavior is defined by gRPC.
@@ -2648,6 +2701,8 @@ Optional:
 - `http_headers` (Block List) Custom headers to set in the request. HTTP allows repeated headers. (see [below for nested schema](#nestedblock--spec--init_containers--readiness_probe--http_get--http_headers))
 - `path` (String) Path to access on the HTTP server.
 - `port` (String) Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+- `protocol` (String) Protocol selects the wire protocol for the probe connection.
+Nil defaults to HTTP/1.1.
 - `scheme` (String) Scheme to use for connecting to the host. Defaults to HTTP.
 
 <a id="nestedblock--spec--init_containers--readiness_probe--http_get--http_headers"></a>
@@ -2835,6 +2890,10 @@ Optional:
 
 Optional:
 
+- `mode` (String) mode specifies the connection mode for the gRPC health probe.
+Set to "TLS" to use TLS without certificate verification.
+Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+If not specified, the probe uses a plaintext (insecure) connection.
 - `port` (Number) Port number of the gRPC service. Number must be in the range 1 to 65535.
 - `service` (String) Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
  If this is not specified, the default behavior is defined by gRPC.
@@ -2849,6 +2908,8 @@ Optional:
 - `http_headers` (Block List) Custom headers to set in the request. HTTP allows repeated headers. (see [below for nested schema](#nestedblock--spec--init_containers--startup_probe--http_get--http_headers))
 - `path` (String) Path to access on the HTTP server.
 - `port` (String) Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+- `protocol` (String) Protocol selects the wire protocol for the probe connection.
+Nil defaults to HTTP/1.1.
 - `scheme` (String) Scheme to use for connecting to the host. Defaults to HTTP.
 
 <a id="nestedblock--spec--init_containers--startup_probe--http_get--http_headers"></a>
@@ -2885,6 +2946,12 @@ Optional:
 
 Optional:
 
+- `bind_mount_options` (List of String) bindMountOptions is the list of additional bind mount options to apply when
+mounting this volume into the container. Allowed values are noexec,
+nodev, and nosuid. These are Linux mount options and have no effect on
+Windows nodes.
+This field is not supported with image volumes.
+This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.
 - `mount_path` (String) Path within the container at which the volume should be mounted.  Must not contain ':'.
 - `mount_propagation` (String) mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10.
 - `name` (String) This must match the Name of a Volume.
@@ -3098,6 +3165,14 @@ Optional:
 Optional:
 
 - `medium` (String) What type of storage medium should back this directory. The default is "" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+- `mode` (Number) mode specifies the permission bits for the emptyDir directory, in numeric
+notation (e.g., 0755, 01777). Must be a value between 0000 and 01777.
+If not specified, defaults to 0777.
+This might be in conflict with other options that affect the file
+mode, like fsGroup. If fsGroup is specified, the fsGroup permissions
+will override the mode specified here.
+This field has no effect on Windows.
+This field is alpha and requires EmptyDirVolumeMode featuregate to be enabled.
 - `size_limit` (String) Total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir
 
 
@@ -3308,6 +3383,8 @@ Optional:
 - `capacity` (Map of String) Represents the actual resources of the underlying volume.
 - `conditions` (Block List) Current Condition of persistent volume claim. If underlying persistent volume is being resized then the Condition will be set to 'ResizeStarted'. (see [below for nested schema](#nestedblock--spec--storage--volume_claim_template--status--conditions))
 - `current_volume_attributes_class_name` (String) currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using. When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim This is an alpha field and requires enabling VolumeAttributesClass feature.
+- `health_status` (Block List, Max: 1) healthStatus contains the latest controller-reported health information
+for the volume bound to this claim. (see [below for nested schema](#nestedblock--spec--storage--volume_claim_template--status--health_status))
 - `modify_volume_status` (Block List, Max: 1) ModifyVolumeStatus represents the status object of ControllerModifyVolume operation. When this is unset, there is no ModifyVolume operation being attempted. This is an alpha field and requires enabling VolumeAttributesClass feature. (see [below for nested schema](#nestedblock--spec--storage--volume_claim_template--status--modify_volume_status))
 - `phase` (String) Phase represents the current phase of PersistentVolumeClaim.
 - `resize_status` (String) ResizeStatus stores status of resize operation. ResizeStatus is not set by default but when expansion is complete resizeStatus is set to empty string by resize controller or kubelet. This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
@@ -3325,6 +3402,34 @@ Optional:
 Can be True, False, Unknown.
 More info: https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#:~:text=state%20of%20pvc-,conditions.status,-(string)%2C%20required
 - `type` (String) PersistentVolumeClaimConditionType is a valid value of PersistentVolumeClaimCondition.Type
+
+
+<a id="nestedblock--spec--storage--volume_claim_template--status--health_status"></a>
+### Nested Schema for `spec.storage.volume_claim_template.status.health_status`
+
+Optional:
+
+- `health_conditions` (Block List) conditions is the set of adverse conditions reported by
+the CSI controller plugin. An empty list means no adverse condition.
+At most 16 conditions may be reported. (see [below for nested schema](#nestedblock--spec--storage--volume_claim_template--status--health_status--health_conditions))
+- `last_transition_time` (String) lastTransitionTime is when the current set of conditions first appeared.
+
+<a id="nestedblock--spec--storage--volume_claim_template--status--health_status--health_conditions"></a>
+### Nested Schema for `spec.storage.volume_claim_template.status.health_status.health_conditions`
+
+Optional:
+
+- `message` (String) message is a human-readable description.
+Maximum permitted length of a message is 1024 bytes.
+- `reason` (String) reason is a brief CamelCase machine-parseable reason.
+Together with status it forms the unique identity of a condition entry.
+Maximum permitted length of a reason is 256 bytes.
+- `status` (String) status is the machine-parseable health category.
+Possible values:
+- "Inaccessible": the volume cannot be accessed.
+- "DataLoss": data loss has been detected on the volume.
+- "Degraded": the volume is functioning with reduced capability.
+
 
 
 <a id="nestedblock--spec--storage--volume_claim_template--status--modify_volume_status"></a>
@@ -3420,6 +3525,12 @@ the range 0 to Replicas-1, it will be counted towards MaxUnavailable.
 
 Optional:
 
+- `bind_mount_options` (List of String) bindMountOptions is the list of additional bind mount options to apply when
+mounting this volume into the container. Allowed values are noexec,
+nodev, and nosuid. These are Linux mount options and have no effect on
+Windows nodes.
+This field is not supported with image volumes.
+This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.
 - `mount_path` (String) Path within the container at which the volume should be mounted.  Must not contain ':'.
 - `mount_propagation` (String) mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10.
 - `name` (String) This must match the Name of a Volume.
@@ -3582,6 +3693,9 @@ Optional:
 Optional:
 
 - `default_mode` (Number) Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.
+- `default_user` (Number) defaultUser is Optional: The owner UID of the created files by default.
+The defaultUser field is only used as a fallback when the item-level user field is unset.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 - `items` (Block List) If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'. (see [below for nested schema](#nestedblock--spec--volumes--config_map--items))
 - `name` (String) Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
 - `optional` (Boolean) Specify whether the ConfigMap or its keys must be defined
@@ -3594,6 +3708,9 @@ Optional:
 - `key` (String) The key to project.
 - `mode` (Number) Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.
 - `path` (String) The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.
+- `user` (Number) user is Optional: The owner UID of the created file.
+If specified, the item-level user field takes precedence over defaultUser.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 
 
 
@@ -3623,6 +3740,9 @@ Optional:
 Optional:
 
 - `default_mode` (Number) Optional: mode bits to use on created files by default. Must be a Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.
+- `default_user` (Number) defaultUser is Optional: The owner UID of the created files by default.
+The defaultUser field is only used as a fallback when the item-level user field is unset.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 - `items` (Block List) Items is a list of downward API volume file (see [below for nested schema](#nestedblock--spec--volumes--downward_api--items))
 
 <a id="nestedblock--spec--volumes--downward_api--items"></a>
@@ -3634,6 +3754,9 @@ Optional:
 - `mode` (Number) Optional: mode bits used to set permissions on this file, must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.
 - `path` (String) Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
 - `resource_field_ref` (Block List, Max: 1) Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, requests.cpu and requests.memory) are currently supported. (see [below for nested schema](#nestedblock--spec--volumes--downward_api--items--resource_field_ref))
+- `user` (Number) user is Optional: The owner UID of the created file.
+If specified, the item-level user field takes precedence over defaultUser.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 
 <a id="nestedblock--spec--volumes--downward_api--items--field_ref"></a>
 ### Nested Schema for `spec.volumes.downward_api.items.field_ref`
@@ -3662,6 +3785,14 @@ Optional:
 Optional:
 
 - `medium` (String) What type of storage medium should back this directory. The default is "" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+- `mode` (Number) mode specifies the permission bits for the emptyDir directory, in numeric
+notation (e.g., 0755, 01777). Must be a value between 0000 and 01777.
+If not specified, defaults to 0777.
+This might be in conflict with other options that affect the file
+mode, like fsGroup. If fsGroup is specified, the fsGroup permissions
+will override the mode specified here.
+This field has no effect on Windows.
+This field is alpha and requires EmptyDirVolumeMode featuregate to be enabled.
 - `size_limit` (String) Total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir
 
 
@@ -3930,6 +4061,9 @@ Optional:
 Optional:
 
 - `default_mode` (Number) Mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.
+- `default_user` (Number) defaultUser is Optional: The owner UID of the created files by default.
+The defaultUser field is only used as a fallback when the item-level user field is unset.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 - `sources` (Block List) list of volume projections (see [below for nested schema](#nestedblock--spec--volumes--projected--sources))
 
 <a id="nestedblock--spec--volumes--projected--sources"></a>
@@ -3990,6 +4124,9 @@ Optional:
 - `optional` (Boolean) If true, don't block pod startup if the referenced ClusterTrustBundle(s) aren't available.  If using name, then the named ClusterTrustBundle is allowed not to exist.  If using signerName, then the combination of signerName and labelSelector is allowed to match zero ClusterTrustBundles.
 - `path` (String) Relative path from the volume root to write the bundle.
 - `signer_name` (String) Select all ClusterTrustBundles that match this signer name. Mutually-exclusive with name.  The contents of all selected ClusterTrustBundles will be unified and deduplicated.
+- `user` (Number) user is Optional: The owner UID of the created file.
+If specified, the item-level user field takes precedence over defaultUser.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 
 <a id="nestedblock--spec--volumes--projected--sources--cluster_trust_bundle--label_selector"></a>
 ### Nested Schema for `spec.volumes.projected.sources.cluster_trust_bundle.label_selector`
@@ -4028,6 +4165,9 @@ Optional:
 - `key` (String) The key to project.
 - `mode` (Number) Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.
 - `path` (String) The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.
+- `user` (Number) user is Optional: The owner UID of the created file.
+If specified, the item-level user field takes precedence over defaultUser.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 
 
 
@@ -4047,6 +4187,9 @@ Optional:
 - `mode` (Number) Optional: mode bits used to set permissions on this file, must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.
 - `path` (String) Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
 - `resource_field_ref` (Block List, Max: 1) Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, requests.cpu and requests.memory) are currently supported. (see [below for nested schema](#nestedblock--spec--volumes--projected--sources--downward_api--items--resource_field_ref))
+- `user` (Number) user is Optional: The owner UID of the created file.
+If specified, the item-level user field takes precedence over defaultUser.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 
 <a id="nestedblock--spec--volumes--projected--sources--downward_api--items--field_ref"></a>
 ### Nested Schema for `spec.volumes.projected.sources.downward_api.items.field_ref`
@@ -4119,6 +4262,9 @@ seconds (1 hour).  This constraint is enforced by kube-apiserver.
 `kubernetes.io` signers will never issue certificates with a lifetime
 longer than 24 hours.
 - `signer_name` (String) Kubelet's generated CSRs will be addressed to this signer.
+- `user` (Number) user is Optional: The owner UID of the created file.
+If specified, the item-level user field takes precedence over defaultUser.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 - `user_annotations` (Map of String) userAnnotations allow pod authors to pass additional information to
 the signer implementation.  Kubernetes does not restrict or validate this
 metadata in any way.
@@ -4151,6 +4297,9 @@ Optional:
 - `key` (String) The key to project.
 - `mode` (Number) Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.
 - `path` (String) The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.
+- `user` (Number) user is Optional: The owner UID of the created file.
+If specified, the item-level user field takes precedence over defaultUser.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 
 
 
@@ -4162,6 +4311,9 @@ Optional:
 - `audience` (String) Audience is the intended audience of the token. A recipient of a token must identify itself with an identifier specified in the audience of the token, and otherwise should reject the token. The audience defaults to the identifier of the apiserver.
 - `expiration_seconds` (Number) ExpirationSeconds is the requested duration of validity of the service account token. As the token approaches expiration, the kubelet volume plugin will proactively rotate the service account token. The kubelet will start trying to rotate the token if the token is older than 80 percent of its time to live or if the token is older than 24 hours.Defaults to 1 hour and must be at least 10 minutes.
 - `path` (String) Path is the path relative to the mount point of the file to project the token into.
+- `user` (Number) user is Optional: The owner UID of the created file.
+If specified, the item-level user field takes precedence over defaultUser.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 
 
 
@@ -4233,6 +4385,9 @@ Optional:
 Optional:
 
 - `default_mode` (Number) Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.
+- `default_user` (Number) defaultUser is Optional: The owner UID of the created files by default.
+The defaultUser field is only used as a fallback when the item-level user field is unset.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 - `items` (Block List) If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'. (see [below for nested schema](#nestedblock--spec--volumes--secret--items))
 - `optional` (Boolean) Specify whether the Secret or its keys must be defined
 - `secret_name` (String) Name of the secret in the pod's namespace to use. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
@@ -4245,6 +4400,9 @@ Optional:
 - `key` (String) The key to project.
 - `mode` (Number) Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.
 - `path` (String) The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.
+- `user` (Number) user is Optional: The owner UID of the created file.
+If specified, the item-level user field takes precedence over defaultUser.
+(Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
 
 
 

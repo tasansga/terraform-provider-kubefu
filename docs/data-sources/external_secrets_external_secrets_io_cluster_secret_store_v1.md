@@ -606,8 +606,57 @@ Optional:
 
 Optional:
 
+- `application_credential_id` (Block List, Max: 1) ID of the application credential used for authentication. (see [below for nested schema](#nestedblock--spec--provider_--barbican--auth--application_credential_id))
+- `application_credential_secret` (Block List, Max: 1) BarbicanProviderAppCredSecretRef defines a reference to an Application Credential Secret. (see [below for nested schema](#nestedblock--spec--provider_--barbican--auth--application_credential_secret))
+- `auth_type` (String) AuthType selects how Barbican authenticates.
+- "password": use username and password.
+- "applicationCredential": use application credential ID and secret.
+Defaults to "password".
 - `password` (Block List, Max: 1) BarbicanProviderPasswordRef defines a reference to a secret containing password for the Barbican provider. (see [below for nested schema](#nestedblock--spec--provider_--barbican--auth--password))
 - `username` (Block List, Max: 1) BarbicanProviderUsernameRef defines a reference to a secret containing username for the Barbican provider. (see [below for nested schema](#nestedblock--spec--provider_--barbican--auth--username))
+
+<a id="nestedblock--spec--provider_--barbican--auth--application_credential_id"></a>
+### Nested Schema for `spec.provider_.barbican.auth.application_credential_id`
+
+Optional:
+
+- `secret_ref` (Block List, Max: 1) SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--barbican--auth--application_credential_id--secret_ref))
+- `value` (String)
+
+<a id="nestedblock--spec--provider_--barbican--auth--application_credential_id--secret_ref"></a>
+### Nested Schema for `spec.provider_.barbican.auth.application_credential_id.secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
+
+<a id="nestedblock--spec--provider_--barbican--auth--application_credential_secret"></a>
+### Nested Schema for `spec.provider_.barbican.auth.application_credential_secret`
+
+Optional:
+
+- `secret_ref` (Block List, Max: 1) SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+In some instances, `key` is a required field. (see [below for nested schema](#nestedblock--spec--provider_--barbican--auth--application_credential_secret--secret_ref))
+
+<a id="nestedblock--spec--provider_--barbican--auth--application_credential_secret--secret_ref"></a>
+### Nested Schema for `spec.provider_.barbican.auth.application_credential_secret.secret_ref`
+
+Optional:
+
+- `key` (String) A key in the referenced Secret.
+Some instances of this field may be defaulted, in others it may be required.
+- `name` (String) The name of the Secret resource being referred to.
+- `namespace` (String) The namespace of the Secret resource being referred to.
+Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+
+
 
 <a id="nestedblock--spec--provider_--barbican--auth--password"></a>
 ### Nested Schema for `spec.provider_.barbican.auth.password`

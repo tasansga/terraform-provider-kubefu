@@ -227,4 +227,5 @@ var dataSourceExternalSecretsGeneratorsExternalSecretsIoPasswordV1Alpha1Compatib
 	"v2.8.0",
 	"v2.9.0",
 	"v2.10.0",
+	"v2.11.0",
 }

@@ -44,12 +44,12 @@ data "kubefu_flux_kustomize_toolkit_fluxcd_io_kustomization_v1" "inttest" {
 
   spec {
     interval = "10m"
-    path     = "./workloads/cisco-msp-golden-config/foo-messaging/variables"
+    path     = "./workloads/silver-maker/foo-messaging/variables"
     prune    = true
 
     source_ref {
       kind      = "GitRepository"
-      name      = "cisco-msp-golden-config"
+      name      = "silver-maker"
       namespace = "flux-system"
     }
   }
@@ -63,7 +63,7 @@ data "kubefu_flux_kustomize_toolkit_fluxcd_io_kustomization_v1" "inttest_explici
 
   spec {
     interval = "10m"
-    path     = "./workloads/cisco-msp-golden-config/foo-messaging/variables"
+    path     = "./workloads/silver-maker/foo-messaging/variables"
     prune    = true
 
     common_metadata {
@@ -72,7 +72,7 @@ data "kubefu_flux_kustomize_toolkit_fluxcd_io_kustomization_v1" "inttest_explici
 
     source_ref {
       kind      = "GitRepository"
-      name      = "cisco-msp-golden-config"
+      name      = "silver-maker"
       namespace = "flux-system"
     }
   }
