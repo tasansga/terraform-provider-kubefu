@@ -749,3 +749,121 @@ func TestSetDataSourceManifestWithObjectPathsFlattensConfigMapArgsWrappers(t *te
 		t.Fatalf("unexpected kvPairSources key in rendered output")
 	}
 }
+
+func TestSetDataSourceManifestWithListOfObjectsPreservesArrayAndCamelCasesKeys(t *testing.T) {
+	testSchema := map[string]*schema.Schema{
+		"subjects": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"api_group": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+				"kind": {
+					Type:     schema.TypeString,
+					Required: true,
+				},
+				"name": {
+					Type:     schema.TypeString,
+					Required: true,
+				},
+			}},
+		},
+		"rules": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"api_groups": {
+					Type:     schema.TypeList,
+					Optional: true,
+					Elem:     &schema.Schema{Type: schema.TypeString},
+				},
+				"resources": {
+					Type:     schema.TypeList,
+					Optional: true,
+					Elem:     &schema.Schema{Type: schema.TypeString},
+				},
+			}},
+		},
+		"kubefu_manifest_json": {Type: schema.TypeString, Computed: true},
+		"kubefu_manifest_yaml": {Type: schema.TypeString, Computed: true},
+	}
+	raw := map[string]interface{}{
+		"subjects": []interface{}{
+			map[string]interface{}{
+				"api_group": "rbac.authorization.k8s.io",
+				"kind":      "Group",
+				"name":      "k3s-admins",
+			},
+		},
+		"rules": []interface{}{
+			map[string]interface{}{
+				"api_groups": []interface{}{"apps"},
+				"resources":  []interface{}{"pods"},
+			},
+		},
+	}
+	d := schema.TestResourceDataRaw(t, testSchema, raw)
+	singleObjectPaths := []string{} // neither subjects nor rules are MaxItems: 1
+	allObjectPaths := []string{"subjects", "rules"}
+
+	if err := SetDataSourceManifestWithObjectPathsForMeta(
+		d,
+		testRenderModeConfig{mode: RenderModeCompact},
+		[]string{"subjects", "rules"},
+		singleObjectPaths,
+		allObjectPaths,
+	); err != nil {
+		t.Fatalf("set manifest: %v", err)
+	}
+
+	payload := d.Get("kubefu_manifest_yaml").(string)
+	var manifest map[string]interface{}
+	if err := yaml.Unmarshal([]byte(payload), &manifest); err != nil {
+		t.Fatalf("unmarshal yaml: %v", err)
+	}
+
+	// Verify subjects remains a list of length 1 (not unwrapped into a map)
+	subjects, ok := manifest["subjects"].([]interface{})
+	if !ok {
+		t.Fatalf("expected subjects to be a slice, got %T: %v", manifest["subjects"], manifest["subjects"])
+	}
+	if len(subjects) != 1 {
+		t.Fatalf("expected 1 subject, got %d", len(subjects))
+	}
+	subject0, ok := subjects[0].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected subject[0] to be map, got %T", subjects[0])
+	}
+	if subject0["apiGroup"] != "rbac.authorization.k8s.io" {
+		t.Fatalf("expected apiGroup to be rbac.authorization.k8s.io, got %v", subject0["apiGroup"])
+	}
+	if _, ok := subject0["api_group"]; ok {
+		t.Fatalf("unexpected snake_case api_group in subject[0]")
+	}
+
+	// Verify rules remains a list of length 1
+	rules, ok := manifest["rules"].([]interface{})
+	if !ok {
+		t.Fatalf("expected rules to be a slice, got %T: %v", manifest["rules"], manifest["rules"])
+	}
+	if len(rules) != 1 {
+		t.Fatalf("expected 1 rule, got %d", len(rules))
+	}
+	rule0, ok := rules[0].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected rule[0] to be map, got %T", rules[0])
+	}
+	if _, ok := rule0["apiGroups"]; !ok {
+		t.Fatalf("expected apiGroups in rule[0]")
+	}
+	if _, ok := rule0["api_groups"]; ok {
+		t.Fatalf("unexpected snake_case api_groups in rule[0]")
+	}
+	apiGroups := rule0["apiGroups"].([]interface{})
+	if len(apiGroups) != 1 || apiGroups[0] != "apps" {
+		t.Fatalf("expected apiGroups to be ['apps'], got %v", apiGroups)
+	}
+}
+

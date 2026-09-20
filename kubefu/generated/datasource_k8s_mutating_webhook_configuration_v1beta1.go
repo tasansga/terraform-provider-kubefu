@@ -726,7 +726,7 @@ func dataSourceK8sAdmissionregistrationK8sIoMutatingWebhookConfigurationV1Beta1R
 	if err := manifestpkg.SetDataSourceDefaults(d, "admissionregistration.k8s.io/v1beta1", "MutatingWebhookConfiguration", "admissionregistration.k8s.io/v1beta1/MutatingWebhookConfiguration"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "webhooks"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "webhooks.client_config", "webhooks.client_config.service", "webhooks.namespace_selector", "webhooks.object_selector"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "webhooks"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "webhooks.client_config", "webhooks.client_config.service", "webhooks.namespace_selector", "webhooks.object_selector"}, []string{"metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references", "webhooks", "webhooks.client_config", "webhooks.client_config.service", "webhooks.namespace_selector", "webhooks.namespace_selector.match_expressions", "webhooks.object_selector", "webhooks.object_selector.match_expressions", "webhooks.rules"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

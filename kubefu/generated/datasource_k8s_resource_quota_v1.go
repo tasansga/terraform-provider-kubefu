@@ -557,7 +557,7 @@ func dataSourceK8sCoreResourceQuotaV1Read(_ context.Context, d *schema.ResourceD
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "ResourceQuota", "core/v1/ResourceQuota"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.scope_selector", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.scope_selector", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.scope_selector", "spec.scope_selector.match_expressions", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -547,7 +547,7 @@ func dataSourceK8sResourceK8sIoResourcePoolStatusRequestV1Alpha3Read(_ context.C
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha3", "ResourcePoolStatusRequest", "resource.k8s.io/v1alpha3/ResourcePoolStatusRequest"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "status", "status.pools.shareable_summary"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "status", "status.pools.shareable_summary"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "status", "status.conditions", "status.pools", "status.pools.partition_summary", "status.pools.shareable_summary", "status.pools.shareable_summary.capacity"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -536,7 +536,7 @@ func dataSourceK8sRbacAuthorizationK8sIoClusterRoleBindingV1Read(_ context.Conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "rbac.authorization.k8s.io/v1/ClusterRoleBinding"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "role_ref", "subjects"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "role_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "role_ref", "subjects"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "role_ref"}, []string{"metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references", "role_ref", "subjects"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

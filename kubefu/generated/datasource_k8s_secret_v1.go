@@ -495,7 +495,7 @@ func dataSourceK8sCoreSecretV1Read(_ context.Context, d *schema.ResourceData, m 
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "Secret", "core/v1/Secret"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"data", "immutable", "metadata", "string_data", "type"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"data", "immutable", "metadata", "string_data", "type"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}, []string{"metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

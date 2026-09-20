@@ -236,7 +236,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoBeyondtrustWorkloadCred
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "BeyondtrustWorkloadCredentialsDynamicSecret", "generators.external-secrets.io/v1alpha1/BeyondtrustWorkloadCredentialsDynamicSecret"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.provider_", "spec.provider_.auth", "spec.provider_.auth.apikey", "spec.provider_.auth.apikey.token", "spec.provider_.ca_provider", "spec.provider_.server", "spec.retry_settings"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.provider_", "spec.provider_.auth", "spec.provider_.auth.apikey", "spec.provider_.auth.apikey.token", "spec.provider_.ca_provider", "spec.provider_.server", "spec.retry_settings"}, []string{"spec", "spec.provider_", "spec.provider_.auth", "spec.provider_.auth.apikey", "spec.provider_.auth.apikey.token", "spec.provider_.ca_provider", "spec.provider_.server", "spec.retry_settings"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

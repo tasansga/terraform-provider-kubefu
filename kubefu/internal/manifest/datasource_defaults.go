@@ -59,23 +59,38 @@ func SetDataSourceManifestWithObjectKeys(d *schema.ResourceData, keys []string, 
 }
 
 // SetDataSourceManifestWithObjectPaths renders kubefu_manifest_json/yaml from known schema keys,
-// treating paths in objectPaths as single-object attributes.
-func SetDataSourceManifestWithObjectPaths(d *schema.ResourceData, keys []string, objectPaths []string) error {
-	return setDataSourceManifestWithObjectPathsAndMode(d, keys, objectPaths, RenderModeCompact)
+// treating paths in singleObjectPaths as single-object attributes, and converting keys in allObjectPaths to camelCase.
+func SetDataSourceManifestWithObjectPaths(d *schema.ResourceData, keys []string, singleObjectPaths []string, allObjectPaths ...[]string) error {
+	schemaObjectPaths := singleObjectPaths
+	if len(allObjectPaths) > 0 {
+		schemaObjectPaths = allObjectPaths[0]
+	}
+	return setDataSourceManifestWithObjectPathsAndMode(d, keys, singleObjectPaths, schemaObjectPaths, RenderModeCompact)
 }
 
 // SetDataSourceManifestWithObjectPathsForMeta renders kubefu_manifest_json/yaml from known schema keys,
 // selecting render mode from provider metadata when available.
-func SetDataSourceManifestWithObjectPathsForMeta(d *schema.ResourceData, meta any, keys []string, objectPaths []string) error {
+func SetDataSourceManifestWithObjectPathsForMeta(d *schema.ResourceData, meta any, keys []string, singleObjectPaths []string, allObjectPaths ...[]string) error {
+	schemaObjectPaths := singleObjectPaths
+	if len(allObjectPaths) > 0 {
+		schemaObjectPaths = allObjectPaths[0]
+	}
 	mode := RenderModeCompact
 	if cfg, ok := meta.(renderModeProvider); ok {
 		mode = normalizeRenderMode(cfg.ManifestRenderMode())
 	}
-	return setDataSourceManifestWithObjectPathsAndMode(d, keys, objectPaths, mode)
+	return setDataSourceManifestWithObjectPathsAndMode(d, keys, singleObjectPaths, schemaObjectPaths, mode)
 }
 
-func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []string, objectPaths []string, mode string) error {
+func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []string, singleObjectPaths []string, objectPaths []string, mode string) error {
 	manifest := make(map[string]interface{})
+	singleObjectPathSet := make(map[string]struct{}, len(singleObjectPaths))
+	for _, path := range singleObjectPaths {
+		if path == "" {
+			continue
+		}
+		singleObjectPathSet[path] = struct{}{}
+	}
 	objectPathSet := make(map[string]struct{}, len(objectPaths))
 	for _, path := range objectPaths {
 		if path == "" {
@@ -102,7 +117,7 @@ func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []
 		if !ok {
 			continue
 		}
-		normalized, err := normalizeManifestValue(v, key, objectPathSet, explicitPaths)
+		normalized, err := normalizeManifestValue(v, key, singleObjectPathSet, objectPathSet, explicitPaths)
 		if err != nil {
 			return fmt.Errorf("normalize manifest value %q: %w", key, err)
 		}
@@ -465,12 +480,12 @@ func resolveObjectPathChildKey(parentPath, renderedKey string, explicitPaths map
 	return base
 }
 
-func normalizeManifestValue(value interface{}, path string, objectPaths map[string]struct{}, explicitPaths map[string]struct{}) (interface{}, error) {
+func normalizeManifestValue(value interface{}, path string, singleObjectPaths map[string]struct{}, objectPaths map[string]struct{}, explicitPaths map[string]struct{}) (interface{}, error) {
 	switch v := value.(type) {
 	case []interface{}:
-		if _, ok := objectPaths[path]; ok && len(v) == 1 {
+		if _, ok := singleObjectPaths[path]; ok && len(v) == 1 {
 			if m, ok := v[0].(map[string]interface{}); ok {
-				return normalizeManifestValue(m, path, objectPaths, explicitPaths)
+				return normalizeManifestValue(m, path, singleObjectPaths, objectPaths, explicitPaths)
 			}
 			if v[0] == nil {
 				return map[string]interface{}{}, nil
@@ -478,7 +493,7 @@ func normalizeManifestValue(value interface{}, path string, objectPaths map[stri
 		}
 		normalized := make([]interface{}, len(v))
 		for i := range v {
-			next, err := normalizeManifestValue(v[i], path, objectPaths, explicitPaths)
+			next, err := normalizeManifestValue(v[i], path, singleObjectPaths, objectPaths, explicitPaths)
 			if err != nil {
 				return nil, err
 			}
@@ -500,7 +515,7 @@ func normalizeManifestValue(value interface{}, path string, objectPaths map[stri
 					outKey = "values"
 				}
 			}
-			next, err := normalizeManifestValue(child, childPath, objectPaths, explicitPaths)
+			next, err := normalizeManifestValue(child, childPath, singleObjectPaths, objectPaths, explicitPaths)
 			if err != nil {
 				return nil, err
 			}

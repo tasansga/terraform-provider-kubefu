@@ -735,7 +735,7 @@ func dataSourceK8sAdmissionregistrationK8sIoValidatingAdmissionPolicyV1Alpha1Rea
 	if err := manifestpkg.SetDataSourceDefaults(d, "admissionregistration.k8s.io/v1alpha1", "ValidatingAdmissionPolicy", "admissionregistration.k8s.io/v1alpha1/ValidatingAdmissionPolicy"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.match_constraints", "spec.match_constraints.namespace_selector", "spec.match_constraints.object_selector", "spec.param_kind", "status", "status.type_checking"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.match_constraints", "spec.match_constraints.namespace_selector", "spec.match_constraints.object_selector", "spec.param_kind", "status", "status.type_checking"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.audit_annotations", "spec.match_conditions", "spec.match_constraints", "spec.match_constraints.exclude_resource_rules", "spec.match_constraints.namespace_selector", "spec.match_constraints.namespace_selector.match_expressions", "spec.match_constraints.object_selector", "spec.match_constraints.object_selector.match_expressions", "spec.match_constraints.resource_rules", "spec.param_kind", "spec.validations", "spec.variables", "status", "status.conditions", "status.type_checking", "status.type_checking.expression_warnings"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

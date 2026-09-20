@@ -324,7 +324,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoTLSRouteV1Alpha3Read(_ context.Co
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1alpha3", "TLSRoute", "gateway.networking.k8s.io/v1alpha3/TLSRoute"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "status", "status.parents.parent_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "status", "status.parents.parent_ref"}, []string{"spec", "spec.parent_refs", "spec.rules", "spec.rules.backend_refs", "status", "status.parents", "status.parents.conditions", "status.parents.parent_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

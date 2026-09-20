@@ -531,7 +531,7 @@ func dataSourceK8sFlowcontrolApiserverK8sIoFlowSchemaV1Beta2Read(_ context.Conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "flowcontrol.apiserver.k8s.io/v1beta2", "FlowSchema", "flowcontrol.apiserver.k8s.io/v1beta2/FlowSchema"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.distinguisher_method", "spec.priority_level_configuration", "spec.rules.subjects.group", "spec.rules.subjects.service_account", "spec.rules.subjects.user", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.distinguisher_method", "spec.priority_level_configuration", "spec.rules.subjects.group", "spec.rules.subjects.service_account", "spec.rules.subjects.user", "status"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.distinguisher_method", "spec.priority_level_configuration", "spec.rules", "spec.rules.non_resource_rules", "spec.rules.resource_rules", "spec.rules.subjects", "spec.rules.subjects.group", "spec.rules.subjects.service_account", "spec.rules.subjects.user", "status", "status.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

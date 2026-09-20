@@ -876,7 +876,7 @@ func dataSourceFluxKustomizeToolkitFluxcdIoKustomizationV1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.toolkit.fluxcd.io/v1", "Kustomization", "kustomize.toolkit.fluxcd.io/v1/Kustomization"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "spec.decryption", "spec.decryption.secret_ref", "spec.ignore.target", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.patches.target", "spec.post_build", "spec.source_ref", "status", "status.inventory"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "spec.decryption", "spec.decryption.secret_ref", "spec.ignore.target", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.patches.target", "spec.post_build", "spec.source_ref", "status", "status.inventory"}, []string{"spec", "spec.common_metadata", "spec.decryption", "spec.decryption.secret_ref", "spec.depends_on_", "spec.health_check_exprs", "spec.health_checks", "spec.ignore", "spec.ignore.target", "spec.images", "spec.kube_config", "spec.kube_config.config_map_ref", "spec.kube_config.secret_ref", "spec.patches", "spec.patches.target", "spec.post_build", "spec.post_build.substitute_from", "spec.source_ref", "status", "status.conditions", "status.history", "status.inventory", "status.inventory.entries"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

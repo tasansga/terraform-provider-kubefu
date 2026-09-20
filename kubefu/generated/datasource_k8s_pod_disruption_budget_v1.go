@@ -451,7 +451,7 @@ func dataSourceK8sPolicyPodDisruptionBudgetV1Read(_ context.Context, d *schema.R
 	if err := manifestpkg.SetDataSourceDefaults(d, "policy/v1", "PodDisruptionBudget", "policy/v1/PodDisruptionBudget"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.selector", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.selector", "status"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.selector", "spec.selector.match_expressions", "status", "status.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

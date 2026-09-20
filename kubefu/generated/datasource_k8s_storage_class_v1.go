@@ -543,7 +543,7 @@ func dataSourceK8sStorageK8sIoStorageClassV1Read(_ context.Context, d *schema.Re
 	if err := manifestpkg.SetDataSourceDefaults(d, "storage.k8s.io/v1", "StorageClass", "storage.k8s.io/v1/StorageClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"allow_volume_expansion", "allowed_topologies", "metadata", "mount_options", "parameters", "provisioner_", "reclaim_policy", "volume_binding_mode"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"allow_volume_expansion", "allowed_topologies", "metadata", "mount_options", "parameters", "provisioner_", "reclaim_policy", "volume_binding_mode"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}, []string{"allowed_topologies", "allowed_topologies.match_label_expressions", "metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

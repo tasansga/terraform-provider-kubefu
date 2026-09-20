@@ -564,7 +564,7 @@ func dataSourceK8sResourceK8sIoResourceClaimV1Alpha2Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha2", "ResourceClaim", "resource.k8s.io/v1alpha2/ResourceClaim"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.parameters_ref", "status", "status.allocation", "status.allocation.available_on_nodes", "status.allocation.resource_handles.structured_data", "status.allocation.resource_handles.structured_data.results.named_resources"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.parameters_ref", "status", "status.allocation", "status.allocation.available_on_nodes", "status.allocation.resource_handles.structured_data", "status.allocation.resource_handles.structured_data.results.named_resources"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.parameters_ref", "status", "status.allocation", "status.allocation.available_on_nodes", "status.allocation.available_on_nodes.node_selector_terms", "status.allocation.available_on_nodes.node_selector_terms.match_expressions", "status.allocation.available_on_nodes.node_selector_terms.match_fields", "status.allocation.resource_handles", "status.allocation.resource_handles.structured_data", "status.allocation.resource_handles.structured_data.results", "status.allocation.resource_handles.structured_data.results.named_resources", "status.reserved_for"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

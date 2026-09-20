@@ -198,7 +198,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayClassV1Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1", "GatewayClass", "gateway.networking.k8s.io/v1/GatewayClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.parameters_ref", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.parameters_ref", "status"}, []string{"spec", "spec.parameters_ref", "status", "status.conditions", "status.supported_features"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

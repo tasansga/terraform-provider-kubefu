@@ -16,9 +16,10 @@ type PrepareDataSourceSchemaOptions struct {
 }
 
 type PreparedDataSourceSchema struct {
-	Schema              map[string]*schema.Schema
-	ManifestKeys        []string
-	ManifestObjectPaths []string
+	Schema                    map[string]*schema.Schema
+	ManifestKeys              []string
+	ManifestSingleObjectPaths []string
+	ManifestObjectPaths       []string
 }
 
 func PrepareDataSourceSchema(def Definition, input map[string]*schema.Schema, opts PrepareDataSourceSchemaOptions) PreparedDataSourceSchema {
@@ -52,10 +53,12 @@ func PrepareDataSourceSchema(def Definition, input map[string]*schema.Schema, op
 		manifestKeys = append(manifestKeys, key)
 	}
 	sort.Strings(manifestKeys)
+	singleObjectPaths, objectPaths := objectPathsForSchema(schemaMap)
 	return PreparedDataSourceSchema{
-		Schema:              schemaMap,
-		ManifestKeys:        manifestKeys,
-		ManifestObjectPaths: objectPathsForSchema(schemaMap),
+		Schema:                    schemaMap,
+		ManifestKeys:              manifestKeys,
+		ManifestSingleObjectPaths: singleObjectPaths,
+		ManifestObjectPaths:       objectPaths,
 	}
 }
 

@@ -405,7 +405,7 @@ func dataSourceK8sStorageK8sIoCSINodeV1Read(_ context.Context, d *schema.Resourc
 	if err := manifestpkg.SetDataSourceDefaults(d, "storage.k8s.io/v1", "CSINode", "storage.k8s.io/v1/CSINode"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.drivers.allocatable", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.drivers.allocatable", "status"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.drivers", "spec.drivers.allocatable", "status", "status.storage_health", "status.storage_health.health_conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

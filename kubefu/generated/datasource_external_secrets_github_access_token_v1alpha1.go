@@ -196,7 +196,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGithubAccessTokenV1Alph
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "GithubAccessToken", "generators.external-secrets.io/v1alpha1/GithubAccessToken"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.privat_key", "spec.auth.privat_key.secret_ref", "spec.auth.private_key", "spec.auth.private_key.secret_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.privat_key", "spec.auth.privat_key.secret_ref", "spec.auth.private_key", "spec.auth.private_key.secret_ref"}, []string{"spec", "spec.auth", "spec.auth.privat_key", "spec.auth.privat_key.secret_ref", "spec.auth.private_key", "spec.auth.private_key.secret_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -60,9 +60,10 @@ func (d Definition) AsDataSource(pkgName, provider string) (FileData, error) {
 		CompatibleVersions:  d.ProviderVersions,
 		APIVersion:          apiVersion,
 		Kind:                d.Kind,
-		ID:                  d.ID(),
-		ManifestKeys:        prepared.ManifestKeys,
-		ManifestObjectPaths: prepared.ManifestObjectPaths,
+		ID:                        d.ID(),
+		ManifestKeys:              prepared.ManifestKeys,
+		ManifestSingleObjectPaths: prepared.ManifestSingleObjectPaths,
+		ManifestObjectPaths:       prepared.ManifestObjectPaths,
 	}
 	source, err := ds.Render()
 	if err != nil {
@@ -152,12 +153,17 @@ func (d Definition) ID() string {
 	return definitionID(d)
 }
 
-func objectPathsForSchema(schemaMap map[string]*schema.Schema) []string {
+func objectPathsForSchema(schemaMap map[string]*schema.Schema) ([]string, []string) {
 	if len(schemaMap) == 0 {
-		return nil
+		return nil, nil
 	}
-	paths := make(map[string]struct{})
-	collectObjectPaths(schemaMap, "", paths)
+	singlePaths := make(map[string]struct{})
+	allPaths := make(map[string]struct{})
+	collectObjectPaths(schemaMap, "", singlePaths, allPaths)
+	return mapKeysToSortedSlice(singlePaths), mapKeysToSortedSlice(allPaths)
+}
+
+func mapKeysToSortedSlice(paths map[string]struct{}) []string {
 	if len(paths) == 0 {
 		return nil
 	}
@@ -169,7 +175,7 @@ func objectPathsForSchema(schemaMap map[string]*schema.Schema) []string {
 	return keys
 }
 
-func collectObjectPaths(schemaMap map[string]*schema.Schema, prefix string, paths map[string]struct{}) {
+func collectObjectPaths(schemaMap map[string]*schema.Schema, prefix string, singlePaths, allPaths map[string]struct{}) {
 	for name, entry := range schemaMap {
 		if entry == nil {
 			continue
@@ -180,11 +186,12 @@ func collectObjectPaths(schemaMap map[string]*schema.Schema, prefix string, path
 		}
 		elem, ok := entry.Elem.(*schema.Resource)
 		if entry.Type == schema.TypeList && ok {
+			allPaths[path] = struct{}{}
 			if entry.MaxItems == 1 {
-				paths[path] = struct{}{}
+				singlePaths[path] = struct{}{}
 			}
 			if elem != nil {
-				collectObjectPaths(elem.Schema, path, paths)
+				collectObjectPaths(elem.Schema, path, singlePaths, allPaths)
 			}
 		}
 	}

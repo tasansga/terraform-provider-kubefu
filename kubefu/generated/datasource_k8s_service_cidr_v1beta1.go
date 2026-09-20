@@ -341,7 +341,7 @@ func dataSourceK8sNetworkingK8sIoServiceCIDRV1Beta1Read(_ context.Context, d *sc
 	if err := manifestpkg.SetDataSourceDefaults(d, "networking.k8s.io/v1beta1", "ServiceCIDR", "networking.k8s.io/v1beta1/ServiceCIDR"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "status", "status.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

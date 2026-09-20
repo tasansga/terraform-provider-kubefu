@@ -798,7 +798,7 @@ func dataSourceK8sResourceK8sIoResourceClaimTemplateV1Alpha3Read(_ context.Conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha3", "ResourceClaimTemplate", "resource.k8s.io/v1alpha3/ResourceClaimTemplate"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.metadata", "spec.spec", "spec.spec.devices", "spec.spec.devices.config.opaque", "spec.spec.devices.requests.first_available.selectors.cel", "spec.spec.devices.requests.selectors.cel"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.metadata", "spec.spec", "spec.spec.devices", "spec.spec.devices.config.opaque", "spec.spec.devices.requests.first_available.selectors.cel", "spec.spec.devices.requests.selectors.cel"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.metadata", "spec.metadata.managed_fields", "spec.metadata.owner_references", "spec.spec", "spec.spec.devices", "spec.spec.devices.config", "spec.spec.devices.config.opaque", "spec.spec.devices.constraints", "spec.spec.devices.requests", "spec.spec.devices.requests.first_available", "spec.spec.devices.requests.first_available.selectors", "spec.spec.devices.requests.first_available.selectors.cel", "spec.spec.devices.requests.first_available.tolerations", "spec.spec.devices.requests.selectors", "spec.spec.devices.requests.selectors.cel", "spec.spec.devices.requests.tolerations"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

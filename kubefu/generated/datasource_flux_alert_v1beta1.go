@@ -226,7 +226,7 @@ func dataSourceFluxNotificationToolkitFluxcdIoAlertV1Beta1Read(_ context.Context
 	if err := manifestpkg.SetDataSourceDefaults(d, "notification.toolkit.fluxcd.io/v1beta1", "Alert", "notification.toolkit.fluxcd.io/v1beta1/Alert"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.provider_ref", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.provider_ref", "status"}, []string{"spec", "spec.event_sources", "spec.provider_ref", "status", "status.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

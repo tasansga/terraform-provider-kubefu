@@ -852,7 +852,7 @@ func dataSourceK8sCorePersistentVolumeClaimV1Read(_ context.Context, d *schema.R
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "PersistentVolumeClaim", "core/v1/PersistentVolumeClaim"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.data_source", "spec.data_source_ref", "spec.resources", "spec.selector", "status", "status.health_status", "status.modify_volume_status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.data_source", "spec.data_source_ref", "spec.resources", "spec.selector", "status", "status.health_status", "status.modify_volume_status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.data_source", "spec.data_source_ref", "spec.resources", "spec.resources.claims", "spec.selector", "spec.selector.match_expressions", "status", "status.conditions", "status.health_status", "status.health_status.health_conditions", "status.modify_volume_status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

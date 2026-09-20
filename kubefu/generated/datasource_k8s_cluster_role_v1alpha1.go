@@ -573,7 +573,7 @@ func dataSourceK8sRbacAuthorizationK8sIoClusterRoleV1Alpha1Read(_ context.Contex
 	if err := manifestpkg.SetDataSourceDefaults(d, "rbac.authorization.k8s.io/v1alpha1", "ClusterRole", "rbac.authorization.k8s.io/v1alpha1/ClusterRole"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"aggregation_rule", "metadata", "rules"}, []string{"aggregation_rule", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"aggregation_rule", "metadata", "rules"}, []string{"aggregation_rule", "metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}, []string{"aggregation_rule", "aggregation_rule.cluster_role_selectors", "aggregation_rule.cluster_role_selectors.match_expressions", "metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references", "rules"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

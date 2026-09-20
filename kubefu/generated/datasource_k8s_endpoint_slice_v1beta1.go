@@ -467,7 +467,7 @@ func dataSourceK8sDiscoveryK8sIoEndpointSliceV1Beta1Read(_ context.Context, d *s
 	if err := manifestpkg.SetDataSourceDefaults(d, "discovery.k8s.io/v1beta1", "EndpointSlice", "discovery.k8s.io/v1beta1/EndpointSlice"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"address_type", "endpoints", "metadata", "ports"}, []string{"endpoints.conditions", "endpoints.hints", "endpoints.target_ref", "metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"address_type", "endpoints", "metadata", "ports"}, []string{"endpoints.conditions", "endpoints.hints", "endpoints.target_ref", "metadata"}, []string{"endpoints", "endpoints.conditions", "endpoints.hints", "endpoints.hints.for_zones", "endpoints.target_ref", "metadata", "metadata.managed_fields", "metadata.owner_references", "ports"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

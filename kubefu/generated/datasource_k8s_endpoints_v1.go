@@ -691,7 +691,7 @@ func dataSourceK8sCoreEndpointsV1Read(_ context.Context, d *schema.ResourceData,
 	if err := manifestpkg.SetDataSourceDefaults(d, "v1", "Endpoints", "core/v1/Endpoints"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "subsets"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "subsets.addresses.target_ref", "subsets.not_ready_addresses.target_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "subsets"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "subsets.addresses.target_ref", "subsets.not_ready_addresses.target_ref"}, []string{"metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references", "subsets", "subsets.addresses", "subsets.addresses.target_ref", "subsets.not_ready_addresses", "subsets.not_ready_addresses.target_ref", "subsets.ports"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

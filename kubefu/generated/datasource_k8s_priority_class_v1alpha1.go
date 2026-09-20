@@ -495,7 +495,7 @@ func dataSourceK8sSchedulingK8sIoPriorityClassV1Alpha1Read(_ context.Context, d 
 	if err := manifestpkg.SetDataSourceDefaults(d, "scheduling.k8s.io/v1alpha1", "PriorityClass", "scheduling.k8s.io/v1alpha1/PriorityClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"description", "global_default", "metadata", "preemption_policy", "value"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"description", "global_default", "metadata", "preemption_policy", "value"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata"}, []string{"metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

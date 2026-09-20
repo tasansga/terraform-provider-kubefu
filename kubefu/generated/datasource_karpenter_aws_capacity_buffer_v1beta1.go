@@ -244,7 +244,7 @@ func dataSourceKarpenterAwsAutoscalingXK8sIoCapacityBufferV1Beta1Read(_ context.
 	if err := manifestpkg.SetDataSourceDefaults(d, "autoscaling.x-k8s.io/v1beta1", "CapacityBuffer", "autoscaling.x-k8s.io/v1beta1/CapacityBuffer"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.pod_template_ref", "spec.scalable_ref", "status", "status.pod_template_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.pod_template_ref", "spec.scalable_ref", "status", "status.pod_template_ref"}, []string{"spec", "spec.pod_template_ref", "spec.scalable_ref", "status", "status.conditions", "status.pod_template_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

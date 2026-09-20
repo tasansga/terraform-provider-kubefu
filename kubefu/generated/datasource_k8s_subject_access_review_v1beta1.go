@@ -621,7 +621,7 @@ func dataSourceK8sAuthorizationK8sIoSubjectAccessReviewV1Beta1Read(_ context.Con
 	if err := manifestpkg.SetDataSourceDefaults(d, "authorization.k8s.io/v1beta1", "SubjectAccessReview", "authorization.k8s.io/v1beta1/SubjectAccessReview"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.non_resource_attributes", "spec.resource_attributes", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.non_resource_attributes", "spec.resource_attributes", "status"}, []string{"metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.non_resource_attributes", "spec.resource_attributes", "status"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

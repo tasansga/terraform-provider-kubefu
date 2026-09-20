@@ -864,7 +864,7 @@ func dataSourceKarpenterAwsKarpenterK8sAwsEC2NodeClassV1Read(_ context.Context, 
 	if err := manifestpkg.SetDataSourceDefaults(d, "karpenter.k8s.aws/v1", "EC2NodeClass", "karpenter.k8s.aws/v1/EC2NodeClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.block_device_mappings.ebs", "spec.connection_tracking", "spec.cpu_options", "spec.kubelet", "spec.metadata_options", "spec.placement_group_selector", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.block_device_mappings.ebs", "spec.connection_tracking", "spec.cpu_options", "spec.kubelet", "spec.metadata_options", "spec.placement_group_selector", "status"}, []string{"spec", "spec.ami_selector_terms", "spec.block_device_mappings", "spec.block_device_mappings.ebs", "spec.capacity_reservation_selector_terms", "spec.connection_tracking", "spec.cpu_options", "spec.kubelet", "spec.metadata_options", "spec.network_interfaces", "spec.placement_group_selector", "spec.security_group_selector_terms", "spec.subnet_selector_terms", "status", "status.amis", "status.amis.requirements", "status.capacity_reservations", "status.conditions", "status.security_groups", "status.subnets"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

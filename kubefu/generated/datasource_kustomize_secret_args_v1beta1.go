@@ -168,7 +168,7 @@ func dataSourceKustomizeKustomizeConfigK8sIoSecretArgsV1Beta1Read(_ context.Cont
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.config.k8s.io/v1beta1", "SecretArgs", "kustomize.config.k8s.io/v1beta1/SecretArgs"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"generator_args", "metadata", "type"}, []string{"generator_args", "generator_args.kv_pair_sources", "metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"generator_args", "metadata", "type"}, []string{"generator_args", "generator_args.kv_pair_sources", "metadata"}, []string{"generator_args", "generator_args.kv_pair_sources", "metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

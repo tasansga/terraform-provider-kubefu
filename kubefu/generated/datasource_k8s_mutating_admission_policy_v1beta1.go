@@ -631,7 +631,7 @@ func dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyV1Beta1Read(_
 	if err := manifestpkg.SetDataSourceDefaults(d, "admissionregistration.k8s.io/v1beta1", "MutatingAdmissionPolicy", "admissionregistration.k8s.io/v1beta1/MutatingAdmissionPolicy"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.match_constraints", "spec.match_constraints.namespace_selector", "spec.match_constraints.object_selector", "spec.mutations.apply_configuration", "spec.mutations.json_patch", "spec.param_kind"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.match_constraints", "spec.match_constraints.namespace_selector", "spec.match_constraints.object_selector", "spec.mutations.apply_configuration", "spec.mutations.json_patch", "spec.param_kind"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.match_conditions", "spec.match_constraints", "spec.match_constraints.exclude_resource_rules", "spec.match_constraints.namespace_selector", "spec.match_constraints.namespace_selector.match_expressions", "spec.match_constraints.object_selector", "spec.match_constraints.object_selector.match_expressions", "spec.match_constraints.resource_rules", "spec.mutations", "spec.mutations.apply_configuration", "spec.mutations.json_patch", "spec.param_kind", "spec.variables"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

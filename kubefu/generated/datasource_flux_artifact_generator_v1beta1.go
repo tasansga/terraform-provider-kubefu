@@ -316,7 +316,7 @@ func dataSourceFluxSourceExtensionsFluxcdIoArtifactGeneratorV1Beta1Read(_ contex
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.extensions.fluxcd.io/v1beta1", "ArtifactGenerator", "source.extensions.fluxcd.io/v1beta1/ArtifactGenerator"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.common_metadata", "status"}, []string{"spec", "spec.artifacts", "spec.artifacts.copy", "spec.common_metadata", "spec.sources", "status", "status.conditions", "status.inventory"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

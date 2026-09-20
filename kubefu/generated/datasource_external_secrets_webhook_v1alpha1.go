@@ -287,7 +287,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoWebhookV1Alpha1Read(_ c
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "Webhook", "generators.external-secrets.io/v1alpha1/Webhook"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.ntlm", "spec.auth.ntlm.password_secret", "spec.auth.ntlm.username_secret", "spec.ca_provider", "spec.result", "spec.secrets.secret_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.ntlm", "spec.auth.ntlm.password_secret", "spec.auth.ntlm.username_secret", "spec.ca_provider", "spec.result", "spec.secrets.secret_ref"}, []string{"spec", "spec.auth", "spec.auth.ntlm", "spec.auth.ntlm.password_secret", "spec.auth.ntlm.username_secret", "spec.ca_provider", "spec.result", "spec.secrets", "spec.secrets.secret_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

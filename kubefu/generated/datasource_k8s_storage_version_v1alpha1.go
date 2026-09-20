@@ -383,7 +383,7 @@ func dataSourceK8sInternalApiserverK8sIoStorageVersionV1Alpha1Read(_ context.Con
 	if err := manifestpkg.SetDataSourceDefaults(d, "internal.apiserver.k8s.io/v1alpha1", "StorageVersion", "internal.apiserver.k8s.io/v1alpha1/StorageVersion"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "status"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "status", "status.conditions", "status.storage_versions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

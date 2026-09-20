@@ -432,7 +432,7 @@ func dataSourceK8sSchedulingK8sIoWorkloadV1Alpha2Read(_ context.Context, d *sche
 	if err := manifestpkg.SetDataSourceDefaults(d, "scheduling.k8s.io/v1alpha2", "Workload", "scheduling.k8s.io/v1alpha2/Workload"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.controller_ref", "spec.pod_group_templates.scheduling_constraints", "spec.pod_group_templates.scheduling_policy", "spec.pod_group_templates.scheduling_policy.gang"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.controller_ref", "spec.pod_group_templates.scheduling_constraints", "spec.pod_group_templates.scheduling_policy", "spec.pod_group_templates.scheduling_policy.gang"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.controller_ref", "spec.pod_group_templates", "spec.pod_group_templates.resource_claims", "spec.pod_group_templates.scheduling_constraints", "spec.pod_group_templates.scheduling_constraints.topology", "spec.pod_group_templates.scheduling_policy", "spec.pod_group_templates.scheduling_policy.gang"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

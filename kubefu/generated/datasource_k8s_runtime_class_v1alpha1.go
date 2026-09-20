@@ -563,7 +563,7 @@ func dataSourceK8sNodeK8sIoRuntimeClassV1Alpha1Read(_ context.Context, d *schema
 	if err := manifestpkg.SetDataSourceDefaults(d, "node.k8s.io/v1alpha1", "RuntimeClass", "node.k8s.io/v1alpha1/RuntimeClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.overhead", "spec.scheduling"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "metadata.initializers", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.metadata", "spec", "spec.overhead", "spec.scheduling"}, []string{"metadata", "metadata.initializers", "metadata.initializers.pending", "metadata.initializers.result", "metadata.initializers.result.details", "metadata.initializers.result.details.causes", "metadata.initializers.result.metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.overhead", "spec.scheduling", "spec.scheduling.tolerations"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -413,7 +413,7 @@ func dataSourceK8sResourceK8sIoDeviceClassV1Alpha3Read(_ context.Context, d *sch
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1alpha3", "DeviceClass", "resource.k8s.io/v1alpha3/DeviceClass"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.config.opaque", "spec.selectors.cel", "spec.suitable_nodes"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.config.opaque", "spec.selectors.cel", "spec.suitable_nodes"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.config", "spec.config.opaque", "spec.selectors", "spec.selectors.cel", "spec.suitable_nodes", "spec.suitable_nodes.node_selector_terms", "spec.suitable_nodes.node_selector_terms.match_expressions", "spec.suitable_nodes.node_selector_terms.match_fields"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

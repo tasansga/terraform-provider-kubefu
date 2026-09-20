@@ -404,7 +404,7 @@ func dataSourceK8sResourceK8sIoDeviceTaintRuleV1Read(_ context.Context, d *schem
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1", "DeviceTaintRule", "resource.k8s.io/v1/DeviceTaintRule"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.device_selector", "spec.taint", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.device_selector", "spec.taint", "status"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.device_selector", "spec.taint", "status", "status.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

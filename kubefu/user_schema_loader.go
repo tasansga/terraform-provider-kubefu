@@ -158,7 +158,7 @@ func buildUserSchemaDataSource(entry resourcegen.ResourceEntry, provider string)
 			if err := manifest.SetDataSourceDefaults(d, apiVersion, entry.Kind, id); err != nil {
 				return diag.FromErr(err)
 			}
-			if err := manifest.SetDataSourceManifestWithObjectPathsForMeta(d, m, prepared.ManifestKeys, prepared.ManifestObjectPaths); err != nil {
+			if err := manifest.SetDataSourceManifestWithObjectPathsForMeta(d, m, prepared.ManifestKeys, prepared.ManifestSingleObjectPaths, prepared.ManifestObjectPaths); err != nil {
 				return diag.FromErr(err)
 			}
 			return nil

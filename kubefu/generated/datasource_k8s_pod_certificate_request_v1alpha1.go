@@ -432,7 +432,7 @@ func dataSourceK8sCertificatesK8sIoPodCertificateRequestV1Alpha1Read(_ context.C
 	if err := manifestpkg.SetDataSourceDefaults(d, "certificates.k8s.io/v1alpha1", "PodCertificateRequest", "certificates.k8s.io/v1alpha1/PodCertificateRequest"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "status"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "status", "status.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

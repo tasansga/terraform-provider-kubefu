@@ -480,7 +480,7 @@ func dataSourceFluxSourceToolkitFluxcdIoOCIRepositoryV1Beta2Read(_ context.Conte
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1beta2", "OCIRepository", "source.toolkit.fluxcd.io/v1beta2/OCIRepository"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.cert_secret_ref", "spec.layer_selector", "spec.proxy_secret_ref", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact", "status.observed_layer_selector"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.cert_secret_ref", "spec.layer_selector", "spec.proxy_secret_ref", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.secret_ref", "status", "status.artifact", "status.observed_layer_selector"}, []string{"spec", "spec.cert_secret_ref", "spec.layer_selector", "spec.proxy_secret_ref", "spec.ref", "spec.secret_ref", "spec.verify", "spec.verify.match_oidc_identity", "spec.verify.secret_ref", "status", "status.artifact", "status.conditions", "status.observed_layer_selector"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

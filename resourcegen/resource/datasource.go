@@ -19,9 +19,10 @@ type DataSource struct {
 	CompatibleVersions  []string
 	APIVersion          string
 	Kind                string
-	ID                  string
-	ManifestKeys        []string
-	ManifestObjectPaths []string
+	ID                        string
+	ManifestKeys              []string
+	ManifestSingleObjectPaths []string
+	ManifestObjectPaths       []string
 }
 
 // WriteFile emits the data source as a Go source file to the provided path.
@@ -90,12 +91,12 @@ func %sRead(_ context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
 	if err := manifestpkg.SetDataSourceDefaults(d, %q, %q, %q); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{%s}, []string{%s}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{%s}, []string{%s}, []string{%s}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
 }
-`, d.FuncName, d.APIVersion, d.Kind, d.ID, renderStringSlice(d.ManifestKeys), renderStringSlice(d.ManifestObjectPaths))
+`, d.FuncName, d.APIVersion, d.Kind, d.ID, renderStringSlice(d.ManifestKeys), renderStringSlice(d.ManifestSingleObjectPaths), renderStringSlice(d.ManifestObjectPaths))
 	_, err := buf.WriteString(stubs)
 	return err
 }

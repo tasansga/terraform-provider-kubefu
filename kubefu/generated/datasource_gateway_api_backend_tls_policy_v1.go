@@ -326,7 +326,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoBackendTLSPolicyV1Read(_ context.
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1", "BackendTLSPolicy", "gateway.networking.k8s.io/v1/BackendTLSPolicy"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.validation", "status", "status.ancestors.ancestor_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.validation", "status", "status.ancestors.ancestor_ref"}, []string{"spec", "spec.target_refs", "spec.validation", "spec.validation.ca_certificate_refs", "spec.validation.subject_alt_names", "status", "status.ancestors", "status.ancestors.ancestor_ref", "status.ancestors.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

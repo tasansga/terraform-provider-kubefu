@@ -316,7 +316,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoUDPRouteV1Alpha2Read(_ context.Co
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1alpha2", "UDPRoute", "gateway.networking.k8s.io/v1alpha2/UDPRoute"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "status", "status.parents.parent_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "status", "status.parents.parent_ref"}, []string{"spec", "spec.parent_refs", "spec.rules", "spec.rules.backend_refs", "status", "status.parents", "status.parents.conditions", "status.parents.parent_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

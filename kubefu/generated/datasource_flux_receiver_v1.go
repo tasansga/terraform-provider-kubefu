@@ -323,7 +323,7 @@ func dataSourceFluxNotificationToolkitFluxcdIoReceiverV1Read(_ context.Context, 
 	if err := manifestpkg.SetDataSourceDefaults(d, "notification.toolkit.fluxcd.io/v1", "Receiver", "notification.toolkit.fluxcd.io/v1/Receiver"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.secret_ref", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.secret_ref", "status"}, []string{"spec", "spec.oidc_providers", "spec.oidc_providers.validations", "spec.oidc_providers.variables", "spec.resources", "spec.secret_ref", "status", "status.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

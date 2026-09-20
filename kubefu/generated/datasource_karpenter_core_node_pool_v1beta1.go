@@ -511,7 +511,7 @@ func dataSourceKarpenterCoreKarpenterShNodePoolV1Beta1Read(_ context.Context, d 
 	if err := manifestpkg.SetDataSourceDefaults(d, "karpenter.sh/v1beta1", "NodePool", "karpenter.sh/v1beta1/NodePool"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.disruption", "spec.template", "spec.template.metadata", "spec.template.spec", "spec.template.spec.kubelet", "spec.template.spec.node_class_ref", "spec.template.spec.resources", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.disruption", "spec.template", "spec.template.metadata", "spec.template.spec", "spec.template.spec.kubelet", "spec.template.spec.node_class_ref", "spec.template.spec.resources", "status"}, []string{"spec", "spec.disruption", "spec.disruption.budgets", "spec.template", "spec.template.metadata", "spec.template.spec", "spec.template.spec.kubelet", "spec.template.spec.node_class_ref", "spec.template.spec.requirements", "spec.template.spec.resources", "spec.template.spec.startup_taints", "spec.template.spec.taints", "status", "status.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

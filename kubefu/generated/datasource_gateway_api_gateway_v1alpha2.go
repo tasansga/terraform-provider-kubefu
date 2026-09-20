@@ -476,7 +476,7 @@ func dataSourceGatewayApiGatewayNetworkingK8sIoGatewayV1Alpha2Read(_ context.Con
 	if err := manifestpkg.SetDataSourceDefaults(d, "gateway.networking.k8s.io/v1alpha2", "Gateway", "gateway.networking.k8s.io/v1alpha2/Gateway"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.listeners.allowed_routes", "spec.listeners.allowed_routes.namespaces", "spec.listeners.allowed_routes.namespaces.selector", "spec.listeners.tls", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.listeners.allowed_routes", "spec.listeners.allowed_routes.namespaces", "spec.listeners.allowed_routes.namespaces.selector", "spec.listeners.tls", "status"}, []string{"spec", "spec.addresses", "spec.listeners", "spec.listeners.allowed_routes", "spec.listeners.allowed_routes.kinds", "spec.listeners.allowed_routes.namespaces", "spec.listeners.allowed_routes.namespaces.selector", "spec.listeners.allowed_routes.namespaces.selector.match_expressions", "spec.listeners.tls", "spec.listeners.tls.certificate_refs", "status", "status.addresses", "status.conditions", "status.listeners", "status.listeners.conditions", "status.listeners.supported_kinds"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

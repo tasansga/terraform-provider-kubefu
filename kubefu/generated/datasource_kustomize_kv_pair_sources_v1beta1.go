@@ -120,7 +120,7 @@ func dataSourceKustomizeKustomizeConfigK8sIoKvPairSourcesV1Beta1Read(_ context.C
 	if err := manifestpkg.SetDataSourceDefaults(d, "kustomize.config.k8s.io/v1beta1", "KvPairSources", "kustomize.config.k8s.io/v1beta1/KvPairSources"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"env", "envs", "files", "literals", "metadata"}, []string{"metadata"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"env", "envs", "files", "literals", "metadata"}, []string{"metadata"}, []string{"metadata"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

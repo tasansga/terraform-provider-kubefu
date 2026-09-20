@@ -428,7 +428,7 @@ func dataSourceFluxSourceToolkitFluxcdIoBucketV1Beta2Read(_ context.Context, d *
 	if err := manifestpkg.SetDataSourceDefaults(d, "source.toolkit.fluxcd.io/v1beta2", "Bucket", "source.toolkit.fluxcd.io/v1beta2/Bucket"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.cert_secret_ref", "spec.proxy_secret_ref", "spec.secret_ref", "spec.sts", "spec.sts.cert_secret_ref", "spec.sts.secret_ref", "status", "status.artifact"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"spec", "spec.access_from", "spec.cert_secret_ref", "spec.proxy_secret_ref", "spec.secret_ref", "spec.sts", "spec.sts.cert_secret_ref", "spec.sts.secret_ref", "status", "status.artifact"}, []string{"spec", "spec.access_from", "spec.access_from.namespace_selectors", "spec.cert_secret_ref", "spec.proxy_secret_ref", "spec.secret_ref", "spec.sts", "spec.sts.cert_secret_ref", "spec.sts.secret_ref", "status", "status.artifact", "status.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

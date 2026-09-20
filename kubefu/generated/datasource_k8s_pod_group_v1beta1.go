@@ -524,7 +524,7 @@ func dataSourceK8sSchedulingK8sIoPodGroupV1Beta1Read(_ context.Context, d *schem
 	if err := manifestpkg.SetDataSourceDefaults(d, "scheduling.k8s.io/v1beta1", "PodGroup", "scheduling.k8s.io/v1beta1/PodGroup"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.disruption_mode", "spec.scheduling_constraints", "spec.scheduling_policy", "spec.scheduling_policy.gang", "spec.workload_ref", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.disruption_mode", "spec.scheduling_constraints", "spec.scheduling_policy", "spec.scheduling_policy.gang", "spec.workload_ref", "status"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.disruption_mode", "spec.resource_claims", "spec.scheduling_constraints", "spec.scheduling_constraints.topology", "spec.scheduling_policy", "spec.scheduling_policy.gang", "spec.workload_ref", "status", "status.conditions", "status.resource_claim_statuses"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

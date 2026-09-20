@@ -689,7 +689,7 @@ func dataSourceK8sResourceK8sIoResourceSliceV1Beta2Read(_ context.Context, d *sc
 	if err := manifestpkg.SetDataSourceDefaults(d, "resource.k8s.io/v1beta2", "ResourceSlice", "resource.k8s.io/v1beta2/ResourceSlice"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.devices.node_selector", "spec.node_selector", "spec.pool"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.devices.node_selector", "spec.node_selector", "spec.pool"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.devices", "spec.devices.consumes_counters", "spec.devices.node_selector", "spec.devices.node_selector.node_selector_terms", "spec.devices.node_selector.node_selector_terms.match_expressions", "spec.devices.node_selector.node_selector_terms.match_fields", "spec.devices.taints", "spec.node_selector", "spec.node_selector.node_selector_terms", "spec.node_selector.node_selector_terms.match_expressions", "spec.node_selector.node_selector_terms.match_fields", "spec.pool", "spec.shared_counters"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

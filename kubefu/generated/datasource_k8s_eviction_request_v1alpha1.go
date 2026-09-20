@@ -390,7 +390,7 @@ func dataSourceK8sLifecycleK8sIoEvictionRequestV1Alpha1Read(_ context.Context, d
 	if err := manifestpkg.SetDataSourceDefaults(d, "lifecycle.k8s.io/v1alpha1", "EvictionRequest", "lifecycle.k8s.io/v1alpha1/EvictionRequest"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.target", "spec.target.pod", "status"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec", "status"}, []string{"metadata", "spec", "spec.target", "spec.target.pod", "status"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.target", "spec.target.pod", "status", "status.conditions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

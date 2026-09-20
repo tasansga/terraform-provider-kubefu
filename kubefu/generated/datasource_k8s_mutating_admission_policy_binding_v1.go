@@ -583,7 +583,7 @@ func dataSourceK8sAdmissionregistrationK8sIoMutatingAdmissionPolicyBindingV1Read
 	if err := manifestpkg.SetDataSourceDefaults(d, "admissionregistration.k8s.io/v1", "MutatingAdmissionPolicyBinding", "admissionregistration.k8s.io/v1/MutatingAdmissionPolicyBinding"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.match_resources", "spec.match_resources.namespace_selector", "spec.match_resources.object_selector", "spec.param_ref", "spec.param_ref.selector"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"metadata", "spec", "spec.match_resources", "spec.match_resources.namespace_selector", "spec.match_resources.object_selector", "spec.param_ref", "spec.param_ref.selector"}, []string{"metadata", "metadata.managed_fields", "metadata.owner_references", "spec", "spec.match_resources", "spec.match_resources.exclude_resource_rules", "spec.match_resources.namespace_selector", "spec.match_resources.namespace_selector.match_expressions", "spec.match_resources.object_selector", "spec.match_resources.object_selector.match_expressions", "spec.match_resources.resource_rules", "spec.param_ref", "spec.param_ref.selector", "spec.param_ref.selector.match_expressions"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}

@@ -169,7 +169,7 @@ func dataSourceExternalSecretsGeneratorsExternalSecretsIoGitlabDeployTokenV1Alph
 	if err := manifestpkg.SetDataSourceDefaults(d, "generators.external-secrets.io/v1alpha1", "GitlabDeployToken", "generators.external-secrets.io/v1alpha1/GitlabDeployToken"); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.token", "spec.auth.token.secret_ref"}); err != nil {
+	if err := manifestpkg.SetDataSourceManifestWithObjectPathsForMeta(d, m, []string{"metadata", "spec"}, []string{"spec", "spec.auth", "spec.auth.token", "spec.auth.token.secret_ref"}, []string{"spec", "spec.auth", "spec.auth.token", "spec.auth.token.secret_ref"}); err != nil {
 		return diag.FromErr(err)
 	}
 	return diag.Diagnostics{}
