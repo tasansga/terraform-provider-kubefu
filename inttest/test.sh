@@ -101,7 +101,7 @@ apply)
     fi
   }
   mkdir -p "$TF_DIR/out"
-  for output_name in namespace_yaml config_map_yaml flux_kustomization_yaml flux_kustomization_explicit_empty_yaml user_schema_yaml; do
+  for output_name in namespace_yaml config_map_yaml flux_kustomization_yaml flux_kustomization_explicit_empty_yaml user_schema_yaml cluster_role_yaml; do
     expected="$("$TF_BIN" output -raw "$output_name")"
     case "$output_name" in
       namespace_yaml) file="$TF_DIR/out/namespace.yaml" ;;
@@ -109,6 +109,7 @@ apply)
       flux_kustomization_yaml) file="$TF_DIR/out/flux_kustomization.yaml" ;;
       flux_kustomization_explicit_empty_yaml) file="$TF_DIR/out/flux_kustomization_explicit_empty.yaml" ;;
       user_schema_yaml) file="$TF_DIR/out/user_schema.yaml" ;;
+      cluster_role_yaml) file="$TF_DIR/out/cluster_role.yaml" ;;
       *) echo "unknown output $output_name" >&2; exit 1 ;;
     esac
     printf '%s' "$expected" >"$file"
@@ -146,6 +147,10 @@ apply)
   assert_not_contains "$TF_DIR/out/flux_kustomization.yaml" "postBuild: []"
   assert_contains "$TF_DIR/out/user_schema.yaml" "apiVersion: crd.custom.test/v1beta1"
   assert_contains "$TF_DIR/out/user_schema.yaml" "kind: TstQueue"
+  assert_contains "$TF_DIR/out/cluster_role.yaml" "kind: ClusterRole"
+  assert_contains "$TF_DIR/out/cluster_role.yaml" "name: kubefu-inttest-role"
+  assert_not_contains "$TF_DIR/out/cluster_role.yaml" "apiGroups: []"
+  assert_contains "$TF_DIR/out/cluster_role.yaml" "- \"\""
   ;;
 destroy)
   "$TF_BIN" destroy -auto-approve

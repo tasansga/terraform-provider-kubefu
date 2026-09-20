@@ -110,3 +110,19 @@ data "kubefu_user_crd_custom_test_tst_queue_v1beta1" "inttest_user" {}
 output "user_schema_yaml" {
   value = data.kubefu_user_crd_custom_test_tst_queue_v1beta1.inttest_user.kubefu_manifest_yaml
 }
+
+data "kubefu_k8s_rbac_authorization_k8s_io_cluster_role_v1" "inttest_cluster_role" {
+  metadata {
+    name = "kubefu-inttest-role"
+  }
+  rules {
+    api_groups = [""]
+    resources  = ["pods"]
+    verbs      = ["get"]
+  }
+}
+
+output "cluster_role_yaml" {
+  value = data.kubefu_k8s_rbac_authorization_k8s_io_cluster_role_v1.inttest_cluster_role.kubefu_manifest_yaml
+}
+

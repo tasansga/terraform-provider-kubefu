@@ -276,7 +276,18 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 			return out, true
 		case []interface{}:
 			out := make([]interface{}, 0, len(v))
+			stringSlice := isStringSlice(v, path, objectPaths)
 			for _, item := range v {
+				if stringSlice {
+					if s, ok := item.(string); ok {
+						out = append(out, s)
+						continue
+					}
+					if item == nil {
+						out = append(out, "")
+						continue
+					}
+				}
 				next, keep := pruneManifestValue(item, path, explicitPaths, objectPaths, mode)
 				if keep {
 					if next == nil {
@@ -307,10 +318,15 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 		return v, explicit || v
 	case []interface{}:
 		pruned := make([]interface{}, 0, len(v))
+		stringSlice := isStringSlice(v, path, objectPaths)
 		for _, item := range v {
-			if explicit {
+			if explicit && stringSlice {
 				if s, ok := item.(string); ok {
 					pruned = append(pruned, s)
+					continue
+				}
+				if item == nil {
+					pruned = append(pruned, "")
 					continue
 				}
 			}
@@ -503,6 +519,20 @@ func collectExplicitManifestPaths(value cty.Value, path string, paths map[string
 
 func isTopLevelManifestPath(path string) bool {
 	return path != "" && !strings.Contains(path, ".")
+}
+
+func isStringSlice(v []interface{}, path string, objectPaths map[string]struct{}) bool {
+	if _, isObject := objectPaths[path]; isObject {
+		return false
+	}
+	for _, elem := range v {
+		switch elem.(type) {
+		case string, nil:
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 func lowerCamelToSnake(value string) string {

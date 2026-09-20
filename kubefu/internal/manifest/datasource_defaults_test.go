@@ -944,3 +944,218 @@ func TestSetDataSourceManifestWithEmptyStringInListPreservesElement(t *testing.T
 	}
 }
 
+func TestSetDataSourceManifestWithNilStringInListPreservesElement(t *testing.T) {
+	testSchema := map[string]*schema.Schema{
+		"rules": {
+			Type:       schema.TypeList,
+			Optional:   true,
+			ConfigMode: schema.SchemaConfigModeAttr,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"api_groups": {
+					Type:       schema.TypeList,
+					Optional:   true,
+					ConfigMode: schema.SchemaConfigModeAttr,
+					Elem:       &schema.Schema{Type: schema.TypeString},
+				},
+				"resources": {
+					Type:     schema.TypeList,
+					Optional: true,
+					Elem:     &schema.Schema{Type: schema.TypeString},
+				},
+				"verbs": {
+					Type:     schema.TypeList,
+					Optional: true,
+					Elem:     &schema.Schema{Type: schema.TypeString},
+				},
+			}},
+		},
+		"kubefu_manifest_json": {Type: schema.TypeString, Computed: true},
+		"kubefu_manifest_yaml": {Type: schema.TypeString, Computed: true},
+	}
+	raw := map[string]interface{}{
+		"rules": []interface{}{
+			map[string]interface{}{
+				"api_groups": []interface{}{nil},
+				"resources":  []interface{}{"pods"},
+				"verbs":      []interface{}{"get"},
+			},
+		},
+	}
+	d := schema.TestResourceDataRaw(t, testSchema, raw)
+	singleObjectPaths := []string{}
+	allObjectPaths := []string{"rules"}
+
+	if err := SetDataSourceManifestWithObjectPathsForMeta(
+		d,
+		testRenderModeConfig{mode: RenderModeCompact},
+		[]string{"rules"},
+		singleObjectPaths,
+		allObjectPaths,
+	); err != nil {
+		t.Fatalf("set manifest: %v", err)
+	}
+
+	payload := d.Get("kubefu_manifest_yaml").(string)
+	var manifest map[string]interface{}
+	if err := yaml.Unmarshal([]byte(payload), &manifest); err != nil {
+		t.Fatalf("unmarshal yaml: %v", err)
+	}
+
+	rules, ok := manifest["rules"].([]interface{})
+	if !ok || len(rules) != 1 {
+		t.Fatalf("expected rules slice of len 1, got %T (%v)", manifest["rules"], manifest["rules"])
+	}
+	rule0, ok := rules[0].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected rule[0] to be map, got %T", rules[0])
+	}
+	apiGroups, ok := rule0["apiGroups"].([]interface{})
+	if !ok {
+		t.Fatalf("expected apiGroups in rule[0] to be slice, got %T (%v)", rule0["apiGroups"], rule0["apiGroups"])
+	}
+	if len(apiGroups) != 1 || apiGroups[0] != "" {
+		t.Fatalf("expected apiGroups to be [\"\"], got %v", apiGroups)
+	}
+}
+
+func TestSetDataSourceManifestWithNilInObjectListDoesNotCoerceToString(t *testing.T) {
+	testSchema := map[string]*schema.Schema{
+		"rules": {
+			Type:       schema.TypeList,
+			Optional:   true,
+			ConfigMode: schema.SchemaConfigModeAttr,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"resources": {
+					Type:     schema.TypeList,
+					Optional: true,
+					Elem:     &schema.Schema{Type: schema.TypeString},
+				},
+				"verbs": {
+					Type:     schema.TypeList,
+					Optional: true,
+					Elem:     &schema.Schema{Type: schema.TypeString},
+				},
+			}},
+		},
+		"kubefu_manifest_json": {Type: schema.TypeString, Computed: true},
+		"kubefu_manifest_yaml": {Type: schema.TypeString, Computed: true},
+	}
+	raw := map[string]interface{}{
+		"rules": []interface{}{
+			map[string]interface{}{
+				"resources": []interface{}{"pods"},
+				"verbs":     []interface{}{"get"},
+			},
+			nil,
+		},
+	}
+	d := schema.TestResourceDataRaw(t, testSchema, raw)
+	singleObjectPaths := []string{}
+	allObjectPaths := []string{"rules"}
+
+	if err := SetDataSourceManifestWithObjectPathsForMeta(
+		d,
+		testRenderModeConfig{mode: RenderModeCompact},
+		[]string{"rules"},
+		singleObjectPaths,
+		allObjectPaths,
+	); err != nil {
+		t.Fatalf("set manifest: %v", err)
+	}
+
+	payload := d.Get("kubefu_manifest_yaml").(string)
+	var manifest map[string]interface{}
+	if err := yaml.Unmarshal([]byte(payload), &manifest); err != nil {
+		t.Fatalf("unmarshal yaml: %v", err)
+	}
+
+	rules, ok := manifest["rules"].([]interface{})
+	if !ok {
+		t.Fatalf("expected rules slice, got %T (%v)", manifest["rules"], manifest["rules"])
+	}
+	for i, r := range rules {
+		if _, isString := r.(string); isString {
+			t.Fatalf("rules[%d] was unexpectedly coerced to string: %v", i, r)
+		}
+	}
+	if len(rules) != 1 {
+		t.Fatalf("expected rules slice of len 1 (nil omitted), got len %d (%v)", len(rules), rules)
+	}
+}
+
+func TestSetDataSourceManifestCanonicalPreservesNilStringInList(t *testing.T) {
+	testSchema := map[string]*schema.Schema{
+		"rules": {
+			Type:       schema.TypeList,
+			Optional:   true,
+			ConfigMode: schema.SchemaConfigModeAttr,
+			Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"api_groups": {
+					Type:       schema.TypeList,
+					Optional:   true,
+					ConfigMode: schema.SchemaConfigModeAttr,
+					Elem:       &schema.Schema{Type: schema.TypeString},
+				},
+				"resources": {
+					Type:     schema.TypeList,
+					Optional: true,
+					Elem:     &schema.Schema{Type: schema.TypeString},
+				},
+				"verbs": {
+					Type:     schema.TypeList,
+					Optional: true,
+					Elem:     &schema.Schema{Type: schema.TypeString},
+				},
+			}},
+		},
+		"kubefu_manifest_json": {Type: schema.TypeString, Computed: true},
+		"kubefu_manifest_yaml": {Type: schema.TypeString, Computed: true},
+	}
+	raw := map[string]interface{}{
+		"rules": []interface{}{
+			map[string]interface{}{
+				"api_groups": []interface{}{nil},
+				"resources":  []interface{}{"pods"},
+				"verbs":      []interface{}{"get"},
+			},
+		},
+	}
+	d := schema.TestResourceDataRaw(t, testSchema, raw)
+	singleObjectPaths := []string{}
+	allObjectPaths := []string{"rules"}
+
+	if err := SetDataSourceManifestWithObjectPathsForMeta(
+		d,
+		testRenderModeConfig{mode: RenderModeCanonical},
+		[]string{"rules"},
+		singleObjectPaths,
+		allObjectPaths,
+	); err != nil {
+		t.Fatalf("set manifest: %v", err)
+	}
+
+	payload := d.Get("kubefu_manifest_yaml").(string)
+	var manifest map[string]interface{}
+	if err := yaml.Unmarshal([]byte(payload), &manifest); err != nil {
+		t.Fatalf("unmarshal yaml: %v", err)
+	}
+
+	rules, ok := manifest["rules"].([]interface{})
+	if !ok || len(rules) != 1 {
+		t.Fatalf("expected rules slice of len 1, got %T (%v)", manifest["rules"], manifest["rules"])
+	}
+	rule0, ok := rules[0].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected rule[0] to be map, got %T", rules[0])
+	}
+	apiGroups, ok := rule0["apiGroups"].([]interface{})
+	if !ok {
+		t.Fatalf("expected apiGroups in rule[0] to be slice, got %T (%v)", rule0["apiGroups"], rule0["apiGroups"])
+	}
+	if len(apiGroups) != 1 || apiGroups[0] != "" {
+		t.Fatalf("expected apiGroups to be [\"\"], got %v", apiGroups)
+	}
+}
+
+
+
