@@ -499,3 +499,63 @@ func TestFindDefinitionNameByGVKUsesSortedDefinitionNames(t *testing.T) {
 		t.Fatalf("expected deterministic sorted name, got %q", name)
 	}
 }
+
+func TestBuildPropertiesDeterministicOnCollidingNames(t *testing.T) {
+	builder := &schemaBuilder{
+		definitions: map[string]definition{},
+		cache:       make(map[string]map[string]*schema.Schema),
+	}
+	def := definition{
+		Properties: map[string]property{
+			"proxyURL": {
+				Type:        "string",
+				Description: "Optional proxy URL.\n\nIf defined, this field takes precedence over `proxyUrl`.",
+			},
+			"proxyUrl": {
+				Type:        "string",
+				Description: "`proxyURL` defines the HTTP proxy server to use.",
+			},
+		},
+	}
+
+	expectedDesc := "Optional proxy URL.\n\nIf defined, this field takes precedence over `proxyUrl`."
+	for i := 0; i < 50; i++ {
+		sch := builder.buildProperties(def)
+		proxyURLSch, ok := sch["proxy_url"]
+		if !ok {
+			t.Fatalf("expected proxy_url schema to exist")
+		}
+		if proxyURLSch.Description != expectedDesc {
+			t.Fatalf("iteration %d: expected deterministic description %q, got %q", i, expectedDesc, proxyURLSch.Description)
+		}
+	}
+}
+
+func TestBuildInlinePropertiesDeterministicOnCollidingNames(t *testing.T) {
+	builder := &schemaBuilder{
+		definitions: map[string]definition{},
+		cache:       make(map[string]map[string]*schema.Schema),
+	}
+	props := map[string]property{
+		"proxyURL": {
+			Type:        "string",
+			Description: "Optional proxy URL.\n\nIf defined, this field takes precedence over `proxyUrl`.",
+		},
+		"proxyUrl": {
+			Type:        "string",
+			Description: "`proxyURL` defines the HTTP proxy server to use.",
+		},
+	}
+
+	expectedDesc := "Optional proxy URL.\n\nIf defined, this field takes precedence over `proxyUrl`."
+	for i := 0; i < 50; i++ {
+		sch := builder.buildInlineProperties(props)
+		proxyURLSch, ok := sch["proxy_url"]
+		if !ok {
+			t.Fatalf("expected proxy_url schema to exist")
+		}
+		if proxyURLSch.Description != expectedDesc {
+			t.Fatalf("iteration %d: expected deterministic description %q, got %q", i, expectedDesc, proxyURLSch.Description)
+		}
+	}
+}

@@ -322,12 +322,24 @@ func (b *schemaBuilder) buildProperties(def definition) map[string]*schema.Schem
 		required[normalizedPropertyName(prop)] = true
 	}
 	schemaMap := make(map[string]*schema.Schema, len(def.Properties))
-	for name, prop := range def.Properties {
+	names := make([]string, 0, len(def.Properties))
+	for name := range def.Properties {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	for _, name := range names {
+		prop := def.Properties[name]
 		attr := normalizedPropertyName(name)
 		if attr == "" {
 			attr = name
 		}
-		schemaMap[attr] = b.buildSchemaForProperty(name, prop, required[attr])
+		newSch := b.buildSchemaForProperty(name, prop, required[attr])
+		if existing, ok := schemaMap[attr]; ok {
+			schemaMap[attr] = mergeSchemaField(existing, newSch)
+		} else {
+			schemaMap[attr] = newSch
+		}
 	}
 	return schemaMap
 }
@@ -446,12 +458,24 @@ func (b *schemaBuilder) lookupDefinition(ref string) (string, definition, bool) 
 
 func (b *schemaBuilder) buildInlineProperties(props map[string]property) map[string]*schema.Schema {
 	schemaMap := make(map[string]*schema.Schema, len(props))
-	for name, prop := range props {
+	names := make([]string, 0, len(props))
+	for name := range props {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	for _, name := range names {
+		prop := props[name]
 		attr := normalizedPropertyName(name)
 		if attr == "" {
 			attr = name
 		}
-		schemaMap[attr] = b.buildSchemaForProperty(name, prop, false)
+		newSch := b.buildSchemaForProperty(name, prop, false)
+		if existing, ok := schemaMap[attr]; ok {
+			schemaMap[attr] = mergeSchemaField(existing, newSch)
+		} else {
+			schemaMap[attr] = newSch
+		}
 	}
 	return schemaMap
 }
