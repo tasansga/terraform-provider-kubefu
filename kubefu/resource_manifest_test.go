@@ -1,10 +1,19 @@
 package kubefu
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	meta "k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
+	schemaApi "k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/dynamic/fake"
+	clienttesting "k8s.io/client-go/testing"
 )
 
 func TestDecodeManifests_SingleDocumentYAML(t *testing.T) {
@@ -376,6 +385,38 @@ func TestPrunedObjects(t *testing.T) {
 	}
 }
 
+func TestPrunedObjects_APIVersionUpgradeDoesNotPrune(t *testing.T) {
+	oldObjs := []*unstructured.Unstructured{
+		{
+			Object: map[string]any{
+				"apiVersion": "batch/v1beta1",
+				"kind":       "CronJob",
+				"metadata": map[string]any{
+					"name":      "my-job",
+					"namespace": "default",
+				},
+			},
+		},
+	}
+	newObjs := []*unstructured.Unstructured{
+		{
+			Object: map[string]any{
+				"apiVersion": "batch/v1",
+				"kind":       "CronJob",
+				"metadata": map[string]any{
+					"name":      "my-job",
+					"namespace": "default",
+				},
+			},
+		},
+	}
+
+	pruned := prunedObjects(oldObjs, newObjs)
+	if len(pruned) != 0 {
+		t.Fatalf("expected 0 pruned objects on API version upgrade, got %d (%v)", len(pruned), pruned)
+	}
+}
+
 func TestInheritRecordedNamespaces(t *testing.T) {
 	// u1 has no namespace specified in YAML
 	u1 := &unstructured.Unstructured{Object: map[string]any{"apiVersion": "v1", "kind": "ConfigMap", "metadata": map[string]any{"name": "cm1"}}}
@@ -416,6 +457,205 @@ func TestRetainUntouchedObjects(t *testing.T) {
 	}
 	if retained[0].GetName() != "cm1" || retained[1].GetName() != "cm2" || retained[2].GetName() != "cm3" {
 		t.Errorf("unexpected retained list: %v", retained)
+	}
+}
+
+func TestObjectKeyOf(t *testing.T) {
+	makeObj := func(apiVersion, kind, namespace, name string) *unstructured.Unstructured {
+		obj := map[string]any{}
+		if apiVersion != "" {
+			obj["apiVersion"] = apiVersion
+		}
+		if kind != "" {
+			obj["kind"] = kind
+		}
+		md := map[string]any{}
+		if namespace != "" {
+			md["namespace"] = namespace
+		}
+		if name != "" {
+			md["name"] = name
+		}
+		if len(md) > 0 {
+			obj["metadata"] = md
+		}
+		return &unstructured.Unstructured{Object: obj}
+	}
+
+	tests := []struct {
+		name      string
+		objA      *unstructured.Unstructured
+		objB      *unstructured.Unstructured
+		expectOkA bool
+		expectOkB bool
+		wantEqual bool
+	}{
+		{
+			name:      "version-agnostic equality: batch/v1beta1 vs batch/v1 CronJob",
+			objA:      makeObj("batch/v1beta1", "CronJob", "default", "my-job"),
+			objB:      makeObj("batch/v1", "CronJob", "default", "my-job"),
+			expectOkA: true,
+			expectOkB: true,
+			wantEqual: true,
+		},
+		{
+			name:      "group mismatch: extensions/v1beta1 vs networking.k8s.io/v1 Ingress",
+			objA:      makeObj("extensions/v1beta1", "Ingress", "default", "my-ingress"),
+			objB:      makeObj("networking.k8s.io/v1", "Ingress", "default", "my-ingress"),
+			expectOkA: true,
+			expectOkB: true,
+			wantEqual: false,
+		},
+		{
+			name:      "kind mismatch",
+			objA:      makeObj("v1", "ConfigMap", "default", "cm1"),
+			objB:      makeObj("v1", "Secret", "default", "cm1"),
+			expectOkA: true,
+			expectOkB: true,
+			wantEqual: false,
+		},
+		{
+			name:      "namespace mismatch",
+			objA:      makeObj("v1", "ConfigMap", "default", "cm1"),
+			objB:      makeObj("v1", "ConfigMap", "other", "cm1"),
+			expectOkA: true,
+			expectOkB: true,
+			wantEqual: false,
+		},
+		{
+			name:      "name mismatch",
+			objA:      makeObj("v1", "ConfigMap", "default", "cm1"),
+			objB:      makeObj("v1", "ConfigMap", "default", "cm2"),
+			expectOkA: true,
+			expectOkB: true,
+			wantEqual: false,
+		},
+		{
+			name:      "nil safety: nil object",
+			objA:      nil,
+			objB:      makeObj("v1", "ConfigMap", "default", "cm1"),
+			expectOkA: false,
+			expectOkB: true,
+			wantEqual: false,
+		},
+		{
+			name:      "malformed: empty kind",
+			objA:      makeObj("v1", "", "default", "cm1"),
+			objB:      makeObj("v1", "ConfigMap", "default", "cm1"),
+			expectOkA: false,
+			expectOkB: true,
+			wantEqual: false,
+		},
+		{
+			name:      "malformed: empty name",
+			objA:      makeObj("v1", "ConfigMap", "default", ""),
+			objB:      makeObj("v1", "ConfigMap", "default", "cm1"),
+			expectOkA: false,
+			expectOkB: true,
+			wantEqual: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			keyA, okA := objectKeyOf(tt.objA)
+			if okA != tt.expectOkA {
+				t.Fatalf("objectKeyOf(objA) ok = %v, want %v", okA, tt.expectOkA)
+			}
+			keyB, okB := objectKeyOf(tt.objB)
+			if okB != tt.expectOkB {
+				t.Fatalf("objectKeyOf(objB) ok = %v, want %v", okB, tt.expectOkB)
+			}
+			isEqual := okA && okB && keyA == keyB
+			if isEqual != tt.wantEqual {
+				t.Errorf("objectKeyOf comparison = %v, want %v (keyA=%+v, keyB=%+v)", isEqual, tt.wantEqual, keyA, keyB)
+			}
+		})
+	}
+}
+
+func TestInheritRecordedNamespaces_NilSafety(t *testing.T) {
+	cm := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name": "cm1",
+			},
+		},
+	}
+	// Should not panic when nil objects are present
+	inheritRecordedNamespaces([]*unstructured.Unstructured{nil, cm}, []*unstructured.Unstructured{nil, cm})
+}
+
+func TestObjectKeyOf_RejectsMalformedOrUnnamedObjects(t *testing.T) {
+	if _, ok := objectKeyOf(nil); ok {
+		t.Errorf("expected objectKeyOf(nil) to return ok=false")
+	}
+
+	missingKind := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"metadata": map[string]any{
+				"name": "cm1",
+			},
+		},
+	}
+	if _, ok := objectKeyOf(missingKind); ok {
+		t.Errorf("expected objectKeyOf with empty kind to return ok=false")
+	}
+
+	missingName := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata":   map[string]any{},
+		},
+	}
+	if _, ok := objectKeyOf(missingName); ok {
+		t.Errorf("expected objectKeyOf with empty name to return ok=false")
+	}
+
+	valid := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name": "cm1",
+			},
+		},
+	}
+	key, ok := objectKeyOf(valid)
+	if !ok {
+		t.Fatalf("expected objectKeyOf with valid kind and name to return ok=true")
+	}
+	if key.name != "cm1" || key.gk.Kind != "ConfigMap" {
+		t.Errorf("unexpected key: %+v", key)
+	}
+}
+
+func TestInheritRecordedNamespaces_IgnoresUnnamedObjects(t *testing.T) {
+	unnamedObj := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata":   map[string]any{},
+		},
+	}
+	recordedUnnamed := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"namespace": "recorded-ns",
+			},
+		},
+	}
+
+	inheritRecordedNamespaces([]*unstructured.Unstructured{unnamedObj}, []*unstructured.Unstructured{recordedUnnamed})
+
+	if unnamedObj.GetNamespace() != "" {
+		t.Errorf("expected unnamed object not to inherit namespace, got %q", unnamedObj.GetNamespace())
 	}
 }
 
@@ -583,4 +823,330 @@ func schemaMapToResourceData(t *testing.T, s map[string]*schema.Schema, raw map[
 		}
 	}
 	return d
+}
+
+func setupDriftTestFixture(t *testing.T, liveObjs ...runtime.Object) (*schema.ResourceData, *providerConfig, *unstructured.Unstructured, *unstructured.Unstructured) {
+	t.Helper()
+
+	u1 := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name":      "cm1",
+				"namespace": "default",
+			},
+			"data": map[string]any{
+				"k1": "v1",
+			},
+		},
+	}
+	u2 := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name":      "cm2",
+				"namespace": "default",
+			},
+			"data": map[string]any{
+				"k2": "v2",
+			},
+		},
+	}
+
+	manifest := `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+  namespace: default
+data:
+  k1: v1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm2
+  namespace: default
+data:
+  k2: v2
+`
+
+	scheme := runtime.NewScheme()
+	effectiveLive := liveObjs
+	if len(effectiveLive) == 0 {
+		effectiveLive = []runtime.Object{u1}
+	}
+	fakeClient := fake.NewSimpleDynamicClient(scheme, effectiveLive...)
+	fakeClient.PrependReactor("patch", "configmaps", func(action clienttesting.Action) (handled bool, ret runtime.Object, err error) {
+		patchAction := action.(clienttesting.PatchAction)
+		var obj unstructured.Unstructured
+		if err := json.Unmarshal(patchAction.GetPatch(), &obj.Object); err != nil {
+			return true, nil, err
+		}
+		return true, &obj, nil
+	})
+
+	mapper := meta.NewDefaultRESTMapper([]schemaApi.GroupVersion{
+		{Group: "", Version: "v1"},
+	})
+	mapper.Add(schemaApi.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"}, meta.RESTScopeNamespace)
+
+	cfg := &providerConfig{
+		dynamicClient: fakeClient,
+		restMapper:    mapper,
+	}
+
+	resource := resourceManifest()
+	initialID := manifestIDs([]*unstructured.Unstructured{u1, u2})
+	d := schemaMapToResourceData(t, resource.Schema, map[string]any{
+		"manifest": manifest,
+	})
+	d.SetId(initialID)
+
+	return d, cfg, u1, u2
+}
+
+func TestResourceManifestRead_PartialNotFoundDrift(t *testing.T) {
+	d, cfg, u1, _ := setupDriftTestFixture(t)
+
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("resourceManifestRead failed: %v", diags)
+	}
+
+	// 1. Live ID must be updated in d.Id() to reflect true cluster state (cm1 only)
+	expectedLiveID := manifestIDs([]*unstructured.Unstructured{u1})
+	if d.Id() != expectedLiveID {
+		t.Errorf("expected d.Id() to be %q, got %q", expectedLiveID, d.Id())
+	}
+
+	// 2. d.Get("manifest") must be updated with live objects (only cm1)
+	newManifest := d.Get("manifest").(string)
+	objs, err := decodeManifests(newManifest)
+	if err != nil {
+		t.Fatalf("failed to decode updated manifest: %v", err)
+	}
+	if len(objs) != 1 {
+		t.Fatalf("expected 1 live object in manifest, got %d", len(objs))
+	}
+	if objs[0].GetName() != "cm1" {
+		t.Errorf("expected live object to be 'cm1', got %q", objs[0].GetName())
+	}
+}
+
+func TestResourceManifestRead_DriftLifecycle_AcceptedOutOfBandDeletion(t *testing.T) {
+	d, cfg, u1, _ := setupDriftTestFixture(t)
+
+	// First read: drift detected (cm2 missing from cluster)
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("first resourceManifestRead failed: %v", diags)
+	}
+
+	expectedLiveID := manifestIDs([]*unstructured.Unstructured{u1})
+	if d.Id() != expectedLiveID {
+		t.Fatalf("expected 1st read d.Id() to update to live ID %q, got %q", expectedLiveID, d.Id())
+	}
+
+	// Subsequent plan: user accepted out-of-band deletion and updated HCL config to only cm1.
+	// State now has manifest=cm1 and id=cm1.
+	acceptedManifest := d.Get("manifest").(string)
+	resource := resourceManifest()
+	d2 := schemaMapToResourceData(t, resource.Schema, map[string]any{
+		"manifest": acceptedManifest,
+	})
+	d2.SetId(expectedLiveID)
+
+	diags2 := resourceManifestRead(context.Background(), d2, cfg)
+	if diags2.HasError() {
+		t.Fatalf("second resourceManifestRead failed: %v", diags2)
+	}
+
+	// Clean state: id matches live cluster (cm1) without any trapped cm2
+	if d2.Id() != expectedLiveID {
+		t.Fatalf("expected 2nd read d.Id() to remain %q, got %q", expectedLiveID, d2.Id())
+	}
+}
+
+func TestResourceManifestRead_DriftLifecycle_RecreateMissingResource(t *testing.T) {
+	d, cfg, u1, u2 := setupDriftTestFixture(t)
+
+	resource := resourceManifest()
+	initialID := manifestIDs([]*unstructured.Unstructured{u1, u2})
+	manifest := d.Get("manifest").(string)
+
+	// Drift detected on read: cm2 missing
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("resourceManifestRead failed: %v", diags)
+	}
+
+	expectedLiveID := manifestIDs([]*unstructured.Unstructured{u1})
+	if d.Id() != expectedLiveID {
+		t.Fatalf("expected d.Id() to update to live ID %q, got %q", expectedLiveID, d.Id())
+	}
+
+	// State manifest now has cm1, but HCL still has cm1 and cm2.
+	// OpenTofu detects state != HCL and plans an Update.
+	// When update runs with original HCL manifest:
+	dUpdate := schemaMapToResourceData(t, resource.Schema, map[string]any{
+		"manifest": manifest,
+	})
+	dUpdate.SetId(expectedLiveID)
+
+	diagsUpdate := resourceManifestCreateOrUpdate(context.Background(), dUpdate, cfg)
+	if diagsUpdate.HasError() {
+		t.Fatalf("resourceManifestCreateUpdate failed: %v", diagsUpdate)
+	}
+
+	if dUpdate.Id() != initialID {
+		t.Fatalf("expected dUpdate.Id() to restore %q, got %q", initialID, dUpdate.Id())
+	}
+}
+
+func TestBuildKubeClients_AsymmetricInjectionErrors(t *testing.T) {
+	fakeClient := fake.NewSimpleDynamicClient(runtime.NewScheme())
+	fakeMapper := meta.NewDefaultRESTMapper([]schemaApi.GroupVersion{
+		{Group: "", Version: "v1"},
+	})
+
+	expectedErr := "both dynamicClient and restMapper must be provided together for client injection"
+
+	t.Run("dynamicClient only returns error", func(t *testing.T) {
+		cfg := &providerConfig{dynamicClient: fakeClient, restMapper: nil}
+		client, mapper, err := buildKubeClients(cfg)
+		if err == nil || !strings.Contains(err.Error(), expectedErr) {
+			t.Fatalf("expected error containing %q, got err=%v", expectedErr, err)
+		}
+		if client != nil || mapper != nil {
+			t.Errorf("expected nil clients on error, got client=%v, mapper=%v", client, mapper)
+		}
+	})
+
+	t.Run("restMapper only returns error", func(t *testing.T) {
+		cfg := &providerConfig{dynamicClient: nil, restMapper: fakeMapper}
+		client, mapper, err := buildKubeClients(cfg)
+		if err == nil || !strings.Contains(err.Error(), expectedErr) {
+			t.Fatalf("expected error containing %q, got err=%v", expectedErr, err)
+		}
+		if client != nil || mapper != nil {
+			t.Errorf("expected nil clients on error, got client=%v, mapper=%v", client, mapper)
+		}
+	})
+
+	t.Run("both non-nil returns clients without error", func(t *testing.T) {
+		cfg := &providerConfig{dynamicClient: fakeClient, restMapper: fakeMapper}
+		client, mapper, err := buildKubeClients(cfg)
+		if err != nil {
+			t.Fatalf("unexpected error when both clients provided: %v", err)
+		}
+		if client != fakeClient || mapper != fakeMapper {
+			t.Errorf("expected returned clients to match injected clients")
+		}
+	})
+}
+
+func TestResolveNamespace_InjectedClientsDefaultsHermetically(t *testing.T) {
+	fakeClient := fake.NewSimpleDynamicClient(runtime.NewScheme())
+	cfg := &providerConfig{dynamicClient: fakeClient}
+
+	u := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name": "no-namespace-cm",
+			},
+		},
+	}
+
+	namespacedMapping := &meta.RESTMapping{
+		Scope: meta.RESTScopeNamespace,
+	}
+
+	ns, err := resolveNamespace(cfg, u, namespacedMapping)
+	if err != nil {
+		t.Fatalf("unexpected error from resolveNamespace: %v", err)
+	}
+	if ns != "default" {
+		t.Errorf("expected namespace 'default' when mock client is injected, got %q", ns)
+	}
+}
+
+func TestResourceManifestCreateOrUpdate_PartialApplyFailurePreservesResolvedNamespace(t *testing.T) {
+	manifest := `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm2
+`
+
+	u2 := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name":      "cm2",
+				"namespace": "default",
+			},
+		},
+	}
+	// cm1 is newly added without explicit namespace and is not yet in oldObjs,
+	// so inheritRecordedNamespaces does not pre-populate its namespace.
+	oldObjs := []*unstructured.Unstructured{u2}
+
+	scheme := runtime.NewScheme()
+	fakeClient := fake.NewSimpleDynamicClient(scheme)
+	fakeClient.PrependReactor("patch", "configmaps", func(action clienttesting.Action) (handled bool, ret runtime.Object, err error) {
+		patchAction := action.(clienttesting.PatchAction)
+		if patchAction.GetName() == "cm2" {
+			return true, nil, fmt.Errorf("simulated patch failure for cm2")
+		}
+		var obj unstructured.Unstructured
+		if err := json.Unmarshal(patchAction.GetPatch(), &obj.Object); err != nil {
+			return true, nil, err
+		}
+		return true, &obj, nil
+	})
+
+	mapper := meta.NewDefaultRESTMapper([]schemaApi.GroupVersion{
+		{Group: "", Version: "v1"},
+	})
+	mapper.Add(schemaApi.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"}, meta.RESTScopeNamespace)
+
+	cfg := &providerConfig{
+		dynamicClient: fakeClient,
+		restMapper:    mapper,
+	}
+
+	resource := resourceManifest()
+	d := schemaMapToResourceData(t, resource.Schema, map[string]any{
+		"manifest": manifest,
+	})
+	d.SetId(manifestIDs(oldObjs))
+
+	diags := resourceManifestCreateOrUpdate(context.Background(), d, cfg)
+	if !diags.HasError() {
+		t.Fatalf("expected create/update to fail, got success")
+	}
+
+	ids, err := parseManifestIDs(d.Id())
+	if err != nil {
+		t.Fatalf("unexpected error parsing d.Id(): %v", err)
+	}
+	if len(ids) != 2 {
+		t.Fatalf("expected 2 objects in d.Id(), got %d: %q", len(ids), d.Id())
+	}
+	for _, idObj := range ids {
+		if idObj.GetNamespace() == "" || idObj.GetNamespace() == "cluster" {
+			t.Errorf("expected non-empty namespace, got %q for %s", idObj.GetNamespace(), idObj.GetName())
+		}
+	}
 }

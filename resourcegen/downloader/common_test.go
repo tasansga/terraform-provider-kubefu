@@ -178,10 +178,9 @@ func TestRateLimitWait(t *testing.T) {
 	t.Run("X-RateLimit-Reset header", func(t *testing.T) {
 		resetEpoch := time.Now().Add(10 * time.Second).Unix()
 		resp := &http.Response{
-			Header: http.Header{
-				"X-RateLimit-Reset": []string{strconv.FormatInt(resetEpoch, 10)},
-			},
+			Header: make(http.Header),
 		}
+		resp.Header.Set("X-RateLimit-Reset", strconv.FormatInt(resetEpoch, 10))
 		got := rateLimitWait(resp)
 		if got <= 0 || got > 15*time.Second {
 			t.Errorf("rateLimitWait() returned unexpected duration: %v", got)

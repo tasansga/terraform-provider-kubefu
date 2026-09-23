@@ -18,6 +18,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
+	schemaApi "k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	k8yaml "k8s.io/apimachinery/pkg/util/yaml"
 	"k8s.io/client-go/discovery"
@@ -196,15 +197,6 @@ func resourceManifestRead(ctx context.Context, d *schema.ResourceData, m any) di
 		return nil
 	}
 
-	// If only a subset of objects was found, do NOT truncate d.Id() or d.Get("manifest")
-	// so missing resources remain tracked in state and can be re-converged.
-	if notFoundCount > 0 {
-		return nil
-	}
-
-	if d.Id() == "" {
-		d.SetId(manifestIDs(objs))
-	}
 	if err := setManifestFromObjects(d, lives); err != nil {
 		return diag.FromErr(err)
 	}
@@ -334,6 +326,14 @@ func validateManifest(u *unstructured.Unstructured) error {
 }
 
 func buildKubeClients(cfg *providerConfig) (dynamic.Interface, meta.RESTMapper, error) {
+	if cfg != nil {
+		if cfg.dynamicClient != nil && cfg.restMapper != nil {
+			return cfg.dynamicClient, cfg.restMapper, nil
+		}
+		if cfg.dynamicClient != nil || cfg.restMapper != nil {
+			return nil, nil, fmt.Errorf("both dynamicClient and restMapper must be provided together for client injection")
+		}
+	}
 	restCfg, err := buildRESTConfig(cfg)
 	if err != nil {
 		return nil, nil, err
@@ -383,6 +383,9 @@ func applyManifest(ctx context.Context, client dynamic.Interface, mapper meta.RE
 	ns, err := resolveNamespace(cfg, u, mapping)
 	if err != nil {
 		return nil, err
+	}
+	if mapping.Scope.Name() == meta.RESTScopeNameNamespace && u.GetNamespace() == "" {
+		u.SetNamespace(ns)
 	}
 	resource := client.Resource(mapping.Resource)
 	var target dynamic.ResourceInterface
@@ -462,7 +465,7 @@ func resolveNamespace(cfg *providerConfig, u *unstructured.Unstructured, mapping
 	if ns != "" {
 		return ns, nil
 	}
-	if cfg == nil {
+	if cfg == nil || cfg.dynamicClient != nil {
 		return "default", nil
 	}
 	if fromCfg, err := kubeconfigNamespace(cfg); err == nil && fromCfg != "" {
@@ -539,18 +542,36 @@ func reverseObjects(objs []*unstructured.Unstructured) []*unstructured.Unstructu
 	return reversed
 }
 
+type objectKey struct {
+	gk        schemaApi.GroupKind
+	namespace string
+	name      string
+}
+
+func objectKeyOf(u *unstructured.Unstructured) (objectKey, bool) {
+	if u == nil || u.GetName() == "" || u.GetKind() == "" {
+		return objectKey{}, false
+	}
+	return objectKey{
+		gk:        u.GroupVersionKind().GroupKind(),
+		namespace: u.GetNamespace(),
+		name:      u.GetName(),
+	}, true
+}
+
 func prunedObjects(oldObjs, newObjs []*unstructured.Unstructured) []*unstructured.Unstructured {
-	newIDs := make(map[string]bool, len(newObjs))
+	newKeys := make(map[objectKey]struct{}, len(newObjs))
 	for _, u := range newObjs {
-		if id := manifestID(u); id != "" {
-			newIDs[id] = true
+		if key, ok := objectKeyOf(u); ok {
+			newKeys[key] = struct{}{}
 		}
 	}
 	var pruned []*unstructured.Unstructured
 	for _, oldU := range reverseObjects(oldObjs) {
-		oldID := manifestID(oldU)
-		if oldID != "" && !newIDs[oldID] {
-			pruned = append(pruned, oldU)
+		if key, ok := objectKeyOf(oldU); ok {
+			if _, exists := newKeys[key]; !exists {
+				pruned = append(pruned, oldU)
+			}
 		}
 	}
 	return pruned
@@ -558,12 +579,16 @@ func prunedObjects(oldObjs, newObjs []*unstructured.Unstructured) []*unstructure
 
 func inheritRecordedNamespaces(objs, recordedObjs []*unstructured.Unstructured) {
 	for _, u := range objs {
-		if u.GetNamespace() == "" {
-			for _, rec := range recordedObjs {
-				if rec.GroupVersionKind() == u.GroupVersionKind() && rec.GetName() == u.GetName() && rec.GetNamespace() != "" {
-					u.SetNamespace(rec.GetNamespace())
-					break
-				}
+		if u == nil || u.GetName() == "" || u.GetNamespace() != "" {
+			continue
+		}
+		for _, rec := range recordedObjs {
+			if rec == nil || rec.GetName() == "" || rec.GetNamespace() == "" {
+				continue
+			}
+			if rec.GroupVersionKind().GroupKind() == u.GroupVersionKind().GroupKind() && rec.GetName() == u.GetName() {
+				u.SetNamespace(rec.GetNamespace())
+				break
 			}
 		}
 	}
@@ -573,16 +598,18 @@ func retainUntouchedObjects(appliedObjs, oldObjs []*unstructured.Unstructured) [
 	retained := make([]*unstructured.Unstructured, len(appliedObjs), len(appliedObjs)+len(oldObjs))
 	copy(retained, appliedObjs)
 
-	appliedIdentities := make(map[string]bool, len(appliedObjs))
+	appliedKeys := make(map[objectKey]struct{}, len(appliedObjs))
 	for _, u := range appliedObjs {
-		key := fmt.Sprintf("%s/%s/%s/%s", u.GetAPIVersion(), u.GetKind(), u.GetNamespace(), u.GetName())
-		appliedIdentities[key] = true
+		if key, ok := objectKeyOf(u); ok {
+			appliedKeys[key] = struct{}{}
+		}
 	}
 
 	for _, oldU := range oldObjs {
-		key := fmt.Sprintf("%s/%s/%s/%s", oldU.GetAPIVersion(), oldU.GetKind(), oldU.GetNamespace(), oldU.GetName())
-		if !appliedIdentities[key] {
-			retained = append(retained, oldU)
+		if key, ok := objectKeyOf(oldU); ok {
+			if _, exists := appliedKeys[key]; !exists {
+				retained = append(retained, oldU)
+			}
 		}
 	}
 	return retained

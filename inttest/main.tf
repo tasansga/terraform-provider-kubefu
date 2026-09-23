@@ -126,3 +126,74 @@ output "cluster_role_yaml" {
   value = data.kubefu_k8s_rbac_authorization_k8s_io_cluster_role_v1.inttest_cluster_role.kubefu_manifest_yaml
 }
 
+data "kubefu_k8s_apps_deployment_v1" "inttest_deployment" {
+  metadata {
+    name      = "kubernetes-mcp-server"
+    namespace = "mcp-system"
+  }
+  spec {
+    replicas = 1
+    selector {
+      match_labels = {
+        app = "kubernetes-mcp-server"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "kubernetes-mcp-server"
+        }
+      }
+      spec {
+        containers {
+          name  = "mcp-server"
+          image = "my-image:latest"
+          args  = ["--mode=sse"]
+          ports {
+            container_port = 8081
+          }
+        }
+        containers {
+          name  = "auth-proxy"
+          image = "proxy:latest"
+          ports {
+            container_port = 8080
+          }
+          liveness_probe {
+            http_get {
+              path = "/health"
+              port = 8080
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+output "deployment_yaml" {
+  value = data.kubefu_k8s_apps_deployment_v1.inttest_deployment.kubefu_manifest_yaml
+}
+
+data "kubefu_k8s_core_service_v1" "inttest_service" {
+  metadata {
+    name      = "kubernetes-mcp-server"
+    namespace = "mcp-system"
+  }
+  spec {
+    type = "NodePort"
+    selector = {
+      app = "kubernetes-mcp-server"
+    }
+    ports {
+      port        = 80
+      target_port = 8080
+      protocol    = "TCP"
+    }
+  }
+}
+
+output "service_yaml" {
+  value = data.kubefu_k8s_core_service_v1.inttest_service.kubefu_manifest_yaml
+}
+

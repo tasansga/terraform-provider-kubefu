@@ -13,6 +13,8 @@ import (
 
 	"github.com/tasansga/terraform-provider-kubefu/kubefu/generated"
 	"github.com/tasansga/terraform-provider-kubefu/kubefu/internal/manifest"
+	"k8s.io/apimachinery/pkg/api/meta"
+	"k8s.io/client-go/dynamic"
 )
 
 type providerConfig struct {
@@ -29,6 +31,9 @@ type providerConfig struct {
 	KubeContext                string
 	SchemaPaths                []string
 	ManifestRenderModeValue    string
+
+	dynamicClient dynamic.Interface
+	restMapper    meta.RESTMapper
 }
 
 func (c *providerConfig) ManifestRenderMode() string {

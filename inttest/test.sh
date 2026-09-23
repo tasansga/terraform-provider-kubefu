@@ -101,7 +101,7 @@ apply)
     fi
   }
   mkdir -p "$TF_DIR/out"
-  for output_name in namespace_yaml config_map_yaml flux_kustomization_yaml flux_kustomization_explicit_empty_yaml user_schema_yaml cluster_role_yaml; do
+  for output_name in namespace_yaml config_map_yaml flux_kustomization_yaml flux_kustomization_explicit_empty_yaml user_schema_yaml cluster_role_yaml deployment_yaml service_yaml; do
     expected="$("$TF_BIN" output -raw "$output_name")"
     case "$output_name" in
       namespace_yaml) file="$TF_DIR/out/namespace.yaml" ;;
@@ -110,6 +110,8 @@ apply)
       flux_kustomization_explicit_empty_yaml) file="$TF_DIR/out/flux_kustomization_explicit_empty.yaml" ;;
       user_schema_yaml) file="$TF_DIR/out/user_schema.yaml" ;;
       cluster_role_yaml) file="$TF_DIR/out/cluster_role.yaml" ;;
+      deployment_yaml) file="$TF_DIR/out/deployment.yaml" ;;
+      service_yaml) file="$TF_DIR/out/service.yaml" ;;
       *) echo "unknown output $output_name" >&2; exit 1 ;;
     esac
     printf '%s' "$expected" >"$file"
@@ -151,6 +153,12 @@ apply)
   assert_contains "$TF_DIR/out/cluster_role.yaml" "name: kubefu-inttest-role"
   assert_not_contains "$TF_DIR/out/cluster_role.yaml" "apiGroups: []"
   assert_contains "$TF_DIR/out/cluster_role.yaml" "- \"\""
+  assert_not_contains "$TF_DIR/out/deployment.yaml" "livenessProbe: []"
+  assert_contains "$TF_DIR/out/deployment.yaml" "port: 8080"
+  assert_not_contains "$TF_DIR/out/deployment.yaml" "port: \"8080\""
+  assert_not_contains "$TF_DIR/out/deployment.yaml" "args: []"
+  assert_contains "$TF_DIR/out/service.yaml" "targetPort: 8080"
+  assert_not_contains "$TF_DIR/out/service.yaml" "targetPort: \"8080\""
   ;;
 destroy)
   "$TF_BIN" destroy -auto-approve

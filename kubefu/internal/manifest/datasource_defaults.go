@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/hashicorp/go-cty/cty"
@@ -98,7 +99,12 @@ func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []
 		}
 		objectPathSet[path] = struct{}{}
 	}
-	explicitPaths := explicitManifestPaths(d, keys)
+	manifestCtx := &manifestContext{
+		singleObjectPaths: singleObjectPathSet,
+		objectPaths:       objectPathSet,
+		renderMode:        mode,
+	}
+	manifestCtx.explicitPaths = explicitManifestPaths(d, keys, manifestCtx)
 	if v, ok := d.GetOk("api_version"); ok {
 		if s := strings.TrimSpace(v.(string)); s != "" {
 			manifest["apiVersion"] = s
@@ -117,11 +123,11 @@ func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []
 		if !ok {
 			continue
 		}
-		normalized, err := normalizeManifestValue(v, key, singleObjectPathSet, objectPathSet, explicitPaths)
+		normalized, err := normalizeManifestValue(v, key, manifestCtx)
 		if err != nil {
 			return fmt.Errorf("normalize manifest value %q: %w", key, err)
 		}
-		pruned, keep := pruneManifestValue(normalized, key, explicitPaths, objectPathSet, mode)
+		pruned, keep := pruneManifestValue(normalized, key, manifestCtx)
 		if keep {
 			manifest[toLowerCamel(key)] = pruned
 		}
@@ -251,24 +257,37 @@ func normalizeRenderMode(mode string) string {
 	}
 }
 
-func pruneManifestValue(value interface{}, path string, explicitPaths map[string]struct{}, objectPaths map[string]struct{}, mode string) (interface{}, bool) {
-	if normalizeRenderMode(mode) == RenderModeCanonical {
+type manifestContext struct {
+	singleObjectPaths map[string]struct{}
+	objectPaths       map[string]struct{}
+	explicitPaths     map[string]struct{}
+	renderMode        string
+}
+
+func pruneManifestValue(value interface{}, path string, ctx *manifestContext) (interface{}, bool) {
+	if ctx == nil {
+		ctx = &manifestContext{}
+	}
+	if normalizeRenderMode(ctx.renderMode) == RenderModeCanonical {
 		switch v := value.(type) {
 		case manifestLiteralValue:
 			return v.Value, v.Value != nil
 		case map[string]interface{}:
 			out := make(map[string]interface{}, len(v))
-			_, isObjectPath := objectPaths[path]
+			var isObjectPath bool
+			if ctx.objectPaths != nil {
+				_, isObjectPath = ctx.objectPaths[stripIndices(path)]
+			}
 			for key, item := range v {
 				childKey := key
 				if isObjectPath {
-					childKey = resolveObjectPathChildKey(path, key, explicitPaths, objectPaths)
+					childKey = resolveObjectPathChildKey(path, key, ctx.explicitPaths, ctx.objectPaths)
 				}
 				childPath := childKey
 				if path != "" {
 					childPath = path + "." + childKey
 				}
-				next, keep := pruneManifestValue(item, childPath, explicitPaths, objectPaths, mode)
+				next, keep := pruneManifestValue(item, childPath, ctx)
 				if keep {
 					out[key] = next
 				}
@@ -276,8 +295,8 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 			return out, true
 		case []interface{}:
 			out := make([]interface{}, 0, len(v))
-			stringSlice := isStringSlice(v, path, objectPaths)
-			for _, item := range v {
+			stringSlice := isStringSlice(v, path, ctx.objectPaths)
+			for i, item := range v {
 				if stringSlice {
 					if s, ok := item.(string); ok {
 						out = append(out, s)
@@ -288,7 +307,8 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 						continue
 					}
 				}
-				next, keep := pruneManifestValue(item, path, explicitPaths, objectPaths, mode)
+				elemPath := fmt.Sprintf("%s.%d", path, i)
+				next, keep := pruneManifestValue(item, elemPath, ctx)
 				if keep {
 					if next == nil {
 						continue
@@ -301,7 +321,10 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 			return value, value != nil
 		}
 	}
-	_, explicit := explicitPaths[path]
+	var explicit bool
+	if ctx.explicitPaths != nil {
+		_, explicit = ctx.explicitPaths[path]
+	}
 	switch v := value.(type) {
 	case manifestLiteralValue:
 		if v.Value == nil {
@@ -311,6 +334,11 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 	}
 	switch v := value.(type) {
 	case nil:
+		if ctx.singleObjectPaths != nil {
+			if _, isSingle := ctx.singleObjectPaths[stripIndices(path)]; isSingle {
+				return nil, false
+			}
+		}
 		return nil, explicit
 	case string:
 		return v, explicit || strings.TrimSpace(v) != ""
@@ -318,8 +346,8 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 		return v, explicit || v
 	case []interface{}:
 		pruned := make([]interface{}, 0, len(v))
-		stringSlice := isStringSlice(v, path, objectPaths)
-		for _, item := range v {
+		stringSlice := isStringSlice(v, path, ctx.objectPaths)
+		for i, item := range v {
 			if explicit && stringSlice {
 				if s, ok := item.(string); ok {
 					pruned = append(pruned, s)
@@ -330,7 +358,8 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 					continue
 				}
 			}
-			next, keep := pruneManifestValue(item, path, explicitPaths, objectPaths, mode)
+			elemPath := fmt.Sprintf("%s.%d", path, i)
+			next, keep := pruneManifestValue(item, elemPath, ctx)
 			if keep {
 				if next == nil {
 					continue
@@ -347,17 +376,20 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 		return pruned, true
 	case map[string]interface{}:
 		pruned := make(map[string]interface{}, len(v))
-		_, isObjectPath := objectPaths[path]
+		var isObjectPath bool
+		if ctx.objectPaths != nil {
+			_, isObjectPath = ctx.objectPaths[stripIndices(path)]
+		}
 		for key, item := range v {
 			childKey := key
 			if isObjectPath {
-				childKey = resolveObjectPathChildKey(path, key, explicitPaths, objectPaths)
+				childKey = resolveObjectPathChildKey(path, key, ctx.explicitPaths, ctx.objectPaths)
 			}
 			childPath := childKey
 			if path != "" {
 				childPath = path + "." + childKey
 			}
-			next, keep := pruneManifestValue(item, childPath, explicitPaths, objectPaths, mode)
+			next, keep := pruneManifestValue(item, childPath, ctx)
 			if keep {
 				pruned[key] = next
 			}
@@ -383,7 +415,7 @@ func pruneManifestValue(value interface{}, path string, explicitPaths map[string
 	}
 }
 
-func explicitManifestPaths(d *schema.ResourceData, keys []string) map[string]struct{} {
+func explicitManifestPaths(d *schema.ResourceData, keys []string, ctx *manifestContext) map[string]struct{} {
 	paths := make(map[string]struct{})
 	for _, key := range keys {
 		if key == "" {
@@ -393,12 +425,12 @@ func explicitManifestPaths(d *schema.ResourceData, keys []string) map[string]str
 		if hasDiagErrors(rawDiags) {
 			if isEmptyRawConfigDiag(rawDiags) && d.HasChange(key) {
 				if v, ok := d.GetOkExists(key); ok {
-					collectExplicitManifestPathsFromValue(v, key, paths, false)
+					collectExplicitManifestPathsFromValue(v, key, paths, false, ctx)
 				}
 			}
 			continue
 		}
-		collectExplicitManifestPaths(rawValue, key, paths, false)
+		collectExplicitManifestPaths(rawValue, key, paths, false, ctx)
 	}
 	return paths
 }
@@ -412,7 +444,7 @@ func isEmptyRawConfigDiag(diags diag.Diagnostics) bool {
 	return false
 }
 
-func collectExplicitManifestPathsFromValue(value interface{}, path string, paths map[string]struct{}, parentExplicit bool) bool {
+func collectExplicitManifestPathsFromValue(value interface{}, path string, paths map[string]struct{}, parentExplicit bool, ctx *manifestContext) bool {
 	if path == "" || value == nil {
 		return false
 	}
@@ -424,7 +456,7 @@ func collectExplicitManifestPathsFromValue(value interface{}, path string, paths
 			if path != "" {
 				childPath = path + "." + k
 			}
-			if collectExplicitManifestPathsFromValue(child, childPath, paths, parentExplicit) {
+			if collectExplicitManifestPathsFromValue(child, childPath, paths, false, ctx) {
 				anyExplicit = true
 			}
 		}
@@ -434,21 +466,29 @@ func collectExplicitManifestPathsFromValue(value interface{}, path string, paths
 		}
 		return false
 	case []interface{}:
+		isSingle := false
+		if ctx != nil && ctx.singleObjectPaths != nil {
+			_, isSingle = ctx.singleObjectPaths[stripIndices(path)]
+		}
 		anyExplicit := false
 		hasElements := false
-		for _, elem := range v {
+		for i, elem := range v {
 			hasElements = true
-			if collectExplicitManifestPathsFromValue(elem, path, paths, true) {
+			elemPath := path
+			if !isSingle {
+				elemPath = fmt.Sprintf("%s.%d", path, i)
+			}
+			if collectExplicitManifestPathsFromValue(elem, elemPath, paths, true, ctx) {
 				anyExplicit = true
 			}
 		}
-		if anyExplicit || hasElements || isTopLevelManifestPath(path) {
+		if anyExplicit || parentExplicit || hasElements || isTopLevelManifestPath(path) {
 			paths[path] = struct{}{}
 			return true
 		}
 		return false
 	case string:
-		if strings.TrimSpace(v) == "" {
+		if strings.TrimSpace(v) == "" && !parentExplicit {
 			return false
 		}
 		paths[path] = struct{}{}
@@ -468,7 +508,7 @@ func hasDiagErrors(diags diag.Diagnostics) bool {
 	return false
 }
 
-func collectExplicitManifestPaths(value cty.Value, path string, paths map[string]struct{}, parentExplicit bool) bool {
+func collectExplicitManifestPaths(value cty.Value, path string, paths map[string]struct{}, parentExplicit bool, ctx *manifestContext) bool {
 	if path == "" || !value.IsKnown() || value.IsNull() {
 		return false
 	}
@@ -484,7 +524,7 @@ func collectExplicitManifestPaths(value cty.Value, path string, paths map[string
 			if path != "" {
 				childPath = path + "." + childPath
 			}
-			if collectExplicitManifestPaths(next, childPath, paths, parentExplicit) {
+			if collectExplicitManifestPaths(next, childPath, paths, false, ctx) {
 				anyExplicit = true
 			}
 		}
@@ -494,23 +534,36 @@ func collectExplicitManifestPaths(value cty.Value, path string, paths map[string
 		}
 		return false
 	case t.IsListType() || t.IsSetType() || t.IsTupleType():
+		isSingle := false
+		if ctx != nil && ctx.singleObjectPaths != nil {
+			_, isSingle = ctx.singleObjectPaths[stripIndices(path)]
+		}
 		anyExplicit := false
 		hasElements := false
 		it := value.ElementIterator()
+		idx := 0
 		for it.Next() {
 			hasElements = true
 			_, next := it.Element()
-			if collectExplicitManifestPaths(next, path, paths, true) {
+			elemPath := path
+			if !isSingle {
+				elemPath = fmt.Sprintf("%s.%d", path, idx)
+			}
+			if collectExplicitManifestPaths(next, elemPath, paths, true, ctx) {
 				anyExplicit = true
 			}
+			idx++
 		}
 		// Keep non-empty collections explicit. Empty nested collections are treated
 		// as implicit unless they are top-level attributes.
-		if anyExplicit || hasElements || isTopLevelManifestPath(path) {
+		if anyExplicit || parentExplicit || hasElements || isTopLevelManifestPath(path) {
 			paths[path] = struct{}{}
 			return true
 		}
 		return false
+	case t == cty.String:
+		paths[path] = struct{}{}
+		return true
 	default:
 		paths[path] = struct{}{}
 		return true
@@ -521,8 +574,47 @@ func isTopLevelManifestPath(path string) bool {
 	return path != "" && !strings.Contains(path, ".")
 }
 
+func isIndexSegment(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, r := range s {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+func stripIndices(path string) string {
+	if !strings.ContainsAny(path, "0123456789") {
+		return path
+	}
+	if isIndexSegment(path) {
+		return ""
+	}
+
+	var sb strings.Builder
+	sb.Grow(len(path))
+
+	start := 0
+	for i := 0; i <= len(path); i++ {
+		if i == len(path) || path[i] == '.' {
+			segment := path[start:i]
+			if !isIndexSegment(segment) && segment != "" {
+				if sb.Len() > 0 {
+					sb.WriteByte('.')
+				}
+				sb.WriteString(segment)
+			}
+			start = i + 1
+		}
+	}
+	return sb.String()
+}
+
 func isStringSlice(v []interface{}, path string, objectPaths map[string]struct{}) bool {
-	if _, isObject := objectPaths[path]; isObject {
+	if _, isObject := objectPaths[stripIndices(path)]; isObject {
 		return false
 	}
 	for _, elem := range v {
@@ -563,7 +655,7 @@ func resolveObjectPathChildKey(parentPath, renderedKey string, explicitPaths map
 	if _, ok := explicitPaths[basePath]; ok {
 		return base
 	}
-	if _, ok := objectPaths[basePath]; ok {
+	if _, ok := objectPaths[stripIndices(basePath)]; ok {
 		return base
 	}
 	escaped := base + "_"
@@ -571,26 +663,39 @@ func resolveObjectPathChildKey(parentPath, renderedKey string, explicitPaths map
 	if _, ok := explicitPaths[escapedPath]; ok {
 		return escaped
 	}
-	if _, ok := objectPaths[escapedPath]; ok {
+	if _, ok := objectPaths[stripIndices(escapedPath)]; ok {
 		return escaped
 	}
 	return base
 }
 
-func normalizeManifestValue(value interface{}, path string, singleObjectPaths map[string]struct{}, objectPaths map[string]struct{}, explicitPaths map[string]struct{}) (interface{}, error) {
+func normalizeManifestValue(value interface{}, path string, ctx *manifestContext) (interface{}, error) {
+	if ctx == nil {
+		ctx = &manifestContext{}
+	}
 	switch v := value.(type) {
 	case []interface{}:
-		if _, ok := singleObjectPaths[path]; ok && len(v) == 1 {
-			if m, ok := v[0].(map[string]interface{}); ok {
-				return normalizeManifestValue(m, path, singleObjectPaths, objectPaths, explicitPaths)
+		var isSingle bool
+		if ctx.singleObjectPaths != nil {
+			_, isSingle = ctx.singleObjectPaths[stripIndices(path)]
+		}
+		if isSingle {
+			if len(v) == 1 {
+				if m, ok := v[0].(map[string]interface{}); ok {
+					return normalizeManifestValue(m, path, ctx)
+				}
+				if v[0] == nil {
+					return map[string]interface{}{}, nil
+				}
 			}
-			if v[0] == nil {
-				return map[string]interface{}{}, nil
+			if len(v) == 0 {
+				return nil, nil
 			}
 		}
 		normalized := make([]interface{}, len(v))
 		for i := range v {
-			next, err := normalizeManifestValue(v[i], path, singleObjectPaths, objectPaths, explicitPaths)
+			elemPath := fmt.Sprintf("%s.%d", path, i)
+			next, err := normalizeManifestValue(v[i], elemPath, ctx)
 			if err != nil {
 				return nil, err
 			}
@@ -599,7 +704,10 @@ func normalizeManifestValue(value interface{}, path string, singleObjectPaths ma
 		return normalized, nil
 	case map[string]interface{}:
 		normalized := make(map[string]interface{}, len(v))
-		_, isObjectPath := objectPaths[path]
+		var isObjectPath bool
+		if ctx.objectPaths != nil {
+			_, isObjectPath = ctx.objectPaths[stripIndices(path)]
+		}
 		for k, child := range v {
 			childPath := k
 			if path != "" {
@@ -612,7 +720,7 @@ func normalizeManifestValue(value interface{}, path string, singleObjectPaths ma
 					outKey = "values"
 				}
 			}
-			next, err := normalizeManifestValue(child, childPath, singleObjectPaths, objectPaths, explicitPaths)
+			next, err := normalizeManifestValue(child, childPath, ctx)
 			if err != nil {
 				return nil, err
 			}
@@ -620,10 +728,16 @@ func normalizeManifestValue(value interface{}, path string, singleObjectPaths ma
 		}
 		return normalized, nil
 	case string:
-		if pathHasValuesYAMLSuffix(path) {
+		if pathHasValuesYAMLSuffix(stripIndices(path)) {
 			var parsed interface{}
 			if strings.TrimSpace(v) == "" {
-				if _, explicit := explicitPaths[path]; !explicit {
+				if ctx.explicitPaths != nil {
+					if _, explicit := ctx.explicitPaths[path]; !explicit {
+						if _, explicitStrip := ctx.explicitPaths[stripIndices(path)]; !explicitStrip {
+							return nil, nil
+						}
+					}
+				} else {
 					return nil, nil
 				}
 				return manifestLiteralValue{Value: map[string]interface{}{}}, nil
@@ -637,10 +751,44 @@ func normalizeManifestValue(value interface{}, path string, singleObjectPaths ma
 			}
 			return manifestLiteralValue{Value: obj}, nil
 		}
+		if isIntOrStringPath(path) {
+			if num, err := strconv.Atoi(v); err == nil {
+				return num, nil
+			}
+		}
 		return v, nil
 	default:
 		return v, nil
 	}
+}
+
+func isIntOrStringPath(path string) bool {
+	path = stripIndices(path)
+	lastSegment := path
+	if idx := strings.LastIndex(path, "."); idx != -1 {
+		lastSegment = path[idx+1:]
+	}
+	switch lastSegment {
+	case "target_port", "targetPort",
+		"service_port", "servicePort",
+		"max_unavailable", "maxUnavailable",
+		"max_surge", "maxSurge",
+		"min_available", "minAvailable":
+		return true
+	case "port":
+		lower := strings.ToLower(path)
+		return strings.Contains(lower, "probe") ||
+			strings.Contains(lower, "http_get") ||
+			strings.Contains(lower, "httpget") ||
+			strings.Contains(lower, "tcp_socket") ||
+			strings.Contains(lower, "tcpsocket") ||
+			strings.Contains(lower, "lifecycle") ||
+			strings.Contains(lower, "ingress") ||
+			strings.Contains(lower, "egress") ||
+			strings.Contains(lower, "network_policy") ||
+			strings.Contains(lower, "networkpolicy")
+	}
+	return false
 }
 
 func pathHasValuesYAMLSuffix(path string) bool {

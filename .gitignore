@@ -13,3 +13,4 @@ dist/
 /pattern
 .tempdir
 /TASK_*.md
+/SESSION
