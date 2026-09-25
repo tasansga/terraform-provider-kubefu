@@ -7,12 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"os"
-	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"k8s.io/apimachinery/pkg/api/equality"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -45,9 +47,10 @@ func resourceManifest() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"manifest": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "Kubernetes manifest to apply (YAML or JSON)",
+				Type:             schema.TypeString,
+				Required:         true,
+				DiffSuppressFunc: manifestDiffSuppress,
+				Description:      "Kubernetes manifest to apply (YAML or JSON)",
 			},
 			"field_manager": {
 				Type:        schema.TypeString,
@@ -197,8 +200,74 @@ func resourceManifestRead(ctx context.Context, d *schema.ResourceData, m any) di
 		return nil
 	}
 
-	if err := setManifestFromObjects(d, lives); err != nil {
-		return diag.FromErr(err)
+	// Performance optimization: Avoid rewriting d.Get("manifest") when all objects exist and
+	// have not semantically drifted.
+	// Previously, setManifestFromObjects was unconditionally called here, re-serializing the live
+	// objects from the cluster (which include server-defaulted fields and formatting changes) into
+	// the Terraform state. For huge manifests (e.g. 33,000+ lines in external-secrets CRDs), this
+	// created permanent artificial diffs between the configuration YAML and the state YAML, forcing
+	// OpenTofu/Terraform's Myers diff algorithm to compare ~40,000 lines in-memory on every plan,
+	// spiking heap allocations past 3GB and causing kernel OOM kills.
+	//
+	// We only rewrite the manifest if:
+	// 1. notFoundCount > 0: Some objects were deleted out-of-band, so the state manifest must reflect
+	//    only surviving objects so Terraform detects the drift and recreates the missing ones.
+	// 2. d.Get("manifest") == "": e.g. during an import where no initial configuration is in state yet.
+	// 3. Cluster objects have semantically drifted from the state manifest.
+	stateManifest, _ := d.Get("manifest").(string)
+	driftDetected := false
+	if notFoundCount > 0 || stateManifest == "" {
+		driftDetected = true
+	} else if len(objs) != len(lives) {
+		driftDetected = true
+	} else {
+		stateMap := make(map[objectKey]map[string]any, len(objs))
+		for _, u := range objs {
+			k, ok := objectKeyOf(u)
+			if !ok {
+				driftDetected = true
+				break
+			}
+			if _, exists := stateMap[k]; exists {
+				driftDetected = true
+				break
+			}
+			// In-place normalization is safe here because `objs` is newly decoded from state
+			// and is not referenced downstream after drift detection. Bypassing DeepCopyJSON
+			// saves significant heap allocations on large CRD manifests.
+			normalizeManifestObject(u.Object)
+			stateMap[k] = u.Object
+		}
+		if !driftDetected {
+			for _, live := range lives {
+				k, ok := objectKeyOf(live)
+				if !ok {
+					driftDetected = true
+					break
+				}
+				stateObj, exists := stateMap[k]
+				if !exists {
+					driftDetected = true
+					break
+				}
+				liveNorm := runtime.DeepCopyJSON(live.Object)
+				normalizeManifestObject(liveNorm)
+				if !isSubsetOrEqual(stateObj, liveNorm) {
+					driftDetected = true
+					break
+				}
+				delete(stateMap, k)
+			}
+			if len(stateMap) != 0 {
+				driftDetected = true
+			}
+		}
+	}
+
+	if driftDetected {
+		if err := setManifestFromObjects(d, lives); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 	d.SetId(manifestIDs(lives))
 	return nil
@@ -326,14 +395,24 @@ func validateManifest(u *unstructured.Unstructured) error {
 }
 
 func buildKubeClients(cfg *providerConfig) (dynamic.Interface, meta.RESTMapper, error) {
-	if cfg != nil {
-		if cfg.dynamicClient != nil && cfg.restMapper != nil {
-			return cfg.dynamicClient, cfg.restMapper, nil
-		}
-		if cfg.dynamicClient != nil || cfg.restMapper != nil {
-			return nil, nil, fmt.Errorf("both dynamicClient and restMapper must be provided together for client injection")
-		}
+	if cfg == nil {
+		return nil, nil, fmt.Errorf("provider configuration is missing")
 	}
+
+	if cfg.dynamicClient != nil && cfg.restMapper != nil {
+		return cfg.dynamicClient, cfg.restMapper, nil
+	}
+	if cfg.dynamicClient != nil || cfg.restMapper != nil {
+		return nil, nil, fmt.Errorf("both dynamicClient and restMapper must be provided together for client injection")
+	}
+
+	cfg.cachedMu.Lock()
+	defer cfg.cachedMu.Unlock()
+
+	if cfg.cachedDynamicClient != nil && cfg.cachedRESTMapper != nil {
+		return cfg.cachedDynamicClient, cfg.cachedRESTMapper, nil
+	}
+
 	restCfg, err := buildRESTConfig(cfg)
 	if err != nil {
 		return nil, nil, err
@@ -347,7 +426,10 @@ func buildKubeClients(cfg *providerConfig) (dynamic.Interface, meta.RESTMapper, 
 		return nil, nil, fmt.Errorf("create discovery client: %w", err)
 	}
 	mapper := restmapper.NewDeferredDiscoveryRESTMapper(memory.NewMemCacheClient(disco))
-	return client, mapper, nil
+	cfg.cachedDynamicClient = client
+	cfg.cachedRESTMapper = mapper
+
+	return cfg.cachedDynamicClient, cfg.cachedRESTMapper, nil
 }
 
 func buildRESTConfig(cfg *providerConfig) (*rest.Config, error) {
@@ -685,8 +767,10 @@ func setManifestFromObjects(d *schema.ResourceData, objs []*unstructured.Unstruc
 	for _, obj := range objs {
 		copyObj := runtime.DeepCopyJSON(obj.Object)
 		normalizeManifestObject(copyObj)
-		sorted := sortManifestValue(copyObj)
-		jsonPayload, err := json.Marshal(sorted)
+		// Performance optimization: json.Marshal automatically sorts map keys lexicographically.
+		// Bypassing redundant custom tree sorting avoids deep recursive map/slice
+		// copies and millions of memory allocations on large CRD manifests.
+		jsonPayload, err := json.Marshal(copyObj)
 		if err != nil {
 			return fmt.Errorf("marshal live manifest: %w", err)
 		}
@@ -769,28 +853,246 @@ func normalizeManifestObject(obj map[string]interface{}) {
 	}
 }
 
-func sortManifestValue(value interface{}) interface{} {
-	switch v := value.(type) {
-	case map[string]interface{}:
-		keys := make([]string, 0, len(v))
-		for k := range v {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		sorted := make(map[string]interface{}, len(v))
-		for _, k := range keys {
-			sorted[k] = sortManifestValue(v[k])
-		}
-		return sorted
-	case []interface{}:
-		sorted := make([]interface{}, len(v))
-		for i := range v {
-			sorted[i] = sortManifestValue(v[i])
-		}
-		return sorted
-	default:
-		return v
+// manifestDiffSuppress suppresses diffs between old and new manifests when they are semantically equivalent.
+// For large manifests (e.g., CRD bundles of 30,000+ lines), minor cosmetic differences such as key ordering,
+// YAML formatting, or server-side defaulted metadata can cause OpenTofu's Myers diff engine to consume gigabytes of RAM.
+// By decoding both manifests into Unstructured objects, normalizing metadata (removing server-generated fields),
+// and checking semantic equality, we prevent unnecessary diff generation and memory thrashing.
+func manifestDiffSuppress(k, old, new string, d *schema.ResourceData) bool {
+	if old == new {
+		return true
 	}
+	oldTrimmed := strings.TrimSpace(old)
+	newTrimmed := strings.TrimSpace(new)
+	if oldTrimmed == newTrimmed {
+		return true
+	}
+	if oldTrimmed == "" || newTrimmed == "" {
+		return false
+	}
+
+	oldObjs, err := decodeManifests(oldTrimmed)
+	if err != nil {
+		return false
+	}
+	newObjs, err := decodeManifests(newTrimmed)
+	if err != nil {
+		return false
+	}
+	if len(oldObjs) != len(newObjs) {
+		return false
+	}
+
+	if d != nil && d.Id() != "" {
+		idObjs, _ := parseManifestIDs(d.Id())
+		if len(idObjs) > 0 {
+			inheritRecordedNamespaces(oldObjs, idObjs)
+			inheritRecordedNamespaces(newObjs, idObjs)
+		}
+	}
+
+	oldMap := make(map[objectKey]map[string]any, len(oldObjs))
+	for _, u := range oldObjs {
+		objKey, ok := objectKeyOf(u)
+		if !ok {
+			return false
+		}
+		if _, exists := oldMap[objKey]; exists {
+			// Duplicate object in oldObjs, fall back to exact comparison
+			return false
+		}
+		normalizeManifestObject(u.Object)
+		oldMap[objKey] = u.Object
+	}
+
+	for _, u := range newObjs {
+		objKey, ok := objectKeyOf(u)
+		if !ok {
+			return false
+		}
+		normalizeManifestObject(u.Object)
+		oldObj, exists := oldMap[objKey]
+		if !exists {
+			return false
+		}
+		if !isSemanticEqual(oldObj, u.Object) {
+			return false
+		}
+		delete(oldMap, objKey)
+	}
+	return len(oldMap) == 0
+}
+
+func isSemanticEqual(a, b any) bool {
+	return isSubsetOrEqual(a, b) && isSubsetOrEqual(b, a)
+}
+
+const maxSubsetDepth = 100
+
+func isSubsetOrEqual(subset, superset any) bool {
+	return isSubsetOrEqualDepth(subset, superset, 0)
+}
+
+func isSubsetOrEqualDepth(subset, superset any, depth int) bool {
+	if depth > maxSubsetDepth {
+		return false
+	}
+	if subset == nil && superset == nil {
+		return true
+	}
+	if subset == nil || superset == nil {
+		return false
+	}
+	switch sub := subset.(type) {
+	case map[string]any:
+		sup, ok := superset.(map[string]any)
+		if !ok {
+			return false
+		}
+		for k, subVal := range sub {
+			supVal, exists := sup[k]
+			if !exists || !isSubsetOrEqualDepth(subVal, supVal, depth+1) {
+				return false
+			}
+		}
+		return true
+	case []any:
+		sup, ok := superset.([]any)
+		if !ok || len(sub) != len(sup) {
+			return false
+		}
+		for i := range sub {
+			if !isSubsetOrEqualDepth(sub[i], sup[i], depth+1) {
+				return false
+			}
+		}
+		return true
+	default:
+		// Exact 64-bit integer comparison before float conversion to prevent precision loss above 2^53 - 1
+		if subInt, ok := toInt64(subset); ok {
+			if supInt, ok := toInt64(superset); ok {
+				return subInt == supInt
+			}
+		}
+		if subUint, ok := toUint64(subset); ok {
+			if supUint, ok := toUint64(superset); ok {
+				return subUint == supUint
+			}
+		}
+		// Handle numeric representations (e.g. int vs int64 vs float64 from JSON)
+		if subNum, ok := toFloat64(subset); ok {
+			if supNum, ok := toFloat64(superset); ok {
+				return subNum == supNum
+			}
+		}
+		return equality.Semantic.DeepEqual(subset, superset)
+	}
+}
+
+func toInt64(v any) (int64, bool) {
+	switch n := v.(type) {
+	case int:
+		return int64(n), true
+	case int8:
+		return int64(n), true
+	case int16:
+		return int64(n), true
+	case int32:
+		return int64(n), true
+	case int64:
+		return n, true
+	case uint:
+		if n <= math.MaxInt64 {
+			return int64(n), true
+		}
+	case uint8:
+		return int64(n), true
+	case uint16:
+		return int64(n), true
+	case uint32:
+		return int64(n), true
+	case uint64:
+		if n <= math.MaxInt64 {
+			return int64(n), true
+		}
+	case json.Number:
+		if i, err := n.Int64(); err == nil {
+			return i, true
+		}
+	}
+	return 0, false
+}
+
+func toUint64(v any) (uint64, bool) {
+	switch n := v.(type) {
+	case uint:
+		return uint64(n), true
+	case uint8:
+		return uint64(n), true
+	case uint16:
+		return uint64(n), true
+	case uint32:
+		return uint64(n), true
+	case uint64:
+		return n, true
+	case int:
+		if n >= 0 {
+			return uint64(n), true
+		}
+	case int8:
+		if n >= 0 {
+			return uint64(n), true
+		}
+	case int16:
+		if n >= 0 {
+			return uint64(n), true
+		}
+	case int32:
+		if n >= 0 {
+			return uint64(n), true
+		}
+	case int64:
+		if n >= 0 {
+			return uint64(n), true
+		}
+	case json.Number:
+		if u, err := strconv.ParseUint(string(n), 10, 64); err == nil {
+			return u, true
+		}
+	}
+	return 0, false
+}
+
+func toFloat64(v any) (float64, bool) {
+	switch n := v.(type) {
+	case int:
+		return float64(n), true
+	case int8:
+		return float64(n), true
+	case int16:
+		return float64(n), true
+	case int32:
+		return float64(n), true
+	case int64:
+		return float64(n), true
+	case uint:
+		return float64(n), true
+	case uint8:
+		return float64(n), true
+	case uint16:
+		return float64(n), true
+	case uint32:
+		return float64(n), true
+	case uint64:
+		return float64(n), true
+	case float64:
+		return n, true
+	case json.Number:
+		if f, err := n.Float64(); err == nil {
+			return f, true
+		}
+	}
+	return 0, false
 }
 
 func manifestLooksLikeJSON(manifest string) bool {

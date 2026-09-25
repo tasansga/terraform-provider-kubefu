@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -136,8 +135,7 @@ func setDataSourceManifestWithObjectPathsAndMode(d *schema.ResourceData, keys []
 	if len(manifest) == 0 {
 		return nil
 	}
-	sorted := sortManifestValue(manifest)
-	jsonPayload, err := json.Marshal(sorted)
+	jsonPayload, err := json.Marshal(manifest)
 	if err != nil {
 		return fmt.Errorf("marshal manifest json: %w", err)
 	}
@@ -814,28 +812,4 @@ func toLowerCamel(value string) string {
 		parts[i] = strings.ToUpper(part[:1]) + part[1:]
 	}
 	return strings.Join(parts, "")
-}
-
-func sortManifestValue(value interface{}) interface{} {
-	switch v := value.(type) {
-	case map[string]interface{}:
-		keys := make([]string, 0, len(v))
-		for k := range v {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		sorted := make(map[string]interface{}, len(v))
-		for _, k := range keys {
-			sorted[k] = sortManifestValue(v[k])
-		}
-		return sorted
-	case []interface{}:
-		sorted := make([]interface{}, len(v))
-		for i := range v {
-			sorted[i] = sortManifestValue(v[i])
-		}
-		return sorted
-	default:
-		return v
-	}
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -34,6 +35,10 @@ type providerConfig struct {
 
 	dynamicClient dynamic.Interface
 	restMapper    meta.RESTMapper
+
+	cachedMu            sync.Mutex
+	cachedDynamicClient dynamic.Interface
+	cachedRESTMapper    meta.RESTMapper
 }
 
 func (c *providerConfig) ManifestRenderMode() string {

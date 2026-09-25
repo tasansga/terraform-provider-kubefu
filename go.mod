@@ -1,6 +1,6 @@
 module github.com/tasansga/terraform-provider-kubefu
 
-go 1.27.0
+go 1.27.1
 
 require (
 	github.com/hashicorp/go-cty v1.5.0
@@ -83,7 +83,7 @@ require (
 	golang.org/x/tools v0.50.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260918162117-cecb64721679 // indirect
-	google.golang.org/grpc v1.84.0 // indirect
+	google.golang.org/grpc v1.85.0-dev.0.20260825072537-93e31b48545e // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect

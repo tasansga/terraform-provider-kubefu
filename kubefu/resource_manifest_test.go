@@ -4,14 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	meta "k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	schemaApi "k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/dynamic/fake"
 	clienttesting "k8s.io/client-go/testing"
 )
@@ -908,6 +912,58 @@ data:
 	return d, cfg, u1, u2
 }
 
+func setupDriftTestCase(t *testing.T, manifest string, id string, liveObjs ...*unstructured.Unstructured) (*schema.ResourceData, *providerConfig) {
+	t.Helper()
+	scheme := runtime.NewScheme()
+	fakeClient := fake.NewSimpleDynamicClient(scheme)
+	mapper := meta.NewDefaultRESTMapper([]schemaApi.GroupVersion{
+		{Group: "", Version: "v1"},
+		{Group: "apps", Version: "v1"},
+	})
+	mapper.Add(schemaApi.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"}, meta.RESTScopeNamespace)
+	mapper.Add(schemaApi.GroupVersionKind{Group: "", Version: "v1", Kind: "Service"}, meta.RESTScopeNamespace)
+	mapper.Add(schemaApi.GroupVersionKind{Group: "apps", Version: "v1", Kind: "Deployment"}, meta.RESTScopeNamespace)
+
+	for _, u := range liveObjs {
+		if u == nil {
+			continue
+		}
+		mapping, err := mapper.RESTMapping(u.GroupVersionKind().GroupKind(), u.GroupVersionKind().Version)
+		if err != nil {
+			t.Fatalf("setupDriftTestCase mapper error: %v", err)
+		}
+		ns := u.GetNamespace()
+		if ns == "" && mapping.Scope.Name() == meta.RESTScopeNameNamespace {
+			ns = "default"
+		}
+		var target dynamic.ResourceInterface
+		if mapping.Scope.Name() == meta.RESTScopeNameNamespace {
+			target = fakeClient.Resource(mapping.Resource).Namespace(ns)
+		} else {
+			target = fakeClient.Resource(mapping.Resource)
+		}
+		if _, err := target.Create(context.Background(), u, metav1.CreateOptions{}); err != nil {
+			t.Fatalf("setupDriftTestCase seed error: %v", err)
+		}
+	}
+
+	cfg := &providerConfig{
+		dynamicClient: fakeClient,
+		restMapper:    mapper,
+	}
+
+	resource := resourceManifest()
+	d := schemaMapToResourceData(t, resource.Schema, map[string]any{
+		"manifest": manifest,
+	})
+	if id == "" && len(liveObjs) > 0 {
+		id = manifestIDs(liveObjs)
+	}
+	d.SetId(id)
+
+	return d, cfg
+}
+
 func TestResourceManifestRead_PartialNotFoundDrift(t *testing.T) {
 	d, cfg, u1, _ := setupDriftTestFixture(t)
 
@@ -1046,6 +1102,73 @@ func TestBuildKubeClients_AsymmetricInjectionErrors(t *testing.T) {
 			t.Errorf("expected returned clients to match injected clients")
 		}
 	})
+
+	t.Run("nil cfg returns error", func(t *testing.T) {
+		client, mapper, err := buildKubeClients(nil)
+		if err == nil || !strings.Contains(err.Error(), "provider configuration is missing") {
+			t.Fatalf("expected missing configuration error, got err=%v", err)
+		}
+		if client != nil || mapper != nil {
+			t.Errorf("expected nil clients on error, got client=%v, mapper=%v", client, mapper)
+		}
+	})
+
+	t.Run("retries client construction after transient failure without caching error", func(t *testing.T) {
+		cfg := &providerConfig{
+			KubeConfigPath: "/nonexistent/invalid/kubeconfig/path",
+		}
+		client, mapper, err := buildKubeClients(cfg)
+		if err == nil {
+			t.Fatalf("expected error on first call with invalid kubeconfig path")
+		}
+		if client != nil || mapper != nil {
+			t.Errorf("expected nil clients on error, got client=%v, mapper=%v", client, mapper)
+		}
+
+		// Create a valid temporary kubeconfig
+		tmpDir := t.TempDir()
+		kubeconfigPath := tmpDir + "/kubeconfig"
+		kubeconfigContent := `apiVersion: v1
+clusters:
+- cluster:
+    server: https://127.0.0.1:6443
+  name: test-cluster
+contexts:
+- context:
+    cluster: test-cluster
+    user: test-user
+  name: test-context
+current-context: test-context
+kind: Config
+preferences: {}
+users:
+- name: test-user
+  user:
+    token: fake-token
+`
+		if err := os.WriteFile(kubeconfigPath, []byte(kubeconfigContent), 0600); err != nil {
+			t.Fatalf("failed to write temporary kubeconfig: %v", err)
+		}
+
+		// Update path to valid kubeconfig - retry should now succeed
+		cfg.KubeConfigPath = kubeconfigPath
+		client2, mapper2, err2 := buildKubeClients(cfg)
+		if err2 != nil {
+			t.Fatalf("expected retry to succeed after transient error, got err=%v", err2)
+		}
+		if client2 == nil || mapper2 == nil {
+			t.Fatalf("expected non-nil client and mapper on retry")
+		}
+
+		// Subsequent call should return cached instances
+		client3, mapper3, err3 := buildKubeClients(cfg)
+		if err3 != nil {
+			t.Fatalf("unexpected error on subsequent call: %v", err3)
+		}
+		if client3 != client2 || mapper3 != mapper2 {
+			t.Errorf("expected cached clients to be returned")
+		}
+	})
 }
 
 func TestResolveNamespace_InjectedClientsDefaultsHermetically(t *testing.T) {
@@ -1147,6 +1270,779 @@ metadata:
 	for _, idObj := range ids {
 		if idObj.GetNamespace() == "" || idObj.GetNamespace() == "cluster" {
 			t.Errorf("expected non-empty namespace, got %q for %s", idObj.GetNamespace(), idObj.GetName())
+		}
+	}
+}
+
+func TestManifestDiffSuppress(t *testing.T) {
+	tests := []struct {
+		name     string
+		oldVal   string
+		newVal   string
+		id       string
+		suppress bool
+	}{
+		{
+			name:     "identical strings",
+			oldVal:   "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: cm\n",
+			newVal:   "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: cm\n",
+			suppress: true,
+		},
+		{
+			name:     "whitespace differences",
+			oldVal:   "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: cm\n",
+			newVal:   "\n\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: cm\n\n",
+			suppress: true,
+		},
+		{
+			name:     "yaml comments",
+			oldVal:   "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: cm\n",
+			newVal:   "# Comment here\napiVersion: v1\n# Another comment\nkind: ConfigMap\nmetadata:\n  name: cm\n",
+			suppress: true,
+		},
+		{
+			name: "key ordering differences",
+			oldVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test
+  namespace: default
+data:
+  a: "1"
+  b: "2"
+`,
+			newVal: `
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  namespace: default
+  name: test
+data:
+  b: "2"
+  a: "1"
+`,
+			suppress: true,
+		},
+		{
+			name: "server generated metadata (status, uid, resourceVersion, creationTimestamp)",
+			oldVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test
+  namespace: default
+  uid: "12345-67890"
+  resourceVersion: "9999"
+  creationTimestamp: "2026-09-25T00:00:00Z"
+status:
+  phase: Active
+data:
+  key: value
+`,
+			newVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test
+  namespace: default
+data:
+  key: value
+`,
+			suppress: true,
+		},
+		{
+			name: "actual data change must not be suppressed",
+			oldVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test
+data:
+  key: old-value
+`,
+			newVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test
+data:
+  key: new-value
+`,
+			suppress: false,
+		},
+		{
+			name: "field deletion in newVal must not be suppressed",
+			oldVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test
+  namespace: default
+data:
+  a: "1"
+  b: "2"
+`,
+			newVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test
+  namespace: default
+data:
+  a: "1"
+`,
+			suppress: false,
+		},
+		{
+			name: "different number of objects must not be suppressed",
+			oldVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test2
+`,
+			newVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test1
+`,
+			suppress: false,
+		},
+		{
+			name: "multi-document reordering is suppressed",
+			oldVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test1
+  namespace: default
+data:
+  key: val1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test2
+  namespace: default
+data:
+  key: val2
+`,
+			newVal: `
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test2
+  namespace: default
+data:
+  key: val2
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test1
+  namespace: default
+data:
+  key: val1
+`,
+			suppress: true,
+		},
+		{
+			name: "duplicate object replacing another object must not be suppressed",
+			oldVal: `apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+  namespace: default
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm2
+  namespace: default
+`,
+			newVal: `apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+  namespace: default
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+  namespace: default
+`,
+			suppress: false,
+		},
+		{
+			name: "namespace omitted in newVal is suppressed when matching recorded id namespace",
+			oldVal: `apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+  namespace: default
+data:
+  key: value
+`,
+			newVal: `apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+data:
+  key: value
+`,
+			id:       "v1/ConfigMap/default/cm1",
+			suppress: true,
+		},
+		{
+			name: "field deletion in newVal (e.g. clusterIP) must not be suppressed",
+			oldVal: `apiVersion: v1
+kind: Service
+metadata:
+  name: my-svc
+  namespace: default
+spec:
+  clusterIP: 10.96.0.1
+  ports:
+  - port: 80
+`,
+			newVal: `apiVersion: v1
+kind: Service
+metadata:
+  name: my-svc
+  namespace: default
+spec:
+  ports:
+  - port: 80
+`,
+			suppress: false,
+		},
+		{
+			name: "numeric type representation difference (JSON float64 vs YAML int64) is suppressed",
+			oldVal: `{"apiVersion": "apps/v1", "kind": "Deployment", "metadata": {"name": "d", "namespace": "default"}, "spec": {"replicas": 1.0}}`,
+			newVal: `
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: d
+  namespace: default
+spec:
+  replicas: 1
+`,
+			suppress: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var d *schema.ResourceData
+			if tc.id != "" {
+				res := resourceManifest()
+				d = schemaMapToResourceData(t, res.Schema, map[string]any{
+					"manifest": tc.oldVal,
+				})
+				d.SetId(tc.id)
+			}
+			got := manifestDiffSuppress("manifest", tc.oldVal, tc.newVal, d)
+			if got != tc.suppress {
+				t.Errorf("manifestDiffSuppress() = %v, want %v", got, tc.suppress)
+			}
+		})
+	}
+}
+
+func TestResourceManifestRead_PreservesOriginalManifestWhenAllFound(t *testing.T) {
+	originalManifest := `# Custom comment preserved
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-cm
+  namespace: default
+data:
+  key: value
+`
+	u := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name":              "test-cm",
+				"namespace":         "default",
+				"uid":               "abc-123",
+				"resourceVersion":   "100",
+				"creationTimestamp": "2026-09-25T00:00:00Z",
+			},
+			"data": map[string]any{
+				"key": "value",
+			},
+		},
+	}
+	d, cfg := setupDriftTestCase(t, originalManifest, "", u)
+
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("resourceManifestRead failed: %v", diags)
+	}
+
+	// Verify that the manifest string in state was NOT overwritten by the live cluster object
+	gotManifest := d.Get("manifest").(string)
+	if gotManifest != originalManifest {
+		t.Errorf("expected original manifest to be preserved byte-for-byte, got:\n%s", gotManifest)
+	}
+}
+
+func TestResourceManifestRead_UpdatesManifestWhenPartialNotFound(t *testing.T) {
+	manifest := `apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-cm1
+  namespace: default
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-cm2
+  namespace: default
+`
+	// Seed only test-cm1 in the cluster, test-cm2 is missing (simulating out-of-band deletion)
+	u1 := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name":      "test-cm1",
+				"namespace": "default",
+			},
+		},
+	}
+	d, cfg := setupDriftTestCase(t, manifest, "v1/ConfigMap/default/test-cm1;v1/ConfigMap/default/test-cm2", u1)
+
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("resourceManifestRead failed: %v", diags)
+	}
+
+	// Because test-cm2 was missing, setManifestFromObjects MUST have been called to reflect only test-cm1,
+	// triggering Terraform drift so cm2 can be recreated.
+	gotManifest := d.Get("manifest").(string)
+	if strings.Contains(gotManifest, "test-cm2") {
+		t.Errorf("expected missing cm2 to be removed from state manifest to trigger drift recreation, got:\n%s", gotManifest)
+	}
+	if !strings.Contains(gotManifest, "test-cm1") {
+		t.Errorf("expected surviving cm1 to remain in state manifest, got:\n%s", gotManifest)
+	}
+}
+
+func TestResourceManifestRead_DetectsSemanticDrift(t *testing.T) {
+	desiredManifest := `apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-cm
+  namespace: default
+data:
+  key: desired-value
+`
+	// Seed the object in the cluster with drifted data
+	u := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name":              "test-cm",
+				"namespace":         "default",
+				"uid":               "abc-123",
+				"resourceVersion":   "101",
+				"creationTimestamp": "2026-09-25T00:00:00Z",
+			},
+			"data": map[string]any{
+				"key": "cluster-drifted-value",
+			},
+		},
+	}
+	d, cfg := setupDriftTestCase(t, desiredManifest, "", u)
+
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("resourceManifestRead failed: %v", diags)
+	}
+
+	gotManifest := d.Get("manifest").(string)
+	if !strings.Contains(gotManifest, "cluster-drifted-value") {
+		t.Errorf("expected state manifest to be updated with cluster-drifted-value, got:\n%s", gotManifest)
+	}
+}
+
+func TestResourceManifestRead_NoSemanticDriftPreservesConfigString(t *testing.T) {
+	originalManifest := `# custom comment
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-cm
+  namespace: default
+data:
+  key: same-value
+`
+	// Seed the object in the cluster with server metadata and status
+	u := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name":              "test-cm",
+				"namespace":         "default",
+				"uid":               "abc-123",
+				"resourceVersion":   "100",
+				"creationTimestamp": "2026-09-25T00:00:00Z",
+			},
+			"data": map[string]any{
+				"key": "same-value",
+			},
+			"status": map[string]any{
+				"phase": "Active",
+			},
+		},
+	}
+	d, cfg := setupDriftTestCase(t, originalManifest, "", u)
+
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("resourceManifestRead failed: %v", diags)
+	}
+
+	gotManifest := d.Get("manifest").(string)
+	if gotManifest != originalManifest {
+		t.Errorf("expected original manifest to be preserved byte-for-byte, got:\n%s", gotManifest)
+	}
+}
+
+func TestResourceManifestRead_NoSemanticDriftWhenNamespaceOmittedInConfig(t *testing.T) {
+	originalManifest := `apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+data:
+  key: value
+`
+	// Seed the object in the cluster with namespace: "default" and data.key: "value"
+	u := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name":              "cm1",
+				"namespace":         "default",
+				"uid":               "abc-123",
+				"resourceVersion":   "100",
+				"creationTimestamp": "2026-09-25T00:00:00Z",
+			},
+			"data": map[string]any{
+				"key": "value",
+			},
+		},
+	}
+	d, cfg := setupDriftTestCase(t, originalManifest, "v1/ConfigMap/default/cm1", u)
+
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("resourceManifestRead failed: %v", diags)
+	}
+
+	gotManifest := d.Get("manifest").(string)
+	if gotManifest != originalManifest {
+		t.Errorf("expected original manifest to be preserved byte-for-byte, got:\n%s", gotManifest)
+	}
+}
+
+func TestResourceManifestRead_ServerDefaultsIgnoredInDriftCheck(t *testing.T) {
+	stateManifest := `apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+  namespace: default
+spec:
+  ports:
+  - port: 80
+`
+	// Seed the object in the cluster with ports and server defaults
+	u := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "Service",
+			"metadata": map[string]any{
+				"name":              "my-service",
+				"namespace":         "default",
+				"uid":               "abc-123",
+				"resourceVersion":   "100",
+				"creationTimestamp": "2026-09-25T00:00:00Z",
+			},
+			"spec": map[string]any{
+				"clusterIP":       "10.96.0.1",
+				"clusterIPs":      []any{"10.96.0.1"},
+				"sessionAffinity": "None",
+				"type":            "ClusterIP",
+				"ports": []any{
+					map[string]any{
+						"port": int64(80),
+					},
+				},
+			},
+		},
+	}
+	d, cfg := setupDriftTestCase(t, stateManifest, "", u)
+
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("resourceManifestRead failed: %v", diags)
+	}
+
+	gotManifest := d.Get("manifest").(string)
+	if gotManifest != stateManifest {
+		t.Errorf("expected original manifest to be preserved byte-for-byte, got:\n%s", gotManifest)
+	}
+}
+
+func TestResourceManifestRead_DuplicateKeyInStateTriggersDrift(t *testing.T) {
+	// Duplicate ConfigMap key (same name/namespace/GVK) in state
+	stateManifest := `# comment to verify drift rewrite
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+  namespace: default
+data:
+  key: value
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+  namespace: default
+data:
+  key: value
+`
+	u1 := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "ConfigMap",
+			"metadata": map[string]any{
+				"name":      "cm1",
+				"namespace": "default",
+			},
+			"data": map[string]any{
+				"key": "value",
+			},
+		},
+	}
+	d, cfg := setupDriftTestCase(t, stateManifest, "v1/ConfigMap/default/cm1;v1/ConfigMap/default/cm1", u1)
+
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("resourceManifestRead failed: %v", diags)
+	}
+
+	// Because duplicate key was present in state, drift must be detected and manifest rewritten (comment removed)
+	gotManifest := d.Get("manifest").(string)
+	if gotManifest == stateManifest {
+		t.Errorf("expected drift to be detected and state manifest overwritten, but it was unchanged")
+	}
+	if strings.Contains(gotManifest, "# comment to verify drift rewrite") {
+		t.Errorf("expected custom comment to be stripped upon drift rewrite, got:\n%s", gotManifest)
+	}
+}
+
+func TestIsSubsetOrEqual_NumericComparison(t *testing.T) {
+	if !isSubsetOrEqual(1, 1) {
+		t.Errorf("expected isSubsetOrEqual(1, 1) to be true")
+	}
+	if isSubsetOrEqual(1, 2) {
+		t.Errorf("expected isSubsetOrEqual(1, 2) to be false")
+	}
+	if !isSubsetOrEqual(int64(10), float64(10.0)) {
+		t.Errorf("expected isSubsetOrEqual(int64(10), float64(10.0)) to be true")
+	}
+	if isSubsetOrEqual(int64(10), float64(20.0)) {
+		t.Errorf("expected isSubsetOrEqual(int64(10), float64(20.0)) to be false")
+	}
+	if isSubsetOrEqual(float32(10.0), float64(10.0)) {
+		t.Errorf("expected isSubsetOrEqual with float32 to be false")
+	}
+}
+
+func TestIsSemanticEqual(t *testing.T) {
+	if !isSemanticEqual(map[string]any{"replicas": float64(1)}, map[string]any{"replicas": int64(1)}) {
+		t.Errorf("expected isSemanticEqual to be true for float64(1) and int64(1)")
+	}
+	if isSemanticEqual(map[string]any{"replicas": float64(1)}, map[string]any{"replicas": int64(2)}) {
+		t.Errorf("expected isSemanticEqual to be false for float64(1) and int64(2)")
+	}
+	if isSemanticEqual(map[string]any{"replicas": float64(1), "extra": "field"}, map[string]any{"replicas": int64(1)}) {
+		t.Errorf("expected isSemanticEqual to be false when subset is not superset")
+	}
+}
+
+func TestResourceManifestRead_DetectsNumericDrift(t *testing.T) {
+	stateManifest := `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dep1
+  namespace: default
+spec:
+  replicas: 1
+`
+	uLive := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "apps/v1",
+			"kind":       "Deployment",
+			"metadata": map[string]any{
+				"name":      "dep1",
+				"namespace": "default",
+			},
+			"spec": map[string]any{
+				"replicas": int64(5),
+			},
+		},
+	}
+	d, cfg := setupDriftTestCase(t, stateManifest, "apps/v1/Deployment/default/dep1", uLive)
+
+	diags := resourceManifestRead(context.Background(), d, cfg)
+	if diags.HasError() {
+		t.Fatalf("resourceManifestRead failed: %v", diags)
+	}
+
+	gotManifest := d.Get("manifest").(string)
+	objs, err := decodeManifests(gotManifest)
+	if err != nil {
+		t.Fatalf("failed to decode updated manifest: %v", err)
+	}
+	if len(objs) != 1 {
+		t.Fatalf("expected 1 object, got %d", len(objs))
+	}
+	replicasRaw, found, err := unstructured.NestedFieldNoCopy(objs[0].Object, "spec", "replicas")
+	if err != nil || !found {
+		t.Fatalf("failed to get replicas from updated manifest: found=%v, err=%v", found, err)
+	}
+	replicas, ok := toFloat64(replicasRaw)
+	if !ok || replicas != 5 {
+		t.Errorf("expected replicas to be 5, got %v", replicasRaw)
+	}
+}
+
+func TestIsSubsetOrEqual_RecursionDepthLimit(t *testing.T) {
+	buildDeepMap := func(depth int) map[string]any {
+		root := make(map[string]any)
+		curr := root
+		for i := 0; i < depth; i++ {
+			next := make(map[string]any)
+			curr["child"] = next
+			curr = next
+		}
+		return root
+	}
+
+	m1 := buildDeepMap(50)
+	m2 := buildDeepMap(50)
+	if !isSubsetOrEqual(m1, m2) {
+		t.Errorf("expected depth 50 to return true")
+	}
+
+	deep1 := buildDeepMap(105)
+	deep2 := buildDeepMap(105)
+	if isSubsetOrEqual(deep1, deep2) {
+		t.Errorf("expected depth 105 to exceed maxSubsetDepth and return false")
+	}
+}
+
+func TestIsSubsetOrEqual_LargeIntegerPrecision(t *testing.T) {
+	n1 := int64(1<<60 + 1)
+	n2 := int64(1<<60 + 2)
+	if isSubsetOrEqual(n1, n2) {
+		t.Errorf("expected isSubsetOrEqual(%d, %d) to be false due to 64-bit precision, got true", n1, n2)
+	}
+	if !isSubsetOrEqual(n1, n1) {
+		t.Errorf("expected isSubsetOrEqual(%d, %d) to be true, got false", n1, n1)
+	}
+
+	u1 := uint64(1<<63 + 1)
+	u2 := uint64(1<<63 + 2)
+	if isSubsetOrEqual(u1, u2) {
+		t.Errorf("expected isSubsetOrEqual(%d, %d) to be false due to 64-bit precision, got true", u1, u2)
+	}
+	if !isSubsetOrEqual(u1, u1) {
+		t.Errorf("expected isSubsetOrEqual(%d, %d) to be true, got false", u1, u1)
+	}
+}
+
+func TestBuildKubeClients_Concurrent(t *testing.T) {
+	tmpDir := t.TempDir()
+	kubeconfigPath := tmpDir + "/kubeconfig"
+	kubeconfigContent := `apiVersion: v1
+clusters:
+- cluster:
+    server: https://127.0.0.1:6443
+  name: test-cluster
+contexts:
+- context:
+    cluster: test-cluster
+    user: test-user
+  name: test-context
+current-context: test-context
+kind: Config
+preferences: {}
+users:
+- name: test-user
+  user:
+    token: fake-token
+`
+	if err := os.WriteFile(kubeconfigPath, []byte(kubeconfigContent), 0600); err != nil {
+		t.Fatalf("failed to write temporary kubeconfig: %v", err)
+	}
+
+	cfg := &providerConfig{
+		KubeConfigPath: kubeconfigPath,
+	}
+
+	type clientResult struct {
+		client dynamic.Interface
+		mapper meta.RESTMapper
+	}
+	results := make([]clientResult, 20)
+	var wg sync.WaitGroup
+	for i := 0; i < 20; i++ {
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
+			client, mapper, err := buildKubeClients(cfg)
+			if err != nil {
+				t.Errorf("unexpected error from buildKubeClients: %v", err)
+				return
+			}
+			if client == nil || mapper == nil {
+				t.Errorf("expected non-nil client and mapper")
+				return
+			}
+			results[idx] = clientResult{client: client, mapper: mapper}
+		}(i)
+	}
+	wg.Wait()
+
+	if results[0].client == nil || results[0].mapper == nil {
+		t.Fatalf("goroutine 0 failed to obtain clients")
+	}
+	firstClient := results[0].client
+	firstMapper := results[0].mapper
+	for i := 1; i < 20; i++ {
+		if results[i].client != firstClient {
+			t.Errorf("goroutine %d got client %p, want %p", i, results[i].client, firstClient)
+		}
+		if results[i].mapper != firstMapper {
+			t.Errorf("goroutine %d got mapper %p, want %p", i, results[i].mapper, firstMapper)
 		}
 	}
 }
