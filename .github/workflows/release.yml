@@ -24,6 +24,8 @@ jobs:
         uses: opentofu/setup-opentofu@v1
         with:
           tofu_version: latest
+      - name: Run cross-architecture check
+        run: make cross-check
       - name: Run integration test suite
         run: make inttest
       - name: Import GPG key

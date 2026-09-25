@@ -2,9 +2,11 @@ DIST_DIR=dist
 RESOURCEGEN_BIN=$(DIST_DIR)/resourcegen
 PROVIDER_BIN=$(DIST_DIR)/terraform-provider-kubefu
 
+CROSS_COMBOS=linux/amd64 linux/arm linux/arm64 windows/amd64 windows/arm64 darwin/amd64 darwin/arm64
+
 default: all
 
-all: lint unittest inttest build-provider docs
+all: lint cross-check unittest inttest build-provider docs
 
 $(DIST_DIR):
 	mkdir -p $(DIST_DIR)
@@ -29,6 +31,15 @@ lint:
 	golangci-lint run kubefu/generated
 	golangci-lint run cmd/resourcegen
 	golangci-lint run cmd/terraform-provider-kubefu
+
+cross-check:
+	@for combo in $(CROSS_COMBOS); do \
+		os=$${combo%/*}; \
+		arch=$${combo#*/}; \
+		echo "Cross-checking $$os/$$arch..."; \
+		CGO_ENABLED=0 GOOS=$$os GOARCH=$$arch go vet ./... || exit 1; \
+		CGO_ENABLED=0 GOOS=$$os GOARCH=$$arch go build -o /dev/null ./cmd/terraform-provider-kubefu || exit 1; \
+	done
 
 modupdate:
 	go get -u ./...

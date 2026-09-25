@@ -1002,7 +1002,7 @@ func toInt64(v any) (int64, bool) {
 	case int64:
 		return n, true
 	case uint:
-		if n <= math.MaxInt64 {
+		if uint64(n) <= math.MaxInt64 {
 			return int64(n), true
 		}
 	case uint8:

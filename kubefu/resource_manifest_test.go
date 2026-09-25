@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"strings"
 	"sync"
@@ -1872,6 +1873,13 @@ func TestIsSubsetOrEqual_NumericComparison(t *testing.T) {
 	}
 	if isSubsetOrEqual(float32(10.0), float64(10.0)) {
 		t.Errorf("expected isSubsetOrEqual with float32 to be false")
+	}
+	// Verify 32-bit uint boundaries and uint-to-int64 conversions
+	if !isSubsetOrEqual(uint(math.MaxUint32), float64(math.MaxUint32)) {
+		t.Errorf("expected isSubsetOrEqual for uint(math.MaxUint32) to be true")
+	}
+	if !isSubsetOrEqual(uint(100), int64(100)) {
+		t.Errorf("expected isSubsetOrEqual for uint(100) and int64(100) to be true")
 	}
 }
 
