@@ -3,6 +3,7 @@ package kubefu
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,6 +18,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/equality"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -851,6 +853,74 @@ func normalizeManifestObject(obj map[string]interface{}) {
 			}
 		}
 	}
+
+	if kind == "Secret" {
+		normalizeSecretStringData(obj)
+	}
+
+	normalizeResourceQuantities(obj, 0)
+}
+
+func normalizeSecretStringData(obj map[string]interface{}) {
+	stringData, ok := obj["stringData"].(map[string]interface{})
+	if !ok {
+		return
+	}
+	data, ok := obj["data"].(map[string]interface{})
+	if !ok || data == nil {
+		data = make(map[string]interface{}, len(stringData))
+		obj["data"] = data
+	}
+	for k, v := range stringData {
+		if s, ok := v.(string); ok {
+			data[k] = base64.StdEncoding.EncodeToString([]byte(s))
+		}
+	}
+	delete(obj, "stringData")
+}
+
+func normalizeResourceQuantities(v interface{}, depth int) {
+	if depth > maxSubsetDepth {
+		return
+	}
+	switch typed := v.(type) {
+	case map[string]interface{}:
+		if resources, ok := typed["resources"].(map[string]interface{}); ok {
+			for _, field := range []string{"requests", "limits"} {
+				if qMap, ok := resources[field].(map[string]interface{}); ok {
+					for k, raw := range qMap {
+						if normalized, ok := canonicalizeQuantity(raw); ok {
+							qMap[k] = normalized
+						}
+					}
+				}
+			}
+		}
+		for _, child := range typed {
+			normalizeResourceQuantities(child, depth+1)
+		}
+	case []interface{}:
+		for _, elem := range typed {
+			normalizeResourceQuantities(elem, depth+1)
+		}
+	}
+}
+
+func canonicalizeQuantity(raw interface{}) (string, bool) {
+	var s string
+	switch v := raw.(type) {
+	case string:
+		s = v
+	case int, int64, float64:
+		s = fmt.Sprintf("%v", v)
+	default:
+		return "", false
+	}
+	q, err := resource.ParseQuantity(s)
+	if err != nil {
+		return "", false
+	}
+	return q.String(), true
 }
 
 // manifestDiffSuppress suppresses diffs between old and new manifests when they are semantically equivalent.

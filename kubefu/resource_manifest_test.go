@@ -2054,3 +2054,99 @@ users:
 		}
 	}
 }
+
+func TestManifestDiffSuppress_SecretStringData(t *testing.T) {
+	liveYAML := `apiVersion: v1
+kind: Secret
+metadata:
+  name: zulip-app-keys
+  namespace: zulip
+type: Opaque
+data:
+  SECRET_KEY: c2VjcmV0LTE=
+  CAMO_KEY: Y2Ftby0y
+`
+	configYAML := `apiVersion: v1
+kind: Secret
+metadata:
+  name: zulip-app-keys
+  namespace: zulip
+type: Opaque
+stringData:
+  SECRET_KEY: secret-1
+  CAMO_KEY: camo-2
+`
+	if !manifestDiffSuppress("manifest", liveYAML, configYAML, nil) {
+		t.Fatalf("expected manifestDiffSuppress to treat Secret stringData and base64 data as equal")
+	}
+
+	stateObjs, err := decodeManifests(configYAML)
+	if err != nil {
+		t.Fatalf("decodeManifests(configYAML) failed: %v", err)
+	}
+	liveObjs, err := decodeManifests(liveYAML)
+	if err != nil {
+		t.Fatalf("decodeManifests(liveYAML) failed: %v", err)
+	}
+	normalizeManifestObject(stateObjs[0].Object)
+	normalizeManifestObject(liveObjs[0].Object)
+	if !isSubsetOrEqual(stateObjs[0].Object, liveObjs[0].Object) {
+		t.Fatalf("expected normalized Secret with stringData to be subset/equal of live Secret with data")
+	}
+}
+
+func TestManifestDiffSuppress_ResourceQuantities(t *testing.T) {
+	liveYAML := `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zulip
+  namespace: zulip
+spec:
+  template:
+    spec:
+      containers:
+      - name: zulip
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1Gi
+          limits:
+            cpu: "2"
+            memory: 3Gi
+`
+	configYAML := `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zulip
+  namespace: zulip
+spec:
+  template:
+    spec:
+      containers:
+      - name: zulip
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1024Mi
+          limits:
+            cpu: 2000m
+            memory: 3072Mi
+`
+	if !manifestDiffSuppress("manifest", liveYAML, configYAML, nil) {
+		t.Fatalf("expected manifestDiffSuppress to treat equivalent Kubernetes resource quantities as equal")
+	}
+
+	stateObjs, err := decodeManifests(configYAML)
+	if err != nil {
+		t.Fatalf("decodeManifests(configYAML) failed: %v", err)
+	}
+	liveObjs, err := decodeManifests(liveYAML)
+	if err != nil {
+		t.Fatalf("decodeManifests(liveYAML) failed: %v", err)
+	}
+	normalizeManifestObject(stateObjs[0].Object)
+	normalizeManifestObject(liveObjs[0].Object)
+	if !isSubsetOrEqual(stateObjs[0].Object, liveObjs[0].Object) {
+		t.Fatalf("expected normalized Deployment with 2000m/1024Mi to be subset/equal of live Deployment with 2/1Gi")
+	}
+}
